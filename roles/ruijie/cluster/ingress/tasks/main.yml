@@ -11,7 +11,7 @@
   delegate_to: "{{ groups.deploy[0] }}"
 
 - name: 部署ingress
-  when: '"traefik-ingress" not in pod_info.stdout'
+  when: '"traefik-ingress" not in pod_info.stdout and  "sourceid" == KAD_APP_NAME'
   block:
     - name: 尝试推送离线 traefik镜像（若执行失败，可忽略）
       copy: src={{ base_dir }}/down/{{ traefik_offline }} dest=/opt/kube/images/{{ traefik_offline }}
