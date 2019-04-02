@@ -21,7 +21,29 @@
       - rsync               # 文件同步工具，分发证书等配置文件需要
       - ipset
       - ipvsadm
+      - net-tools
+      - ntp
     state: latest
+
+- name: 关闭防火墙
+  shell: "systemctl stop firewalld && systemctl disable firewalld"
+  ignore_errors: true
+
+- name: 清理防火墙规则
+  shell: "iptables -F && iptables -X && iptables -F -t nat && iptables -X -t nat"
+  ignore_errors: true
+
+- name: 设置默认转发策略
+  shell: "iptables -P FORWARD ACCEPT"
+  ignore_errors: true
+
+- name: 设置时区和时间
+  shell: "timedatectl set-timezone Asia/Shanghai
+   && timedatectl set-local-rtc 0
+   && ntpdate cn.pool.ntp.org
+   && systemctl restart crond
+   && systemctl restart rsyslog"
+  ignore_errors: true
 
 - name: 临时关闭 selinux
   shell: "setenforce 0"
@@ -32,14 +54,3 @@
     dest: /etc/selinux/config
     regexp: "^SELINUX="
     line: "SELINUX=disabled"
-
-# 优化设置 journal 日志相关，避免日志重复搜集，浪费系统资源
-- name: 禁止rsyslog获取journald日志
-  lineinfile:
-    dest: /etc/rsyslog.conf
-    state: present
-    regexp: 'ModLoad imjournal'
-    line: '#$ModLoad imjournal # provides access to the systemd journal'
-
-- name: 重启rsyslog服务
-  service: name=rsyslog state=restarted

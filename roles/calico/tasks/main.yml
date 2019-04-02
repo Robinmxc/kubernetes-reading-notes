@@ -88,11 +88,10 @@
   - calicoctl
 
 - name: 分发 calico 证书
-  synchronize: src=/etc/calico/ssl/{{ item }} dest=/etc/calico/ssl/{{ item }}
+  copy: src=/etc/calico/ssl/{{ item }} dest=/etc/calico/ssl/{{ item }}
   with_items:
   - calico.pem
   - calico-key.pem
-  delegate_to: "{{ groups.deploy[0] }}"
 
 - name: 准备 calicoctl配置文件
   template: src=calicoctl.cfg.j2 dest=/etc/calico/calicoctl.cfg

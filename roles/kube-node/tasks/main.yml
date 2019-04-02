@@ -6,6 +6,7 @@
   - /var/lib/kube-proxy
   - /etc/cni/net.d
   - /root/.kube
+  - /opt/kube/images
 
 - name: 下载 kubelet,kube-proxy 二进制和基础 cni plugins
   copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
@@ -19,7 +20,7 @@
   tags: upgrade_k8s
 
 - name: 分发 kubeconfig配置文件
-  synchronize: src=/root/.kube/config dest=/root/.kube/config
+  copy: src=/root/.kube/config dest=/root/.kube/config
   delegate_to: "{{ groups.deploy[0] }}"
 
 - name: 添加 kubectl 命令自动补全
@@ -40,12 +41,11 @@
   ignore_errors: true
 
 - name: 分发证书相关
-  synchronize: src={{ ca_dir }}/{{ item }} dest={{ ca_dir }}/{{ item }}
+  copy: src={{ ca_dir }}/{{ item }} dest={{ ca_dir }}/{{ item }}
   with_items:
   - ca.pem
   - ca-key.pem
   - ca-config.json
-  delegate_to: "{{ groups.deploy[0] }}"
 
 ##----------kubelet 配置部分--------------
 - name: 准备kubelet 证书签名请求
@@ -103,8 +103,7 @@
 
 ##-------kube-proxy部分----------------
 - name: 安装kube-proxy.kubeconfig配置文件
-  synchronize: src=/etc/kubernetes/kube-proxy.kubeconfig dest=/etc/kubernetes/kube-proxy.kubeconfig
-  delegate_to: "{{ groups.deploy[0] }}"
+  copy: src=/etc/kubernetes/kube-proxy.kubeconfig dest=/etc/kubernetes/kube-proxy.kubeconfig
 
 - name: 创建kube-proxy 服务文件
   tags: reload-kube-proxy, upgrade_k8s, restart_node
