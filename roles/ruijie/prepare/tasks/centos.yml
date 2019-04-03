@@ -1,3 +1,14 @@
+# 检查是否静态IP
+- block:
+  - name: 获取网卡配置文件名
+    shell: 'grep -rnl "{{ inventory_hostname }}" ifcfg-*'
+    args:
+      chdir: "/etc/sysconfig/network-scripts"
+    register: find_output
+
+  - name: 检查IP是否配置为静态分配
+    shell: 'grep BOOTPROTO.*static /etc/sysconfig/network-scripts/{{ find_output.stdout }}'
+
 - name: 删除centos/redhat默认安装
   yum: 
     name: 
