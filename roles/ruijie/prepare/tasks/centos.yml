@@ -4,10 +4,12 @@
     shell: 'grep -rnl "{{ inventory_hostname }}" ifcfg-*'
     args:
       chdir: "/etc/sysconfig/network-scripts"
-    register: find_output
+    register: find_ifcfg
 
   - name: 检查IP是否配置为静态分配
-    shell: 'grep BOOTPROTO.*static /etc/sysconfig/network-scripts/{{ find_output.stdout }}'
+    shell: 'grep BOOTPROTO /etc/sysconfig/network-scripts/{{ find_ifcfg.stdout }}'
+    register: bootproto
+    failed_when: '"static" not in bootproto.stdout'
 
 - name: 删除centos/redhat默认安装
   yum: 
