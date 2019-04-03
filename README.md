@@ -2,7 +2,7 @@
 
 基于[Kubeasz](https://github.com/gjmzj/kubeasz)开发。
 
-## 使用方法
+## 一、使用方法
 
 #### 1. 准备主机
 
@@ -89,7 +89,29 @@
     192.168.1.64            : ok=xx   changed=xx   unreachable=0    failed=0
     ```
 
-## 处理异常情况
+## 二、准备开发环境
+
+按以下步骤准备开发环境
+
+1. 安装Ansible
+    ```bash
+    yum install -y ansible
+    ```
+1. 下载代码（在/opt目录下执行）
+    ```
+    cd /opt
+    git clone http://192.168.54.191/baseproject/kad.git
+    ```
+1. 下载运行部署脚本需要的二进制文件
+    ```
+    wget http://192.168.54.24:8081/repository/files/ruijie/kad/support/kad-support-files-0.1.0.tar.gz
+    cd kad
+    tar xzvf ../kad-support-files-0.1.0.tar.gz
+    ```
+
+## 三、附录
+
+### 处理异常情况
 
 1. 如果没有部署成功，执行以下命令清除集群环境，然后重新执行部署过程
     ```
