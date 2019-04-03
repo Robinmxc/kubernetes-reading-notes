@@ -189,11 +189,16 @@
     tags: rm_ntp 
     when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
 
+  - name: 查询chronyd状态
+    shell: "systemctl list-units *.service"
+    register: svc_info
+    when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"
+
   - name: stop and disable chronyd in CentOS/RedHat
     service: name=chronyd state=stopped enabled=no
+    tags: rm_ntp
+    when: '"chronyd" in svc_info.stdout'
     ignore_errors: true
-    tags: rm_ntp 
-    when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"
 
   - name: clean certs and keys
     file: name={{ item }} state=absent
