@@ -1,7 +1,7 @@
 # to synchronize time of nodes with 'chrony'
 - hosts: all
   roles:
-  - chrony
+  - ruijie/chrony
 
 # to create CA, kubeconfig, kube-proxy.kubeconfig etc. on 'deploy' node
 - hosts: deploy
