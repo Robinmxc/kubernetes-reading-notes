@@ -35,7 +35,6 @@
       - ipset
       - ipvsadm
       - net-tools
-      - ntp
     state: latest
 
 - name: 查询防火墙状态
@@ -53,16 +52,6 @@
 
 - name: 设置默认转发策略
   shell: "iptables -P FORWARD ACCEPT"
-  ignore_errors: true
-
-- name: 设置时区和时间
-  shell: "timedatectl set-timezone Asia/Shanghai
-   && timedatectl set-local-rtc 0
-   && ntpdate cn.pool.ntp.org
-   && hwclock --systohc
-   && hwclock -w
-   && systemctl restart crond
-   && systemctl restart rsyslog"
   ignore_errors: true
 
 - name: 临时关闭 selinux
