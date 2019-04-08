@@ -2,3 +2,14 @@
 ingress_install: "yes"
 ingress_backend: "traefik"
 traefik_offline: "traefik_v1.7.4.tar"
+
+ingress_ui_host: "traefik-ui.local"
+
+# http or https
+traefik_mode: "http"
+
+#证书文件名，如：["com.ruijie", "com.ruijie.cn"]
+#同时/etc/kubernetes/ssl目录下要有：com.ruijie.pem, com.ruijie-key.pem, com.ruijie.com.cn.pem, com.ruijie.com.cn-key.pem
+traefik_ssl_names: []
+
+traefik_temp_dir: "/opt/kube/kube-system/traefik-{{ traefik_mode }}"

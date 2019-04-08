@@ -7,9 +7,11 @@ spec:
   selector:
     k8s-app: traefik-ingress-lb
   ports:
-  - name: web
-    port: 80
-    targetPort: 8580
+    - protocol: TCP
+      name: admin
+      port: 8580
+      targetPort: 8580
+
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -18,10 +20,10 @@ metadata:
   namespace: kube-system
 spec:
   rules:
-  - host: traefik-ui.local
+  - host: {{ ingress_ui_host }}
     http:
       paths:
       - path: /
         backend:
           serviceName: traefik-web-ui
-          servicePort: web
+          servicePort: admin

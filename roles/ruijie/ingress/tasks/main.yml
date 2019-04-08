@@ -23,8 +23,48 @@
       shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ traefik_offline }}"
       when: 'traefik_offline in image_info.stdout'
 
+    - name: 在deploy 节点创建相关目录
+      file: path={{ item }} state=directory
+      with_items:
+      - "{{ traefik_temp_dir }}/manifests"
+      run_once: true
+      delegate_to: "{{ groups.deploy[0] }}"
+
+    - name: 复制traefik部署文件
+      copy: src={{ item }} dest={{ traefik_temp_dir }}/manifests/{{ item }}
+      with_items:
+        - ingress-rbac.yaml
+        - traefik-ingress-{{ traefik_mode }}.yaml
+      run_once: true
+      delegate_to: "{{ groups.deploy[0] }}"
+
+    - name: 创建traefik-ui部署文件
+      template: src=traefik-ui.yaml.j2 dest={{ traefik_temp_dir }}/manifests/traefik-ui.yaml
+      run_once: true
+      delegate_to: "{{ groups.deploy[0] }}"
+
+    - name: 保存证书到k8s
+      vars:
+        - ssl_files: "{% for f in traefik_ssl_names %} --from-file={{ ca_dir }}/{{ f }}.pem --from-file={{ ca_dir }}/{{ f }}-key.pem {% endfor %}"
+      shell: "{{ bin_dir }}/kubectl create secret generic traefik-cert {{ ssl_files }} -n kube-system"
+      run_once: true
+      delegate_to: "{{ groups.deploy[0] }}"
+      when: "'https' == traefik_mode"
+
+    - name: 创建traefik配置文件
+      template: src=traefix.toml.j2 dest={{ traefik_temp_dir }}/traefix.toml
+      run_once: true
+      delegate_to: "{{ groups.deploy[0] }}"
+      when: "'https' == traefik_mode"
+
+    - name: 保存traefik配置文件到到k8s
+      shell: "{{ bin_dir }}/kubectl create configmap traefik-conf --from-file={{ traefik_temp_dir }}/traefix.toml -n kube-system"
+      run_once: true
+      delegate_to: "{{ groups.deploy[0] }}"
+      when: "'https' == traefik_mode"
+
     - name: 创建 traefik部署
-      shell: "{{ bin_dir }}/kubectl apply -f {{ base_dir }}/manifests/ruijie/ingress/"
+      shell: "{{ bin_dir }}/kubectl apply -f {{ traefik_temp_dir }}/manifests/"
       delegate_to: "{{ groups.deploy[0] }}"
       run_once: true
 
