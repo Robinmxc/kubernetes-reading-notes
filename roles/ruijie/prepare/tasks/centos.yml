@@ -35,7 +35,7 @@
       - ipset
       - ipvsadm
       - net-tools
-    state: latest
+    state: present
 
 - name: 查询防火墙状态
   shell: "systemctl list-units *.service"
