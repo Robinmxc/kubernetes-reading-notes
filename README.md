@@ -46,7 +46,7 @@
     mkdir -p inventory/my-cluster
     cp inventory/example/m1n3.ini inventory/my-cluster
     ```
-1. 编辑inventory/my-cluster/m1n3.ini，设置各节点IP地址：
+1. 编辑inventory/my-cluster，设置各节点IP地址：
     ```
     [deploy]
     192.168.1.12 NTP_ENABLED=no
