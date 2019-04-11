@@ -43,7 +43,6 @@
 1. 复制一个示例配置文件作为配置基础
     ```bash
     cd /opt/kad
-    mkdir -p inventory/my-cluster
     cp inventory/example/m1n3.ini inventory/my-cluster
     ```
 1. 编辑inventory/my-cluster，设置各节点IP地址：
