@@ -32,7 +32,7 @@
 
 #### 3. 准备配置文件
 
-参考inventory目录下的例子，准备部署文件。下面以1个master节点+3个node节点为例进行说明。
+参考inventory/example目录下的例子，准备部署文件。下面以1个master节点+3个node节点为例进行说明。
 
 假设各主机IP地址如下：
 - 部署主机：192.128.1.12
@@ -43,9 +43,10 @@
 1. 复制一个示例配置文件作为配置基础
     ```bash
     cd /opt/kad
+    mkdir -p inventory/my-cluster
     cp inventory/example/m1n3.ini inventory/my-cluster
     ```
-1. 编辑inventory/my-cluster，设置各节点IP地址：
+1. 编辑inventory/my-cluster/m1n3.ini，设置各节点IP地址：
     ```
     [deploy]
     192.168.1.12 NTP_ENABLED=no
