@@ -13,4 +13,4 @@
 
 ## 沟通交流
 
-- [Gitlab Issues](/baseproject/kad/issues)
+- [Gitlab Issues](http://192.168.54.191/baseproject/kad/issues)
