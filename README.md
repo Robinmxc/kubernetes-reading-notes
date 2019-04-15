@@ -3,13 +3,13 @@
 基于[Kubeasz](https://github.com/gjmzj/kubeasz)开发。
 
 ## 使用说明
-- [基本用法](docs/ruijie/getting-started.md)
-- [双Master高可用模式的部署方法](docs/ruijie/master-ha.md)
-- [HTTPS服务的配置方法](docs/ruijie/traefik-https.md)
-- [常见问题和解决办法](docs/ruijie/solve-problem.md)
+- [基本用法](docs/ruijie/guide/getting-started.md)
+- [双Master高可用模式的部署方法](docs/ruijie/guide/master-ha.md)
+- [HTTPS服务的配置方法](docs/ruijie/guide/traefik-https.md)
+- [常见问题和解决办法](docs/ruijie/guide/solve-problem.md)
 
 ## 参与开发
-- [怎样准备开发环境](docs/ruijie/develop.md)
+- [怎样准备开发环境](docs/ruijie/guide/develop.md)
 
 ## 沟通交流
 
