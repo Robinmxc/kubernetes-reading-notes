@@ -6,10 +6,13 @@
       chdir: "/etc/sysconfig/network-scripts"
     register: find_ifcfg
 
-  - name: 检查IP是否配置为静态分配
+  - name: 获取BOOTPROTO配置
     shell: 'grep BOOTPROTO /etc/sysconfig/network-scripts/{{ find_ifcfg.stdout }}'
     register: bootproto
-    failed_when: '"static" not in bootproto.stdout'
+
+  - name: 检查是否静态IP
+    fail: msg="{{ inventory_hostname }}不是静态IP地址"
+    when: '"static" not in bootproto.stdout'
 
 - name: 删除centos/redhat默认安装
   yum: 
