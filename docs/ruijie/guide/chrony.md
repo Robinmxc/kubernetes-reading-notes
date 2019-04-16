@@ -8,3 +8,5 @@
 ```
 ntp_server="0.centos.pool.ntp.org"
 ```
+
+如果没有可用的时间服务器，`ntp_server`设置为第1个主节点的IP。
