@@ -13,31 +13,31 @@
 #### 修改配置文件
 
 在配置文件末尾添加以下内容：
-    ```
-    traefik_ssl_names=["ruijie.com"]
-    ```
+```
+traefik_ssl_names=["ruijie.com"]
+```
 
 可以配置多个域名，例如：
-    ```
-    traefik_ssl_names=["ruijie.com", "abc.com", "def.com"]
-    ```
+```
+traefik_ssl_names=["ruijie.com", "abc.com", "def.com"]
+```
 注意：各个域名的证书都要按照前面的要求放到`/etc/kubernetes/ssl`目录下。
 
 #### 部署到K8S
 
 执行以下命令完成部署：
-    ```
-    cd /opt/kad
-    ansible-playbook -i inventory/my-cluster playbooks/cluster/traefik-https.yml -k
-    ```
-其中inventory/my-cluster需要改成你的配置文件。
+```
+cd /opt/kad
+ansible-playbook -i inventory/my-cluster playbooks/cluster/traefik-https.yml -k
+```
+ 其中inventory/my-cluster需要改成你的配置文件。
 
 #### 验证
 
 在hosts中设置：
-    ```
-    192.168.1.62  com.ruijie
-    ```
+```
+192.168.1.62  com.ruijie
+```
 其中`192.168.1.62`是任意一个node节点的IP。
 
 用浏览器访问：`https://com.ruijie/`。
