@@ -6,6 +6,7 @@
 - [基本用法](docs/ruijie/guide/getting-started.md)
 - [双Master高可用模式的部署方法](docs/ruijie/guide/master-ha.md)
 - [HTTPS服务的配置方法](docs/ruijie/guide/traefik-https.md)
+- [设置时间同步服务器 ](docs/ruijie/guide/chrony.md)
 - [常见问题和解决办法](docs/ruijie/guide/solve-problem.md)
 
 ## 参与开发
