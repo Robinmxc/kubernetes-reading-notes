@@ -5,5 +5,5 @@ CERT_EXPIRY: "438000h"
 # kubeconfig 配置参数
 CLUSTER_NAME: "kubernetes"
 USER_NAME: "admin"
-CONTEXT_NAME: "kubernetes"
+CONTEXT_NAME: "default"
 
