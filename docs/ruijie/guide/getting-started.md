@@ -2,8 +2,7 @@
 
 #### 1. 准备
 
-##### 5台主机
-- 1台主机作为部署主机
+##### 4台主机
 - 4台集群主机（1台master + 3台node）
 - 操作系统要求都是CentOS 7.6.1810
 - 各主机的root密码必须相同（包括部署主机）
@@ -14,7 +13,7 @@
 
 #### 2. 安装部署工具
 
-在部署主机上按以下步骤操作：
+在master上按以下步骤操作：
 
 1. 安装Ansible
     ```bash
@@ -35,7 +34,6 @@
 参考inventory/example目录下的例子，准备部署文件。下面以1个master节点+3个node节点为例进行说明。
 
 假设各主机IP地址如下：
-- 部署主机：192.128.1.12
 - master节点：192.168.1.61
 - node节点：192.168.1.62, 192.168.1.63, 192.168.1.64
 
@@ -49,7 +47,7 @@
 1. 编辑inventory/my-cluster/m1n3.ini，设置各节点IP地址：
     ```
     [deploy]
-    192.168.1.12 NTP_ENABLED=no
+    192.168.1.61 NTP_ENABLED=no
 
     [etcd]
     192.168.1.61 NODE_NAME=etcd1
@@ -80,7 +78,6 @@
 1. 等待脚本运行完成。部署成功会显示如下信息
     ```
     PLAY RECAP *************************************************************
-    192.168.1.12            : ok=xx   changed=xx   unreachable=0    failed=0
     192.168.1.61            : ok=xx   changed=xx   unreachable=0    failed=0
     192.168.1.62            : ok=xx   changed=xx   unreachable=0    failed=0
     192.168.1.63            : ok=xx   changed=xx   unreachable=0    failed=0
