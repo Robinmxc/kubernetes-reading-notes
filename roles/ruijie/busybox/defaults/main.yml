@@ -1,0 +1,4 @@
+namespace: kube-ruijie
+
+busybox_version: "1.30.1"
+busybox_offline: "busybox-1.30.1.tar"
