@@ -15,6 +15,10 @@
 
 在master上按以下步骤操作：
 
+1. 安装基础工具wget，如果wget已经存在可以跳过这一步
+    ```bash
+    yum install -y wget
+    ```
 1. 安装Ansible
     ```bash
     yum install -y ansible
