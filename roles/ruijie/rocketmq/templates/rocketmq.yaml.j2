@@ -1,0 +1,63 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-rocket
+  namespace: {{ namespace }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+     labels:
+       service: rg-rocket
+    spec:
+      nodeName: {{ rocketmq_node_ip }}
+      containers:
+      - name: broker
+        image: rocketmqinc/rocketmq:{{ rocketmq_version }}
+        command: ["sh","mqbroker", "-n","localhost:9876 autoCreateTopicEnable=true"]
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 10909
+          - containerPort: 10911
+        volumeMounts:
+          - mountPath: /root/logs
+            name: brokeroptlogs
+          - mountPath: /root/store
+            name: brokeroptstore
+      - name: namesrv
+        image: rocketmqinc/rocketmq:{{ rocketmq_version }}
+        command: ["sh","mqnamesrv"]
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 9876
+        volumeMounts:
+          - mountPath: /root/logs
+            name: namesrvoptlogs
+          - mountPath: /root/store
+            name: namesrvoptstore
+      volumes:
+      - name: brokeroptlogs
+        hostPath:
+          path: {{ rocketmq_logs_dir }}/broker
+      - name: brokeroptstore
+        hostPath:
+          path: {{ rocketmq_data_dir }}/broker
+      - name: namesrvoptlogs
+        hostPath:
+          path: {{ rocketmq_logs_dir }}/namesrv
+      - name: namesrvoptstore
+        hostPath:
+          path: {{ rocketmq_data_dir }}/namesrv
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-rocket
+  namespace: {{ namespace }}
+spec:
+  selector:
+    service: rg-rocket
+  ports:
+  - port: 9876
+    targetPort: 9876

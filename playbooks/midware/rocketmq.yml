@@ -1,0 +1,4 @@
+- hosts:
+  - rocketmq
+  roles:
+  - ruijie/rocketmq

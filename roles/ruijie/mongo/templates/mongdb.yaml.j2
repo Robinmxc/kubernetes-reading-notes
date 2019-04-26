@@ -1,0 +1,60 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: {{ namespace }}
+  name: {{ mongodb_node_name }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+     labels:
+       service: {{ mongodb_node_name }}
+    spec:
+      nodeName: {{ mongodb_node_ip }}
+      containers:
+      - name: {{ mongodb_node_name }}
+        image: mongo:{{ mongodb_version }}
+        imagePullPolicy: IfNotPresent
+        command:
+          - mongod
+          - '--bind_ip_all'
+          - '--replSet'
+          - rs0
+          - '--smallfiles'
+          - '--noprealloc'
+{% if mongodb_resource_limit == 'yes' %}
+          - '--wiredTigerCacheSizeGB'
+          - '{{ wiredTigerCacheSizeGB }}'
+{% endif %}
+        ports:
+          - containerPort: {{ mongodb_port }}
+            hostPort: {{ mongodb_port }}
+{% if mongodb_resource_limit == 'yes' %}
+        resources:
+          limits:
+            cpu: '{{ mongodb_max_cpu }}'
+            memory: {{ mongodb_max_memory }}
+          requests:
+            cpu: '{{ mongodb_min_cpu }}'
+            memory: {{ mongodb_min_memory }}
+{% endif %}
+        volumeMounts:
+          - mountPath: /data/db
+            name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: {{ mongodb_data_dir }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ mongodb_node_name }}
+  namespace: {{ namespace }}
+spec:
+  selector:
+    service: {{ mongodb_node_name }}
+  ports:
+  - port: {{ mongodb_port }}
+    targetPort: {{ mongodb_port }}
