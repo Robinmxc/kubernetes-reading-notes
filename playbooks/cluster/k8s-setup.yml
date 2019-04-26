@@ -63,7 +63,7 @@
   - kube-master
   - kube-node
   roles:
-  - flannel
+  - ruijie/flannel
 
 # to install clust-addons
 - hosts:

@@ -23,7 +23,7 @@ data:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: metrics-server-v0.3.1
+  name: metrics-server
   namespace: kube-system
   labels:
     k8s-app: metrics-server
@@ -90,7 +90,7 @@ spec:
           - --memory=40Mi
           - --extra-memory=4Mi
           - --threshold=5
-          - --deployment=metrics-server-v0.3.1
+          - --deployment=metrics-server
           - --container=metrics-server
           - --poll-period=300000
           - --estimator=exponential

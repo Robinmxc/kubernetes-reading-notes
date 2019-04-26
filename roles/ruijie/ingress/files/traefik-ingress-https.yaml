@@ -1,16 +1,16 @@
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
-  name: traefik-ingress-controller
+  name: traefik-ingress
   namespace: kube-system
   labels:
-    k8s-app: traefik-ingress-lb
+    k8s-app: traefik-ingress
 spec:
   template:
     metadata:
       labels:
-        k8s-app: traefik-ingress-lb
-        name: traefik-ingress-lb
+        k8s-app: traefik-ingress
+        name: traefik-ingress
     spec:
       terminationGracePeriodSeconds: 60
       hostNetwork: true
@@ -18,7 +18,7 @@ spec:
       serviceAccountName: ingress-sa
       containers:
       - image: traefik:v1.7.4
-        name: traefik-ingress-lb
+        name: traefik-ingress
         volumeMounts:
         - mountPath: "/ssl"
           name: "ssl"
