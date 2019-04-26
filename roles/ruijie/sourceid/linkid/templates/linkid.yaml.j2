@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-linkid
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: rg-linkid
+    spec:
+      containers:
+      - name: rg-linkid
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/linkid:{{ SOURCEID_LINKID_VERSION }}
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 2Gi
+        ports:
+        - containerPort: 8901
+      imagePullSecrets:
+      - name: regsecret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-linkid
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  selector:
+    service: rg-linkid
+  ports:
+  - port: 80
+    targetPort: 8901

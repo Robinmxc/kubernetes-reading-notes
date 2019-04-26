@@ -5,3 +5,6 @@ rocketmq_offline: "rocketmq-4.3.0.tar"
 
 rocketmq_data_dir: "/ruijie/{{ namespace }}/rocketmq/data"
 rocketmq_logs_dir: "/ruijie/{{ namespace }}/rocketmq/log"
+
+rocketmq_check_data_dir: "yes"
+

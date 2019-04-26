@@ -1,0 +1,2 @@
+workspace_dir: "{{ base_dir }}/workspace/{{ SOURCEID_NAMESPACE }}"
+yaml_dir: "{{ workspace_dir }}/yaml"

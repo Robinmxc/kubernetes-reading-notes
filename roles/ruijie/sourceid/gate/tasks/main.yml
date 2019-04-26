@@ -1,0 +1,15 @@
+- name: 准备目录
+  file: path={{ item }} state=directory
+  with_items:
+  - "{{ yaml_dir }}/gate"
+
+- name: 准备部署文件
+  template: src=gate.yaml.j2 dest={{ yaml_dir }}/gate/gate.yml
+
+- name: 获取所有已经创建的POD信息
+  command: "{{ bin_dir }}/kubectl get pod -n {{ SOURCEID_NAMESPACE }}"
+  register: pod_info
+
+- name: 执行部署
+  shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/gate/"
+  when: '"rg-gate" not in pod_info.stdout'

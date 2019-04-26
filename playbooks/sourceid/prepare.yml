@@ -1,0 +1,10 @@
+- hosts:
+  - localhost
+  roles:
+  - ruijie/sourceid/download
+
+- hosts:
+  - kube-node
+  roles:
+  - ruijie/sourceid/load-images
+  - ruijie/sourceid/prepare

@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-gate
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: rg-gate
+    spec:
+      containers:
+      - name: rg-gate
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/gate:{{ SOURCEID_GATE_VERSION }}
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 2
+            memory: 2Gi
+          requests:
+            cpu: 1
+            memory: 1Gi
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regsecret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-gate
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  selector:
+    service: rg-gate
+  ports:
+  - port: 80
+    targetPort: 80

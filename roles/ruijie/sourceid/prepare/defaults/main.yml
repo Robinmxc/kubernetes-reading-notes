@@ -1,0 +1,1 @@
+workspace_dir: "{{ base_dir }}/workspace/{{ SOURCEID_NAMESPACE }}"

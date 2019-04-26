@@ -12,3 +12,5 @@ mongodb_max_cpu: 2
 mongodb_min_memory: 2Gi
 mongodb_max_memory: 4Gi
 wiredTigerCacheSizeGB: 1
+
+mongodb_check_data_dir: "yes"

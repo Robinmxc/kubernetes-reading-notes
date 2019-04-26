@@ -1,0 +1,10 @@
+img_download_dir: "{{ base_dir }}/down"
+img_copy_dir: "/opt/kube/images"
+
+sourceid_imgs: [
+    {name: "linkid", version: "{{ SOURCEID_LINKID_VERSION }}"},
+    {name: "sso", version: "{{ SOURCEID_SSO_VERSION }}"},
+    {name: "gate", version: "{{ SOURCEID_GATE_VERSION }}"},
+    {name: "frontend", version: "{{ SOURCEID_FRONTEND_VERSION }}"},
+    {name: "componet", version: "{{ SOURCEID_COMPONENT_VERSION }}"}
+]

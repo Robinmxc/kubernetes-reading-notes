@@ -33,7 +33,7 @@
   - kube-master
   - kube-node
   roles:
-  - docker
+  - ruijie/docker
 
 # to set up 'kube-master' nodes
 - hosts: kube-master

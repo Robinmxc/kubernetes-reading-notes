@@ -1,0 +1,28 @@
+- name: 准备下载目录
+  file: path={{ item }} state=directory
+  with_items:
+  - "{{ img_download_dir }}"
+
+- name: 获取已下载的镜像文件信息
+  command: "ls {{ img_download_dir }}"
+  register: download_info
+
+- name: 获取docker已加载的镜像信息
+  command: "docker images"
+  register: imgages_info
+
+- name: 下载镜像
+  vars:
+    img_id: "{{ PRIVATE_INSECURE_REGISTRY }}/sourceid/{{ item.name }}"
+    img_file_name: "{{ item.name }}-{{ item.version }}.tar"
+  command: 'docker pull {{ img_id }}:{{ item.version}}'
+  when: '"" != item.version and img_id not in imgages_info.stdout and img_file_name not in download_info.stdout'
+  with_items: "{{ sourceid_imgs }}"
+
+- name: 保存镜像文件
+  vars:
+    img_id: "{{ PRIVATE_INSECURE_REGISTRY }}/sourceid/{{ item.name }}"
+    img_file_name: "{{ item.name }}-{{ item.version }}.tar"
+  command: 'docker save -o {{ img_download_dir }}/{{ img_file_name }} {{ img_id }}:{{ item.version}}'
+  when: '"" != item.version and img_file_name not in download_info.stdout'
+  with_items: "{{ sourceid_imgs }}"

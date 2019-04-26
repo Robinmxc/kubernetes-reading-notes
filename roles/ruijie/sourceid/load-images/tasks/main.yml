@@ -1,0 +1,27 @@
+- name: 准备镜像复制目录
+  file: path={{ item }} state=directory
+  with_items:
+  - "{{ img_copy_dir }}"
+
+- name: 获取已复制的镜像文件信息
+  command: "ls {{ img_copy_dir}}"
+  register: images_copy_info
+
+- name: 复制镜像文件
+  vars:
+    img_file_name: "{{ item.name }}-{{ item.version }}.tar"
+  copy: src={{ img_download_dir }}/{{ img_file_name }} dest={{ img_copy_dir }}/{{ img_file_name }}
+  when: '"" != item.version and img_file_name not in images_copy_info.stdout'
+  with_items: "{{ sourceid_imgs }}"
+
+- name: 获取docker已加载的镜像信息
+  command: "docker images"
+  register: imgages_info
+
+- name: 加载镜像
+  vars:
+    img_id: "{{ PRIVATE_INSECURE_REGISTRY }}/sourceid/{{ item.name }}"
+    img_file_name: "{{ item.name }}-{{ item.version }}.tar"
+  command: 'docker load -i {{ img_copy_dir }}/{{ img_file_name }}'
+  when: '"" != item.version and img_id not in imgages_info.stdout'
+  with_items: "{{ sourceid_imgs }}"

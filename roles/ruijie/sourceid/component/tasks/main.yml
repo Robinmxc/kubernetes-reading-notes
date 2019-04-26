@@ -1,0 +1,2 @@
+- name: 获取已下载离线镜像信息
+  debug: msg="TODO"

@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-sso
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: rg-sso
+    spec:
+      containers:
+      - name: rg-sso
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/sso:{{ SOURCEID_SSO_VERSION }}
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 3Gi
+        ports:
+        - containerPort: 80
+        volumeMounts:
+            - mountPath: /etc/cas
+              name: etc
+            - mountPath: /build
+              name: build
+            - mountPath: /cas
+              name: cas
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - emptyDir: {}
+          name: etc
+        - emptyDir: {}
+          name: build
+        - emptyDir: {}
+          name: cas
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-sso
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  selector:
+    service: rg-sso
+  ports:
+  - port: 80
+    targetPort: 80

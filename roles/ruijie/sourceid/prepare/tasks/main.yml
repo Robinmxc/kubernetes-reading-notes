@@ -1,0 +1,20 @@
+- name: 在deploy节点准备目录
+  file: path={{ item }} state=directory
+  with_items:
+  - "{{ workspace_dir }}/bin"
+  - "{{ workspace_dir }}/yaml"
+  run_once: true
+  connection: local
+
+- name: 获取namespace是否存在
+  command: "{{ bin_dir }}/kubectl get namespaces"
+  register: namespaces_info
+  run_once: true
+  connection: local
+
+- name: 创建namespace
+  shell: "{{ bin_dir }}/kubectl create namespace {{ SOURCEID_NAMESPACE }}"
+  when: 'SOURCEID_NAMESPACE not in namespaces_info.stdout'
+  run_once: true
+  connection: local
+

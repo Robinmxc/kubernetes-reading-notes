@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-frontend
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: rg-frontend
+    spec:
+      containers:
+      - name: rg-frontend
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/frontend:{{ SOURCEID_FRONTEND_VERSION }}
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
+          requests:
+            cpu: 1
+            memory: 1Gi
+        ports:
+        - containerPort: 8081
+      imagePullSecrets:
+      - name: regsecret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-frontend
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  selector:
+    service: rg-frontend
+  ports:
+  - port: 80
+    targetPort: 8081

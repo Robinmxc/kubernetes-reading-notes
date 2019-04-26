@@ -1,11 +1,12 @@
 - name: 获取数据存储路径状态
   stat: path="{{ mongodb_data_dir }}"
   register: data_dir_stat
+  when: 'mongodb_check_data_dir == "yes"'
 
 - name: 检查数据存储路径是否存在
   fail: msg="数据存储目录{{ mongodb_data_dir }}不存在"
-  when: "not data_dir_stat.stat.exists
-     and ( mongodb_deploy_mode == 3 or inventory_hostname == groups.mongodb[0] )"
+  when: 'mongodb_check_data_dir == "yes" and not data_dir_stat.stat.exists
+     and ( mongodb_deploy_mode == 3 or inventory_hostname == groups.mongodb[0] )'
 
 - name: 在deploy节点准备目录
   file: path={{ item }} state=directory

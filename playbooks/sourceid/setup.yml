@@ -1,0 +1,19 @@
+- hosts:
+  - mongodb
+  roles:
+  - { role: ruijie/mongo, namespace: "{{ SOURCEID_NAMESPACE }}" }
+
+- hosts:
+  - rocketmq
+  roles:
+  - { role: ruijie/rocketmq, namespace: "{{ SOURCEID_NAMESPACE }}" }
+
+- hosts:
+  - localhost
+  roles:
+  - { role: ruijie/sourceid/dbinit }
+  - { role: ruijie/sourceid/linkid }
+  - { role: ruijie/sourceid/sso }
+  - { role: ruijie/sourceid/gate }
+  - { role: ruijie/sourceid/component }
+  - { role: ruijie/sourceid/frontend }
