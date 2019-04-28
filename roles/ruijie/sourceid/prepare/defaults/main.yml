@@ -1,1 +1,4 @@
 workspace_dir: "{{ base_dir }}/workspace/{{ SOURCEID_NAMESPACE }}"
+
+PRIVATE_REGISTRY_USER: "admin"
+PRIVATE_REGISTRY_PWD: "admin123"
