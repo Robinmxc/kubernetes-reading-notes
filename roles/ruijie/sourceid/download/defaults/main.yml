@@ -1,9 +1,9 @@
 img_download_dir: "{{ base_dir }}/down"
 
 sourceid_imgs: [
-    {name: "linkid", version: "{{ SOURCEID_LINKID_VERSION }}"},
-    {name: "sso", version: "{{ SOURCEID_SSO_VERSION }}"},
-    {name: "gate", version: "{{ SOURCEID_GATE_VERSION }}"},
-    {name: "frontend", version: "{{ SOURCEID_FRONTEND_VERSION }}"},
-    {name: "componet", version: "{{ SOURCEID_COMPONENT_VERSION }}"}
+    {name: "linkid", version: "{{ SOURCEID_LINKID_VERSION }}", prefix: "sourceid/"},
+    {name: "sso", version: "{{ SOURCEID_SSO_VERSION }}", prefix: "sourceid/"},
+    {name: "gate", version: "{{ SOURCEID_GATE_VERSION }}", prefix: "sourceid/"},
+    {name: "frontend", version: "{{ SOURCEID_FRONTEND_VERSION }}", prefix: "sourceid/"},
+    {name: "component", version: "{{ SOURCEID_COMPONENT_VERSION }}", prefix: "sourceid/"}
 ]

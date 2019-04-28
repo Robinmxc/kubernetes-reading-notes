@@ -1,0 +1,47 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-component
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: rg-component
+    spec:
+      containers:
+      - name: rg-component
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/component:{{ SOURCEID_COMPONENT_VERSION }}
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 2Gi
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /ruijie/component/conf
+          name: conf
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: /ruijie/component/conf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-component
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  selector:
+    service: rg-component
+  ports:
+  - port: 80
+    targetPort: 8080

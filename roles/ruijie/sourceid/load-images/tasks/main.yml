@@ -15,13 +15,13 @@
   with_items: "{{ sourceid_imgs }}"
 
 - name: 获取docker已加载的镜像信息
-  command: "docker images"
+  command: 'docker images --format "\{\{.Repository}}:\{\{.Tag\}\}"'
   register: imgages_info
 
 - name: 加载镜像
   vars:
-    img_id: "{{ PRIVATE_INSECURE_REGISTRY }}/sourceid/{{ item.name }}"
+    img_id_ver: "{{ PRIVATE_INSECURE_REGISTRY }}/{{ item.prefix }}{{ item.name }}:{{ item.version}}"
     img_file_name: "{{ item.name }}-{{ item.version }}.tar"
   command: 'docker load -i {{ img_copy_dir }}/{{ img_file_name }}'
-  when: '"" != item.version and img_id not in imgages_info.stdout'
+  when: '"" != item.version and img_id_ver not in imgages_info.stdout'
   with_items: "{{ sourceid_imgs }}"

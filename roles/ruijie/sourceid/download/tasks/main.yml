@@ -8,21 +8,21 @@
   register: download_info
 
 - name: 获取docker已加载的镜像信息
-  command: "docker images"
+  command: 'docker images --format "\{\{.Repository}}:\{\{.Tag\}\}"'
   register: imgages_info
 
 - name: 下载镜像
   vars:
-    img_id: "{{ PRIVATE_INSECURE_REGISTRY }}/sourceid/{{ item.name }}"
+    img_id_ver: "{{ PRIVATE_INSECURE_REGISTRY }}/{{ item.prefix }}{{ item.name }}:{{ item.version}}"
     img_file_name: "{{ item.name }}-{{ item.version }}.tar"
-  command: 'docker pull {{ img_id }}:{{ item.version}}'
-  when: '"" != item.version and img_id not in imgages_info.stdout and img_file_name not in download_info.stdout'
+  command: 'docker pull {{ img_id_ver }}'
+  when: '"" != item.version and img_id_ver not in imgages_info.stdout and img_file_name not in download_info.stdout'
   with_items: "{{ sourceid_imgs }}"
 
 - name: 保存镜像文件
   vars:
-    img_id: "{{ PRIVATE_INSECURE_REGISTRY }}/sourceid/{{ item.name }}"
+    img_id_ver: "{{ PRIVATE_INSECURE_REGISTRY }}/{{ item.prefix }}{{ item.name }}:{{ item.version}}"
     img_file_name: "{{ item.name }}-{{ item.version }}.tar"
-  command: 'docker save -o {{ img_download_dir }}/{{ img_file_name }} {{ img_id }}:{{ item.version}}'
+  command: 'docker save -o {{ img_download_dir }}/{{ img_file_name }} {{ img_id_ver }}'
   when: '"" != item.version and img_file_name not in download_info.stdout'
   with_items: "{{ sourceid_imgs }}"
