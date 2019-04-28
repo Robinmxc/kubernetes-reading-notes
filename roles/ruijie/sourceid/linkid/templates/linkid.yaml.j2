@@ -23,8 +23,15 @@ spec:
             memory: 2Gi
         ports:
         - containerPort: 8901
+        volumeMounts:
+        - mountPath: /ruijie/sourceid/linkid/conf
+          name: conf
       imagePullSecrets:
       - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/linkid/conf
 
 ---
 apiVersion: v1

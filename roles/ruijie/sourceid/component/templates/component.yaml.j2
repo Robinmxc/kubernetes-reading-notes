@@ -31,7 +31,7 @@ spec:
       volumes:
         - name: conf
           hostPath:
-            path: /ruijie/component/conf
+            path: {{ config_base_dir }}/component/conf
 
 ---
 apiVersion: v1

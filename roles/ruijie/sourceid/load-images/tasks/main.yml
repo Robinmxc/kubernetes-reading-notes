@@ -15,7 +15,7 @@
   with_items: "{{ sourceid_imgs }}"
 
 - name: 获取docker已加载的镜像信息
-  command: 'docker images --format "\{\{.Repository}}:\{\{.Tag\}\}"'
+  command: "docker images --format ''{{ '{{' }}.Repository{{ '}}' }}:{{ '{{' }}.Tag{{ '}}' }}''"
   register: imgages_info
 
 - name: 加载镜像

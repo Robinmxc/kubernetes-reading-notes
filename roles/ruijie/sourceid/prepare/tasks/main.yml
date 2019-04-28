@@ -4,7 +4,16 @@
   - "{{ workspace_dir }}/bin"
   - "{{ workspace_dir }}/conf"
   - "{{ workspace_dir }}/yaml"
-  - "{{ workspace_dir }}/temp/sourceid-setup-{{ SOURCEID_SETUP_VERSION }}"
+  run_once: true
+  connection: local
+
+- name: 删除已经存在的解压目录
+  file: path="{{ workspace_dir }}/temp/sourceid-setup-{{ SOURCEID_SETUP_VERSION }}" state=absent
+  run_once: true
+  connection: local
+
+- name: 重新创建解压目录
+  file: path="{{ workspace_dir }}/temp/sourceid-setup-{{ SOURCEID_SETUP_VERSION }}" state=directory
   run_once: true
   connection: local
 

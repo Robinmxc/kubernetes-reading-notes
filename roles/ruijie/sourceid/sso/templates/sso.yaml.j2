@@ -30,6 +30,8 @@ spec:
               name: build
             - mountPath: /cas
               name: cas
+            - mountPath: /ruijie/sourceid/sso/conf
+              name: conf
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -39,6 +41,9 @@ spec:
           name: build
         - emptyDir: {}
           name: cas
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/sso/conf
 
 ---
 apiVersion: v1

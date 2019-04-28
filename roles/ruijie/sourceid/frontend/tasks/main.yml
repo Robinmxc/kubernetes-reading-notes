@@ -1,15 +1,24 @@
+
 - name: 准备目录
   file: path={{ item }} state=directory
   with_items:
   - "{{ yaml_dir }}/frontend"
+  run_once: true
+  connection: local
 
 - name: 准备部署文件
   template: src=frontend.yaml.j2 dest={{ yaml_dir }}/frontend/frontend.yml
+  run_once: true
+  connection: local
 
 - name: 获取所有已经创建的POD信息
   command: "{{ bin_dir }}/kubectl get pod -n {{ SOURCEID_NAMESPACE }}"
   register: pod_info
+  run_once: true
+  connection: local
 
 - name: 执行部署
   shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/frontend/"
   when: '"rg-frontend" not in pod_info.stdout'
+  run_once: true
+  connection: local

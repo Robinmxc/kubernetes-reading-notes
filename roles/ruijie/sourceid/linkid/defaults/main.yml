@@ -1,2 +1,5 @@
 workspace_dir: "{{ base_dir }}/workspace/{{ SOURCEID_NAMESPACE }}"
 yaml_dir: "{{ workspace_dir }}/yaml"
+
+config_base_dir: "/ruijie/{{ SOURCEID_NAMESPACE }}"
+
