@@ -38,6 +38,7 @@
       - ipset
       - ipvsadm
       - net-tools
+      - unzip
     state: present
 
 - name: 查询防火墙状态

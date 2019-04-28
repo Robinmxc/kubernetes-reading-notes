@@ -1,4 +1,22 @@
+img_download_dir: "{{ base_dir }}/down"
+
 workspace_dir: "{{ base_dir }}/workspace/{{ SOURCEID_NAMESPACE }}"
+
+mongodb_addr: "mongo1.{{ SOURCEID_NAMESPACE }}.svc,mongo2.{{ SOURCEID_NAMESPACE }}.svc,mongo3.{{ SOURCEID_NAMESPACE }}.svc"
+
+SOURCEID_GATEWAY_URL: "http://gateway"
 
 PRIVATE_REGISTRY_USER: "admin"
 PRIVATE_REGISTRY_PWD: "admin123"
+
+SOURCEID_CAS_DB_USER: "cas"
+SOURCEID_CAS_DB_PWD: "abc123_"
+
+SOURCEID_GATE_DB_USER: "gateuser"
+SOURCEID_GATE_DB_PWD: "gatepass"
+
+SOURCEID_LINKID_DB_USER: "linkid"
+SOURCEID_LINKID_DB_PWD: "linkid"
+
+COMPONENT_DB_USER: "comp"
+COMPONENT_DB_PWD: "abc123_"
