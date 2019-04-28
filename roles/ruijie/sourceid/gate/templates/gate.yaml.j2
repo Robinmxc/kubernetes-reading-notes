@@ -38,3 +38,19 @@ spec:
   ports:
   - port: 80
     targetPort: 80
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: rg-gate-ingress
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  rules:
+  - host: {{ SOURCEID_GATE_DOMAIN }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rg-gate
+          servicePort: 80

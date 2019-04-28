@@ -52,3 +52,20 @@ spec:
   ports:
   - port: 80
     targetPort: 80
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: rg-sso-ingress
+  namespace: {{ SOURCEID_NAMESPACE }}
+spec:
+  rules:
+  - host: {{ SOURCEID_SSO_DOMAIN }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rg-sso
+          servicePort: 80
+
