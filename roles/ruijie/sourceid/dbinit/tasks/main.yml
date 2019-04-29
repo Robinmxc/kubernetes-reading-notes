@@ -28,8 +28,14 @@
     retries: 8
     delay: 8
 
+  - name: 查询用户状态
+    shell: '{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({usersInfo: "cas"})'''
+    register: user_status
+    connection: local
+
   - name: 初始化数据库用户
     shell: "{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo /data/init/create-users.js"
+    when: '"cas" not in user_status.stdout'
     connection: local
 
   when: 'inventory_hostname == groups.mongodb[0]'
