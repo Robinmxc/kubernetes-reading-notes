@@ -6,10 +6,7 @@ down/*
 bin/*
 !bin/readme.md
 
-# ansible hosts
-hosts
-
-# k8s storage manifests 
+# k8s storage manifests
 manifests/storage/*
 !manifests/storage/test.yaml
 
@@ -29,3 +26,5 @@ roles/cluster-backup/files/*
 
 inventory/*
 !inventory/example
+
+/workspace

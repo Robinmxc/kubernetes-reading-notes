@@ -11,9 +11,9 @@
 - name: 在deploy节点准备目录
   file: path={{ item }} state=directory
   with_items:
-  - "/opt/kube/kube-system/mongo"
+  - "{{ yaml_dir }}/mongo"
   run_once: true
-  delegate_to: "{{ groups.deploy[0] }}"
+  connection: local
 
 - name: 获取已下载离线镜像信息
   command: "ls {{ base_dir }}/down"
@@ -22,10 +22,10 @@
   run_once: true
 
 - name: 获取所有已经创建的POD信息
-  command: "{{ bin_dir }}/kubectl get pod --all-namespaces"
+  command: "{{ bin_dir }}/kubectl get pod -n {{ namespace }}"
   register: pod_info
   run_once: true
-  delegate_to: "{{ groups.deploy[0] }}"
+  connection: local
 
 - block:
     - name: 尝试推送离线mongodb镜像（若执行失败，可忽略）
@@ -44,27 +44,27 @@
       vars:
         mongodb_node_name: "mongo1"
         mongodb_node_ip: "{{ groups.mongodb[0] }}"
-      template: src=mongdb.yaml.j2 dest=/opt/kube/kube-system/mongo/mongo1.yml
+      template: src=mongdb.yaml.j2 dest={{ yaml_dir }}/mongo/mongo1.yml
       run_once: true
-      delegate_to: "{{ groups.deploy[0] }}"
+      connection: local
 
     - name: 部署第1个mongodb
-      shell: "{{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/mongo/mongo1.yml"
-      delegate_to: "{{ groups.deploy[0] }}"
+      shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo1.yml"
+      connection: local
       run_once: true
 
     - name: 准备第2个mongodb的部署文件
       vars:
         mongodb_node_name: "mongo2"
         mongodb_node_ip: "{{ groups.mongodb[1] }}"
-      template: src=mongdb.yaml.j2 dest=/opt/kube/kube-system/mongo/mongo2.yml
+      template: src=mongdb.yaml.j2 dest={{ yaml_dir }}/mongo/mongo2.yml
       run_once: true
-      delegate_to: "{{ groups.deploy[0] }}"
+      connection: local
       when: "mongodb_deploy_mode == 3"
 
     - name: 部署第2个mongodb
-      shell: "{{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/mongo/mongo2.yml"
-      delegate_to: "{{ groups.deploy[0] }}"
+      shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo2.yml"
+      connection: local
       run_once: true
       when: "mongodb_deploy_mode == 3"
 
@@ -72,16 +72,15 @@
       vars:
         mongodb_node_name: "mongo3"
         mongodb_node_ip: "{{ groups.mongodb[2] }}"
-      template: src=mongdb.yaml.j2 dest=/opt/kube/kube-system/mongo/mongo3.yml
+      template: src=mongdb.yaml.j2 dest={{ yaml_dir }}/mongo/mongo3.yml
       run_once: true
-      delegate_to: "{{ groups.deploy[0] }}"
+      connection: local
       when: "mongodb_deploy_mode == 3"
 
     - name: 部署第3个mongodb
-      shell: "{{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/mongo/mongo3.yml"
-      delegate_to: "{{ groups.deploy[0] }}"
+      shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo3.yml"
+      connection: local
       run_once: true
       when: "mongodb_deploy_mode == 3"
 
   when: '"mongo" not in pod_info.stdout'
-  ignore_errors: true

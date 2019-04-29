@@ -1,5 +1,8 @@
 namespace: "kube-ruijie"
 
+workspace_dir: "{{ base_dir }}/workspace/{{ namespace }}"
+yaml_dir: "{{ workspace_dir }}/yaml"
+
 mongodb_version: "4.0.6"
 mongodb_offline: "mongo-4.0.6.tar"
 mongodb_data_dir: "/ruijie/{{ namespace }}/mongodb/data/"

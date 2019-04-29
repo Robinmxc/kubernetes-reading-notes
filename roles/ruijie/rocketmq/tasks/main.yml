@@ -19,9 +19,9 @@
 - name: 在deploy节点准备目录
   file: path={{ item }} state=directory
   with_items:
-  - "/opt/kube/kube-system/rocketmq"
+  - "{{ yaml_dir }}/rocketmq"
   run_once: true
-  delegate_to: "{{ groups.deploy[0] }}"
+  connection: local
 
 - name: 获取已下载离线镜像信息
   command: "ls {{ base_dir }}/down"
@@ -30,10 +30,10 @@
   run_once: true
 
 - name: 获取所有已经创建的POD信息
-  command: "{{ bin_dir }}/kubectl get pod --all-namespaces"
+  command: "{{ bin_dir }}/kubectl get pod -n {{ namespace }}"
   register: pod_info
   run_once: true
-  delegate_to: "{{ groups.deploy[0] }}"
+  connection: local
 
 - block:
     - name: 尝试推送离线RocketMQ镜像（若执行失败，可忽略）
@@ -51,13 +51,12 @@
     - name: 准备RocketMQ的部署文件
       vars:
         rocketmq_node_ip: "{{ groups.rocketmq[0] }}"
-      template: src=rocketmq.yaml.j2 dest=/opt/kube/kube-system/rocketmq/rocketmq.yml
+      template: src=rocketmq.yaml.j2 dest={{ yaml_dir }}/rocketmq/rocketmq.yml
       run_once: true
-      delegate_to: "{{ groups.deploy[0] }}"
+      connection: local
 
     - name: 部署RocketMQ
-      shell: "{{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/rocketmq/rocketmq.yml"
-      delegate_to: "{{ groups.deploy[0] }}"
+      shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/rocketmq/rocketmq.yml"
+      connection: local
       run_once: true
   when: '"rg-rocket" not in pod_info.stdout'
-  ignore_errors: true

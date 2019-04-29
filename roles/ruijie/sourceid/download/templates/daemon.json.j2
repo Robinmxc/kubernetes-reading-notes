@@ -1,0 +1,14 @@
+{
+  "registry-mirrors": ["{{ REG_MIRROR_1 }}"],
+{% if PRIVATE_REGISTRY_ENABLED %}
+  "insecure-registries":["{{ PRIVATE_INSECURE_REGISTRY }}"],
+{% endif %}
+  "max-concurrent-downloads": 10,
+  "log-driver": "json-file",
+  "log-level": "warn",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+    },
+  "data-root": "/var/lib/docker"
+}

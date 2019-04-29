@@ -1,5 +1,11 @@
 img_download_dir: "{{ base_dir }}/down"
 
+REG_MIRROR_1: "https://registry.docker-cn.com"
+
+PRIVATE_REGISTRY_ENABLED: "yes"
+PRIVATE_REGISTRY_USER: "admin"
+PRIVATE_REGISTRY_PWD: "admin123"
+
 sourceid_imgs: [
     {name: "linkid", version: "{{ SOURCEID_LINKID_VERSION }}", prefix: "sourceid/"},
     {name: "sso", version: "{{ SOURCEID_SSO_VERSION }}", prefix: "sourceid/"},

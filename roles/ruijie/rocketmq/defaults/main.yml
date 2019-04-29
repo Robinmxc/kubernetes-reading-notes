@@ -1,5 +1,8 @@
 namespace: "kube-ruijie"
 
+workspace_dir: "{{ base_dir }}/workspace/{{ namespace }}"
+yaml_dir: "{{ workspace_dir }}/yaml"
+
 rocketmq_version: "4.3.0"
 rocketmq_offline: "rocketmq-4.3.0.tar"
 

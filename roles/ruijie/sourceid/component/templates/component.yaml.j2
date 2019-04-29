@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: rg-component
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/component:{{ SOURCEID_COMPONENT_VERSION }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/component:{{ SOURCEID_COMPONENT_VERSION }}
         imagePullPolicy: IfNotPresent
         resources:
           limits:
