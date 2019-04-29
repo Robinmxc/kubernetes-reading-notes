@@ -3,6 +3,7 @@ ingress_install: "yes"
 ingress_backend: "traefik"
 traefik_offline: "traefik_v1.7.4.tar"
 
+ingress_ui_enabled: "no"
 ingress_ui_host: "traefik-ui.local"
 
 # http or https

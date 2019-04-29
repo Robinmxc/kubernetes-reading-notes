@@ -40,6 +40,7 @@
 
     - name: 创建traefik-ui部署文件
       template: src=traefik-ui.yaml.j2 dest={{ traefik_temp_dir }}/manifests/traefik-ui.yaml
+      when: '"yes" == ingress_ui_enabled'
       run_once: true
       delegate_to: "{{ groups.deploy[0] }}"
 
