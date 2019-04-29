@@ -4,6 +4,20 @@
     with_items:
     - init-repl-set.js
     - create-users.js
+    - init-data.sh
+
+  - name: 复制初始化脚本
+    copy: src="{{setup_file_dir}}/{{ item }}" dest="{{ mongodb_init_dir }}"
+    with_items:
+    - rg-init-db
+    - rg-upgrade-db
+
+  - name: 设置文件执行权限
+    file: name="{{ item }}" mode=0700
+    with_items:
+    - "{{ mongodb_init_dir }}/init-data.sh"
+    - "{{ mongodb_init_dir }}/rg-init-db/init-data.sh"
+    - "{{ mongodb_init_dir }}/rg-upgrade-db/upgrade_data.sh"
 
   - name: 获取mongo1 POD 名称
     shell: "{{ bin_dir }}/kubectl get pod -n {{ SOURCEID_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
@@ -36,6 +50,26 @@
   - name: 初始化数据库用户
     shell: "{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo /data/init/create-users.js"
     when: '"cas" not in user_status.stdout'
+    connection: local
+
+  - name: 查询数据初始化状态
+    shell: '{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
+    register: data_status
+    connection: local
+
+  - name: 执行初始化脚本
+    shell: '{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- /data/init/init-data.sh'
+    when: '"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w" not in data_status.stdout'
+    connection: local
+
+  - name: 查询数据初始化状态
+    shell: '{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
+    register: data_status
+    connection: local
+
+  - name: 修改域名
+    shell: '{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({update:"cas-service-registry", updates:[{q:{clientId:"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}, u:{$set:{"serviceId":"http://{{ SOURCEID_GATE_DOMAIN }}.*", "logoutUrl":"http://{{ SOURCEID_GATE_DOMAIN }}/logout"}}}]})'''
+    register: data_status
     connection: local
 
   when: 'inventory_hostname == groups.mongodb[0]'

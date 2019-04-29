@@ -2,6 +2,8 @@ img_download_dir: "{{ base_dir }}/down"
 
 workspace_dir: "{{ base_dir }}/workspace/{{ SOURCEID_NAMESPACE }}"
 
+setup_file_dir: "{{ workspace_dir }}/temp/sourceid-setup-{{ SOURCEID_SETUP_VERSION }}"
+
 mongodb_addr: "mongo1.{{ SOURCEID_NAMESPACE }}.svc,mongo2.{{ SOURCEID_NAMESPACE }}.svc,mongo3.{{ SOURCEID_NAMESPACE }}.svc"
 
 SOURCEID_GATEWAY_URL: "http://gateway"
