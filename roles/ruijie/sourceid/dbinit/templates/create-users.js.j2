@@ -1,0 +1,25 @@
+
+db.getSiblingDB("cas").runCommand({
+  createUser: "cas",
+  pwd: "abc123_",
+  roles: [{role:"readWrite", db: "cas"}]
+});
+
+db.getSiblingDB("linkid-dev").runCommand({
+  createUser: "linkid",
+  pwd: "abc123_",
+  roles: [{role:"readWrite", db: "linkid-dev"}]
+});
+
+db.getSiblingDB("gate").runCommand({
+  createUser: "gateuser",
+  pwd: "gatepass",
+  roles: [{role:"readWrite", db: "gate"}]
+});
+
+db.getSiblingDB("component").runCommand({
+  createUser: "comp",
+  pwd: "abc123_",
+  roles: [{role:"readWrite", db: "component"}]
+});
+

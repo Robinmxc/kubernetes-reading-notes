@@ -8,6 +8,10 @@
   when: 'mongodb_check_data_dir == "yes" and not data_dir_stat.stat.exists
      and ( mongodb_deploy_mode == 3 or inventory_hostname == groups.mongodb[0] )'
 
+- name: 准备init目录
+  file: path="{{ mongodb_init_dir }}" state=directory
+  when: '"" != mongodb_init_dir'
+
 - name: 在deploy节点准备目录
   file: path={{ item }} state=directory
   with_items:
