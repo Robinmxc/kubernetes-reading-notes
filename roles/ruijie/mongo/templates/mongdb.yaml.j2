@@ -22,6 +22,8 @@ spec:
           - rs0
           - '--smallfiles'
           - '--noprealloc'
+          - '--enableMajorityReadConcern'
+          - 'false'
 {% if mongodb_resource_limit == 'yes' %}
           - '--wiredTigerCacheSizeGB'
           - '{{ wiredTigerCacheSizeGB }}'
