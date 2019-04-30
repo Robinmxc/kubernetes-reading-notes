@@ -1,5 +1,5 @@
 ---
-- include: prepare.yml
-- include: midware.yml
-- include: initdata.yml
-- include: application.yml
+- import_playbook: prepare.yml
+- import_playbook: midware.yml
+- import_playbook: initdata.yml
+- import_playbook: application.yml
