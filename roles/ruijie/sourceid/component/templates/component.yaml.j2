@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: rg-component
-  namespace: {{ SOURCEID_NAMESPACE }}
+  namespace: {{ APP_NAMESPACE }}
 spec:
   replicas: 1
   template:
@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: rg-component
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/component:{{ SOURCEID_COMPONENT_VERSION }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.component.docker_name }}:{{ SOURCEID_COMPONENTS.component.version }}
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -38,7 +38,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: rg-component
-  namespace: {{ SOURCEID_NAMESPACE }}
+  namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
     service: rg-component

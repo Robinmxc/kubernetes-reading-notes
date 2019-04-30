@@ -1,8 +1,8 @@
 
 - name: 复制配置文件
   copy:
-    src: "{{ workspace_dir }}/conf/sourceid/sso/conf"
-    dest: "{{ config_base_dir }}/sourceid/sso/"
+    src: "{{ workspace_dir }}/conf/sourceid/sso/conf/"
+    dest: "{{ config_base_dir }}/sourceid/sso/conf/"
 
 - name: 准备目录
   file: path={{ item }} state=directory
@@ -17,7 +17,7 @@
   connection: local
 
 - name: 获取所有已经创建的POD信息
-  command: "{{ bin_dir }}/kubectl get pod -n {{ SOURCEID_NAMESPACE }}"
+  command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
   register: pod_info
   run_once: true
   connection: local

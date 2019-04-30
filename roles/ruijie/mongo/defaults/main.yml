@@ -1,20 +1,13 @@
-namespace: "kube-ruijie"
-
-workspace_dir: "{{ base_dir }}/workspace/{{ namespace }}"
-yaml_dir: "{{ workspace_dir }}/yaml"
-
 mongodb_version: "4.0.6"
 mongodb_offline: "mongo-4.0.6.tar"
-mongodb_data_dir: "/ruijie/{{ namespace }}/mongodb/data/"
-mongodb_init_dir: "/ruijie/{{ namespace }}/mongodb/init/"
 mongodb_port: 27017
 mongodb_deploy_mode: 3
 
-mongodb_resource_limit: "yes"
-mongodb_min_cpu: 1
-mongodb_max_cpu: 2
-mongodb_min_memory: 2Gi
-mongodb_max_memory: 4Gi
-wiredTigerCacheSizeGB: 1
+mongodb_check_data_dir: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}yes{%- else -%}no{%- endif -%}"
 
-mongodb_check_data_dir: "yes"
+mongodb_resource_limit: "yes"
+mongodb_min_cpu: "{%- if CLUSTER_SCALE == 'normal' -%}2{%- else -%}1{%- endif -%}"
+mongodb_max_cpu: "{%- if CLUSTER_SCALE == 'normal' -%}4{%- else -%}2{%- endif -%}"
+mongodb_min_memory: "{%- if CLUSTER_SCALE == 'normal' -%}16Gi{%- else -%}2Gi{%- endif -%}"
+mongodb_max_memory: "{%- if CLUSTER_SCALE == 'normal' -%}24Gi{%- else -%}4Gi{%- endif -%}"
+wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- else -%}1{%- endif -%}"

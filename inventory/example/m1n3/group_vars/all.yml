@@ -1,0 +1,67 @@
+# ---------K8S参数--------------------
+
+# 集群网络插件，目前支持calico, flannel, kube-router, cilium
+CLUSTER_NETWORK: "flannel"
+
+# 服务网段 (Service CIDR），注意不要与内网已有网段冲突
+SERVICE_CIDR: "10.68.0.0/16"
+
+# POD 网段 (Cluster CIDR），注意不要与内网已有网段冲突
+CLUSTER_CIDR: "172.30.0.0/16"
+
+# 服务端口范围 (NodePort Range)
+NODE_PORT_RANGE: "20000-40000"
+
+# kubernetes 服务 IP (预分配，一般是 SERVICE_CIDR 中第一个IP)
+CLUSTER_KUBERNETES_SVC_IP: "10.68.0.1"
+
+# 集群 DNS 服务 IP (从 SERVICE_CIDR 中预分配)
+CLUSTER_DNS_SVC_IP: "10.68.0.2"
+
+# 集群 DNS 域名
+CLUSTER_DNS_DOMAIN: "cluster.local."
+
+# ---------附加参数--------------------
+#默认二进制文件目录
+bin_dir: "/opt/kube/bin"
+
+#证书目录
+ca_dir: "/etc/kubernetes/ssl"
+
+#部署目录，即 ansible 工作目录
+base_dir: "/opt/kad"
+
+img_download_dir: "{{ base_dir }}/down"
+
+img_copy_dir: "/opt/kube/images"
+
+workspace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
+
+setup_file_dir: "{{ workspace_dir }}/temp/sourceid-setup-{{ SOURCEID_SETUP_VERSION }}"
+
+yaml_dir: "{{ workspace_dir }}/yaml"
+
+config_base_dir: "/ruijie/{{ APP_NAMESPACE }}"
+
+mongodb_data_dir: "/ruijie/{{ APP_NAMESPACE }}/mongodb/data/"
+mongodb_init_dir: "/ruijie/{{ APP_NAMESPACE }}/mongodb/init/"
+
+rocketmq_data_dir: "/ruijie/{{ APP_NAMESPACE }}/rocketmq/data"
+rocketmq_logs_dir: "/ruijie/{{ APP_NAMESPACE }}/rocketmq/log"
+
+PRIVATE_INSECURE_REGISTRY: "id.ruijie.com.cn:25082"
+PRIVATE_REGISTRY_ENABLED: "yes"
+PRIVATE_REGISTRY_USER: "admin"
+PRIVATE_REGISTRY_PWD: "admin123"
+
+#SourceId数据库脚本版本号
+SOURCEID_DB_VERSION: "R1.3"
+
+#SourceId组件参数
+SOURCEID_COMPONENTS: {
+  linkid: {version: "1.0.0", docker_name: "sourceid/linkid"},
+  sso: {version: "1.0.0", docker_name: "sourceid/sso"},
+  gate: {version: "1.0.0", docker_name: "sourceid/gate"},
+  frontend: {version: "1.0.0", docker_name: "sourceid/frontend"},
+  component: {version: "1.0.0", docker_name: "sourceid/component"}
+}

@@ -12,7 +12,7 @@
   connection: local
 
 - name: 获取所有已经创建的POD信息
-  command: "{{ bin_dir }}/kubectl get pod -n {{ SOURCEID_NAMESPACE }}"
+  command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
   register: pod_info
   run_once: true
   connection: local

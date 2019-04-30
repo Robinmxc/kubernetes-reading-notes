@@ -1,34 +1,9 @@
-- name: 确保unzip已安装
-  yum:
-    name:
-      - unzip
-    state: present
-  run_once: true
-  connection: local
-
 - name: 准备目录
   file: path={{ item }} state=directory
   with_items:
   - "{{ workspace_dir }}/bin"
   - "{{ workspace_dir }}/conf"
   - "{{ workspace_dir }}/yaml"
-  run_once: true
-  connection: local
-
-- name: 读取目录信息
-  stat: path="{{ setup_file_dir }}"
-  register: p
-  run_once: true
-  connection: local
-
-- name: 删除已经存在的解压目录
-  file: path="{{ setup_file_dir }}" state=absent
-  when: p.stat.exists
-  run_once: true
-  connection: local
-
-- name: 重新创建解压目录
-  file: path="{{ setup_file_dir }}" state=directory
   run_once: true
   connection: local
 
@@ -39,27 +14,20 @@
   connection: local
 
 - name: 创建namespace
-  shell: "{{ bin_dir }}/kubectl create namespace {{ SOURCEID_NAMESPACE }}"
-  when: 'SOURCEID_NAMESPACE not in namespaces_info.stdout'
+  shell: "{{ bin_dir }}/kubectl create namespace {{ APP_NAMESPACE }}"
+  when: 'APP_NAMESPACE not in namespaces_info.stdout'
   run_once: true
   connection: local
 
 - name: 获取regsecret是否存在
-  command: "{{ bin_dir }}/kubectl get secret -n {{ SOURCEID_NAMESPACE }}"
+  command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
   register: secret_info
   run_once: true
   connection: local
 
 - name: 创建regsecret
-  shell: "{{ bin_dir }}/kubectl create secret docker-registry regsecret --docker-server={{ PRIVATE_INSECURE_REGISTRY }} --docker-username={{ PRIVATE_REGISTRY_USER }} --docker-password={{ PRIVATE_REGISTRY_PWD }} --namespace={{ SOURCEID_NAMESPACE }}"
+  shell: "{{ bin_dir }}/kubectl create secret docker-registry regsecret --docker-server={{ PRIVATE_INSECURE_REGISTRY }} --docker-username={{ PRIVATE_REGISTRY_USER }} --docker-password={{ PRIVATE_REGISTRY_PWD }} --namespace={{ APP_NAMESPACE }}"
   when: '"regsecret" not in secret_info.stdout'
-  run_once: true
-  connection: local
-
-- name: 解压安装包
-  unarchive:
-    src: "{{ img_download_dir }}/sourceid-setup-{{ SOURCEID_SETUP_VERSION }}.zip"
-    dest: "{{ setup_file_dir }}"
   run_once: true
   connection: local
 
@@ -79,7 +47,8 @@
     - {regexp: "^front.server.addr=.*$", replace: "front.server.addr=http://{{ SOURCEID_GATE_DOMAIN }}"}
     - {regexp: "^mongodb-base-url=.*$", replace: "mongodb-base-url=mongodb://{{ SOURCEID_CAS_DB_USER }}:{{ SOURCEID_CAS_DB_PWD }}@{{ mongodb_addr }}/cas"}
     - {regexp: "^gateway.feign.base.url.*$", replace: "gateway.feign.base.url={{ SOURCEID_GATEWAY_URL }}"}
-    - {regexp: "kube-ruijie.svc", replace: "{{ SOURCEID_NAMESPACE }}.svc"}
+    - {regexp: "^cas.view.default-redirect-url.*$", replace: "cas.view.default-redirect-url={{ SOURCEID_REDIRECT_URL }}"}
+    - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
 
 - name: 修改GATE配置文件
   replace: path="{{ workspace_dir }}/conf/sourceid/gate/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
@@ -88,7 +57,7 @@
   with_items:
     - {regexp: "^auth-server:.*$", replace: "auth-server: http://{{ SOURCEID_SSO_DOMAIN }}"}
     - {regexp: "mongodb:.*/gate", replace: "mongodb://{{ SOURCEID_GATE_DB_USER }}:{{ SOURCEID_GATE_DB_PWD }}@{{ mongodb_addr }}/gate"}
-    - {regexp: "kube-ruijie.svc", replace: "{{ SOURCEID_NAMESPACE }}.svc"}
+    - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
 
 - name: 修改LINKID配置文件
   replace: path="{{ workspace_dir }}/conf/sourceid/linkid/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
@@ -96,13 +65,12 @@
   connection: local
   with_items:
     - {regexp: "mongodb:.*/linkid-dev", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev"}
-    - {regexp: "kube-ruijie.svc", replace: "{{ SOURCEID_NAMESPACE }}.svc"}
+    - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
 
 - name: 修改COMPONENT配置文件
   replace: path="{{ workspace_dir }}/conf/component/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   run_once: true
   connection: local
-  when: '"" != SOURCEID_COMPONENT_VERSION'
   with_items:
     - {regexp: "mongodb:.*/component", replace: "mongodb://{{ COMPONENT_DB_USER }}:{{ COMPONENT_DB_PWD }}@{{ mongodb_addr }}/component"}
-    - {regexp: "kube-ruijie.svc", replace: "{{ SOURCEID_NAMESPACE }}.svc"}
+    - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}

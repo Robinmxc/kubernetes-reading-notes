@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: rg-rocket
-  namespace: {{ namespace }}
+  namespace: {{ APP_NAMESPACE }}
 spec:
   replicas: 1
   template:
@@ -54,7 +54,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: rg-rocket
-  namespace: {{ namespace }}
+  namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
     service: rg-rocket

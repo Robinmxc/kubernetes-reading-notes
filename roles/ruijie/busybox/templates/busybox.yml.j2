@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
   name: busybox
-  namespace: {{ namespace }}
+  namespace: {{ APP_NAMESPACE }}
 spec:
   template:
     metadata:

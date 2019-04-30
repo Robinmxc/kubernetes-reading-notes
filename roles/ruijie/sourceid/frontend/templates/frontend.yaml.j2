@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: rg-frontend
-  namespace: {{ SOURCEID_NAMESPACE }}
+  namespace: {{ APP_NAMESPACE }}
 spec:
   replicas: 1
   template:
@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: rg-frontend
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/frontend:{{ SOURCEID_FRONTEND_VERSION }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.frontend.docker_name }}:{{ SOURCEID_COMPONENTS.frontend.version }}
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -31,7 +31,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: rg-frontend
-  namespace: {{ SOURCEID_NAMESPACE }}
+  namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
     service: rg-frontend

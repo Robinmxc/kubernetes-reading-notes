@@ -1,0 +1,5 @@
+---
+- include: prepare.yml
+- include: midware.yml
+- include: initdata.yml
+- include: application.yml

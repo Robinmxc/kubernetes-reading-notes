@@ -1,0 +1,6 @@
+- hosts:
+  - kube-node
+  vars_files:
+  - "{{ setup_file_dir }}/kad.yml"
+  roles:
+  - { role: ruijie/sourceid/dbinit }

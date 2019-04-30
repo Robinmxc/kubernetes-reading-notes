@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: rg-sso
-  namespace: {{ SOURCEID_NAMESPACE }}
+  namespace: {{ APP_NAMESPACE }}
 spec:
   replicas: 1
   template:
@@ -10,9 +10,15 @@ spec:
       labels:
         service: rg-sso
     spec:
+{% if "dev" == SOURCEID_DEPLOY_PROFILE %}
+      hostAliases:
+      - ip: "{{ groups['kube-node'][0] }}"
+        hostnames:
+        - "{{ SOURCEID_SSO_DOMAIN }}"
+{% endif %}
       containers:
       - name: rg-sso
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/sso:{{ SOURCEID_SSO_VERSION }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.sso.docker_name }}:{{ SOURCEID_COMPONENTS.sso.version }}
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -50,7 +56,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: rg-sso
-  namespace: {{ SOURCEID_NAMESPACE }}
+  namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
     service: rg-sso
@@ -63,7 +69,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: rg-sso-ingress
-  namespace: {{ SOURCEID_NAMESPACE }}
+  namespace: {{ APP_NAMESPACE }}
 spec:
   rules:
   - host: {{ SOURCEID_SSO_DOMAIN }}

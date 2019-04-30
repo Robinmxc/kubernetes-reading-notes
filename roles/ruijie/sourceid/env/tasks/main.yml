@@ -1,0 +1,21 @@
+- name: 确保unzip已安装
+  yum:
+    name:
+      - unzip
+    state: present
+
+- name: 读取目录信息
+  stat: path="{{ setup_file_dir }}"
+  register: p
+
+- name: 删除已经存在的解压目录
+  file: path="{{ setup_file_dir }}" state=absent
+  when: p.stat.exists
+
+- name: 重新创建解压目录
+  file: path="{{ setup_file_dir }}" state=directory
+
+- name: 解压安装包
+  unarchive:
+    src: "{{ img_download_dir }}/sourceid-setup-{{ SOURCEID_SETUP_VERSION }}.zip"
+    dest: "{{ setup_file_dir }}"

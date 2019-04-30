@@ -1,19 +1,1 @@
-mongodb_init_dir: "/ruijie/{{ SOURCEID_NAMESPACE }}/mongodb/init"
 
-workspace_dir: "{{ base_dir }}/workspace/{{ SOURCEID_NAMESPACE }}"
-
-setup_file_dir: "{{ workspace_dir }}/temp/sourceid-setup-{{ SOURCEID_SETUP_VERSION }}"
-
-SOURCEID_DB_VERSION: "R1.3"
-
-SOURCEID_CAS_DB_USER: "cas"
-SOURCEID_CAS_DB_PWD: "abc123_"
-
-SOURCEID_GATE_DB_USER: "gateuser"
-SOURCEID_GATE_DB_PWD: "gatepass"
-
-SOURCEID_LINKID_DB_USER: "linkid"
-SOURCEID_LINKID_DB_PWD: "abc123_"
-
-COMPONENT_DB_USER: "comp"
-COMPONENT_DB_PWD: "abc123_"

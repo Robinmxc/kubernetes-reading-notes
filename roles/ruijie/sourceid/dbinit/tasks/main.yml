@@ -20,56 +20,56 @@
     - "{{ mongodb_init_dir }}/rg-upgrade-db/upgrade_data.sh"
 
   - name: 获取mongo1 POD 名称
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ SOURCEID_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
     register: pod_name
     connection: local
 
   - name: 查询复制集状态
-    shell: "{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval 'rs.status()'"
+    shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval 'rs.status()'"
     register: rs_status
     connection: local
 
   - name: 初始化复制集
-    shell: "{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo /data/init/init-repl-set.js"
+    shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- mongo /data/init/init-repl-set.js"
     when: '"PRIMARY" not in rs_status.stdout'
     connection: local
 
   - name: 等待复制集初始化完成
-    shell: "{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval 'rs.status()'"
+    shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval 'rs.status()'"
     connection: local
     register: rs_status
     until: '"PRIMARY" in rs_status.stdout'
-    retries: 8
-    delay: 8
-
-  - name: 查询用户状态
-    shell: '{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({usersInfo: "cas"})'''
-    register: user_status
-    connection: local
-
-  - name: 初始化数据库用户
-    shell: "{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo /data/init/create-users.js"
-    when: '"cas" not in user_status.stdout'
-    connection: local
+    retries: 6
+    delay: 10
 
   - name: 查询数据初始化状态
-    shell: '{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
+    shell: '{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
     register: data_status
     connection: local
 
   - name: 执行初始化脚本
-    shell: '{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- /data/init/init-data.sh'
+    shell: '{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- /data/init/init-data.sh'
     when: '"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w" not in data_status.stdout'
     connection: local
 
   - name: 查询数据初始化状态
-    shell: '{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
+    shell: '{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
     register: data_status
     connection: local
 
   - name: 修改域名
-    shell: '{{ bin_dir }}/kubectl exec -n {{ SOURCEID_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({update:"cas-service-registry", updates:[{q:{clientId:"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}, u:{$set:{"serviceId":"http://{{ SOURCEID_GATE_DOMAIN }}.*", "logoutUrl":"http://{{ SOURCEID_GATE_DOMAIN }}/logout"}}}]})'''
-    register: data_status
+    shell: '{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({update:"cas-service-registry", updates:[{q:{clientId:"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}, u:{$set:{"serviceId":"http://{{ SOURCEID_GATE_DOMAIN }}.*", "logoutUrl":"http://{{ SOURCEID_GATE_DOMAIN }}/logout"}}}]})'''
+    when: 'SOURCEID_GATE_DOMAIN not in data_status.stdout'
+    connection: local
+
+  - name: 查询用户状态
+    shell: '{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- mongo --eval ''db.getSiblingDB("cas").runCommand({usersInfo: "cas"})'''
+    register: user_status
+    connection: local
+
+  - name: 初始化数据库用户
+    shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- mongo /data/init/create-users.js"
+    when: '"cas" not in user_status.stdout'
     connection: local
 
   when: 'inventory_hostname == groups.mongodb[0]'

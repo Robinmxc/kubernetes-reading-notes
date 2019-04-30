@@ -1,10 +1,19 @@
 - hosts:
   - localhost
   roles:
+  - ruijie/sourceid/env
+
+- hosts:
+  - localhost
+  vars_files:
+  - "{{ setup_file_dir }}/kad.yml"
+  roles:
   - ruijie/sourceid/download
 
 - hosts:
   - kube-node
+  vars_files:
+  - "{{ setup_file_dir }}/kad.yml"
   roles:
   - ruijie/sourceid/load-images
   - ruijie/sourceid/prepare
