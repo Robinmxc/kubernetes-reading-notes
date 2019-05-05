@@ -5,6 +5,8 @@
 
 - hosts:
   - localhost
+  tags:
+  - download
   vars_files:
   - "{{ setup_file_dir }}/kad.yml"
   roles:
@@ -15,5 +17,5 @@
   vars_files:
   - "{{ setup_file_dir }}/kad.yml"
   roles:
-  - ruijie/sourceid/load-images
-  - ruijie/sourceid/prepare
+  - { role: ruijie/sourceid/load-images, tags: ["docker"] }
+  - { role: ruijie/sourceid/prepare, tags: ["sourceid"] }

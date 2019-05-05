@@ -1,0 +1,41 @@
+- hosts:
+  - mongodb
+  tags:
+  - mongodb
+  - midware
+  vars_files:
+  - "{{ setup_file_dir }}/kad.yml"
+  roles:
+  - { role: ruijie/mongo}
+
+- hosts:
+  - rocketmq
+  tags:
+  - rocketmq
+  - midware
+  vars_files:
+  - "{{ setup_file_dir }}/kad.yml"
+  roles:
+  - { role: ruijie/rocketmq}
+
+- hosts:
+  - kube-node
+  tags:
+  - initdata
+  vars_files:
+  - "{{ setup_file_dir }}/kad.yml"
+  roles:
+  - { role: ruijie/sourceid/dbinit }
+
+- hosts:
+  - kube-node
+  tags:
+  - sourceid
+  vars_files:
+  - "{{ setup_file_dir }}/kad.yml"
+  roles:
+  - { role: ruijie/sourceid/linkid, tags: ["linkid"]}
+  - { role: ruijie/sourceid/sso, tags: ["sso"] }
+  - { role: ruijie/sourceid/gate, tags: ["gate"] }
+  - { role: ruijie/sourceid/component, tags: ["component"] }
+  - { role: ruijie/sourceid/frontend, tags: ["frontend"] }
