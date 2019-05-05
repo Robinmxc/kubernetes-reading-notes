@@ -37,7 +37,7 @@ img_copy_dir: "/opt/kube/images"
 
 workspace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
 
-setup_file_dir: "{{ workspace_dir }}/temp/sourceid-setup-{{ SOURCEID_SETUP_VERSION }}"
+setup_file_dir: "{{ workspace_dir }}/temp/sourceid-setup-{{ SOURCEID_VERSION }}"
 
 yaml_dir: "{{ workspace_dir }}/yaml"
 

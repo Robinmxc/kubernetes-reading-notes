@@ -17,5 +17,5 @@
 
 - name: 解压安装包
   unarchive:
-    src: "{{ img_download_dir }}/sourceid-setup-{{ SOURCEID_SETUP_VERSION }}.zip"
+    src: "{{ img_download_dir }}/sourceid-setup-{{ SOURCEID_VERSION }}.zip"
     dest: "{{ setup_file_dir }}"
