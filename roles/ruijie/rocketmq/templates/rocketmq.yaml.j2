@@ -15,25 +15,31 @@ spec:
       - name: broker
         image: rocketmqinc/rocketmq:{{ rocketmq_version }}
         command: ["sh","mqbroker", "-n","localhost:9876 autoCreateTopicEnable=true"]
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ mq_broker_java_opt }}"
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 10909
           - containerPort: 10911
         volumeMounts:
-          - mountPath: /root/logs
+          - mountPath: /root/logs/broker
             name: brokeroptlogs
-          - mountPath: /root/store
+          - mountPath: /root/store/broker
             name: brokeroptstore
       - name: namesrv
         image: rocketmqinc/rocketmq:{{ rocketmq_version }}
         command: ["sh","mqnamesrv"]
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ mq_server_java_opt }}"
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 9876
         volumeMounts:
-          - mountPath: /root/logs
+          - mountPath: /root/logs/namesrv
             name: namesrvoptlogs
-          - mountPath: /root/store
+          - mountPath: /root/store/namesrv
             name: namesrvoptstore
       volumes:
       - name: brokeroptlogs

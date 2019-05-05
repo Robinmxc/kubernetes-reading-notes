@@ -14,6 +14,7 @@ spec:
       - name: rg-component
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.component.docker_name }}:{{ SOURCEID_COMPONENTS.component.version }}
         imagePullPolicy: IfNotPresent
+{% if "yes" == component_resource_limit %}
         resources:
           limits:
             cpu: 2
@@ -21,6 +22,7 @@ spec:
           requests:
             cpu: 1
             memory: 2Gi
+{% endif %}
         ports:
         - containerPort: 8080
         volumeMounts:

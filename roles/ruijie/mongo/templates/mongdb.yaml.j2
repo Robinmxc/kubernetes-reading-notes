@@ -24,22 +24,11 @@ spec:
           - '--noprealloc'
           - '--enableMajorityReadConcern'
           - 'false'
-{% if mongodb_resource_limit == 'yes' %}
           - '--wiredTigerCacheSizeGB'
           - '{{ wiredTigerCacheSizeGB }}'
-{% endif %}
         ports:
           - containerPort: {{ mongodb_port }}
             hostPort: {{ mongodb_port }}
-{% if mongodb_resource_limit == 'yes' %}
-        resources:
-          limits:
-            cpu: '{{ mongodb_max_cpu }}'
-            memory: {{ mongodb_max_memory }}
-          requests:
-            cpu: '{{ mongodb_min_cpu }}'
-            memory: {{ mongodb_min_memory }}
-{% endif %}
         volumeMounts:
           - mountPath: /data/db
             name: data

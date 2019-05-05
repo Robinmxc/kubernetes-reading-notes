@@ -14,6 +14,7 @@ spec:
       - name: rg-gate
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.gate.docker_name }}:{{ SOURCEID_COMPONENTS.gate.version }}
         imagePullPolicy: IfNotPresent
+{% if "yes" == gate_resource_limit %}
         resources:
           limits:
             cpu: 2
@@ -21,6 +22,7 @@ spec:
           requests:
             cpu: 1
             memory: 1Gi
+{% endif %}
         ports:
         - containerPort: 80
         volumeMounts:

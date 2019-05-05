@@ -14,6 +14,7 @@ spec:
       - name: rg-frontend
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.frontend.docker_name }}:{{ SOURCEID_COMPONENTS.frontend.version }}
         imagePullPolicy: IfNotPresent
+{% if "yes" == frontend_resource_limit %}
         resources:
           limits:
             cpu: 1
@@ -21,6 +22,7 @@ spec:
           requests:
             cpu: 1
             memory: 1Gi
+{% endif %}
         ports:
         - containerPort: 8081
       imagePullSecrets:

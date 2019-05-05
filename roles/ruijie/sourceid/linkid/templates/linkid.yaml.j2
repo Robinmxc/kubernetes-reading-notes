@@ -14,6 +14,7 @@ spec:
       - name: rg-linkid
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.linkid.docker_name }}:{{ SOURCEID_COMPONENTS.linkid.version }}
         imagePullPolicy: IfNotPresent
+{% if "yes" == linkid_resource_limit %}
         resources:
           limits:
             cpu: 2
@@ -21,6 +22,7 @@ spec:
           requests:
             cpu: 1
             memory: 2Gi
+{% endif %}
         ports:
         - containerPort: 8901
         volumeMounts:

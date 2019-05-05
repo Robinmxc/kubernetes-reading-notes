@@ -5,9 +5,4 @@ mongodb_deploy_mode: 3
 
 mongodb_check_data_dir: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}yes{%- else -%}no{%- endif -%}"
 
-mongodb_resource_limit: "yes"
-mongodb_min_cpu: "{%- if CLUSTER_SCALE == 'normal' -%}2{%- else -%}1{%- endif -%}"
-mongodb_max_cpu: "{%- if CLUSTER_SCALE == 'normal' -%}4{%- else -%}2{%- endif -%}"
-mongodb_min_memory: "{%- if CLUSTER_SCALE == 'normal' -%}16Gi{%- else -%}2Gi{%- endif -%}"
-mongodb_max_memory: "{%- if CLUSTER_SCALE == 'normal' -%}24Gi{%- else -%}4Gi{%- endif -%}"
-wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- else -%}1{%- endif -%}"
+wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- else -%}0.5{%- endif -%}"
