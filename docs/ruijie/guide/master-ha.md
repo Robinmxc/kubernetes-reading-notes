@@ -21,8 +21,7 @@
 1. 复制示例配置文件作为配置基础
     ```bash
     cd /opt/kad
-    mkdir -p inventory/cluster-ha
-    cp inventory/example/m2n3.ini inventory/cluster-ha
+    cp -rpf inventory/m2n3 inventory/cluster-ha
     ```
 1. 编辑inventory/cluster-ha/m2n3.ini，设置各节点IP地址：
     ```
@@ -58,7 +57,7 @@
 
 1. 执行部署命令（在/opt/kad目录下执行）
     ```bash
-    ansible-playbook -i inventory/cluster-ha playbooks/cluster/k8s-setup.yml -k
+    ansible-playbook -i inventory/cluster-ha/hosts.ini playbooks/cluster/k8s-setup.yml -k
     ```
 1. 出现如下输入密码的提示信息后，输入root用户的密码
     ```

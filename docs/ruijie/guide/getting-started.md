@@ -26,11 +26,11 @@
 1. 下载自动化部署工具的安装包
     ```bash
     cd /opt
-    wget http://192.168.54.24:8081/repository/files/ruijie/kad/release/kad-0.3.0.tar.gz
+    wget http://192.168.54.24:8081/repository/files/ruijie/kad/release/kad-0.6.0.tar.gz
     ```
 1. 解压
     ```bash
-    tar xzvf kad-0.3.0.tar.gz
+    tar xzvf kad-0.6.0.tar.gz
     ```
 
 #### 3. 准备配置文件
@@ -45,10 +45,9 @@
 1. 复制一个示例配置文件作为配置基础
     ```bash
     cd /opt/kad
-    mkdir -p inventory/my-cluster
-    cp inventory/example/m1n3.ini inventory/my-cluster/
+    cp -rpf inventory/m1n3 inventory/my-cluster
     ```
-1. 编辑inventory/my-cluster/m1n3.ini，设置各节点IP地址：
+1. 编辑inventory/my-cluster/hosts.ini，设置各节点IP地址：
     ```
     [deploy]
     192.168.1.61 NTP_ENABLED=no
@@ -73,7 +72,7 @@
 
 1. 执行部署命令（在/opt/kad目录下执行）
     ```bash
-    ansible-playbook -i inventory/my-cluster -k playbooks/cluster/k8s-setup.yml
+    ansible-playbook -i inventory/my-cluster/hosts.ini -k playbooks/cluster/k8s-setup.yml
     ```
 1. 出现如下输入密码的提示信息后，输入root用户的密码
     ```
