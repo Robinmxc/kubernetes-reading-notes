@@ -1,1 +1,9 @@
 
+db_pwd_checklist: [
+    {user: "{{ SOURCEID_CAS_DB_USER }}", pwd: "{{ SOURCEID_CAS_DB_PWD }}", param_name: "SOURCEID_CAS_DB_PWD"},
+    {user: "{{ SOURCEID_GATE_DB_USER }}", pwd: "{{ SOURCEID_GATE_DB_PWD }}", param_name: "SOURCEID_GATE_DB_PWD"},
+    {user: "{{ SOURCEID_LINKID_DB_USER }}", pwd: "{{ SOURCEID_LINKID_DB_PWD }}", param_name: "SOURCEID_LINKID_DB_PWD"},
+    {user: "{{ COMPONENT_DB_USER }}", pwd: "{{ COMPONENT_DB_PWD }}", param_name: "COMPONENT_DB_PWD"},
+  ]
+
+db_pwd_pattern: "^.*(?=.{6,16})(?=.*\\d)(?=.*[A-Z]{1,})(?=.*[a-z]{1,}).*$"
