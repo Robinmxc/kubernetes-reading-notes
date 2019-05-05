@@ -5,6 +5,7 @@
 ## 使用说明
 - [部署单Master集群](docs/ruijie/guide/getting-started.md)
 - [部署双Master高可用集群](docs/ruijie/guide/master-ha.md)
+- [部署SourceID](docs/ruijie/guide/master-ha.md)
 - [配置HTTPS服务](docs/ruijie/guide/traefik-https.md)
 - [使用自定义的时间同步服务器 ](docs/ruijie/guide/chrony.md)
 - [常见问题和解决办法](docs/ruijie/guide/solve-problem.md)
