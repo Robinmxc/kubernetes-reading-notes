@@ -1,6 +1,6 @@
 ## 部署双Master高可用集群
 
-双Master节点高可用方案是用HAProxy+Keepalived实现的，配置过程和[单Master节点配置过程](../guide/getting-started.md)是一样的，只是在配置文件有一些差别。
+双Master节点高可用方案是用HAProxy+Keepalived实现的，配置过程和[单Master节点配置过程](getting-started.md)是一样的，只是在配置文件有一些差别。
 
 #### 准备
 

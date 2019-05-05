@@ -2,11 +2,11 @@
 
 本文描述在K8s集群中部署SourceID的步骤，部署工具需要kad-0.6.0以上版本。
 
-部署SourceID需要在K8s集群的Master节点上进行操作，本文以[单Master集群](getting-started.md)环境为例。
+部署SourceID需要在K8s集群的Master节点上进行操作，本文以[单Master集群](../guide/getting-started.md)环境为例。
 
 #### 1. 准备
 
-**注意：由于集群配置文件格式有较大改动，0.6.0以前版本的配置文件需要按照[单Master集群](getting-started.md)中第3节的操作步骤重新准备（不影响集群运行，只是各项配置参数需要重新输入）。**
+**注意：由于集群配置文件格式有较大改动，0.6.0以前版本的配置文件需要按照[单Master集群](../guide/getting-started.md)中第3节的操作步骤重新准备（不影响集群运行，只是各项配置参数需要重新输入）。**
 
 执行以下命令准备SourceID部署环境：
 
