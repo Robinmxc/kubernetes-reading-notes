@@ -35,6 +35,7 @@
   copy:
     src: "{{ setup_file_dir }}/conf/"
     dest: "{{ workspace_dir }}/conf/"
+    force: false
   run_once: true
   connection: local
 
