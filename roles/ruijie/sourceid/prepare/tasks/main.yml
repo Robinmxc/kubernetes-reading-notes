@@ -31,47 +31,98 @@
   run_once: true
   connection: local
 
-- name: 拷贝配置文件
-  copy:
-    src: "{{ setup_file_dir }}/conf/"
-    dest: "{{ workspace_dir }}/conf/"
-    force: false
+
+- name: 获取SSO配置文件状态
+  stat: path="{{ workspace_dir }}/conf/sourceid/sso/conf"
+  register: path_info
   run_once: true
   connection: local
 
-- name: 修改SSO配置文件
-  replace: path="{{ workspace_dir }}/conf/sourceid/sso/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+- name: 准备SSO配置文件
+  vars:
+    src_path: '{{ setup_file_dir }}/conf/sourceid/sso/conf'
+    dest_path: '{{ workspace_dir }}/conf/sourceid/sso/conf'
+  block:
+  - name: 拷贝SSO配置文件
+    copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+  - name: 修改SSO配置文件
+    replace: path="{{ dest_path }}/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "^cas.server.name=.*$", replace: "cas.server.name=http://{{ SOURCEID_SSO_DOMAIN }}"}
+      - {regexp: "^front.server.addr=.*$", replace: "front.server.addr=http://{{ SOURCEID_GATE_DOMAIN }}"}
+      - {regexp: "^mongodb-base-url=.*$", replace: "mongodb-base-url=mongodb://{{ SOURCEID_CAS_DB_USER }}:{{ SOURCEID_CAS_DB_PWD }}@{{ mongodb_addr }}/cas"}
+      - {regexp: "^gateway.feign.base.url.*$", replace: "gateway.feign.base.url={{ SOURCEID_GATEWAY_URL }}"}
+      - {regexp: "^cas.view.default-redirect-url.*$", replace: "cas.view.default-redirect-url={{ SOURCEID_REDIRECT_URL }}"}
+      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+  when: 'not path_info.stat.exists'
   run_once: true
   connection: local
-  with_items:
-    - {regexp: "^cas.server.name=.*$", replace: "cas.server.name=http://{{ SOURCEID_SSO_DOMAIN }}"}
-    - {regexp: "^front.server.addr=.*$", replace: "front.server.addr=http://{{ SOURCEID_GATE_DOMAIN }}"}
-    - {regexp: "^mongodb-base-url=.*$", replace: "mongodb-base-url=mongodb://{{ SOURCEID_CAS_DB_USER }}:{{ SOURCEID_CAS_DB_PWD }}@{{ mongodb_addr }}/cas"}
-    - {regexp: "^gateway.feign.base.url.*$", replace: "gateway.feign.base.url={{ SOURCEID_GATEWAY_URL }}"}
-    - {regexp: "^cas.view.default-redirect-url.*$", replace: "cas.view.default-redirect-url={{ SOURCEID_REDIRECT_URL }}"}
-    - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
 
-- name: 修改GATE配置文件
-  replace: path="{{ workspace_dir }}/conf/sourceid/gate/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
-  run_once: true
-  connection: local
-  with_items:
-    - {regexp: "^auth-server:.*$", replace: "auth-server: http://{{ SOURCEID_SSO_DOMAIN }}"}
-    - {regexp: "mongodb:.*/gate", replace: "mongodb://{{ SOURCEID_GATE_DB_USER }}:{{ SOURCEID_GATE_DB_PWD }}@{{ mongodb_addr }}/gate"}
-    - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
 
-- name: 修改LINKID配置文件
-  replace: path="{{ workspace_dir }}/conf/sourceid/linkid/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+- name: 获取GATE配置文件状态
+  stat: path="{{ workspace_dir }}/conf/sourceid/gate/conf"
+  register: path_info
   run_once: true
   connection: local
-  with_items:
-    - {regexp: "mongodb:.*/linkid-dev", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev"}
-    - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
 
-- name: 修改COMPONENT配置文件
-  replace: path="{{ workspace_dir }}/conf/component/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+- name: 准备GATE配置文件
+  vars:
+    src_path: "{{ setup_file_dir }}/conf/sourceid/gate/conf"
+    dest_path: "{{ workspace_dir }}/conf/sourceid/gate/conf"
+  block:
+  - name: 拷贝GATE配置文件
+    copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+  - name: 修改GATE配置文件
+    replace: path="{{ dest_path }}/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "^auth-server:.*$", replace: "auth-server: http://{{ SOURCEID_SSO_DOMAIN }}"}
+      - {regexp: "mongodb:.*/gate", replace: "mongodb://{{ SOURCEID_GATE_DB_USER }}:{{ SOURCEID_GATE_DB_PWD }}@{{ mongodb_addr }}/gate"}
+      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+  when: 'not path_info.stat.exists'
   run_once: true
   connection: local
-  with_items:
-    - {regexp: "mongodb:.*/component", replace: "mongodb://{{ COMPONENT_DB_USER }}:{{ COMPONENT_DB_PWD }}@{{ mongodb_addr }}/component"}
-    - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+
+
+- name: 获取LINKID配置文件状态
+  stat: path="{{ workspace_dir }}/conf/sourceid/linkid/conf"
+  register: path_info
+  run_once: true
+  connection: local
+
+- name: 准备LINKID配置文件
+  vars:
+    src_path: "{{ setup_file_dir }}/conf/sourceid/linkid/conf"
+    dest_path: "{{ workspace_dir }}/conf/sourceid/linkid/conf"
+  block:
+  - name: 拷贝LINKID配置文件
+    copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+  - name: 修改LINKID配置文件
+    replace: path="{{ dest_path }}/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "mongodb:.*/linkid-dev", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev"}
+      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+  when: 'not path_info.stat.exists'
+  run_once: true
+  connection: local
+
+- name: 获取COMPONENT配置文件状态
+  stat: path="{{ workspace_dir }}/conf/component/conf"
+  register: path_info
+  run_once: true
+  connection: local
+
+- name: 准备COMPONENT配置文件
+  vars:
+    src_path: "{{ setup_file_dir }}/conf/component/conf"
+    dest_path: "{{ workspace_dir }}/conf/component/conf"
+  block:
+  - name: 拷贝LINKID配置文件
+    copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+  - name: 修改COMPONENT配置文件
+    replace: path="{{ dest_path }}/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "mongodb:.*/component", replace: "mongodb://{{ COMPONENT_DB_USER }}:{{ COMPONENT_DB_PWD }}@{{ mongodb_addr }}/component"}
+      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+  when: 'not path_info.stat.exists'
+  run_once: true
+  connection: local
