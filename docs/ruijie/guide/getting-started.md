@@ -47,7 +47,7 @@
 1. 复制一个示例配置文件作为配置基础
     ```bash
     cd /opt/kad
-    cp -rpf inventory/m1n3 inventory/my-cluster
+    cp -rpf inventory/example/m1n3 inventory/my-cluster
     ```
 1. 编辑inventory/my-cluster/hosts.ini，设置各节点IP地址：
     ```

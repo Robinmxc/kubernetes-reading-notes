@@ -23,7 +23,7 @@
 1. 复制示例配置文件作为配置基础
     ```bash
     cd /opt/kad
-    cp -rpf inventory/m2n3 inventory/cluster-ha
+    cp -rpf inventory/example/m2n3 inventory/cluster-ha
     ```
 1. 编辑inventory/cluster-ha/m2n3.ini，设置各节点IP地址：
     ```
