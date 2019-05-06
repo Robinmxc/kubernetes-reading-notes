@@ -1,1 +1,3 @@
 mongodb_addr: "mongo1.{{ APP_NAMESPACE }}.svc,mongo2.{{ APP_NAMESPACE }}.svc,mongo3.{{ APP_NAMESPACE }}.svc"
+
+SOURCEID_FRONTEND_RES: 'ruijie'

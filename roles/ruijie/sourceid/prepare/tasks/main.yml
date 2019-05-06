@@ -126,3 +126,25 @@
   when: 'not path_info.stat.exists'
   run_once: true
   connection: local
+
+- name: 获取FRONTEND配置文件状态
+  stat: path="{{ workspace_dir }}/conf/sourceid/frontend/deploy"
+  register: path_info
+  run_once: true
+  connection: local
+
+- name: 准备FRONTEND配置文件
+  vars:
+    src_path: "{{ setup_file_dir }}/conf/sourceid/frontend/{{ SOURCEID_FRONTEND_RES }}/deploy"
+    dest_path: "{{ workspace_dir }}/conf/sourceid/frontend/deploy"
+  block:
+  - name: 拷贝FRONTEND配置文件
+    copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+  - name: 修改FRONTEND配置文件
+    replace: path="{{ dest_path }}/deploy.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "gate.test.com", replace: "{{ SOURCEID_GATE_DOMAIN }}"}
+      - {regexp: "service.test.com", replace: "{{ SOURCEID_SSO_DOMAIN }}"}
+  when: 'not path_info.stat.exists'
+  run_once: true
+  connection: local
