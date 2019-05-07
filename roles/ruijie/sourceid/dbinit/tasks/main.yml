@@ -1,6 +1,6 @@
 - name: 检查数据库参数
   fail: msg="数据库密码{{ item.param_name }}不符合要求，密码必须包含大、小写字母和数字"
-  when: 'not ( item.pwd | search(db_pwd_pattern) )'
+  when: 'not ( item.pwd is search(db_pwd_pattern) )'
   connection: local
   run_once: true
   with_items: "{{ db_pwd_checklist }}"
