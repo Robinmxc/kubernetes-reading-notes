@@ -10,6 +10,12 @@ spec:
       labels:
         service: rg-gate
     spec:
+{% if "dev" == SOURCEID_DEPLOY_PROFILE %}
+      hostAliases:
+      - ip: "{{ groups['kube-node'][0] }}"
+        hostnames:
+        - "{{ SOURCEID_SSO_DOMAIN }}"
+{% endif %}
       containers:
       - name: rg-gate
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.gate.docker_name }}:{{ SOURCEID_COMPONENTS.gate.version }}
