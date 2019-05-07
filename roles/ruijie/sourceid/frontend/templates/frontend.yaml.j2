@@ -10,6 +10,12 @@ spec:
       labels:
         service: rg-frontend
     spec:
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/frontend/deploy
       containers:
       - name: rg-frontend
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.frontend.docker_name }}:{{ SOURCEID_COMPONENTS.frontend.version }}
@@ -25,8 +31,9 @@ spec:
 {% endif %}
         ports:
         - containerPort: 8081
-      imagePullSecrets:
-      - name: regsecret
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html/public/deploy
+          name: conf
 
 ---
 apiVersion: v1

@@ -1,4 +1,9 @@
 
+- name: 复制配置文件
+  copy:
+    src: "{{ workspace_dir }}/conf/sourceid/frontend/deploy/"
+    dest: "{{ config_base_dir }}/sourceid/frontend/deploy/"
+
 - name: 准备目录
   file: path={{ item }} state=directory
   with_items:
