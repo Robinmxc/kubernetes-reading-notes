@@ -13,6 +13,9 @@ spec:
       containers:
       - name: rg-gate
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.gate.docker_name }}:{{ SOURCEID_COMPONENTS.gate.version }}
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ gate_java_opt }}"
         imagePullPolicy: IfNotPresent
 {% if "yes" == gate_resource_limit %}
         resources:

@@ -13,12 +13,15 @@ spec:
       containers:
       - name: rg-component
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.component.docker_name }}:{{ SOURCEID_COMPONENTS.component.version }}
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ component_java_opt }}"
         imagePullPolicy: IfNotPresent
 {% if "yes" == component_resource_limit %}
         resources:
           limits:
             cpu: 2
-            memory: 4Gi
+            memory: 3Gi
           requests:
             cpu: 1
             memory: 2Gi

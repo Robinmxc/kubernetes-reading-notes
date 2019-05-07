@@ -19,6 +19,9 @@ spec:
       containers:
       - name: rg-sso
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.sso.docker_name }}:{{ SOURCEID_COMPONENTS.sso.version }}
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ sso_java_opt }}"
         imagePullPolicy: IfNotPresent
 {% if "yes" == sso_resource_limit %}
         resources:
