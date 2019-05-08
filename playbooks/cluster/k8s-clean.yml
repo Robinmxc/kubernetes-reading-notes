@@ -114,16 +114,22 @@
 	&& iptables -F -t mangle && iptables -X -t mangle"
     when: "'kubeasz' not in install_info.stdout"
 
+  - name: 查询网卡信息
+    shell: "ip link | grep mtu"
+    register: ip_link_info
+
   - name: cleanup networks1
-    shell: "ip link del tunl0; \
-	ip link del flannel.1; \
-	ip link del cni0; \
-        ip link del mynet0; \
-	ip link del kube-bridge; \
-        ip link del dummy0; \
-        ip link del kube-ipvs0; \
-        ip link del cilium_net; \
-        ip link del cilium_vxlan"
+    shell: "ip link del {{ item }}"
+    when: 'item in ip_link_info.stdout'
+    with_items:
+      - "tunl0"
+      - "flannel.1"
+      - "cni0"
+      - "mynet0"
+      - "kube-bridge"
+      - "dummy0"
+      - "cilium_net"
+      - "cilium_vxlan"
     ignore_errors: true
 
   - name: cleanup networks2
