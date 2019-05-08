@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: rg-linkid
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.linkid.docker_name }}:{{ SOURCEID_COMPONENTS.linkid.version }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.linkid.name }}:{{ SOURCEID_DOCKERS.linkid.version }}
         env:
         - name: JAVA_OPT_EXT
           value: "{{ linkid_java_opt }}"

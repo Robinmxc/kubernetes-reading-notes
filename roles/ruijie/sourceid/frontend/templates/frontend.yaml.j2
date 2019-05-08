@@ -18,7 +18,7 @@ spec:
             path: {{ config_base_dir }}/sourceid/frontend/deploy
       containers:
       - name: rg-frontend
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.frontend.docker_name }}:{{ SOURCEID_COMPONENTS.frontend.version }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.frontend.name }}:{{ SOURCEID_DOCKERS.frontend.version }}
         imagePullPolicy: IfNotPresent
 {% if "yes" == frontend_resource_limit %}
         resources:

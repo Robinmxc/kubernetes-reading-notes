@@ -4,7 +4,7 @@
   - mongodb
   - midware
   vars_files:
-  - "{{ setup_file_dir }}/kad.yml"
+  - "{{ sourceid_kad_dir }}/kad.yml"
   roles:
   - { role: ruijie/mongo}
 
@@ -14,7 +14,7 @@
   - rocketmq
   - midware
   vars_files:
-  - "{{ setup_file_dir }}/kad.yml"
+  - "{{ sourceid_kad_dir }}/kad.yml"
   roles:
   - { role: ruijie/rocketmq}
 
@@ -23,7 +23,7 @@
   tags:
   - initdata
   vars_files:
-  - "{{ setup_file_dir }}/kad.yml"
+  - "{{ sourceid_kad_dir }}/kad.yml"
   roles:
   - { role: ruijie/sourceid/dbinit }
 
@@ -32,7 +32,7 @@
   tags:
   - sourceid
   vars_files:
-  - "{{ setup_file_dir }}/kad.yml"
+  - "{{ sourceid_kad_dir }}/kad.yml"
   roles:
   - { role: ruijie/sourceid/linkid, tags: ["linkid"]}
   - { role: ruijie/sourceid/sso, tags: ["sso"] }

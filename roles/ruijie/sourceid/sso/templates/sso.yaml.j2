@@ -18,7 +18,7 @@ spec:
 {% endif %}
       containers:
       - name: rg-sso
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.sso.docker_name }}:{{ SOURCEID_COMPONENTS.sso.version }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.sso.name }}:{{ SOURCEID_DOCKERS.sso.version }}
         env:
         - name: JAVA_OPT_EXT
           value: "{{ sso_java_opt }}"

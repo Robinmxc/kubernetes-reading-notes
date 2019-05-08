@@ -10,14 +10,14 @@
   tags:
   - download
   vars_files:
-  - "{{ setup_file_dir }}/kad.yml"
+  - "{{ sourceid_kad_dir }}/kad.yml"
   roles:
   - ruijie/sourceid/download
 
 - hosts:
   - kube-node
   vars_files:
-  - "{{ setup_file_dir }}/kad.yml"
+  - "{{ sourceid_kad_dir }}/kad.yml"
   roles:
   - { role: ruijie/sourceid/load-images, tags: ["docker"] }
   - { role: ruijie/sourceid/prepare, tags: ["sourceid"] }

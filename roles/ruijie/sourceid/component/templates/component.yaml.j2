@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: rg-component
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_COMPONENTS.component.docker_name }}:{{ SOURCEID_COMPONENTS.component.version }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.component.name }}:{{ SOURCEID_DOCKERS.component.version }}
         env:
         - name: JAVA_OPT_EXT
           value: "{{ component_java_opt }}"

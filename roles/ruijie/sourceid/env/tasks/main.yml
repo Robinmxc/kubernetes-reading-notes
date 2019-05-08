@@ -5,17 +5,17 @@
     state: present
 
 - name: 读取目录信息
-  stat: path="{{ setup_file_dir }}"
+  stat: path="{{ sourceid_kad_dir }}"
   register: p
 
-- name: 删除已经存在的解压目录
-  file: path="{{ setup_file_dir }}" state=absent
-  when: p.stat.exists
+- name: 创建解压目录
+  file: path="{{ sourceid_kad_dir }}" state=directory
+  when: 'not p.stat.exists'
 
-- name: 重新创建解压目录
-  file: path="{{ setup_file_dir }}" state=directory
-
-- name: 解压安装包
+- name: 解压SourceID部署包
+  vars:
+    zip_file: "{{ img_download_dir }}/sourceid-kad-{{ SOURCEID_KAD_VERSION }}.zip"
   unarchive:
-    src: "{{ img_download_dir }}/sourceid-setup-{{ SOURCEID_VERSION }}.zip"
-    dest: "{{ setup_file_dir }}"
+    src: "{{ zip_file }}"
+    dest: "{{ sourceid_kad_dir }}"
+  when: 'not p.stat.exists and zip_file is exists'

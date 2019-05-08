@@ -1,10 +1,15 @@
 #!/bin/bash
 
-cd /data/init/rg-init-db
+cd /data/init/sourceid/rg-init-db
 ./init-data.sh 127.0.0.1 27017
 
-cd /data/init/rg-upgrade-db
+cd /data/init/sourceid/rg-upgrade-db
 ./upgrade_data.sh 127.0.0.1 27017 sso sourceid R1.0 {{ SOURCEID_DB_VERSION }}
 ./upgrade_data.sh 127.0.0.1 27017 linkid sourceid R1.0 {{ SOURCEID_DB_VERSION }}
 ./upgrade_data.sh 127.0.0.1 27017 gate sourceid R1.0 {{ SOURCEID_DB_VERSION }}
 ./upgrade_data.sh 127.0.0.1 27017 gateway sourceid R1.0 {{ SOURCEID_DB_VERSION }}
+
+cd /data/init/component/rg-init-db
+./init-data.sh 127.0.0.1 27017
+
+./upgrade_data.sh 127.0.0.1 27017 component v0.0  {{ COMPONENT_DB_VERSION }}

@@ -33,7 +33,7 @@
 
 - name: 拷贝SourceID配置文件
   vars:
-    src_path: "{{ setup_file_dir }}/conf/{{ item }}"
+    src_path: "{{ sourceid_kad_dir }}/conf/{{ item }}"
     dest_path: "{{ workspace_dir }}/conf/{{ item }}"
   copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
   when: 'dest_path is not exists'

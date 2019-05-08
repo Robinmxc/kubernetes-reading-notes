@@ -14,17 +14,16 @@
     - init-data.sh
 
   - name: 复制初始化脚本
-    copy: src="{{setup_file_dir}}/{{ item }}" dest="{{ mongodb_init_dir }}"
-    with_items:
-    - rg-init-db
-    - rg-upgrade-db
+    copy: src="{{sourceid_kad_dir}}/db/" dest="{{ mongodb_init_dir }}/"
 
   - name: 设置文件执行权限
     file: name="{{ item }}" mode=0700
     with_items:
     - "{{ mongodb_init_dir }}/init-data.sh"
-    - "{{ mongodb_init_dir }}/rg-init-db/init-data.sh"
-    - "{{ mongodb_init_dir }}/rg-upgrade-db/upgrade_data.sh"
+    - "{{ mongodb_init_dir }}/sourceid/rg-init-db/init-data.sh"
+    - "{{ mongodb_init_dir }}/sourceid/rg-upgrade-db/upgrade_data.sh"
+    - "{{ mongodb_init_dir }}/component/rg-init-db/init-data.sh"
+    - "{{ mongodb_init_dir }}/component/rg-init-db/upgrade_data.sh"
 
   - name: 获取mongo1 POD 名称
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
