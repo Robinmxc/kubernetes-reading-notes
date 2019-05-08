@@ -1,5 +1,7 @@
 # 国内镜像加速
 REG_MIRROR_1: "https://registry.docker-cn.com"
+REG_MIRROR_2: "https://registry.docker-cn.com"
+REG_MIRROR_3: "https://hub-mirror.c.163.com"
 
 PRIVATE_REGISTRY_ENABLED: "yes"
 PRIVATE_REGISTRY_USER: "admin"

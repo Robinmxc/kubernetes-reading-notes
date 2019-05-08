@@ -1,1 +1,3 @@
-REG_MIRROR_1: "https://registry.docker-cn.com"
+REG_MIRROR_1: "https://3r8alx0a.mirror.aliyuncs.com"
+REG_MIRROR_2: "https://registry.docker-cn.com"
+REG_MIRROR_3: "https://hub-mirror.c.163.com"
