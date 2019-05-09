@@ -44,6 +44,24 @@
       shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ mongodb_offline }}"
       when: 'mongodb_offline in image_info.stdout'
 
+    - name: 生成随机key
+      shell: "openssl rand -hex 32"
+      register: ssl_result
+      connection: local
+      run_once: true
+
+    - name: 准备keyfile部署文件
+      vars:
+        mongo_key: "{{ ssl_result.stdout }}"
+      template: src=keyfile.yaml.j2 dest={{ yaml_dir }}/mongo/keyfile.yml
+      connection: local
+      run_once: true
+
+    - name: 创建keyfile
+      shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/keyfile.yml"
+      connection: local
+      run_once: true
+
     - name: 准备第1个mongodb的部署文件
       vars:
         mongodb_node_name: "mongo1"

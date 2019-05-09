@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongo-key
+  namespace: {{ APP_NAMESPACE }}
+stringData:
+  keyfile: "{{ mongo_key }}"
