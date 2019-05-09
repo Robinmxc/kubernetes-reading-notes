@@ -3,8 +3,6 @@
   tags:
   - mongodb
   - midware
-  vars_files:
-  - "{{ sourceid_kad_dir }}/kad.yml"
   roles:
   - { role: ruijie/mongo}
 
@@ -13,8 +11,6 @@
   tags:
   - rocketmq
   - midware
-  vars_files:
-  - "{{ sourceid_kad_dir }}/kad.yml"
   roles:
   - { role: ruijie/rocketmq}
 
