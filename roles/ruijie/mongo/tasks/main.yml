@@ -88,3 +88,5 @@
       when: "mongodb_deploy_mode == 3"
 
   when: '"mongo" not in pod_info.stdout'
+
+- import_tasks: init_repl_set.yml
