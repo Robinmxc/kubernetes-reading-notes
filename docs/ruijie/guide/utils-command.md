@@ -9,6 +9,8 @@
 
 ### K8s集群常用命令
 
+K8s集群常用命令如下：
+
 1. 删除集群
     ```
     ansible-playbook -i inventory/my-cluster/hosts.ini playbooks/cluster/k8s-clean.yml -k
@@ -20,6 +22,8 @@ SourceID管理命令需要先执行过prepare命令（只需要执行一次）�
 ```
 ansible-playbook -i inventory/my-cluster/hosts.ini playbooks/sourceid/prepare.yml -k
 ```
+
+SourceID常用命令如下：
 
 1. 从K8s集群中删除SourceID各组件
     ```
