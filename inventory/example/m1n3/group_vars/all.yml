@@ -42,7 +42,7 @@ yaml_dir: "{{ workspace_dir }}/yaml"
 config_base_dir: "/ruijie/{{ APP_NAMESPACE }}"
 
 mongodb_data_dir: "/ruijie/{{ APP_NAMESPACE }}/mongodb/data"
-mongodb_init_dir: "/ruijie/{{ APP_NAMESPACE }}/mongodb/init/"
+mongodb_init_dir: "/ruijie/{{ APP_NAMESPACE }}/mongodb/init"
 
 rocketmq_data_dir: "/ruijie/{{ APP_NAMESPACE }}/rocketmq/data"
 rocketmq_logs_dir: "/ruijie/{{ APP_NAMESPACE }}/rocketmq/log"

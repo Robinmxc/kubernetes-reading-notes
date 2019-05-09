@@ -32,6 +32,14 @@
   connection: local
 
 - block:
+    - name: 检查数据库密码是否符合要求
+      vars:
+        pwd_length: "{{ MONGODB_ADMIN_PWD | length }}"
+      fail: msg="数据库管理员密码不符合要求，密码必须包含大、小写字母和数字，且长度为6~16字符"
+      when: 'mongodb_auth_mode == "yes" and MONGODB_ADMIN_PWD is not search(db_pwd_pattern) or pwd_length | int < 6 or pwd_length | int > 16'
+      connection: local
+      run_once: true
+
     - name: 尝试推送离线mongodb镜像（若执行失败，可忽略）
       copy: src={{ base_dir }}/down/{{ mongodb_offline }} dest=/opt/kube/images/{{ mongodb_offline }}
       when: 'mongodb_offline in download_info.stdout'
@@ -46,6 +54,7 @@
 
     - name: 生成随机key
       shell: "openssl rand -hex 32"
+      when: 'mongodb_auth_mode == "yes"'
       register: ssl_result
       connection: local
       run_once: true
@@ -54,11 +63,13 @@
       vars:
         mongo_key: "{{ ssl_result.stdout }}"
       template: src=keyfile.yaml.j2 dest={{ yaml_dir }}/mongo/keyfile.yml
+      when: 'mongodb_auth_mode == "yes"'
       connection: local
       run_once: true
 
     - name: 创建keyfile
       shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/keyfile.yml"
+      when: 'mongodb_auth_mode == "yes"'
       connection: local
       run_once: true
 
@@ -105,6 +116,28 @@
       run_once: true
       when: "mongodb_deploy_mode == 3"
 
+    - name: 获取mongo1 POD 名称
+      shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
+      register: pod_name
+      connection: local
+      run_once: true
+
+    - name: set vars
+      set_fact:
+        pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- "
+      connection: local
+      run_once: true
+
+    - import_tasks: init_repl_set.yml
+
+    - name: 创建数据库管理员账号
+      shell: '{{ pod_shell }} mongo --eval ''db.getSiblingDB("admin").runCommand({createUser: "{{ MONGODB_ADMIN_USER }}",pwd: "{{ MONGODB_ADMIN_PWD }}",roles: [{role:"root", db: "admin"}]})'''
+      when: 'mongodb_auth_mode == "yes"'
+      register: mongo_result
+      failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+      connection: local
+      run_once: true
+      no_log: true
+
   when: '"mongo" not in pod_info.stdout'
 
-- import_tasks: init_repl_set.yml

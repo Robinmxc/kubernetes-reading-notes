@@ -2,24 +2,24 @@
 db.getSiblingDB("cas").runCommand({
   createUser: "{{ SOURCEID_CAS_DB_USER }}",
   pwd: "{{ SOURCEID_CAS_DB_PWD }}",
-  roles: [{role:"readWrite", db: "cas"}]
+  roles: [{role:"dbOwner", db: "cas"}]
 });
 
 db.getSiblingDB("linkid-dev").runCommand({
   createUser: "{{ SOURCEID_LINKID_DB_USER }}",
   pwd: "{{ SOURCEID_LINKID_DB_PWD }}",
-  roles: [{role:"readWrite", db: "linkid-dev"}]
+  roles: [{role:"dbOwner", db: "linkid-dev"}]
 });
 
 db.getSiblingDB("gate").runCommand({
   createUser: "{{ SOURCEID_GATE_DB_USER }}",
   pwd: "{{ SOURCEID_GATE_DB_PWD }}",
-  roles: [{role:"readWrite", db: "gate"}]
+  roles: [{role:"dbOwner", db: "gate"}]
 });
 
 db.getSiblingDB("component").runCommand({
   createUser: "{{ COMPONENT_DB_USER }}",
   pwd: "{{ COMPONENT_DB_PWD }}",
-  roles: [{role:"readWrite", db: "component"}]
+  roles: [{role:"dbOwner", db: "component"}]
 });
 

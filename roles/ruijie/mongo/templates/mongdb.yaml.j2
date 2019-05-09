@@ -26,18 +26,23 @@ spec:
           - 'false'
           - '--wiredTigerCacheSizeGB'
           - '{{ wiredTigerCacheSizeGB }}'
+{% if mongodb_auth_mode == 'yes' %}
           - '--clusterAuthMode'
           - 'keyFile'
           - '--keyFile'
           - '/conf/keyfile'
+          - '--auth'
+{% endif %}
         ports:
           - containerPort: {{ mongodb_port }}
         volumeMounts:
           - mountPath: /data/db
             name: data
+{% if mongodb_auth_mode == 'yes' %}
           - mountPath: /conf/keyfile
             name: keyfile
             subPath: keyfile
+{% endif %}
 {% if mongodb_init_dir != '' %}
           - mountPath: /data/init
             name: init-dir
@@ -46,10 +51,12 @@ spec:
       - name: data
         hostPath:
           path: {{ mongodb_data_dir }}
+{% if mongodb_auth_mode == 'yes' %}
       - name: keyfile
         secret:
           secretName: mongo-key
           defaultMode: 0400
+{% endif %}
 {% if mongodb_init_dir != '' %}
       - name: init-dir
         hostPath:
