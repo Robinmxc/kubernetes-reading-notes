@@ -24,3 +24,5 @@
 
   when: 'mongodb_deploy_mode == 3'
   connection: local
+  run_once: true
+

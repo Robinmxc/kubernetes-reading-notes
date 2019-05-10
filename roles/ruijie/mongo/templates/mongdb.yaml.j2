@@ -1,18 +1,22 @@
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: apps/v1beta1
+kind: StatefulSet
 metadata:
   namespace: {{ APP_NAMESPACE }}
   name: {{ mongodb_node_name }}
 spec:
+  serviceName: {{ mongodb_node_name }}
   replicas: 1
+  selector:
+    matchLabels:
+      app: {{ mongodb_node_name }}
   template:
     metadata:
-     labels:
-       service: {{ mongodb_node_name }}
+      labels:
+        app: {{ mongodb_node_name }}
     spec:
       nodeName: {{ mongodb_node_ip }}
       containers:
-      - name: {{ mongodb_node_name }}
+      - name: mongo
         image: mongo:{{ mongodb_version }}
         imagePullPolicy: IfNotPresent
         command:
@@ -71,7 +75,8 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: {{ mongodb_node_name }}
+    app: {{ mongodb_node_name }}
   ports:
   - port: {{ mongodb_port }}
     targetPort: {{ mongodb_port }}
+  clusterIP: None

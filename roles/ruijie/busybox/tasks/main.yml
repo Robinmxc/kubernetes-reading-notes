@@ -3,7 +3,7 @@
   with_items:
   - "/opt/kube/kube-system/busybox"
   run_once: true
-  delegate_to: "{{ groups.deploy[0] }}"
+  connection: local
 
 - name: 获取已下载离线镜像信息
   command: "ls {{ base_dir }}/down"
@@ -15,7 +15,7 @@
   command: "{{ bin_dir }}/kubectl get pod --all-namespaces"
   register: pod_info
   run_once: true
-  delegate_to: "{{ groups.deploy[0] }}"
+  connection: local
 
 - block:
     - name: 尝试推送离线busybox镜像（若执行失败，可忽略）
@@ -31,15 +31,13 @@
       when: 'busybox_offline in image_info.stdout'
 
     - name: 准备busybox的部署文件
-      vars:
-        busybox_node_ip: "{{ groups.busybox[0] }}"
-      template: src=busybox.yaml.j2 dest=/opt/kube/kube-system/busybox/busybox.yml
+      template: src=busybox.yml.j2 dest=/opt/kube/kube-system/busybox/busybox.yml
       run_once: true
-      delegate_to: "{{ groups.deploy[0] }}"
+      connection: local
 
     - name: 部署busybox
       shell: "{{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/busybox/busybox.yml"
-      delegate_to: "{{ groups.deploy[0] }}"
+      connection: local
       run_once: true
   when: '"busybox" not in pod_info.stdout'
   ignore_errors: true
