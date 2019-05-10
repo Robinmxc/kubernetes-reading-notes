@@ -7,8 +7,7 @@ data:
   liveness-probe-sh: |-
     #!/bin/bash
     LOG_FILE=/data/db/mongo_liveness.log
-    result=`mongo {{ mongo_auth_param }} --eval 'if (rs.status().hasOwnProperty("myState") && (rs.status().myState == 1 || rs.status().myState == 2 || rs.status().myState == 7)  ) 0; else 1;' --quiet`
-    echo $result
+    result=`mongo {{ mongo_auth_param }} --eval 'if (rs.ok == 0 || (rs.status().hasOwnProperty("myState") && (rs.status().myState == 1 || rs.status().myState == 2 || rs.status().myState == 7))  ) 0; else 1;' --quiet`
     if [ $result -eq 1 ]
     then
       echo "[`date +%Y%m%d_%H:%M:%S`]>>>find mongo${i} error,restart it" >> $LOG_FILE
