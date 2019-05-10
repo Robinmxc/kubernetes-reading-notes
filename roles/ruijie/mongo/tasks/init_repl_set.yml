@@ -4,16 +4,16 @@
 
 - block:
   - name: 查询复制集状态
-    shell: "{{ pod_shell }} mongo --eval 'rs.status()'"
+    shell: "{{ pod_shell }} mongo --quiet --eval 'r1=rs.status(); r2=(r1.ok==0 && r1.code==94) ? 0 : 1;'"
     register: rs_status
 
   - name: 初始化复制集
     shell: "{{ pod_shell }} mongo /ruijie/init/init-repl-set.js"
-    when: '"PRIMARY" not in rs_status.stdout'
+    when: '"0" == rs_status.stdout'
 
   - name: 暂停20秒等待复制集初始化完成
     wait_for: timeout=20
-    when: '"PRIMARY" not in rs_status.stdout'
+    when: '"0" == rs_status.stdout'
 
   - name: 检测复制集完成状态
     shell: "{{ pod_shell }} mongo --eval 'rs.status()'"

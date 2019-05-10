@@ -57,9 +57,9 @@
   - name: 准备configmap部署文件
     vars:
       mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin{% else %}{% endif %}"
-    template: src=mongodb-conf.yaml.j2 dest={{ yaml_dir }}/mongo/mongodb-conf.yml
+    template: src=mongo-conf.yaml.j2 dest={{ yaml_dir }}/mongo/mongo-conf.yml
   - name: 创建configmap
-    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongodb-conf.yml"
+    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo-conf.yml"
   when: '"mongo-conf" not in configmap_info.stdout'
   connection: local
   run_once: true
@@ -96,7 +96,7 @@
       vars:
         mongodb_node_name: "mongo1"
         mongodb_node_ip: "{{ groups.mongodb[0] }}"
-      template: src=mongdb.yaml.j2 dest={{ yaml_dir }}/mongo/mongo1.yml
+      template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo1.yml
       run_once: true
       connection: local
 
@@ -109,7 +109,7 @@
       vars:
         mongodb_node_name: "mongo2"
         mongodb_node_ip: "{{ groups.mongodb[1] }}"
-      template: src=mongdb.yaml.j2 dest={{ yaml_dir }}/mongo/mongo2.yml
+      template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo2.yml
       run_once: true
       connection: local
       when: "mongodb_deploy_mode == 3"
@@ -124,7 +124,7 @@
       vars:
         mongodb_node_name: "mongo3"
         mongodb_node_ip: "{{ groups.mongodb[2] }}"
-      template: src=mongdb.yaml.j2 dest={{ yaml_dir }}/mongo/mongo3.yml
+      template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo3.yml
       run_once: true
       connection: local
       when: "mongodb_deploy_mode == 3"
