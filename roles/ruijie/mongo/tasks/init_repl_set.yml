@@ -8,7 +8,7 @@
     register: rs_status
 
   - name: 初始化复制集
-    shell: "{{ pod_shell }} mongo /data/init/init-repl-set.js"
+    shell: "{{ pod_shell }} mongo /ruijie/init/init-repl-set.js"
     when: '"PRIMARY" not in rs_status.stdout'
 
   - name: 暂停20秒等待复制集初始化完成

@@ -48,8 +48,23 @@ spec:
             subPath: keyfile
 {% endif %}
 {% if mongodb_init_dir != '' %}
-          - mountPath: /data/init
+          - mountPath: /ruijie/init
             name: init-dir
+{% endif %}
+{% if mongodb_liveness_probe == 'yes' %}
+          - mountPath: /ruijie/bin/liveness-probe.sh
+            name: mongodb-conf
+            subPath: liveness-probe.sh
+{% endif %}
+{% if mongodb_liveness_probe == 'yes' %}
+        livenessProbe:
+          exec:
+            command:
+            - '/ruijie/bin/liveness-probe.sh'
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
 {% endif %}
       volumes:
       - name: data
@@ -65,6 +80,15 @@ spec:
       - name: init-dir
         hostPath:
           path: {{ mongodb_init_dir }}
+{% endif %}
+{% if mongodb_liveness_probe == 'yes' %}
+      - name: mongodb-conf
+        configMap:
+          name: mongodb-conf
+          items:
+          - key: liveness-probe-sh
+            path: liveness-probe.sh
+            mode: 0550
 {% endif %}
 
 ---

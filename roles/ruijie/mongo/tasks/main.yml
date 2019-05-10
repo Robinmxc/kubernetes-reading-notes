@@ -25,6 +25,46 @@
   connection: local
   run_once: true
 
+- name: 检查keyfile
+  command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
+  when: 'mongodb_auth_mode == "yes"'
+  register: secret_info
+  connection: local
+  run_once: true
+
+- block:
+  - name: 生成随机key
+    shell: "openssl rand -hex 32"
+    register: ssl_result
+  - name: 准备keyfile部署文件
+    vars:
+      mongo_key: "{{ ssl_result.stdout }}"
+    template: src=keyfile.yaml.j2 dest={{ yaml_dir }}/mongo/keyfile.yml
+  - name: 创建keyfile
+    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/keyfile.yml"
+  when: 'mongodb_auth_mode == "yes" and "mongo-key" not in secret_info.stdout'
+  connection: local
+  run_once: true
+
+
+- name: 检查configmap
+  command: "{{ bin_dir }}/kubectl get configmap -n {{ APP_NAMESPACE }}"
+  register: configmap_info
+  connection: local
+  run_once: true
+
+- block:
+  - name: 准备configmap部署文件
+    vars:
+      mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin{% else %}{% endif %}"
+    template: src=mongodb-conf.yaml.j2 dest={{ yaml_dir }}/mongo/mongodb-conf.yml
+  - name: 创建configmap
+    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongodb-conf.yml"
+  when: '"mongo-conf" not in configmap_info.stdout'
+  connection: local
+  run_once: true
+
+
 - name: 获取所有已经创建的POD信息
   command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
   register: pod_info
@@ -40,38 +80,17 @@
       connection: local
       run_once: true
 
-    - name: 尝试推送离线mongodb镜像（若执行失败，可忽略）
+    - name: 分发镜像文件
       copy: src={{ base_dir }}/down/{{ mongodb_offline }} dest=/opt/kube/images/{{ mongodb_offline }}
       when: 'mongodb_offline in download_info.stdout'
 
-    - name: 获取mongodb离线镜像推送情况
+    - name: 获取镜像文件分发情况
       command: "ls /opt/kube/images"
       register: image_info
 
-    - name: 导入mongodb的离线镜像（若执行失败，可忽略）
+    - name: 导入镜像
       shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ mongodb_offline }}"
       when: 'mongodb_offline in image_info.stdout'
-
-    - name: 生成随机key
-      shell: "openssl rand -hex 32"
-      when: 'mongodb_auth_mode == "yes"'
-      register: ssl_result
-      connection: local
-      run_once: true
-
-    - name: 准备keyfile部署文件
-      vars:
-        mongo_key: "{{ ssl_result.stdout }}"
-      template: src=keyfile.yaml.j2 dest={{ yaml_dir }}/mongo/keyfile.yml
-      when: 'mongodb_auth_mode == "yes"'
-      connection: local
-      run_once: true
-
-    - name: 创建keyfile
-      shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/keyfile.yml"
-      when: 'mongodb_auth_mode == "yes"'
-      connection: local
-      run_once: true
 
     - name: 准备第1个mongodb的部署文件
       vars:
