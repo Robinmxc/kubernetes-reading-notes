@@ -8,6 +8,7 @@
 - [部署SourceID](docs/ruijie/sourceid/getting-started.md)
 - [配置HTTPS服务](docs/ruijie/guide/traefik-https.md)
 - [使用自定义的时间同步服务器 ](docs/ruijie/guide/chrony.md)
+- [设置MongoDB和RocketMQ的数据存储目录](docs/ruijie/sourceid/config-data-dir.md)
 - [常用命令](docs/ruijie/guide/utils-command.md)
 - [常见问题和解决办法](docs/ruijie/guide/solve-problem.md)
 
