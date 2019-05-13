@@ -4,7 +4,9 @@ mongodb_port: 27017
 mongodb_deploy_mode: 3
 mongodb_auth_mode: "no"
 
-mongodb_check_data_dir: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}yes{%- else -%}no{%- endif -%}"
+# mongodb_check_data_dir: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}yes{%- else -%}no{%- endif -%}"
+
+mongodb_check_data_dir: "no"
 
 wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- else -%}0.5{%- endif -%}"
 
