@@ -26,11 +26,11 @@
 1. 下载自动化部署工具的安装包
     ```bash
     cd /opt
-    wget http://192.168.54.24:8081/repository/files/ruijie/kad/release/kad-0.6.0.tar.gz
+    wget http://192.168.54.24:8081/repository/files/ruijie/kad/release/kad-0.7.0.tar.gz
     ```
 1. 解压
     ```bash
-    tar xzvf kad-0.6.0.tar.gz
+    tar xzvf kad-0.7.0.tar.gz
     ```
 
 #### 3. 准备配置文件
