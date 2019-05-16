@@ -13,7 +13,6 @@
 
   - name: 暂停20秒等待复制集初始化完成
     wait_for: timeout=20
-    when: '"0" == rs_status.stdout'
 
   - name: 检测复制集完成状态
     shell: "{{ pod_shell }} mongo --eval 'rs.status()'"
