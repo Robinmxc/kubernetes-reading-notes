@@ -1,3 +1,6 @@
 REG_MIRROR_1: "https://3r8alx0a.mirror.aliyuncs.com"
 REG_MIRROR_2: "https://registry.docker-cn.com"
 REG_MIRROR_3: "https://hub-mirror.c.163.com"
+
+
+DOCKER_BIP: "172.18.0.1/24"

@@ -19,3 +19,5 @@ STORAGE_DIR: "/var/lib/docker"
 
 # 开启Restful API
 ENABLE_REMOTE_API: false
+
+DOCKER_BIP: "172.18.0.1/24"

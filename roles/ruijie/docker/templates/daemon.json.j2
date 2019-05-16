@@ -10,7 +10,8 @@
     "max-size": "{{ LOG_MAX_SIZE }}",
     "max-file": "{{ LOG_MAX_FILE }}"
     },
-  "data-root": "{{ STORAGE_DIR }}"
+  "data-root": "{{ STORAGE_DIR }}",
+  "bip":"{{ DOCKER_BIP }}"
 
   {% if ENABLE_REMOTE_API %}
   , "hosts": ["tcp://0.0.0.0:2376", "unix:///var/run/docker.sock"]
