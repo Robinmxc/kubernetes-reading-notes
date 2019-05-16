@@ -8,11 +8,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ mongodb_node_name }}
+      service: {{ mongodb_node_name }}
   template:
     metadata:
       labels:
-        app: {{ mongodb_node_name }}
+        service: {{ mongodb_node_name }}
     spec:
       nodeName: {{ mongodb_node_ip }}
       containers:
@@ -99,7 +99,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    app: {{ mongodb_node_name }}
+    service: {{ mongodb_node_name }}
   ports:
   - port: {{ mongodb_port }}
     targetPort: {{ mongodb_port }}
