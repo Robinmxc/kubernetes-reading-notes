@@ -1,8 +1,6 @@
 {
   "registry-mirrors": ["{{ REG_MIRROR_1 }}", "{{ REG_MIRROR_2 }}", "{{ REG_MIRROR_3 }}"],
-{% if PRIVATE_REGISTRY_ENABLED %}
-  "insecure-registries":["{{ PRIVATE_INSECURE_REGISTRY }}"],
-{% endif %}
+  "insecure-registries":[],
   "max-concurrent-downloads": 10,
   "log-driver": "{{ LOG_DRIVER }}",
   "log-level": "{{ LOG_LEVEL }}",
@@ -12,9 +10,4 @@
     },
   "data-root": "{{ STORAGE_DIR }}",
   "bip":"{{ DOCKER_BIP }}"
-
-  {% if ENABLE_REMOTE_API %}
-  , "hosts": ["tcp://0.0.0.0:2376", "unix:///var/run/docker.sock"]
-  {% endif %}
-
 }

@@ -1,3 +1,0 @@
-sourceid_kad_dir: "{{ workspace_dir }}/temp/sourceid-kad-{{ SOURCEID_KAD_VERSION }}"
-
-mongodb_addr: "mongo1,mongo2,mongo3"

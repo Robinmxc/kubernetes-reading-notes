@@ -1,0 +1,40 @@
+# ---------基础参数--------------------
+
+#部署目录，即 ansible 工作目录
+base_dir: "/opt/kad"
+
+img_download_dir: "{{ base_dir }}/down"
+
+img_copy_dir: "/opt/kube/images"
+
+# 集群网络插件
+CLUSTER_NETWORK: "flannel"
+
+# 服务网段 (Service CIDR），注意不要与内网已有网段冲突
+SERVICE_CIDR: "10.68.0.0/16"
+
+# POD 网段 (Cluster CIDR），注意不要与内网已有网段冲突
+CLUSTER_CIDR: "172.30.0.0/16"
+
+# 服务端口范围 (NodePort Range)
+NODE_PORT_RANGE: "20000-40000"
+
+# kubernetes 服务 IP (预分配，一般是 SERVICE_CIDR 中第一个IP)
+CLUSTER_KUBERNETES_SVC_IP: "10.68.0.1"
+
+# 集群 DNS 服务 IP (从 SERVICE_CIDR 中预分配)
+CLUSTER_DNS_SVC_IP: "10.68.0.2"
+
+# 集群 DNS 域名
+CLUSTER_DNS_DOMAIN: "cluster.local."
+
+#默认二进制文件目录
+bin_dir: "/opt/kube/bin"
+
+#证书目录
+ca_dir: "/etc/kubernetes/ssl"
+
+PRIVATE_REGISTRY_ENABLED: "no"
+PRIVATE_INSECURE_REGISTRY: "id.ruijie.com.cn:25082"
+PRIVATE_REGISTRY_USER: ""
+PRIVATE_REGISTRY_PWD: ""

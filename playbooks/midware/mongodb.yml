@@ -1,4 +1,0 @@
-- hosts:
-  - mongodb
-  roles:
-  - ruijie/mongo

@@ -1,0 +1,67 @@
+# ---------基础参数--------------------
+
+#部署目录，即 ansible 工作目录
+base_dir: "/opt/kad"
+
+#默认二进制文件目录
+bin_dir: "/opt/kube/bin"
+
+img_download_dir: "{{ base_dir }}/down"
+
+img_copy_dir: "/opt/kube/images"
+
+
+#应用程序命名空间
+APP_NAMESPACE: "ruijie-sourceid"
+
+sourceid_kad_dir: "{{ workspace_dir }}/temp/sourceid-kad-{{ SOURCEID_KAD_VERSION }}"
+
+mongodb_addr: "mongo1,mongo2,mongo3"
+
+workspace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
+
+yaml_dir: "{{ workspace_dir }}/yaml"
+
+config_base_dir: "/ruijie/{{ APP_NAMESPACE }}"
+
+mongodb_data_dir: "/ruijie/{{ APP_NAMESPACE }}/mongodb/data"
+mongodb_init_dir: "/ruijie/{{ APP_NAMESPACE }}/mongodb/init"
+
+rocketmq_data_dir: "/ruijie/{{ APP_NAMESPACE }}/rocketmq/data"
+rocketmq_logs_dir: "/ruijie/{{ APP_NAMESPACE }}/rocketmq/log"
+
+#SourceId数据库脚本版本号
+SOURCEID_DB_VERSION: "R1.3"
+
+#component数据库脚本版本号
+COMPONENT_DB_VERSION: "v1.0"
+
+#MongoDB管理员账号和密码
+MONGODB_ADMIN_USER: "admin"
+
+#cas数据库账号和密码
+SOURCEID_CAS_DB_USER: "cas"
+
+#gate数据库账号和密码
+SOURCEID_GATE_DB_USER: "gateuser"
+
+#linkid数据库账号和密码
+SOURCEID_LINKID_DB_USER: "linkid"
+
+#component数据库账号和密码
+COMPONENT_DB_USER: "comp"
+
+#SourceId镜像
+SOURCEID_DOCKERS: {
+  linkid: {name: "sourceid/linkid", version: "dlmu.r1.3"},
+  sso: {name: "sourceid/sso", version: "dlmu.r1.3"},
+  gate: {name: "sourceid/gate", version: "dlmu.r1.3"},
+  frontend: {name: "sourceid/frontend", version: "dlmu.r1.3"},
+  component: {name: "sourceid/component", version: "dlmu.r1.3"}
+}
+
+PRIVATE_REGISTRY_ENABLED: "yes"
+PRIVATE_INSECURE_REGISTRY: "id.ruijie.com.cn:25082"
+PRIVATE_REGISTRY_USER: "admin"
+PRIVATE_REGISTRY_PWD: "admin123"
+

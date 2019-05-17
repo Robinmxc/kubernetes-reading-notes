@@ -98,8 +98,4 @@
       file: src={{ bin_dir }}/docker dest=/usr/bin/docker state=link
       ignore_errors: true
 
-    - name: 登录到私有库
-      shell: "docker login -u {{ PRIVATE_REGISTRY_USER }} -p {{ PRIVATE_REGISTRY_PWD }} {{ PRIVATE_INSECURE_REGISTRY }}"
-      when: 'PRIVATE_REGISTRY_ENABLED == "yes"'
-
   when: "'kubeasz' not in install_info.stdout"

@@ -1,7 +1,12 @@
 # ---------K8S参数--------------------
 
-# 集群网络插件，目前支持calico, flannel, kube-router, cilium
-CLUSTER_NETWORK: "flannel"
+#集群部署模式：allinone, single-master, multi-master
+DEPLOY_MODE: "multi-master"
+
+# 集群 MASTER IP即 LB节点VIP地址，为区别与默认apiserver端口，设置VIP监听的服务端口8443
+# 公有云上请使用云负载均衡内网地址和监听端口
+MASTER_IP: "192.168.1.60"
+KUBE_APISERVER: "https://{{ MASTER_IP }}:8443"
 
 # 服务网段 (Service CIDR），注意不要与内网已有网段冲突
 SERVICE_CIDR: "10.68.0.0/16"
@@ -9,60 +14,51 @@ SERVICE_CIDR: "10.68.0.0/16"
 # POD 网段 (Cluster CIDR），注意不要与内网已有网段冲突
 CLUSTER_CIDR: "172.30.0.0/16"
 
-# 服务端口范围 (NodePort Range)
-NODE_PORT_RANGE: "20000-40000"
-
 # kubernetes 服务 IP (预分配，一般是 SERVICE_CIDR 中第一个IP)
 CLUSTER_KUBERNETES_SVC_IP: "10.68.0.1"
 
 # 集群 DNS 服务 IP (从 SERVICE_CIDR 中预分配)
 CLUSTER_DNS_SVC_IP: "10.68.0.2"
 
-# 集群 DNS 域名
-CLUSTER_DNS_DOMAIN: "cluster.local."
 
-# ---------附加参数--------------------
-#默认二进制文件目录
-bin_dir: "/opt/kube/bin"
+# ---------SourceID应用参数---------------
 
-#证书目录
-ca_dir: "/etc/kubernetes/ssl"
+#SourceID部署包版本号
+SOURCEID_KAD_VERSION: "r1.4"
 
-#部署目录，即 ansible 工作目录
-base_dir: "/opt/kad"
+#MongoDB管理员密码
+MONGODB_ADMIN_PWD: ""
 
-img_download_dir: "{{ base_dir }}/down"
+#cas数据库账号和密码
+SOURCEID_CAS_DB_PWD: ""
 
-img_copy_dir: "/opt/kube/images"
+#gate数据库账号和密码
+SOURCEID_GATE_DB_PWD: ""
 
-workspace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
+#linkid数据库账号和密码
+SOURCEID_LINKID_DB_PWD: ""
 
-yaml_dir: "{{ workspace_dir }}/yaml"
+#component数据库账号和密码
+COMPONENT_DB_PWD: ""
 
-config_base_dir: "/ruijie/{{ APP_NAMESPACE }}"
+#SSO域名
+SOURCEID_SSO_DOMAIN: "id.example.com"
 
-mongodb_data_dir: "/ruijie/{{ APP_NAMESPACE }}/mongodb/data"
-mongodb_init_dir: "/ruijie/{{ APP_NAMESPACE }}/mongodb/init"
+#自助和管理端域名
+SOURCEID_GATE_DOMAIN: "id-self.example.com"
 
-rocketmq_data_dir: "/ruijie/{{ APP_NAMESPACE }}/rocketmq/data"
-rocketmq_logs_dir: "/ruijie/{{ APP_NAMESPACE }}/rocketmq/log"
+#二次认证网关地址
+SOURCEID_GATEWAY_URL: "http://gateway.example.com"
 
-PRIVATE_INSECURE_REGISTRY: "id.ruijie.com.cn:25082"
-PRIVATE_REGISTRY_ENABLED: "yes"
-PRIVATE_REGISTRY_USER: "admin"
-PRIVATE_REGISTRY_PWD: "admin123"
+#登录成功后的跳转地址
+SOURCEID_REDIRECT_URL: "http://www.baidu.com"
 
-#SourceId数据库脚本版本号
-SOURCEID_DB_VERSION: "R1.3"
+#frontend资源文件目录
+SOURCEID_FRONTEND_RES: "ruijie"
 
-#component数据库脚本版本号
-COMPONENT_DB_VERSION: "v1.0"
+#部署规模：small, normal。normal为标准规模，small主要用于开发、测试
+CLUSTER_SCALE: "normal"
 
-#SourceId镜像
-SOURCEID_DOCKERS: {
-  linkid: {name: "sourceid/linkid", version: "dlmu.r1.3"},
-  sso: {name: "sourceid/sso", version: "dlmu.r1.3"},
-  gate: {name: "sourceid/gate", version: "dlmu.r1.3"},
-  frontend: {name: "sourceid/frontend", version: "dlmu.r1.3"},
-  component: {name: "sourceid/component", version: "dlmu.r1.3"}
-}
+#部署模式：dev, prd。dev模式下会多一些和开发、测试有关的配置参数
+SOURCEID_DEPLOY_PROFILE: "prd"
+
