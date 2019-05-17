@@ -13,7 +13,7 @@
     ```
 1. 下载运行部署脚本需要的二进制文件
     ```
-    wget http://192.168.54.24:8081/repository/files/ruijie/kad/support/kad-support-files-0.7.0.tar.gz
+    wget http://http://172.17.8.20:8081/repository/files/ruijie/kad/support/kad-support-files-0.7.0.tar.gz
     cd kad
     tar xzvf ../kad-support-files-0.7.0.tar.gz
     ```
