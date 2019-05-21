@@ -74,7 +74,7 @@
 
 1. 执行部署命令（在`/opt/kad`目录下执行）
     ```bash
-    ansible-playbook -i workspace/inventory playbooks/cluster/k8s-setup.yml -k
+    ansible-playbook -i workspace/inventory/ playbooks/cluster/k8s-setup.yml -k
     ```
 1. 出现如下输入密码的提示信息后，输入root用户的密码
     ```

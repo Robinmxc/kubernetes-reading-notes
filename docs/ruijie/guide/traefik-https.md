@@ -29,9 +29,8 @@ traefik_ssl_names=["ruijie.com", "abc.com", "def.com"]
 ```
 cd /opt/kad
 kubectl delete daemonset -n kube-system traefik-ingress-controller
-ansible-playbook -i workspace/inventory playbooks/cluster/traefik-https.yml -k
+ansible-playbook -i workspace/inventory/ playbooks/cluster/traefik-https.yml -k
 ```
- 其中inventory/my-cluster需要改成你的配置文件。
 
 #### 验证
 

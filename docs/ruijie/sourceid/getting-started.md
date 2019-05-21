@@ -12,12 +12,12 @@
 
 ```bash
 cd /opt/kad
-ansible-playbook -i inventory/my-cluster/hosts.ini playbooks/sourceid/prepare.yml -k
+ansible-playbook -i workspace/inventory/ playbooks/sourceid/prepare.yml -k
 ```
 
 #### 2. 设置MongoDB和RocketMQ部署参数
 
-修改`inventory/my-cluster/hosts.ini`文件，设置部署MongoDB和RocketMQ的主机（参考`inventory/example/m1n3/hosts.ini`）：
+修改`workspace/inventory/hosts.ini`文件，设置部署MongoDB和RocketMQ的主机（参考`inventory/example/m1n3/hosts.ini`）：
 
 ```
 [mongodb]
@@ -31,7 +31,7 @@ ansible-playbook -i inventory/my-cluster/hosts.ini playbooks/sourceid/prepare.ym
 
 #### 3. 设置SourceID部署参数
 
-修改`inventory/my-cluster/hosts.ini`文件，根据文件提示修改以下参数：
+修改`workspace/inventory/hosts.ini`文件，根据文件提示修改以下参数：
 
 ```
 #SourceId发布版本号
@@ -86,7 +86,7 @@ SourceID配置文件在`workspace/ruijie-sourceid/conf`目录下，根据需要�
 
 1. 执行部署命令（在`/opt/kad`目录下执行）
     ```bash
-    ansible-playbook -i inventory/my-cluster/hosts.ini playbooks/sourceid/setup.yml -k
+    ansible-playbook -i workspace/inventory/ playbooks/sourceid/setup.yml -k
     ```
 1. 出现如下输入密码的提示信息后，输入root用户的密码
     ```

@@ -14,7 +14,7 @@ MongoDB和RocketMQ都需要持久化保存数据，默认存储路径如下：
 - RocketMQ数据文件：`/mnt/rocketmq/data`
 - RocketMQ日志文件：`/mnt/rocketmq/log`
 
-修改`inventory/my-cluster/group_vars/all.yml`文件，设置以下参数：
+修改`workspace/inventory/group_vars/all.yml`文件，设置以下参数：
 ```
 mongodb_data_dir: "/mnt/mongodb/data"
 rocketmq_data_dir: "/mnt/rocketmq/data"
