@@ -1,21 +1,41 @@
 - hosts:
   - localhost
   gather_facts: false
+
+  vars:
+    yaml_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/yaml"
+
   tasks:
   - name: 获取所有已经创建的POD信息
     command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
 
-  - name: delete depoyments
-    vars:
-      workspace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
-      yaml_dir: "{{ workspace_dir }}/yaml"
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/{{ item }}/"
-    when: 'item in pod_info.stdout'
-    ignore_errors: true
-    with_items:
-    - "frontend"
-    - "gate"
-    - "component"
-    - "sso"
-    - "linkid"
+  - name: delete linkid
+    tags:
+    - linkid
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/linkid/"
+    when: '"linkid" in pod_info.stdout'
+
+  - name: delete sso
+    tags:
+    - sso
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/sso/"
+    when: '"sso" in pod_info.stdout'
+
+  - name: delete gate
+    tags:
+    - gate
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/gate/"
+    when: '"gate" in pod_info.stdout'
+
+  - name: delete frontend
+    tags:
+    - frontend
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/frontend/"
+    when: '"frontend" in pod_info.stdout'
+
+  - name: delete component
+    tags:
+    - component
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/component/"
+    when: '"component" in pod_info.stdout'
