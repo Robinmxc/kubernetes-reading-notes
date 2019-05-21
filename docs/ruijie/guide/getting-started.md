@@ -13,7 +13,7 @@
 
 #### 2. 安装部署工具
 
-在master上按以下步骤操作：
+在master上按以下步骤操作（以0.8.0版本为例，其它版本请修改版本号）：
 
 1. 安装基础工具wget，如果wget已经存在可以跳过这一步
     ```bash
@@ -26,18 +26,18 @@
 1. 下载自动化部署工具的安装包
     ```bash
     cd /opt
-    wget http://http://172.17.8.20:8081/repository/files/ruijie/kad/release/kad-0.7.0.tar.gz
+    wget http://172.17.8.20:8081/repository/files/ruijie/kad/release/kad-0.8.0.tar.gz
     ```
 1. 解压
     ```bash
-    tar xzvf kad-0.7.0.tar.gz
+    tar xzvf kad-0.8.0.tar.gz
     ```
 
 #### 3. 准备配置文件
 
-**注意：由于配置文件格式有较大改动，0.6.0以前版本的配置文件需要按照本节的操作步骤重新准备（不影响集群运行，只是各项配置参数需要重新输入）。**
+**注意：由于配置文件格式有较大改动，0.8.0以前版本的配置文件需要按照本节的操作步骤重新准备（不影响集群运行，只是各项配置参数需要重新输入）。**
 
-参考inventory/example目录下的例子，准备部署文件。下面以1个master节点+3个node节点为例进行说明。
+参考`inventory/example`目录下的例子，准备部署文件。下面以1个master节点+3个node节点为例进行说明。
 
 假设各主机IP地址如下：
 - master节点：192.168.1.61
@@ -47,9 +47,9 @@
 1. 复制一个示例配置文件作为配置基础
     ```bash
     cd /opt/kad
-    cp -rpf inventory/example/m1n3 inventory/my-cluster
+    cp -rpf inventory/example/m1n3 workspace/inventory
     ```
-1. 编辑inventory/my-cluster/hosts.ini，设置各节点IP地址：
+1. 编辑`workspace/inventory/hosts.ini`，设置各节点IP地址：
     ```
     [deploy]
     192.168.1.61 NTP_ENABLED=no
@@ -72,9 +72,9 @@
 
 按以下步骤操作：
 
-1. 执行部署命令（在/opt/kad目录下执行）
+1. 执行部署命令（在`/opt/kad`目录下执行）
     ```bash
-    ansible-playbook -i inventory/my-cluster/hosts.ini -k playbooks/cluster/k8s-setup.yml
+    ansible-playbook -i workspace/inventory playbooks/cluster/k8s-setup.yml -k
     ```
 1. 出现如下输入密码的提示信息后，输入root用户的密码
     ```

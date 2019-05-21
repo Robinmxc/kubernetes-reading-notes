@@ -12,7 +12,7 @@
 
 #### 准备配置文件
 
-**注意：由于配置文件格式有较大改动，0.6.0以前版本的配置文件需要按照本节的操作步骤重新准备（不影响集群运行，只是各项配置参数需要重新输入）。**
+**注意：由于配置文件格式有较大改动，0.8.0以前版本的配置文件需要按照本节的操作步骤重新准备（不影响集群运行，只是各项配置参数需要重新输入）。**
 
 假设集群部署规划如下：
 - master节点：192.168.1.61,192.168.1.62
@@ -23,9 +23,9 @@
 1. 复制示例配置文件作为配置基础
     ```bash
     cd /opt/kad
-    cp -rpf inventory/example/m2n3 inventory/cluster-ha
+    cp -rpf inventory/example/m2n3 workspace/inventory
     ```
-1. 编辑inventory/cluster-ha/m2n3.ini，设置各节点IP地址：
+1. 编辑`workspace/inventory/hosts.ini`，设置各节点IP地址：
     ```
     [deploy]
     192.168.1.61 NTP_ENABLED=no
@@ -47,9 +47,9 @@
     [lb]
     192.168.1.61 LB_ROLE=master
     192.168.1.62 LB_ROLE=backup
-
-    [all:vars]
-    DEPLOY_MODE=multi-master
+    ```
+1. 编辑`workspace/inventory/group_vars/all.yml`，设置虚地址：
+    ```
     MASTER_IP="192.168.1.60"
     ```
 
@@ -59,7 +59,7 @@
 
 1. 执行部署命令（在/opt/kad目录下执行）
     ```bash
-    ansible-playbook -i inventory/cluster-ha/hosts.ini playbooks/cluster/k8s-setup.yml -k
+    ansible-playbook -i workspace/inventory playbooks/cluster/k8s-setup.yml -k
     ```
 1. 出现如下输入密码的提示信息后，输入root用户的密码
     ```
