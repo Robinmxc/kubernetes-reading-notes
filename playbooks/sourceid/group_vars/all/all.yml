@@ -36,21 +36,6 @@ SOURCEID_DB_VERSION: "R1.3"
 #component数据库脚本版本号
 COMPONENT_DB_VERSION: "v1.0"
 
-#MongoDB管理员账号和密码
-MONGODB_ADMIN_USER: "admin"
-
-#cas数据库账号和密码
-SOURCEID_CAS_DB_USER: "cas"
-
-#gate数据库账号和密码
-SOURCEID_GATE_DB_USER: "gateuser"
-
-#linkid数据库账号和密码
-SOURCEID_LINKID_DB_USER: "linkid"
-
-#component数据库账号和密码
-COMPONENT_DB_USER: "comp"
-
 #SourceId镜像
 SOURCEID_DOCKERS: {
   linkid: {name: "sourceid/linkid", version: "dlmu.r1.3"},
