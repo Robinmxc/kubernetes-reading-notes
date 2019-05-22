@@ -86,7 +86,7 @@ spec:
         configMap:
           name: mongodb-conf
           items:
-          - key: liveness-probe-sh
+          - key: {{ liveness_probe_sh_config_key }}
             path: liveness-probe.sh
             mode: 0550
 {% endif %}
