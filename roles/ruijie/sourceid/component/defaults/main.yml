@@ -2,3 +2,4 @@ component_resource_limit: "{% if CLUSTER_SCALE == 'normal' %}yes{% else %}no{% e
 
 component_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1024m -Xmx1024m{% else %}-Xms128m -Xmx256m{% endif %}"
 
+component_configs: []

@@ -2,3 +2,4 @@ gate_resource_limit: "{%- if CLUSTER_SCALE == 'normal' -%}yes{%- else -%}no{%- e
 
 gate_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx512m{% else %}-Xms128m -Xmx256m{% endif %}"
 
+gate_configs: []

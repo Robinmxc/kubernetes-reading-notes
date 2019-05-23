@@ -1,3 +1,5 @@
 sso_resource_limit: "{%- if CLUSTER_SCALE == 'normal' -%}yes{%- else -%}no{%- endif -%}"
 
 sso_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% else %}-Xms256m -Xmx512m{% endif %}"
+
+sso_configs: []

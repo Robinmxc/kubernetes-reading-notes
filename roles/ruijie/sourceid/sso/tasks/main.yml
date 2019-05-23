@@ -1,4 +1,4 @@
-- name: 修改配置文件
+- name: 自动配置
   tags:
     - config
   replace: path="{{ workspace_dir }}/conf/sourceid/sso/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
@@ -9,6 +9,18 @@
     - {regexp: "^gateway.feign.base.url.*$", replace: "gateway.feign.base.url={{ SOURCEID_GATEWAY_URL }}"}
     - {regexp: "^cas.view.default-redirect-url.*$", replace: "cas.view.default-redirect-url={{ SOURCEID_REDIRECT_URL }}"}
     - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+  no_log: '{{ SOURCEID_DEPLOY_PROFILE=="prd" }}'
+  run_once: true
+  connection: local
+
+- name: 自定义配置
+  tags:
+    - config
+  replace:
+    path: '{{ workspace_dir }}/conf/sourceid/sso/conf/application-bus.properties'
+    regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
+    replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
+  with_items: '{{ sso_configs }}'
   no_log: '{{ SOURCEID_DEPLOY_PROFILE=="prd" }}'
   run_once: true
   connection: local
