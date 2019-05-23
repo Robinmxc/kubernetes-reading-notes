@@ -72,7 +72,7 @@
     template: src=mongo-conf.yaml.j2 dest={{ yaml_dir }}/mongo/mongo-conf.yml
   - name: 创建configmap
     shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo-conf.yml"
-  when: '"mongo-conf" not in configmap_info.stdout'
+  when: '"mongodb-conf" not in configmap_info.stdout'
   connection: local
   run_once: true
 
