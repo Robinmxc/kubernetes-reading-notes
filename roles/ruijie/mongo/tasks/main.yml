@@ -142,6 +142,16 @@
       run_once: true
       when: "mongodb_deploy_mode == 3"
 
+    - name: 轮询等待mongodb运行
+      shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} | grep 'mongo1' | awk '{print $3}'"
+      register: pod_status
+      until: pod_status.stdout == "Running"
+      connection: local
+      run_once: true
+      retries: 12
+      delay: 5
+      ignore_errors: true
+
     - name: 获取mongo1 POD 名称
       shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
       register: pod_name
