@@ -1,38 +1,45 @@
 - name: 获取数据存储路径状态
+  tags:
+  - config
   stat: path="{{ mongodb_data_dir }}"
   register: data_dir_stat
   when: 'mongodb_check_data_dir == "yes"'
 
 - name: 检查数据存储路径是否存在
+  tags:
+  - config
   fail: msg="数据存储目录{{ mongodb_data_dir }}不存在"
   when: 'mongodb_check_data_dir == "yes" and not data_dir_stat.stat.exists
      and ( mongodb_deploy_mode == 3 or inventory_hostname == groups.mongodb[0] )'
 
 - name: 准备init目录
+  tags:
+  - config
   file: path="{{ mongodb_init_dir }}" state=directory
   when: '"" != mongodb_init_dir'
 
 - name: 在deploy节点准备目录
+  tags:
+  - config
   file: path={{ item }} state=directory
   with_items:
   - "{{ yaml_dir }}/mongo"
   run_once: true
   connection: local
 
-- name: 获取已下载离线镜像信息
-  command: "ls {{ base_dir }}/down"
-  register: download_info
-  connection: local
-  run_once: true
-
 - name: 检查keyfile
+  tags:
+  - config
   command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
   when: 'mongodb_auth_mode == "yes"'
   register: secret_info
   connection: local
   run_once: true
 
-- block:
+- name:
+  tags:
+  - config
+  block:
   - name: 生成随机key
     shell: "openssl rand -hex 32"
     register: ssl_result
@@ -48,12 +55,17 @@
 
 
 - name: 检查configmap
+  tags:
+  - config
   command: "{{ bin_dir }}/kubectl get configmap -n {{ APP_NAMESPACE }}"
   register: configmap_info
   connection: local
   run_once: true
 
-- block:
+- name:
+  tags:
+  - config
+  block:
   - name: 准备configmap部署文件
     vars:
       mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin{% else %}{% endif %}"
@@ -64,6 +76,63 @@
   connection: local
   run_once: true
 
+- name: 检查数据库账号是否符合要求
+  tags:
+  - config
+  fail: msg="数据库管理员账号不符合要求，{{ db_user_invalid_msg }}"
+  when: 'mongodb_auth_mode == "yes" and MONGODB_ADMIN_USER is not search(db_user_pattern)'
+  connection: local
+  run_once: true
+
+- name: 检查数据库密码是否符合要求
+  tags:
+  - config
+  fail: msg="数据库管理员密码不符合要求，{{ db_pwd_invalid_msg }}"
+  when: 'mongodb_auth_mode == "yes" and ( MONGODB_ADMIN_PWD is not search(db_pwd_pattern1) or MONGODB_ADMIN_PWD is not search(db_pwd_pattern2) )'
+  connection: local
+  run_once: true
+
+- name: 准备第1个mongodb的部署文件
+  tags:
+  - config
+  vars:
+    mongodb_node_name: "mongo1"
+    mongodb_node_ip: "{{ groups.mongodb[0] }}"
+    liveness_probe_sh_config_key: "liveness-probe-sh"
+  template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo1.yml
+  run_once: true
+  connection: local
+
+- name: 准备第2个mongodb的部署文件
+  tags:
+  - config
+  vars:
+    mongodb_node_name: "mongo2"
+    mongodb_node_ip: "{{ groups.mongodb[1] }}"
+    liveness_probe_sh_config_key: "liveness-probe-sh"
+  template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo2.yml
+  run_once: true
+  connection: local
+  when: "mongodb_deploy_mode == 3"
+
+- name: 准备第3个mongodb的部署文件
+  tags:
+  - config
+  vars:
+    mongodb_node_name: "mongo3"
+    mongodb_node_ip: "{{ groups.mongodb[2] }}"
+    liveness_probe_sh_config_key: "liveness-probe-sh-noauth"
+  template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo3.yml
+  run_once: true
+  connection: local
+  when: "mongodb_deploy_mode == 3"
+
+
+- name: 获取已下载离线镜像信息
+  command: "ls {{ base_dir }}/down"
+  register: download_info
+  connection: local
+  run_once: true
 
 - name: 获取所有已经创建的POD信息
   command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
@@ -72,18 +141,6 @@
   connection: local
 
 - block:
-    - name: 检查数据库账号是否符合要求
-      fail: msg="数据库管理员账号不符合要求，{{ db_user_invalid_msg }}"
-      when: 'mongodb_auth_mode == "yes" and MONGODB_ADMIN_USER is not search(db_user_pattern)'
-      connection: local
-      run_once: true
-
-    - name: 检查数据库密码是否符合要求
-      fail: msg="数据库管理员密码不符合要求，{{ db_pwd_invalid_msg }}"
-      when: 'mongodb_auth_mode == "yes" and ( MONGODB_ADMIN_PWD is not search(db_pwd_pattern1) or MONGODB_ADMIN_PWD is not search(db_pwd_pattern2) )'
-      connection: local
-      run_once: true
-
     - name: 分发镜像文件
       copy: src={{ base_dir }}/down/{{ mongodb_offline }} dest=/opt/kube/images/{{ mongodb_offline }}
       when: 'mongodb_offline in download_info.stdout'
@@ -96,44 +153,15 @@
       shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ mongodb_offline }}"
       when: 'mongodb_offline in image_info.stdout'
 
-    - name: 准备第1个mongodb的部署文件
-      vars:
-        mongodb_node_name: "mongo1"
-        mongodb_node_ip: "{{ groups.mongodb[0] }}"
-        liveness_probe_sh_config_key: "liveness-probe-sh"
-      template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo1.yml
-      run_once: true
-      connection: local
-
     - name: 部署第1个mongodb
       shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo1.yml"
       connection: local
       run_once: true
 
-    - name: 准备第2个mongodb的部署文件
-      vars:
-        mongodb_node_name: "mongo2"
-        mongodb_node_ip: "{{ groups.mongodb[1] }}"
-        liveness_probe_sh_config_key: "liveness-probe-sh"
-      template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo2.yml
-      run_once: true
-      connection: local
-      when: "mongodb_deploy_mode == 3"
-
     - name: 部署第2个mongodb
       shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo2.yml"
       connection: local
       run_once: true
-      when: "mongodb_deploy_mode == 3"
-
-    - name: 准备第3个mongodb的部署文件
-      vars:
-        mongodb_node_name: "mongo3"
-        mongodb_node_ip: "{{ groups.mongodb[2] }}"
-        liveness_probe_sh_config_key: "liveness-probe-sh-noauth"
-      template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo3.yml
-      run_once: true
-      connection: local
       when: "mongodb_deploy_mode == 3"
 
     - name: 部署第3个mongodb
