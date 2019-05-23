@@ -2,7 +2,7 @@ mongodb_version: "4.0.6"
 mongodb_offline: "mongo-4.0.6.tar"
 mongodb_port: 27017
 mongodb_deploy_mode: 3
-mongodb_auth_mode: "no"
+mongodb_auth_mode: "yes"
 
 # mongodb_check_data_dir: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}yes{%- else -%}no{%- endif -%}"
 
