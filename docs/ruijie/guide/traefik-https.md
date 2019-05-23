@@ -28,7 +28,7 @@ traefik_ssl_names=["ruijie.com", "abc.com", "def.com"]
 执行以下命令完成部署：
 ```
 cd /opt/kad
-kubectl delete daemonset -n kube-system traefik-ingress-controller
+kubectl delete daemonset -n kube-system traefik-ingress
 ansible-playbook -i workspace/inventory/ playbooks/cluster/traefik-https.yml -k
 ```
 
