@@ -3,3 +3,6 @@ linkid_resource_limit: "{%- if CLUSTER_SCALE == 'normal' -%}yes{%- else -%}no{%-
 linkid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 linkid_configs: []
+
+linkid_templates_path: ""
+

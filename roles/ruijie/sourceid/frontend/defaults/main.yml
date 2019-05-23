@@ -3,3 +3,5 @@ frontend_resource_limit: "{%- if CLUSTER_SCALE == 'normal' -%}yes{%- else -%}no{
 SOURCEID_FRONTEND_RES: 'ruijie'
 
 frontend_configs: []
+
+frontend_templates_path: ""
