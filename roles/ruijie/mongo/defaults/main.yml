@@ -2,15 +2,13 @@ mongodb_version: "4.0.6"
 mongodb_offline: "mongo-4.0.6.tar"
 mongodb_port: 27017
 mongodb_deploy_mode: 3
-mongodb_auth_mode: "yes"
+mongodb_auth_mode: "no"
 
 # mongodb_check_data_dir: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}yes{%- else -%}no{%- endif -%}"
 
 mongodb_check_data_dir: "no"
 
 wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- else -%}0.5{%- endif -%}"
-
-db_pwd_pattern: "^.*(?=.{6,16})(?=.*\\d)(?=.*[A-Z]{1,})(?=.*[a-z]{1,}).*$"
 
 mongo_shell_fail_pattern: '"ok" : 0'
 mongo_shell_success_pattern: '"ok" : [1-9]+'

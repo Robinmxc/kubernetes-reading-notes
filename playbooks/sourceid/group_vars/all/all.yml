@@ -17,6 +17,7 @@ APP_NAMESPACE: "ruijie-sourceid"
 sourceid_kad_dir: "{{ workspace_dir }}/temp/sourceid-kad-{{ SOURCEID_KAD_VERSION }}"
 
 mongodb_addr: "mongo1,mongo2,mongo3"
+mongodb_auth_mode: "yes"
 
 workspace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
 
@@ -29,6 +30,14 @@ mongodb_init_dir: "/ruijie/{{ APP_NAMESPACE }}/mongodb/init"
 
 rocketmq_data_dir: "/ruijie/{{ APP_NAMESPACE }}/rocketmq/data"
 rocketmq_logs_dir: "/ruijie/{{ APP_NAMESPACE }}/rocketmq/log"
+
+db_user_pattern: "^[a-zA-Z0-9_]{3,16}$"
+db_user_invalid_msg: "账号只能由大/小写字母、数字、下划线组成，长度3~16字符"
+
+db_pwd_pattern1: "^[a-zA-Z0-9_]{6,16}$"
+db_pwd_pattern2: "^.*(?=.*\\d)(?=.*[A-Z]{1,})(?=.*[a-z]{1,}).*$"
+db_pwd_invalid_msg: "密码只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符"
+
 
 #SourceId数据库脚本版本号
 SOURCEID_DB_VERSION: "R1.3"
@@ -49,4 +58,3 @@ PRIVATE_REGISTRY_ENABLED: "yes"
 PRIVATE_INSECURE_REGISTRY: "id.ruijie.com.cn:25082"
 PRIVATE_REGISTRY_USER: "admin"
 PRIVATE_REGISTRY_PWD: "admin123"
-

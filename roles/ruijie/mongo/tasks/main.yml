@@ -72,11 +72,15 @@
   connection: local
 
 - block:
+    - name: 检查数据库账号是否符合要求
+      fail: msg="数据库管理员账号不符合要求，{{ db_user_invalid_msg }}"
+      when: 'mongodb_auth_mode == "yes" and MONGODB_ADMIN_USER is not search(db_user_pattern)'
+      connection: local
+      run_once: true
+
     - name: 检查数据库密码是否符合要求
-      vars:
-        pwd_length: "{{ MONGODB_ADMIN_PWD | length }}"
-      fail: msg="数据库管理员密码不符合要求，密码必须包含大、小写字母和数字，且长度为6~16字符"
-      when: 'mongodb_auth_mode == "yes" and MONGODB_ADMIN_PWD is not search(db_pwd_pattern) or pwd_length | int < 6 or pwd_length | int > 16'
+      fail: msg="数据库管理员密码不符合要求，{{ db_pwd_invalid_msg }}"
+      when: 'mongodb_auth_mode == "yes" and ( MONGODB_ADMIN_PWD is not search(db_pwd_pattern1) or MONGODB_ADMIN_PWD is not search(db_pwd_pattern2) )'
       connection: local
       run_once: true
 

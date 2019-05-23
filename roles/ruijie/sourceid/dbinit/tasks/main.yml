@@ -1,8 +1,13 @@
-- name: 检查数据库参数
-  vars:
-    pwd_length: "{{ item.pwd | length }}"
-  fail: msg="数据库密码{{ item.param_name }}不符合要求，密码必须包含大、小写字母和数字，且长度为6~16字符"
-  when: 'item.pwd is not search(db_pwd_pattern) or pwd_length | int < 6 or pwd_length | int > 16'
+- name: 检查数据库账号
+  fail: msg="数据库账号{{ item.user_param_name }}不符合要求，{{ db_user_invalid_msg }}"
+  when: 'item.user is not search(db_user_pattern)'
+  connection: local
+  run_once: true
+  with_items: "{{ db_pwd_checklist }}"
+
+- name: 检查数据库密码
+  fail: msg="数据库密码{{ item.pwd_param_name }}不符合要求，{{ db_pwd_invalid_msg }}"
+  when: 'item.pwd is not search(db_pwd_pattern1) or item.pwd is not search(db_pwd_pattern2)'
   connection: local
   run_once: true
   with_items: "{{ db_pwd_checklist }}"
