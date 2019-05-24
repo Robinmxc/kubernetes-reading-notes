@@ -12,7 +12,7 @@
 
   - name: 检查是否静态IP
     fail: msg="{{ inventory_hostname }}不是静态IP地址"
-    when: '"static" not in bootproto.stdout'
+    when: '"static" not in bootproto.stdout and "none" not in bootproto.stdout'
 
 - name: 删除centos/redhat默认安装
   yum: 
