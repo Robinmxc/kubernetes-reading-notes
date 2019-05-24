@@ -24,7 +24,7 @@ CLUSTER_DNS_SVC_IP: "10.68.0.2"
 # ---------SourceID应用参数---------------
 
 #SourceID部署包版本号
-SOURCEID_KAD_VERSION: "r1.4"
+SOURCEID_KAD_VERSION: "r1.4.2"
 
 #MongoDB管理员密码
 MONGODB_ADMIN_USER: "admin"
