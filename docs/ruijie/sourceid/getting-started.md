@@ -4,16 +4,26 @@
 
 部署SourceID需要在K8s集群的Master节点上进行操作，本文以[单Master集群](../guide/getting-started.md)环境为例。
 
-#### 1. 准备
-
 **注意：由于集群配置文件格式有较大改动，0.6.0以前版本的配置文件需要按照[单Master集群](../guide/getting-started.md)中第3节的操作步骤重新准备（不影响集群运行，只是各项配置参数需要重新输入）。**
 
-执行以下命令准备SourceID部署环境：
+#### 1. 准备
 
-```bash
-cd /opt/kad
-ansible-playbook -i workspace/inventory/ playbooks/sourceid/prepare.yml -k
-```
+1. 下载SourceID安装包
+    ```bash
+    cd /opt/kad/down/
+    wget http://172.17.8.20:8081/repository/files/ruijie/sourceid/kad/sourceid-kad-r1.4.2.zip
+    ```
+2. 下载SourceID镜像
+    ```bash
+    cd /opt/kad/down/
+    wget http://172.17.8.20:8081/repository/files/ruijie/sourceid/images/sourceid-images-r1.4.tar.gz
+    tar xzvf sourceid-images-r1.4.tar.gz
+    ```
+3. 初始化SourceID相关配置文件
+    ```bash
+    cd /opt/kad
+    ansible-playbook -i workspace/inventory/ playbooks/sourceid/prepare.yml -k
+    ```
 
 #### 2. 设置MongoDB和RocketMQ部署参数
 
@@ -35,7 +45,7 @@ ansible-playbook -i workspace/inventory/ playbooks/sourceid/prepare.yml -k
 
 ```
 #SourceId发布版本号
-SOURCEID_RELEASE_VERSION="dlmu.r1.3"
+SOURCEID_RELEASE_VERSION="r1.4.2"
 
 #SSO域名
 SOURCEID_SSO_DOMAIN="id.example.com"
