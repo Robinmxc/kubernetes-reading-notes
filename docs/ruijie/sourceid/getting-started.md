@@ -41,7 +41,7 @@
 
 #### 3. 设置SourceID部署参数
 
-修改`workspace/inventory/hosts.ini`文件，根据文件提示修改以下参数：
+修改`workspace/inventory/group_vars/all.yml`文件，根据文件提示修改以下参数：
 
 ```
 #SourceId发布版本号

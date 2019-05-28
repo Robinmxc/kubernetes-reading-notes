@@ -65,5 +65,6 @@ SourceID常用命令如下：
     - 修改`workspace/ruijie-sourceid/conf/sourceid/linkid/conf/`目录下的配置文件
     - 按照上述“重新部署单个组件”的操作方法重新部署linkid
 1. 替换frontend资源文件
-    - 资源文件目录复制到`workspace/ruijie-sourceid/conf/sourceid/frontend/`目录下
+    - 资源文件目录（如：`zstu`）复制到`workspace/ruijie-sourceid/conf/sourceid/frontend/`目录下
+    - 修改`workspace/inventory/group_vars/all.yml`文件中的`SOURCEID_FRONTEND_RES`变量为`zstu`
     - 按照上述“重新部署单个组件”的操作方法重新部署frontend
