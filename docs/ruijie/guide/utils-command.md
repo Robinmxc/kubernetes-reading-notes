@@ -55,6 +55,15 @@ SourceID常用命令如下：
     ```
 1. 重新部署单个组件（以linkid为例，其他组件名称分别是：sso、gate、frontend、component）
     ```
-    kubectl delete -f workspace/ruijie-sourceid/yaml/linkid/
+    ansible-playbook -i workspace/inventory/ playbooks/sourceid/clean.yml --tags linkid -k
     ansible-playbook -i workspace/inventory/ playbooks/sourceid/setup.yml --tags linkid -k
     ```
+1. 更新组件版本（以linkid为例）
+    - 修改`workspace/ruijie-sourceid/kad.yml`文件的变量`SOURCEID_DOCKERS`中linkid的版本号
+    - 按照上述“重新部署单个组件”的操作方法重新部署linkid
+1. 修改组件配置文件（以linkid为例）
+    - 修改`workspace/ruijie-sourceid/conf/sourceid/linkid/conf/`目录下的配置文件
+    - 按照上述“重新部署单个组件”的操作方法重新部署linkid
+1. 替换frontend资源文件
+    - 资源文件目录复制到`workspace/ruijie-sourceid/conf/sourceid/frontend/`目录下
+    - 按照上述“重新部署单个组件”的操作方法重新部署frontend

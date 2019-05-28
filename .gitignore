@@ -30,3 +30,6 @@ inventory/*
 /workspace
 
 *.code-workspace
+
+/temp
+

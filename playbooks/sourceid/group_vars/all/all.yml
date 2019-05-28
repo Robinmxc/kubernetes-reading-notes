@@ -14,7 +14,9 @@ img_copy_dir: "/opt/kube/images"
 #应用程序命名空间
 APP_NAMESPACE: "ruijie-sourceid"
 
-sourceid_kad_dir: "{{ workspace_dir }}/temp/sourceid-kad-{{ SOURCEID_KAD_VERSION }}"
+temp_dir: "{{ base_dir }}/temp"
+
+sourceid_kad_temp_dir: "{{ temp_dir }}/sourceid-kad-{{ SOURCEID_KAD_VERSION }}"
 
 mongodb_addr: "mongo1,mongo2,mongo3"
 mongodb_auth_mode: "yes"

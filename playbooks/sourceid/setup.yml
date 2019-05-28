@@ -1,4 +1,9 @@
 - hosts:
+  - localhost
+  roles:
+  - ruijie/sourceid/k8s-config
+
+- hosts:
   - mongodb
   tags:
   - mongodb
@@ -19,7 +24,7 @@
   tags:
   - initdata
   vars_files:
-  - "{{ sourceid_kad_dir }}/kad.yml"
+  - "{{ workspace_dir }}/kad.yml"
   roles:
   - { role: ruijie/sourceid/dbinit }
 
@@ -28,7 +33,7 @@
   tags:
   - sourceid
   vars_files:
-  - "{{ sourceid_kad_dir }}/kad.yml"
+  - "{{ workspace_dir }}/kad.yml"
   roles:
   - { role: ruijie/sourceid/linkid, tags: ["linkid"]}
   - { role: ruijie/sourceid/sso, tags: ["sso"] }

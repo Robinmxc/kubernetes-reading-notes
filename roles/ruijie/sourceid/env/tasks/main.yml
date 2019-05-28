@@ -4,12 +4,19 @@
       - unzip
     state: present
 
+- name: 准备目录
+  file: path={{ item }} state=directory
+  with_items:
+  - "{{ temp_dir }}"
+  - "{{ yaml_dir }}"
+  - "{{ workspace_dir }}/conf"
+
 - name: 读取目录信息
-  stat: path="{{ sourceid_kad_dir }}"
+  stat: path="{{ sourceid_kad_temp_dir }}"
   register: p
 
 - name: 创建解压目录
-  file: path="{{ sourceid_kad_dir }}" state=directory
+  file: path="{{ sourceid_kad_temp_dir }}" state=directory
   when: 'not p.stat.exists'
 
 - name: 解压SourceID部署包
@@ -17,5 +24,24 @@
     zip_file: "{{ img_download_dir }}/sourceid-kad-{{ SOURCEID_KAD_VERSION }}.zip"
   unarchive:
     src: "{{ zip_file }}"
-    dest: "{{ sourceid_kad_dir }}"
+    dest: "{{ sourceid_kad_temp_dir }}"
   when: 'not p.stat.exists and zip_file is exists'
+
+- name: 拷贝kad.yml
+  vars:
+    dest_file: '{{ workspace_dir }}/kad.yml'
+  copy: src="{{ sourceid_kad_temp_dir }}/kad.yml" dest="{{ dest_file }}"
+  when: 'dest_file is not exists'
+
+- name: 拷贝SourceID配置文件
+  vars:
+    src_path: "{{ sourceid_kad_temp_dir }}/conf/{{ item }}"
+    dest_path: "{{ workspace_dir }}/conf/{{ item }}"
+  copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+  when: 'dest_path is not exists'
+  with_items:
+    - "sourceid/sso"
+    - "sourceid/gate"
+    - "sourceid/linkid"
+    - "sourceid/frontend"
+    - "component"

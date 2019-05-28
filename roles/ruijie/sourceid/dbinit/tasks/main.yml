@@ -21,13 +21,13 @@
 
   - name: 压缩数据初始化脚本
     archive:
-      path: "{{sourceid_kad_dir}}/db/"
-      dest: "{{sourceid_kad_dir}}/data.tgz"
+      path: "{{ sourceid_kad_temp_dir }}/db/"
+      dest: "{{ sourceid_kad_temp_dir }}/data.tgz"
     connection: local
     run_once: true
 
   - name: 复制数据初始化脚本
-    copy: src="{{sourceid_kad_dir}}/data.tgz" dest="{{ mongodb_init_dir }}/"
+    copy: src="{{ sourceid_kad_temp_dir }}/data.tgz" dest="{{ mongodb_init_dir }}/"
 
   - name: 解压数据初始化脚本
     unarchive:
