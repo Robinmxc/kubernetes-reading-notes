@@ -1,7 +1,6 @@
 - hosts:
   - localhost
-  tags:
-  - env
+  tags: always
   roles:
   - ruijie/sourceid/env
 

@@ -1,5 +1,6 @@
 - hosts:
   - localhost
+  tags: always
   roles:
   - ruijie/sourceid/k8s-config
 
