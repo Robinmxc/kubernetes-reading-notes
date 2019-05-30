@@ -1,4 +1,3 @@
-linkid_resource_limit: "{%- if CLUSTER_SCALE == 'normal' -%}yes{%- else -%}no{%- endif -%}"
 
 linkid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% else %}-Xms256m -Xmx512m{% endif %}"
 
@@ -6,3 +5,17 @@ linkid_configs: []
 
 linkid_templates_path: ""
 
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 4
+        memory: 2Gi
+      requests:
+        cpu: 2
+        memory: 2Gi
+
+linkid_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

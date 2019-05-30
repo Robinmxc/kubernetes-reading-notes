@@ -1,7 +1,21 @@
-frontend_resource_limit: "{%- if CLUSTER_SCALE == 'normal' -%}yes{%- else -%}no{%- endif -%}"
 
 SOURCEID_FRONTEND_RES: 'ruijie'
 
 frontend_configs: []
 
 frontend_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 2
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 2Gi
+
+frontend_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

@@ -99,6 +99,7 @@
     mongodb_node_name: "mongo1"
     mongodb_node_ip: "{{ groups.mongodb[0] }}"
     liveness_probe_sh_config_key: "liveness-probe-sh"
+    deploy_conf: '{{ mongodb_1_deploy_conf | default(mongodb_deploy_conf) }}'
   template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo1.yml
   run_once: true
   connection: local
@@ -110,6 +111,7 @@
     mongodb_node_name: "mongo2"
     mongodb_node_ip: "{{ groups.mongodb[1] }}"
     liveness_probe_sh_config_key: "liveness-probe-sh"
+    deploy_conf: '{{ mongodb_deploy_conf }}'
   template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo2.yml
   run_once: true
   connection: local
@@ -122,6 +124,7 @@
     mongodb_node_name: "mongo3"
     mongodb_node_ip: "{{ groups.mongodb[2] }}"
     liveness_probe_sh_config_key: "liveness-probe-sh-noauth"
+    deploy_conf: '{{ mongodb_deploy_conf }}'
   template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo3.yml
   run_once: true
   connection: local

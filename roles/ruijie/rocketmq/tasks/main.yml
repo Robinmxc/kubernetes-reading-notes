@@ -15,11 +15,25 @@
     fail: msg="日志存储目录{{ rocketmq_logs_dir }}不存在"
     when: 'not data_dir_stat.stat.exists'
   when: 'rocketmq_check_data_dir == "yes"'
+  tags:
+  - config
 
 - name: 在deploy节点准备目录
+  tags:
+  - config
   file: path={{ item }} state=directory
   with_items:
   - "{{ yaml_dir }}/rocketmq"
+  run_once: true
+  connection: local
+
+- name: 准备RocketMQ的部署文件
+  tags:
+  - config
+  vars:
+    rocketmq_node_ip: "{{ groups.rocketmq[0] }}"
+    deploy_conf: '{{ mq_deploy_conf }}'
+  template: src=rocketmq.yaml.j2 dest={{ yaml_dir }}/rocketmq/rocketmq.yml
   run_once: true
   connection: local
 
@@ -47,13 +61,6 @@
     - name: 导入RocketMQ的离线镜像（若执行失败，可忽略）
       shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ rocketmq_offline }}"
       when: 'rocketmq_offline in image_info.stdout'
-
-    - name: 准备RocketMQ的部署文件
-      vars:
-        rocketmq_node_ip: "{{ groups.rocketmq[0] }}"
-      template: src=rocketmq.yaml.j2 dest={{ yaml_dir }}/rocketmq/rocketmq.yml
-      run_once: true
-      connection: local
 
     - name: 部署RocketMQ
       shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/rocketmq/rocketmq.yml"

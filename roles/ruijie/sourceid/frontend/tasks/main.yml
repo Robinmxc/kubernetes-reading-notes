@@ -40,6 +40,8 @@
 - name: 准备部署文件
   tags:
     - config
+  vars:
+    deploy_conf: '{{ frontend_deploy_conf }}'
   template: src='{{ frontend_templates_path }}frontend.yaml.j2' dest={{ yaml_dir }}/frontend/frontend.yml
   run_once: true
   connection: local

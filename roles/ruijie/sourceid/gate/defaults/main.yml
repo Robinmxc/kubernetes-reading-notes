@@ -1,7 +1,21 @@
-gate_resource_limit: "{%- if CLUSTER_SCALE == 'normal' -%}yes{%- else -%}no{%- endif -%}"
 
 gate_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx512m{% else %}-Xms128m -Xmx256m{% endif %}"
 
 gate_configs: []
 
 gate_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 2Gi
+
+gate_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

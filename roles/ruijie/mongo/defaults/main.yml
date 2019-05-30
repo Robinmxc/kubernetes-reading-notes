@@ -14,3 +14,16 @@ mongo_shell_fail_pattern: '"ok" : 0'
 mongo_shell_success_pattern: '"ok" : [1-9]+'
 
 mongodb_liveness_probe: "yes"
+
+deploy_conf_defaults:
+  small:
+  normal:
+    resources:
+      limits:
+        cpu: 16
+        memory: 32Gi
+      requests:
+        cpu: 8
+        memory: 16Gi
+
+mongodb_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

@@ -1,7 +1,21 @@
-sso_resource_limit: "{%- if CLUSTER_SCALE == 'normal' -%}yes{%- else -%}no{%- endif -%}"
 
 sso_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 sso_configs: []
 
 sso_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 4
+        memory: 4Gi
+      requests:
+        cpu: 2
+        memory: 4Gi
+
+sso_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

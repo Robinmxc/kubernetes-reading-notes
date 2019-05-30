@@ -44,6 +44,8 @@
 - name: 准备部署文件
   tags:
     - config
+  vars:
+    deploy_conf: '{{ sso_deploy_conf }}'
   template: src='{{ sso_templates_path }}sso.yaml.j2' dest={{ yaml_dir }}/sso/sso.yml
   run_once: true
   connection: local

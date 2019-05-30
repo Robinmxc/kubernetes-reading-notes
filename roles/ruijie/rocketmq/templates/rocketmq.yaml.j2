@@ -19,6 +19,15 @@ spec:
         - name: JAVA_OPT_EXT
           value: "{{ mq_broker_java_opt }}"
         imagePullPolicy: IfNotPresent
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
         ports:
           - containerPort: 10909
           - containerPort: 10911

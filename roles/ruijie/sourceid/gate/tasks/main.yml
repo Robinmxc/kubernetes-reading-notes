@@ -41,6 +41,8 @@
 - name: 准备部署文件
   tags:
     - config
+  vars:
+    deploy_conf: '{{ gate_deploy_conf }}'
   template: src='{{ gate_templates_path }}gate.yaml.j2' dest={{ yaml_dir }}/gate/gate.yml
   run_once: true
   connection: local

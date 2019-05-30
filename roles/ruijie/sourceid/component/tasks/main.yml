@@ -40,6 +40,8 @@
 - name: 准备部署文件
   tags:
     - config
+  vars:
+    deploy_conf: '{{ component_deploy_conf }}'
   template: src='{{ component_templates_path }}component.yaml.j2' dest={{ yaml_dir }}/component/component.yml
   run_once: true
   connection: local

@@ -1,7 +1,21 @@
-component_resource_limit: "{% if CLUSTER_SCALE == 'normal' %}yes{% else %}no{% endif %}"
 
 component_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1024m -Xmx1024m{% else %}-Xms128m -Xmx256m{% endif %}"
 
 component_configs: []
 
 component_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 2
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+
+component_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

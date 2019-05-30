@@ -40,6 +40,8 @@
 - name: 准备部署文件
   tags:
     - config
+  vars:
+    deploy_conf: '{{ linkid_deploy_conf }}'
   template: src='{{ linkid_templates_path }}linkid.yaml.j2' dest={{ yaml_dir }}/linkid/linkid.yml
   run_once: true
   connection: local

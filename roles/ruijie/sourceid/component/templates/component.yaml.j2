@@ -4,7 +4,7 @@ metadata:
   name: rg-component
   namespace: {{ APP_NAMESPACE }}
 spec:
-  replicas: 1
+  replicas: {{ deploy_conf.replicas }}
   template:
     metadata:
       labels:
@@ -17,14 +17,14 @@ spec:
         - name: JAVA_OPT_EXT
           value: "{{ component_java_opt }}"
         imagePullPolicy: IfNotPresent
-{% if "yes" == component_resource_limit %}
+{% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
-            cpu: 2
-            memory: 3Gi
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
           requests:
-            cpu: 1
-            memory: 2Gi
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
         - containerPort: 8080
