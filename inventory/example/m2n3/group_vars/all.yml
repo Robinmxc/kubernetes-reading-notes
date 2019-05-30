@@ -33,22 +33,6 @@ SOURCEID_KAD_VERSION: "r1.4.2"
 MONGODB_ADMIN_USER: "admin"
 MONGODB_ADMIN_PWD: ""
 
-#cas数据库账号和密码
-SOURCEID_CAS_DB_USER: "cas"
-SOURCEID_CAS_DB_PWD: ""
-
-#gate数据库账号和密码
-SOURCEID_GATE_DB_USER: "gateuser"
-SOURCEID_GATE_DB_PWD: ""
-
-#linkid数据库账号和密码
-SOURCEID_LINKID_DB_USER: "linkid"
-SOURCEID_LINKID_DB_PWD: ""
-
-#component数据库账号和密码
-COMPONENT_DB_USER: "comp"
-COMPONENT_DB_PWD: ""
-
 #SSO域名
 SOURCEID_SSO_DOMAIN: "id.example.com"
 
