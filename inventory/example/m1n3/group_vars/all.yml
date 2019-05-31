@@ -53,4 +53,3 @@ CLUSTER_SCALE: "normal"
 #部署模式：dev, prd。dev模式下会多一些和开发、测试有关的配置参数
 SOURCEID_DEPLOY_PROFILE: "prd"
 
-DATA_DIR: ""

@@ -5,8 +5,8 @@ mongodb_deploy_mode: 3
 mongodb_auth_mode: "no"
 
 # mongodb_check_data_dir: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}yes{%- else -%}no{%- endif -%}"
-
 mongodb_check_data_dir: "no"
+mongodb_disk_space_required: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}100{%- else -%}3{%- endif -%}"
 
 wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- else -%}0.5{%- endif -%}"
 
@@ -27,3 +27,5 @@ deploy_conf_defaults:
         memory: 16Gi
 
 mongodb_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+
+

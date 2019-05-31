@@ -12,6 +12,21 @@
   when: 'mongodb_check_data_dir == "yes" and not data_dir_stat.stat.exists
      and ( mongodb_deploy_mode == 3 or inventory_hostname == groups.mongodb[0] )'
 
+- name: 获取数据存储目录的容量
+  tags:
+  - config
+  vars:
+    pattern: "^{{ item.mount }}.*$"
+  set_fact: data_dir_mount_info='{{ item }}'
+  when: 'mongodb_data_dir is search(pattern)'
+  with_items: '{{ hostvars[inventory_hostname].ansible_mounts | sort(attribute="mount") | list }}'
+
+- name: 检查存储目录容量是否足够
+  tags:
+  - config
+  fail: msg="数据存储目录{{ mongodb_data_dir }}剩余空间不足"
+  when: '(data_dir_mount_info.size_available | int) < (mongodb_disk_space_required | int) * 1073741824'
+
 - name: 准备init目录
   tags:
   - config
