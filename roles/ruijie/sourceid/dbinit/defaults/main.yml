@@ -11,18 +11,3 @@ mongo_shell_success_pattern: '"ok" : [1-9]+'
 
 mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin{% else %}{% endif %}"
 
-#cas数据库账号和密码
-SOURCEID_CAS_DB_USER: "cas"
-SOURCEID_CAS_DB_PWD: ""
-
-#gate数据库账号和密码
-SOURCEID_GATE_DB_USER: "gateuser"
-SOURCEID_GATE_DB_PWD: ""
-
-#linkid数据库账号和密码
-SOURCEID_LINKID_DB_USER: "linkid"
-SOURCEID_LINKID_DB_PWD: ""
-
-#component数据库账号和密码
-COMPONENT_DB_USER: "comp"
-COMPONENT_DB_PWD: ""
