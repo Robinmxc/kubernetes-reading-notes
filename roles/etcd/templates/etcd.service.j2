@@ -25,8 +25,7 @@ ExecStart={{ bin_dir }}/etcd \
   --initial-cluster-state={{ CLUSTER_STATE }} \
   --data-dir=/var/lib/etcd
   --auto-compaction-retention=1
-Restart=on-failure
-RestartSec=5
+Restart=always
 LimitNOFILE=65536
 
 [Install]

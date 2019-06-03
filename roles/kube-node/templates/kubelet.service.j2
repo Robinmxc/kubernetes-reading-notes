@@ -39,8 +39,7 @@ ExecStart={{ bin_dir }}/kubelet \
   --kube-reserved-cgroup=/system.slice/kubelet.service \
   --eviction-hard={{ HARD_EVICTION }} \
   --v=2
-Restart=on-failure
-RestartSec=5
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

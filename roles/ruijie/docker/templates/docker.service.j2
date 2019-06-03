@@ -9,8 +9,7 @@ Environment="PATH={{ bin_dir }}:/bin:/sbin:/usr/bin:/usr/sbin"
 ExecStart={{ bin_dir }}/dockerd $DOCKER_NETWORK_OPTIONS
 ExecStartPost=/sbin/iptables -I FORWARD -s 0.0.0.0/0 -j ACCEPT
 ExecReload=/bin/kill -s HUP $MAINPID
-Restart=on-failure
-RestartSec=5
+Restart=always
 LimitNOFILE=infinity
 LimitNPROC=infinity
 LimitCORE=infinity
