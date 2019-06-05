@@ -16,9 +16,6 @@
     ```bash
     cd /opt
     wget http://172.17.8.20:8081/repository/files/ruijie/kad/release/kad-0.9.0.tar.gz
-    ```
-1. 解压
-    ```bash
     tar xzvf kad-0.9.0.tar.gz
     ```
 1. 下载SourceID安装包
