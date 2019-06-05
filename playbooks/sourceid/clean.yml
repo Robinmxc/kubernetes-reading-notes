@@ -7,6 +7,7 @@
 
   tasks:
   - name: 获取所有已经创建的POD信息
+    tags: always
     command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
 
