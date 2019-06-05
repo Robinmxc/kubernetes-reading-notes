@@ -1,43 +1,44 @@
 ## SourceID部署步骤
 
-本文描述在K8s集群中部署SourceID的步骤，部署工具需要kad-0.7.0以上版本。
-
-部署SourceID需要在K8s集群的Master节点上进行操作，本文以[单Master集群](../guide/getting-started.md)环境为例。
-
-**注意：由于集群配置文件格式有较大改动，0.6.0以前版本的配置文件需要按照[单Master集群](../guide/getting-started.md)中第3节的操作步骤重新准备（不影响集群运行，只是各项配置参数需要重新输入）。**
+本文以SourceID 1.4为例描述在开发、测试环境部署SourceID的步骤，生产环境部署请使用《SourceID部署操作说明.docx》。
 
 #### 1. 准备
 
+1. 安装基础工具wget，如果wget已经存在可以跳过这一步
+    ```bash
+    yum install -y wget
+    ```
+1. 安装Ansible
+    ```bash
+    yum install -y ansible
+    ```
+1. 下载自动化部署工具的安装包
+    ```bash
+    cd /opt
+    wget http://172.17.8.20:8081/repository/files/ruijie/kad/release/kad-0.9.0.tar.gz
+    ```
+1. 解压
+    ```bash
+    tar xzvf kad-0.9.0.tar.gz
+    ```
 1. 下载SourceID安装包
     ```bash
     cd /opt/kad/down/
     wget http://172.17.8.20:8081/repository/files/ruijie/sourceid/kad/sourceid-kad-r1.4.2.zip
     ```
-2. 下载SourceID镜像
+1. 下载SourceID镜像
     ```bash
     cd /opt/kad/down/
     wget http://172.17.8.20:8081/repository/files/ruijie/sourceid/images/sourceid-images-r1.4.tar.gz
     tar xzvf sourceid-images-r1.4.tar.gz
     ```
-3. 初始化SourceID相关配置文件
-    ```bash
-    cd /opt/kad
-    ansible-playbook -i workspace/inventory/ playbooks/sourceid/prepare.yml -k
-    ```
 
-#### 2. 设置MongoDB和RocketMQ部署参数
+#### 2. 设置K8S部署参数
 
-修改`workspace/inventory/hosts.ini`文件，设置部署MongoDB和RocketMQ的主机（参考`inventory/example/m1n3/hosts.ini`）：
+修改`workspace/inventory/hosts.ini`文件，参照下图进行设置：
 
-```
-[mongodb]
-192.168.1.62
-192.168.1.63
-192.168.1.64
+![K8S部署参数](./images/hosts_config.png)
 
-[rocketmq]
-192.168.1.63
-```
 
 #### 3. 设置SourceID部署参数
 
@@ -59,22 +60,21 @@ SOURCEID_GATEWAY_URL="http://gateway.example.com"
 #登录成功后的跳转地址
 SOURCEID_REDIRECT_URL="http://www.baidu.com"
 
-#cas数据库密码
-SOURCEID_CAS_DB_PWD=""
+#数据库管理员账号，只能由大/小写字母、数字、下划线组成，长度3~16字符
+MONGODB_ADMIN_USER="admin"
 
-#gate数据库密码
-SOURCEID_GATE_DB_PWD=""
+#数据库管理员密码，只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符
+MONGODB_ADMIN_PWD=""
 
-#linkid数据库密码
-SOURCEID_LINKID_DB_PWD=""
+#部署规模：small, normal。normal为标准规模，small主要用于开发、测试
+CLUSTER_SCALE: "small"
 
-#component数据库密码
-COMPONENT_DB_PWD=""
+#部署模式：dev, prd。dev模式下会多一些和开发、测试有关的配置参数，比如sso服务器的hostAlias
+SOURCEID_DEPLOY_PROFILE: "dev"
 ```
 
 注意：
 - `SOURCEID_RELEASE_VERSION`参数是产品发布版本号，不是Docker镜像的版本号，必须根据产品发布文档进行设置
-- 数据库密码长度必须介于6到16字符之间，必须包含大、小写字母和数字
 - 开发和UAT测试环境需要额外设置以下参数（内存占用少，开启测试开关）：
     ```
     CLUSTER_SCALE="small"
@@ -86,17 +86,13 @@ COMPONENT_DB_PWD=""
     SOURCEID_DEPLOY_PROFILE="dev"
     ```
 
-#### 4. 修改SouceID配置文件（可选）
-
-SourceID配置文件在`workspace/ruijie-sourceid/conf`目录下，根据需要进行修改（如果采用默认部署，不需要修改）。
-
-#### 5. 执行部署
+#### 4. 执行部署
 
 按以下步骤操作：
 
 1. 执行部署命令（在`/opt/kad`目录下执行）
     ```bash
-    ansible-playbook -i workspace/inventory/ playbooks/sourceid/setup.yml -k
+    ansible-playbook -i workspace/inventory/ playbooks/sourceid/0-all.yml -k
     ```
 1. 出现如下输入密码的提示信息后，输入root用户的密码
     ```
@@ -105,6 +101,7 @@ SourceID配置文件在`workspace/ruijie-sourceid/conf`目录下，根据需要�
 1. 等待脚本运行完成。部署成功会显示如下信息
     ```
     PLAY RECAP *************************************************************
+    192.168.1.61            : ok=xx   changed=xx   unreachable=0    failed=0
     192.168.1.62            : ok=xx   changed=xx   unreachable=0    failed=0
     192.168.1.63            : ok=xx   changed=xx   unreachable=0    failed=0
     192.168.1.64            : ok=xx   changed=xx   unreachable=0    failed=0
