@@ -27,6 +27,7 @@
   vars_files:
   - "{{ workspace_dir }}/kad.yml"
   roles:
+  - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
   - { role: ruijie/sourceid/dbinit }
 
 - hosts:
@@ -36,6 +37,7 @@
   vars_files:
   - "{{ workspace_dir }}/kad.yml"
   roles:
+  - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
   - { role: ruijie/sourceid/linkid, tags: ["linkid"]}
   - { role: ruijie/sourceid/sso, tags: ["sso"] }
   - { role: ruijie/sourceid/gate, tags: ["gate"] }

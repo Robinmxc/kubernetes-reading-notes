@@ -1,0 +1,40 @@
+- name: 获取secret数据
+  command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
+  register: secret_info
+  connection: local
+  run_once: true
+
+- name: 使用现有密码
+  block:
+  - name: 获取数据库密码
+    command: '{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }} sourceid-db-pwd -o ''go-template={{ "{{" }} index .data "pwd" {{ "}}" }}'''
+    register: secret_result
+  - name: 设置数据库密码为现有密码
+    set_fact:
+      sourceid_db_pwd: '{{ secret_result.stdout | b64decode }}'
+  when: '"sourceid-db-pwd" in secret_info.stdout'
+  connection: local
+  run_once: true
+
+- name: 生成数据库密码
+  block:
+  - name: 生成随机数
+    shell: "openssl rand -hex 6"
+    register: rand_result
+  - name: 保存到secret
+    shell: "{{ bin_dir }}/kubectl create secret generic -n {{ APP_NAMESPACE }} sourceid-db-pwd --from-literal=pwd={{ rand_result.stdout }}"
+  - name: 设置数据库密码为新密码
+    set_fact:
+      sourceid_db_pwd: '{{ rand_result.stdout }}'
+  when: '"sourceid-db-pwd" not in secret_info.stdout'
+  connection: local
+  run_once: true
+
+- name: 设置各个数据库的密码参数
+  set_fact:
+    SOURCEID_CAS_DB_PWD: '{% if SOURCEID_CAS_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_CAS_DB_PWD }}{% endif %}'
+    SOURCEID_GATE_DB_PWD: '{% if SOURCEID_GATE_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_GATE_DB_PWD }}{% endif %}'
+    SOURCEID_LINKID_DB_PWD: '{% if SOURCEID_LINKID_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_LINKID_DB_PWD }}{% endif %}'
+    COMPONENT_DB_PWD: '{% if COMPONENT_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ COMPONENT_DB_PWD }}{% endif %}'
+  connection: local
+  run_once: true

@@ -5,12 +5,12 @@
   run_once: true
   with_items: "{{ db_pwd_checklist }}"
 
-- name: 检查数据库密码
-  fail: msg="数据库密码{{ item.pwd_param_name }}不符合要求，{{ db_pwd_invalid_msg }}"
-  when: '"" != item.pwd and (item.pwd is not search(db_pwd_pattern1) or item.pwd is not search(db_pwd_pattern2))'
-  connection: local
-  run_once: true
-  with_items: "{{ db_pwd_checklist }}"
+# - name: 检查数据库密码
+#   fail: msg="数据库密码{{ item.pwd_param_name }}不符合要求，{{ db_pwd_invalid_msg }}"
+#   when: '"" != item.pwd and (item.pwd is not search(db_pwd_pattern1) or item.pwd is not search(db_pwd_pattern2))'
+#   connection: local
+#   run_once: true
+#   with_items: "{{ db_pwd_checklist }}"
 
 - block:
   - name: 准备初始化文件
@@ -104,17 +104,6 @@
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
-
-  - name: 生成随机数
-    shell: "openssl rand -hex 5"
-    register: rand_result
-
-  - name: 设置密码
-    set_fact:
-      SOURCEID_CAS_DB_PWD: '{% if SOURCEID_CAS_DB_PWD == "" %}{{ rand_result.stdout }}{% else %}{{ SOURCEID_CAS_DB_PWD }}{% endif %}'
-      SOURCEID_GATE_DB_PWD: '{% if SOURCEID_GATE_DB_PWD == "" %}{{ rand_result.stdout }}{% else %}{{ SOURCEID_GATE_DB_PWD }}{% endif %}'
-      SOURCEID_LINKID_DB_PWD: '{% if SOURCEID_LINKID_DB_PWD == "" %}{{ rand_result.stdout }}{% else %}{{ SOURCEID_LINKID_DB_PWD }}{% endif %}'
-      COMPONENT_DB_PWD: '{% if COMPONENT_DB_PWD == "" %}{{ rand_result.stdout }}{% else %}{{ COMPONENT_DB_PWD }}{% endif %}'
 
   - name: 初始化数据库用户
     shell: "{{ mongo_shell }} /ruijie/init/create-users.js"

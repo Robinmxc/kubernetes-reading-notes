@@ -6,7 +6,7 @@
   shell: "{{ bin_dir }}/kubectl create namespace {{ APP_NAMESPACE }}"
   when: 'APP_NAMESPACE not in namespaces_info.stdout'
 
-- name: 获取regsecret是否存在
+- name: 获取secret数据
   command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
   when: 'PRIVATE_REGISTRY_ENABLED == "yes"'
   register: secret_info
