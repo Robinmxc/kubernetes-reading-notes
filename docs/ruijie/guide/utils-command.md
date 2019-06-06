@@ -40,7 +40,12 @@ SourceID常用命令如下：
     ```
 1. 更新组件版本（以linkid为例）
     - 修改`workspace/ruijie-sourceid/kad.yml`文件的变量`SOURCEID_DOCKERS`中linkid的版本号
-    - 按照上述“重新部署单个组件”的操作方法重新部署linkid
+    - 依次执行以下命令：
+        ```
+        ansible-playbook -i workspace/inventory/ playbooks/sourceid/clean.yml --tags linkid -k
+        ansible-playbook -i workspace/inventory/ playbooks/sourceid/prepare.yml -k
+        ansible-playbook -i workspace/inventory/ playbooks/sourceid/setup.yml --tags linkid -k
+        ```
 1. 修改组件配置文件（以linkid为例）
     - 修改`workspace/ruijie-sourceid/conf/sourceid/linkid/conf/`目录下的配置文件
     - 按照上述“重新部署单个组件”的操作方法重新部署linkid
