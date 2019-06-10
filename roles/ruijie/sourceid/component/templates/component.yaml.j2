@@ -13,10 +13,14 @@ spec:
       containers:
       - name: rg-component
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.component.name }}:{{ SOURCEID_DOCKERS.component.version }}
+        imagePullPolicy: IfNotPresent
         env:
         - name: JAVA_OPT_EXT
           value: "{{ component_java_opt }}"
-        imagePullPolicy: IfNotPresent
+        command:
+        - '/bin/bash'
+        - '-c'
+        - 'java -jar -Dspring.config.location=/ruijie/component/conf/ $JAVA_OPT_EXT /app/rs-component-0.0.1.jar'
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:

@@ -1,5 +1,5 @@
 
-gate_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx512m{% else %}-Xms128m -Xmx256m{% endif %}"
+gate_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx1024m{% elif CLUSTER_SCALE == 'single' %}-Xms512m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 gate_configs: []
 
@@ -17,5 +17,14 @@ deploy_conf_defaults:
       requests:
         cpu: 1
         memory: 2Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
 
 gate_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

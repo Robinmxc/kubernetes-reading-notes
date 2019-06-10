@@ -4,11 +4,10 @@ mongodb_port: 27017
 mongodb_deploy_mode: "{{ groups['mongodb'] | length }}"
 mongodb_auth_mode: "no"
 
-# mongodb_check_data_dir: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}yes{%- else -%}no{%- endif -%}"
 mongodb_check_data_dir: "no"
 mongodb_disk_space_required: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}100{%- else -%}3{%- endif -%}"
 
-wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- else -%}0.5{%- endif -%}"
+wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- elif CLUSTER_SCALE == 'single' -%}4{%- else -%}0.5{%- endif -%}"
 
 mongo_shell_fail_pattern: '"ok" : 0'
 mongo_shell_success_pattern: '"ok" : [1-9]+'
@@ -25,6 +24,14 @@ deploy_conf_defaults:
       requests:
         cpu: 8
         memory: 16Gi
+  single:
+    resources:
+      limits:
+        cpu: 4
+        memory: 8Gi
+      requests:
+        cpu: 1
+        memory: 4Gi
 
 mongodb_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
 

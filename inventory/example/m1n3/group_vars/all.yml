@@ -47,7 +47,7 @@ SOURCEID_REDIRECT_URL: "http://www.baidu.com"
 #frontend资源文件目录
 SOURCEID_FRONTEND_RES: "ruijie"
 
-#部署规模：small, normal。normal为标准规模，small主要用于开发、测试
+#部署规模：small, normal, single。normal为标准规模，small主要用于开发、测试，single为单机
 CLUSTER_SCALE: "normal"
 
 #部署模式：dev, prd。dev模式下会多一些和开发、测试有关的配置参数

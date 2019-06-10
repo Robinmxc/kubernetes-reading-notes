@@ -17,5 +17,14 @@ deploy_conf_defaults:
       requests:
         cpu: 1
         memory: 2Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 256Mi
+      requests:
+        cpu: 500m
+        memory: 128Mi
 
 frontend_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
