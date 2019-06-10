@@ -8,3 +8,6 @@ dns_offline: "{%- if dns_backend == 'coredns' -%} \
               {%- else -%} \
                 {{ kubedns_offline }} \
               {%- endif -%}"
+
+dns_replicas: "{% if DEPLOY_MODE == 'allinone' %}1{% else %}2{% endif %}"
+

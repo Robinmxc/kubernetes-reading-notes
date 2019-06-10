@@ -1,5 +1,5 @@
 # dashboard 自动安装
-dashboard_install: "yes"
+dashboard_install: "{% if DEPLOY_MODE == 'allinone' %}no{% else %}yes{% endif %}"
 dashboard_offline: "dashboard_v1.10.1.tar"
 
 # heapster 自动安装
