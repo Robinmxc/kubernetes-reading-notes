@@ -13,12 +13,6 @@
 #   with_items: "{{ db_pwd_checklist }}"
 
 - block:
-  - name: 准备初始化文件
-    template: src="{{ item }}.j2" dest="{{ mongodb_init_dir }}/{{ item }}"
-    with_items:
-    - create-users.js
-    - init-data.sh
-
   - name: 压缩数据初始化脚本
     archive:
       path: "{{ sourceid_kad_temp_dir }}/db/"
@@ -35,23 +29,41 @@
       dest: "{{ mongodb_init_dir }}/"
       remote_src: yes
 
+  - name: 检测数据库脚本是否含用户名
+    shell: 'grep MONGO_HOST\:\$MONGO_PORT {{ mongodb_init_dir }}/sourceid/rg-upgrade-db/upgrade_data.sh'
+    register: grep_result
+
+  - name: 设置数据库脚本版本为
+    set_fact:
+      db_script_version: "1"
+    when: '"MONGO_USER" not in grep_result.stdout'
+
+  - name: 准备创建数据库用户的脚本
+    template: src="create-users.js.j2" dest="{{ mongodb_init_dir }}/create-users.js"
+
+  - name: 准备初始化数据的脚本
+    vars:
+      src_file: '{% if "2" == db_script_version %}init-data-2.sh.j2{% else %}init-data.sh.j2{% endif %}'
+    template: src="{{ src_file }}" dest="{{ mongodb_init_dir }}/init-data.sh"
+
   - name: 修改数据库连接参数
     replace: path="{{ mongodb_init_dir }}/{{ item }}" regexp="^\\s*mongo\\s+" replace="mongo {{ mongo_auth_param }} "
     when: 'mongodb_auth_mode == "yes"'
     with_items:
       - "sourceid/rg-init-db/init-data.sh"
-      - "sourceid/rg-upgrade-db/upgrade_data.sh"
       - "component/rg-init-db/init-data.sh"
       - "component/rg-init-db/upgrade_data.sh"
+
+  - name: 修改数据库连接参数
+    replace: path="{{ mongodb_init_dir }}/sourceid/rg-upgrade-db/upgrade_data.sh" regexp="^\\s*mongo\\s+" replace="mongo {{ mongo_auth_param }} "
+    when: 'db_script_version < "2"'
 
   - name: 修改数据库连接参数2
     replace: path="{{ mongodb_init_dir }}/{{ item }}" regexp="^\\s*mongoimport\\s+" replace="mongoimport {{ mongo_auth_param }} "
     when: 'mongodb_auth_mode == "yes"'
     with_items:
       - "sourceid/rg-init-db/init-data.sh"
-      - "sourceid/rg-upgrade-db/upgrade_data.sh"
       - "component/rg-init-db/init-data.sh"
-      - "component/rg-init-db/upgrade_data.sh"
 
   - name: 设置文件执行权限
     file: name="{{ item }}" mode=0700
