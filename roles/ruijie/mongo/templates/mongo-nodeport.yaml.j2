@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-node
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  type: NodePort
+  ports:
+    - port: {{ mongodb_port }}
+      targetPort: {{ mongodb_port }}
+      nodePort: 30031
+  selector:
+    service: mongo1
