@@ -1,5 +1,7 @@
 ## SourceID单机部署步骤
 
+***注意：部署工具kad 0.10.0以上版本才支持单机部署***
+
 1. 参考[SourceID标准部署](docs/ruijie/sourceid/getting-started.md)中的准备环节，准备部署环境
 1. 修改`workspace/inventory/hosts.ini`文件，所有服务器组设置成同一IP，如下所示：
     ```
