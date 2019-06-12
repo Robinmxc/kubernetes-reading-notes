@@ -5,7 +5,7 @@
   with_items:
     - {regexp: "^cas.server.name=.*$", replace: "cas.server.name=http://{{ SOURCEID_SSO_DOMAIN }}"}
     - {regexp: "^front.server.addr=.*$", replace: "front.server.addr=http://{{ SOURCEID_GATE_DOMAIN }}"}
-    - {regexp: "^mongodb-base-url=.*$", replace: "mongodb-base-url=mongodb://{{ SOURCEID_CAS_DB_USER }}:{{ SOURCEID_CAS_DB_PWD }}@{{ mongodb_addr }}/cas"}
+    - {regexp: "^mongodb-base-url=.*$", replace: "mongodb-base-url=mongodb://{{ SOURCEID_CAS_DB_USER }}:{{ SOURCEID_CAS_DB_PWD }}@{{ mongodb_addr }}/cas?replicaSet=rs0"}
     - {regexp: "^gateway.feign.base.url.*$", replace: "gateway.feign.base.url={{ SOURCEID_GATEWAY_URL }}"}
     - {regexp: "^cas.view.default-redirect-url.*$", replace: "cas.view.default-redirect-url={{ SOURCEID_REDIRECT_URL }}"}
     - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
