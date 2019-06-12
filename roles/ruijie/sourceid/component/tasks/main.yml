@@ -3,7 +3,7 @@
     - config
   replace: path="{{ workspace_dir }}/conf/component/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-    - {regexp: "mongodb:.*/component", replace: "mongodb://{{ COMPONENT_DB_USER }}:{{ COMPONENT_DB_PWD }}@{{ mongodb_addr }}/component?replicaSet=rs0"}
+    - {regexp: "mongodb:.*/component.*$", replace: "mongodb://{{ COMPONENT_DB_USER }}:{{ COMPONENT_DB_PWD }}@{{ mongodb_addr }}/component?replicaSet=rs0"}
     - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
   no_log: '{{ SOURCEID_DEPLOY_PROFILE=="prd" }}'
   run_once: true

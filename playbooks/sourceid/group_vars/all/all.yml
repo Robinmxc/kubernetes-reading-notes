@@ -18,7 +18,7 @@ temp_dir: "{{ base_dir }}/temp"
 
 sourceid_kad_temp_dir: "{{ temp_dir }}/sourceid-kad-{{ SOURCEID_KAD_VERSION }}"
 
-mongodb_addr: "mongo1,mongo2,mongo3"
+mongodb_addr: "{% if (groups['mongodb'] | length | int) == 1 %}mongo1{% else %}mongo1,mongo2,mongo3{% endif %}"
 mongodb_auth_mode: "yes"
 
 workspace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"

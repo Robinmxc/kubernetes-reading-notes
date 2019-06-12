@@ -4,7 +4,7 @@
   replace: path="{{ workspace_dir }}/conf/sourceid/gate/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
   - {regexp: "^auth-server:.*$", replace: "auth-server: http://{{ SOURCEID_SSO_DOMAIN }}"}
-  - {regexp: "mongodb:.*/gate", replace: "mongodb://{{ SOURCEID_GATE_DB_USER }}:{{ SOURCEID_GATE_DB_PWD }}@{{ mongodb_addr }}/gate?replicaSet=rs0"}
+  - {regexp: "mongodb:.*/gate.*$", replace: "mongodb://{{ SOURCEID_GATE_DB_USER }}:{{ SOURCEID_GATE_DB_PWD }}@{{ mongodb_addr }}/gate?replicaSet=rs0"}
   - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
   no_log: '{{ SOURCEID_DEPLOY_PROFILE=="prd" }}'
   run_once: true
