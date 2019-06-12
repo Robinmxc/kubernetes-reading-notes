@@ -6,6 +6,7 @@
 - [部署单Master集群](docs/ruijie/guide/getting-started.md)
 - [部署双Master高可用集群](docs/ruijie/guide/master-ha.md)
 - [部署SourceID](docs/ruijie/sourceid/getting-started.md)
+- [单机部署](docs/ruijie/sourceid/single-node.md)
 - [配置HTTPS服务](docs/ruijie/guide/traefik-https.md)
 - [使用自定义的时间同步服务器 ](docs/ruijie/guide/chrony.md)
 - [设置MongoDB和RocketMQ的数据存储目录](docs/ruijie/sourceid/config-data-dir.md)
