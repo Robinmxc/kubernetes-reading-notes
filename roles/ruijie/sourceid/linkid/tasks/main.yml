@@ -5,6 +5,8 @@
   with_items:
     - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
     - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+    - {regexp: "^lincese.check=.*$", replace: "lincese.check={{ linkid_license_check }}"}
+    - {regexp: "^lincese.url=.*$", replace: "lincese.url=http://rg-license.{{ APP_NAMESPACE }}.svc/license/check/"}
   no_log: '{{ SOURCEID_DEPLOY_PROFILE=="prd" }}'
   run_once: true
   connection: local

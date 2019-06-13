@@ -1,0 +1,84 @@
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: license-admin
+  namespace: {{ APP_NAMESPACE }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - nodes
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: license-admin-binding
+  namespace: {{ APP_NAMESPACE }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: license-admin
+subjects:
+  - kind: ServiceAccount
+    name: license
+    namespace: {{ APP_NAMESPACE }}
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: license
+  namespace: {{ APP_NAMESPACE }}
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-license
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: rg-license
+    spec:
+      serviceAccountName: license
+      imagePullSecrets:
+      - name: regsecret
+      containers:
+      - name: rg-license
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.license.name }}:{{ SOURCEID_DOCKERS.license.version }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /ruijie/sourceid/license/conf
+          name: conf
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/license/conf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-license
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    service: rg-license
+  ports:
+  - port: 80
+    targetPort: 8080
+

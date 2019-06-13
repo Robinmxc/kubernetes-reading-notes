@@ -86,3 +86,5 @@ SOURCEID_LINKID_DB_PWD: ""
 #component数据库账号和密码
 COMPONENT_DB_USER: "comp"
 COMPONENT_DB_PWD: ""
+
+sourceid_license_enabled: "{% if SOURCEID_DOCKERS.license is defined %}yes{% else %}no{% endif %}"

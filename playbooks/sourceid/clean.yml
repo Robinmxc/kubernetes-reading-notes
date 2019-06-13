@@ -40,3 +40,9 @@
     - component
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/component/"
     when: '"component" in pod_info.stdout'
+
+  - name: delete license
+    tags:
+    - license
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/license/"
+    when: '"rg-license" in pod_info.stdout'
