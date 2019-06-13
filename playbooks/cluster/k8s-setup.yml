@@ -1,10 +1,12 @@
 # to synchronize time of nodes with 'chrony'
 - hosts: all
+  any_errors_fatal: true
   roles:
   - ruijie/chrony
 
 # to create CA, kubeconfig, kube-proxy.kubeconfig etc. on 'deploy' node
 - hosts: deploy
+  any_errors_fatal: true
   roles:
   - deploy
 
@@ -15,16 +17,19 @@
   - deploy
   - etcd
   - lb
+  any_errors_fatal: true
   roles:
   - ruijie/prepare
 
 # [optional] to install loadbalance service, only needed by multi-master cluster
 - hosts: lb
+  any_errors_fatal: true
   roles:
   - lb
 
 # to install etcd cluster
 - hosts: etcd
+  any_errors_fatal: true
   roles:
   - etcd
 
@@ -32,11 +37,13 @@
 - hosts:
   - kube-master
   - kube-node
+  any_errors_fatal: true
   roles:
   - ruijie/docker
 
 # to set up 'kube-master' nodes
 - hosts: kube-master
+  any_errors_fatal: true
   roles:
   - kube-master
   - kube-node
@@ -55,6 +62,7 @@
 
 # to set up 'kube-node' nodes
 - hosts: kube-node
+  any_errors_fatal: true
   roles:
   - { role: kube-node, when: "DEPLOY_MODE != 'allinone'" }
 
@@ -62,12 +70,14 @@
 - hosts:
   - kube-master
   - kube-node
+  any_errors_fatal: true
   roles:
   - ruijie/flannel
 
 # to install clust-addons
 - hosts:
   - kube-node
+  any_errors_fatal: true
   roles:
   - ruijie/kube-dns
   - ruijie/ingress

@@ -1,6 +1,7 @@
 - hosts:
   - localhost
   tags: always
+  any_errors_fatal: true
   roles:
   - ruijie/sourceid/k8s-config
 
@@ -9,6 +10,7 @@
   tags:
   - mongodb
   - midware
+  any_errors_fatal: true
   roles:
   - { role: ruijie/mongo}
 
@@ -17,6 +19,7 @@
   tags:
   - rocketmq
   - midware
+  any_errors_fatal: true
   roles:
   - { role: ruijie/rocketmq}
 
@@ -24,6 +27,7 @@
   - kube-node
   tags:
   - initdata
+  any_errors_fatal: true
   vars_files:
   - "{{ workspace_dir }}/kad.yml"
   roles:
@@ -34,6 +38,7 @@
   - kube-node
   tags:
   - sourceid
+  any_errors_fatal: true
   vars_files:
   - "{{ workspace_dir }}/kad.yml"
   roles:

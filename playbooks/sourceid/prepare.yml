@@ -1,6 +1,7 @@
 - hosts:
   - localhost
   tags: always
+  any_errors_fatal: true
   roles:
   - ruijie/sourceid/env
 
@@ -8,6 +9,7 @@
   - localhost
   tags:
   - download
+  any_errors_fatal: true
   vars_files:
   - "{{ workspace_dir }}/kad.yml"
   roles:
@@ -15,6 +17,7 @@
 
 - hosts:
   - kube-node
+  any_errors_fatal: true
   vars_files:
   - "{{ workspace_dir }}/kad.yml"
   roles:
