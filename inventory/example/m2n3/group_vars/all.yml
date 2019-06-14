@@ -27,7 +27,7 @@ DOCKER_BIP: "172.18.0.1/24"
 # ---------SourceID应用参数---------------
 
 #SourceID部署包版本号
-SOURCEID_KAD_VERSION: "r1.4.2"
+SOURCEID_KAD_VERSION: "r1.5.1"
 
 #MongoDB管理员密码
 MONGODB_ADMIN_USER: "admin"
