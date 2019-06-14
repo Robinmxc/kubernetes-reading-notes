@@ -10,7 +10,7 @@
   - config
   fail: msg="数据存储目录{{ mongodb_data_dir }}不存在"
   when: 'mongodb_check_data_dir == "yes" and not data_dir_stat.stat.exists
-     and ( mongodb_deploy_mode == 3 or inventory_hostname == groups.mongodb[0] )'
+     and ( mongodb_deploy_mode == "3" or inventory_hostname == groups.mongodb[0] )'
 
 - name: 获取数据存储目录的容量
   tags:
@@ -130,7 +130,7 @@
   template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo2.yml
   run_once: true
   connection: local
-  when: "mongodb_deploy_mode == 3"
+  when: 'mongodb_deploy_mode == "3"'
 
 - name: 准备第3个mongodb的部署文件
   tags:
@@ -143,7 +143,7 @@
   template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo3.yml
   run_once: true
   connection: local
-  when: "mongodb_deploy_mode == 3"
+  when: 'mongodb_deploy_mode == "3"'
 
 
 - name: 获取已下载离线镜像信息
@@ -180,13 +180,13 @@
       shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo2.yml"
       connection: local
       run_once: true
-      when: "mongodb_deploy_mode == 3"
+      when: 'mongodb_deploy_mode == "3"'
 
     - name: 部署第3个mongodb
       shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo3.yml"
       connection: local
       run_once: true
-      when: "mongodb_deploy_mode == 3"
+      when: 'mongodb_deploy_mode == "3"'
 
     - name: 轮询等待mongodb运行
       shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} | grep 'mongo1' | awk '{print $3}'"
