@@ -9,13 +9,13 @@ deploy_conf_defaults:
   small:
     replicas: 1
   normal:
-    replicas: 1
+    replicas: 2
     resources:
       limits:
-        cpu: 500m
+        cpu: 1
         memory: 512Mi
       requests:
-        cpu: 200m
+        cpu: 500m
         memory: 256Mi
   single:
     replicas: 1

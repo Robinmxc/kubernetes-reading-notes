@@ -13,10 +13,10 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 2
-        memory: 1Gi
+        memory: 512Mi
       requests:
         cpu: 1
-        memory: 2Gi
+        memory: 256Mi
   single:
     replicas: 1
     resources:
