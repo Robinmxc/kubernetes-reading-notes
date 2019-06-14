@@ -158,18 +158,22 @@
   run_once: true
   connection: local
 
-- block:
+- name: 部署mongodb
+  when: '"mongo" not in pod_info.stdout'
+  block:
     - name: 分发镜像文件
       copy: src={{ base_dir }}/down/{{ mongodb_offline }} dest=/opt/kube/images/{{ mongodb_offline }}
-      when: 'mongodb_offline in download_info.stdout'
+      when: '"single" != CLUSTER_SCALE and mongodb_offline in download_info.stdout'
 
-    - name: 获取镜像文件分发情况
-      command: "ls /opt/kube/images"
-      register: image_info
+    - name: 获取docker已加载的镜像信息
+      command: "docker images --format ''{{ '{{' }}.Repository{{ '}}' }}:{{ '{{' }}.Tag{{ '}}' }}''"
+      register: imgages_info
 
     - name: 导入镜像
-      shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ mongodb_offline }}"
-      when: 'mongodb_offline in image_info.stdout'
+      when: '"mongo" not in imgages_info.stdout'
+      vars:
+        img_dir: '{% if "single" == CLUSTER_SCALE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'
+      shell: "{{ bin_dir }}/docker load -i {{ img_dir }}/{{ mongodb_offline }}"
 
     - name: 部署第1个mongodb
       shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo1.yml"
@@ -220,8 +224,6 @@
       connection: local
       run_once: true
       no_log: true
-
-  when: '"mongo" not in pod_info.stdout'
 
 - block:
   - name: 准备MongoDB NodePort部署文件
