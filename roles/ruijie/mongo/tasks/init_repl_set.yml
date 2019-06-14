@@ -2,9 +2,9 @@
   template: src="init-repl-set.js.j2" dest="{{ mongodb_init_dir }}/init-repl-set.js"
   when: 'mongodb_deploy_mode == "3" and inventory_hostname == groups.mongodb[0]'
 
-- name: 准备初始化文件
+- name: 准备单机初始化文件
   template: src="init-repl-set-single.js.j2" dest="{{ mongodb_init_dir }}/init-repl-set.js"
-  when: 'mongodb_deploy_mode == "3" and inventory_hostname == groups.mongodb[0]'
+  when: 'mongodb_deploy_mode == "1" and inventory_hostname == groups.mongodb[0]'
 
 - block:
   - name: 查询复制集状态
