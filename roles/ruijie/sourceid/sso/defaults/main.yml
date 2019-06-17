@@ -12,19 +12,19 @@ deploy_conf_defaults:
     replicas: 2
     resources:
       limits:
-        cpu: 4
+        cpu: 8
         memory: 9Gi
       requests:
-        cpu: 2
+        cpu: 4
         memory: 5Gi
   single:
     replicas: 1
     resources:
       limits:
-        cpu: 2
+        cpu: 4
         memory: 5Gi
       requests:
-        cpu: 1
+        cpu: 2
         memory: 2Gi
 
 sso_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
