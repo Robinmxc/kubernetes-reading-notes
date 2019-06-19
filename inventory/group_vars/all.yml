@@ -21,10 +21,6 @@ CLUSTER_KUBERNETES_SVC_IP: "10.68.0.1"
 # 集群 DNS 服务 IP (从 SERVICE_CIDR 中预分配)
 CLUSTER_DNS_SVC_IP: "10.68.0.2"
 
-# Docker服务绑定IP
-DOCKER_BIP: "172.18.0.1/24"
-
-
 # ---------SourceID应用参数---------------
 
 #SourceID部署包版本号
