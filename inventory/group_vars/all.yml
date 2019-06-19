@@ -1,11 +1,13 @@
 # ---------K8S参数--------------------
 
-#集群部署模式：allinone, single-master, multi-master
-DEPLOY_MODE: "single-master"
+# Master节点IP
+KUBE_MASTER_HOSTS: ["192.168.1.61"]
 
-#集群 MASTER IP，自动生成
-MASTER_IP: "{{ groups['kube-master'][0] }}"
-KUBE_APISERVER: "https://{{ MASTER_IP }}:6443"
+# Node节点IP
+KUBE_NODE_HOSTS: ["192.168.1.62", "192.168.1.63", "192.168.1.64"]
+
+# 双Master部署模式时使用的虚IP
+KUBE_MASTER_VIP: ""
 
 # 服务网段 (Service CIDR），注意不要与内网已有网段冲突
 SERVICE_CIDR: "10.68.0.0/16"

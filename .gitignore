@@ -24,9 +24,6 @@ roles/cluster-backup/files/*
 .idea
 *.iml
 
-inventory/*
-!inventory/example
-
 /workspace
 
 *.code-workspace
