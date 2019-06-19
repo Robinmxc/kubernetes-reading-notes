@@ -20,8 +20,8 @@
   roles:
   - deploy
   - etcd
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
 
 - hosts: deploy
   tasks:

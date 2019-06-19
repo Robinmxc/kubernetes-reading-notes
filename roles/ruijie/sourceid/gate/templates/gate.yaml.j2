@@ -12,7 +12,7 @@ spec:
     spec:
 {% if "dev" == SOURCEID_DEPLOY_PROFILE %}
       hostAliases:
-      - ip: "{{ groups['kube-node'][0] }}"
+      - ip: "{{ groups['kube_node'][0] }}"
         hostnames:
         - "{{ SOURCEID_SSO_DOMAIN }}"
 {% endif %}

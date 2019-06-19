@@ -12,8 +12,8 @@
 
 # prepare tasks for all nodes
 - hosts:
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
   - deploy
   - etcd
   - lb
@@ -35,14 +35,14 @@
 
 # to install docker service
 - hosts:
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
   any_errors_fatal: true
   roles:
   - ruijie/docker
 
-# to set up 'kube-master' nodes
-- hosts: kube-master
+# to set up 'kube_master' nodes
+- hosts: kube_master
   any_errors_fatal: true
   roles:
   - kube-master
@@ -60,23 +60,23 @@
     ignore_errors: true
     delegate_to: "{{ groups.deploy[0] }}"
 
-# to set up 'kube-node' nodes
-- hosts: kube-node
+# to set up 'kube_node' nodes
+- hosts: kube_node
   any_errors_fatal: true
   roles:
   - { role: kube-node, when: "DEPLOY_MODE != 'allinone'" }
 
 # to install network plugin, only one can be choosen
 - hosts:
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
   any_errors_fatal: true
   roles:
   - ruijie/flannel
 
 # to install clust-addons
 - hosts:
-  - kube-node
+  - kube_node
   any_errors_fatal: true
   roles:
   - ruijie/kube-dns

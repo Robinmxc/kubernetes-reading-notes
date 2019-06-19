@@ -7,7 +7,7 @@
 - 新节点预处理 prepare
 - 新节点安装 docker 服务
 - 新节点安装 kube-master 服务
-- 新节点安装 kube-node 服务
+- 新节点安装 kube_node 服务
 - 新节点安装网络插件相关
 - 禁止业务 pod调度到新master节点
 - 更新配置 haproxy 负载均衡并重启

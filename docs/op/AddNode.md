@@ -1,10 +1,10 @@
-## 增加 kube-node 节点
+## 增加 kube_node 节点
 
-新增`kube-node`节点大致流程为：
+新增`kube_node`节点大致流程为：
 - [可选]新节点安装 chrony 时间同步
 - 新节点预处理 prepare
 - 新节点安装 docker 服务
-- 新节点安装 kube-node 服务
+- 新节点安装 kube_node 服务
 - 新节点安装网络插件相关
 
 ### 操作步骤

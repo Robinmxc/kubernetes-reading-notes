@@ -1,5 +1,5 @@
 # 创建kubelet,kube-proxy工作目录和cni配置目录
-- name: 创建kube-node 相关目录
+- name: 创建kube_node 相关目录
   file: name={{ item }} state=directory
   with_items:
   - /var/lib/kubelet

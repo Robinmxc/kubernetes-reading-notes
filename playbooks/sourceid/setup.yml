@@ -24,7 +24,7 @@
   - { role: ruijie/rocketmq}
 
 - hosts:
-  - kube-node
+  - kube_node
   tags:
   - initdata
   any_errors_fatal: true
@@ -35,7 +35,7 @@
   - { role: ruijie/sourceid/dbinit }
 
 - hosts:
-  - kube-node
+  - kube_node
   tags:
   - sourceid
   any_errors_fatal: true

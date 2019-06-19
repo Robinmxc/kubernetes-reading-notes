@@ -10,8 +10,8 @@
 
 # prepare tasks for all nodes
 - hosts:
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
   - deploy
   - etcd
   - lb

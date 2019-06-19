@@ -1,12 +1,12 @@
 # WARNING: This playbook will erase the entire k8s-cluster, include PODs, ETCD data etc.
 # Make sure you know what you are doing.
 
-# to clean 'kube-node' nodes
+# to clean 'kube_node' nodes
 - hosts:
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
   tasks:
-  - name: stop and disable kube-node service
+  - name: stop and disable kube_node service
     service: name={{ item }} state=stopped enabled=no
     with_items:
     - kubelet
@@ -19,7 +19,7 @@
       warn: false
     ignore_errors: true
 
-  - name: remove files and dirs of 'kube-node' nodes
+  - name: remove files and dirs of 'kube_node' nodes
     file: name={{ item }} state=absent
     with_items:
     - "/var/lib/kubelet/"
@@ -28,9 +28,9 @@
     - "/etc/systemd/system/kube-proxy.service"
     - "/opt/kube/kube-system/"
 
-# to clean 'kube-master' nodes
+# to clean 'kube_master' nodes
 - hosts:
-  - kube-master
+  - kube_master
   tasks:
   - name: stop and disable kube-master service
     service: name={{ item }} state=stopped enabled=no
@@ -40,7 +40,7 @@
     - kube-scheduler
     ignore_errors: true
 
-  - name: remove files and dirs of 'kube-master' nodes
+  - name: remove files and dirs of 'kube_master' nodes
     file: name={{ item }} state=absent
     with_items:
     - "/var/run/kubernetes"
@@ -50,8 +50,8 @@
 
 # to clean docker service and networking
 - hosts:
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
   tasks:
   - name: clean 'kube-router' stuff
     shell: "{{ bin_dir }}/docker run --privileged --net=host cloudnativelabs/kube-router --cleanup-config"
@@ -183,8 +183,8 @@
 
 # to clean ntp, certs and keys, env path
 - hosts:
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
   - deploy
   - etcd
   - lb

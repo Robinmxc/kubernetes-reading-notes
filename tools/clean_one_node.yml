@@ -16,16 +16,16 @@
     when: "groups['etcd']|length < 2 and NODE_TO_DEL in groups['etcd']"
 
   - name: fail info2
-    fail: msg="you CAN NOT delete the last member of kube-master!"
-    when: "groups['kube-master']|length < 2 and NODE_TO_DEL in groups['kube-master']"
+    fail: msg="you CAN NOT delete the last member of kube_master!"
+    when: "groups['kube_master']|length < 2 and NODE_TO_DEL in groups['kube_master']"
 
-  - name: 执行kubectl drain(节点可能是kube-node节点)
+  - name: 执行kubectl drain(节点可能是kube_node节点)
     shell: "{{ bin_dir }}/kubectl drain {{ NODE_TO_DEL }} --ignore-daemonsets --delete-local-data"
     ignore_errors: true
 
   - block:
-    # 清理 kube-node 相关服务
-    - name: stop and disable kube-node service
+    # 清理 kube_node 相关服务
+    - name: stop and disable kube_node service
       service: name={{ item }} state=stopped enabled=no
       with_items:
       - kubelet
@@ -47,7 +47,7 @@
       - "/etc/systemd/system/kube-proxy.service"
       - "/opt/kube/kube-system/"
   
-    # 清理 kube-master 相关
+    # 清理 kube_master 相关
     - name: stop and disable kube-master service
       service: name={{ item }} state=stopped enabled=no
       with_items:
@@ -213,8 +213,8 @@
     delegate_to: "{{ NODE_TO_DEL }}"
     run_once: true
 
-  # 执行kubectl delete(节点可能是kube-node节点)
-  - name: 执行kubectl delete(节点可能是kube-node节点)
+  # 执行kubectl delete(节点可能是kube_node节点)
+  - name: 执行kubectl delete(节点可能是kube_node节点)
     shell: "{{ bin_dir }}/kubectl delete node {{ NODE_TO_DEL }}"
     ignore_errors: true
 

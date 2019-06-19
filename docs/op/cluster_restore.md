@@ -42,7 +42,7 @@ $ ansible-playbook /etc/ansible/99.clean.yml
 # 恢复原集群的CA 证书相关
 $ mkdir -p /etc/kubernetes/ssl/ && cp /backup/k8s/* /etc/kubernetes/ssl/
 
-# 然后执行集群恢复步骤，安装至 kube-node完成阶段
+# 然后执行集群恢复步骤，安装至 kube_node完成阶段
 $ cd /etc/ansible
 $ ansible-playbook 01.prepare.yml
 $ ansible-playbook 02.etcd.yml 

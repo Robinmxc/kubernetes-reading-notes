@@ -22,7 +22,7 @@ listen ingress-node
 	mode tcp
         option tcplog
         balance {{ BALANCE_ALG }}
-{% for host in groups['kube-node'] %}
+{% for host in groups['kube_node'] %}
         server {{ host }} {{ host }}:23456 check inter 2000 fall 2 rise 2 weight 1
 {% endfor %}
 {% endif %}
@@ -33,7 +33,7 @@ listen ingress-node-tls
 	mode tcp
         option tcplog
         balance {{ BALANCE_ALG }}
-{% for host in groups['kube-node'] %}
+{% for host in groups['kube_node'] %}
         server {{ host }} {{ host }}:23457 check inter 2000 fall 2 rise 2 weight 1
 {% endfor %}
 {% endif %}

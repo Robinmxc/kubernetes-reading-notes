@@ -203,7 +203,7 @@ WantedBy=multi-user.target
 - hosts: kube-master
   roles:
   - kube-master
-  - kube-node
+  - kube_node
   # 禁止业务 pod调度到 master节点
   tasks:
   - name: 禁止业务 pod调度到 master节点

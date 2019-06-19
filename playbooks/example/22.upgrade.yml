@@ -3,21 +3,21 @@
 
 # update kubectl binary
 - hosts:
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
   - deploy
   roles:
   - prepare
 
 # update masters
 - hosts: 
-  - kube-master
+  - kube_master
   roles:
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
 
 # update nodes
 - hosts: 
-  - kube-node
+  - kube_node
   roles:
-  - { role: kube-node, when: "DEPLOY_MODE != 'allinone'" }
+  - { role: kube_node, when: "DEPLOY_MODE != 'allinone'" }

@@ -101,7 +101,7 @@ ansible-playbook 01.prepare.yml
 ansible-playbook 02.etcd.yml
 ansible-playbook 03.docker.yml
 ansible-playbook 04.kube-master.yml
-ansible-playbook 05.kube-node.yml
+ansible-playbook 05.kube_node.yml
 ansible-playbook 06.network.yml
 ansible-playbook 07.cluster-addon.yml 
 # 一步安装

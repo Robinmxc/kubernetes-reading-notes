@@ -35,11 +35,11 @@
     192.168.1.62 NODE_NAME=etcd2
     192.168.1.63 NODE_NAME=etcd3
 
-    [kube-master]
+    [kube_master]
     192.168.1.61
     192.168.1.62
 
-    [kube-node]
+    [kube_node]
     192.168.1.63
     192.168.1.64
     192.168.1.65

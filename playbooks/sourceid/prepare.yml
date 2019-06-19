@@ -16,7 +16,7 @@
   - ruijie/sourceid/download
 
 - hosts:
-  - kube-node
+  - kube_node
   any_errors_fatal: true
   vars_files:
   - "{{ workspace_dir }}/kad.yml"

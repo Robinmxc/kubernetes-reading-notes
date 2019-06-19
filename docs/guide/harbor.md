@@ -32,7 +32,7 @@ mv docker-compose-Linux-x86_64 /etc/ansible/bin/docker-compose
 1. role `docker` 安装docker
 1. role `harbor` 安装harbor
 
-`kube-node`节点在harbor部署完之后，需要配置harbor的证书，并可以在hosts里面添加harbor的域名解析，如果你的环境中有dns服务器，可以跳过hosts文件设置
+`kube_node`节点在harbor部署完之后，需要配置harbor的证书，并可以在hosts里面添加harbor的域名解析，如果你的环境中有dns服务器，可以跳过hosts文件设置
 
 请在另外窗口打开 [roles/harbor/tasks/main.yml](../../roles/harbor/tasks/main.yml)，对照以下讲解
 

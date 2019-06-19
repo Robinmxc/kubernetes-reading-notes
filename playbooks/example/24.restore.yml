@@ -39,17 +39,17 @@
 
 # to install docker
 - hosts:
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
   roles:
   - docker
 
-# to set up 'kube-master' nodes
+# to set up 'kube_master' nodes
 - hosts:
-  - kube-master
+  - kube_master
   roles:
-  - kube-master
-  - kube-node
+  - kube_master
+  - kube_node
   # 
   tasks:
   - name: Making master nodes SchedulingDisabled
@@ -61,11 +61,11 @@
     shell: "{{ bin_dir }}/kubectl label node {{ inventory_hostname }} kubernetes.io/role=master --overwrite"
     ignore_errors: true
 
-# to set up 'kube-node' nodes
+# to set up 'kube_node' nodes
 - hosts:
-  - kube-node
+  - kube_node
   roles:
-  - kube-node
+  - kube_node
 
 # to restore data of etcd cluster
 - hosts: etcd

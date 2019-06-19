@@ -16,8 +16,8 @@ def parse_host_data(filename):
 
     result = {
         "groups": {
-            "kube-master": {"hosts": master_hosts},
-            "kube-node": {"hosts": node_hosts},
+            "kube_master": {"hosts": master_hosts},
+            "kube_node": {"hosts": node_hosts},
             "etcd": {"hosts": node_hosts},
             "mongodb": {"hosts": node_hosts},
             "deploy": {"hosts": [master_hosts[0]]},
