@@ -4,6 +4,7 @@
 import json
 import sys
 import yaml
+from ipaddress import IPv4Network
 
 def to_json(in_dict):
     return json.dumps(in_dict, sort_keys=True, indent=2)
@@ -51,6 +52,30 @@ def parse_host_data(filename):
     else:
         group_all_vars["MASTER_IP"] = master_hosts[0]
         group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:6443"
+
+    # 计算服务网段
+    if "SERVICE_CIDR" in config:
+        service_cidr = IPv4Network(config["SERVICE_CIDR"].decode("iso-8859-1"))
+    else:
+        cluster_cidr = IPv4Network(config["CLUSTER_CIDR"].decode("iso-8859-1"))
+        # POD网络位数是16~20时分别对应的服务网络位数。
+        # 如：POD网络位数是20，对应的服务网络位数是24，可以有254个服务IP
+        prefix_length_conf = [22, 23, 23, 23, 24]
+        calc_masks = [0x0000fc00, 0x00007c00, 0x00003e00, 0x00001e00, 0x00000f00]
+        idx = cluster_cidr.prefixlen - 16
+        if (idx < 0):
+            idx = 0
+        service_cidr_addr = (int(cluster_cidr.network_address) & 0xffffff00) | calc_masks[idx]
+        service_cidr = IPv4Network((service_cidr_addr, prefix_length_conf[idx]))
+        group_all_vars["SERVICE_CIDR"] = str(service_cidr)
+
+    # kubernetes服务IP默认分配为服务网段一个IP
+    if "CLUSTER_KUBERNETES_SVC_IP" not in config:
+        group_all_vars["CLUSTER_KUBERNETES_SVC_IP"] = str(service_cidr.network_address + 1)
+
+    # DNS服务IP默认分配为服务网段第2个IP
+    if "CLUSTER_DNS_SVC_IP" not in config:
+        group_all_vars["CLUSTER_DNS_SVC_IP"] = str(service_cidr.network_address + 2)
 
     # 初始化Host变量
     for ip in master_hosts:

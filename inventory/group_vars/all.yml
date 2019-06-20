@@ -6,20 +6,12 @@ KUBE_MASTER_HOSTS: ["192.168.1.61"]
 # Node节点IP
 KUBE_NODE_HOSTS: ["192.168.1.62", "192.168.1.63", "192.168.1.64"]
 
+# POD 网段 (Cluster CIDR），不要与内网已有网段冲突，网络位数不能大于20
+CLUSTER_CIDR: "172.30.16.0/20"
+
 # 双Master部署模式时使用的虚IP
 KUBE_MASTER_VIP: ""
 
-# 服务网段 (Service CIDR），注意不要与内网已有网段冲突
-SERVICE_CIDR: "10.68.0.0/16"
-
-# POD 网段 (Cluster CIDR），注意不要与内网已有网段冲突
-CLUSTER_CIDR: "172.30.0.0/16"
-
-# kubernetes 服务 IP (预分配，一般是 SERVICE_CIDR 中第一个IP)
-CLUSTER_KUBERNETES_SVC_IP: "10.68.0.1"
-
-# 集群 DNS 服务 IP (从 SERVICE_CIDR 中预分配)
-CLUSTER_DNS_SVC_IP: "10.68.0.2"
 
 # ---------SourceID应用参数---------------
 
