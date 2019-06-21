@@ -1,20 +1,3 @@
-# ---------K8S参数--------------------
-
-# Master节点IP
-KUBE_MASTER_HOSTS: ["192.168.1.61"]
-
-# Node节点IP
-KUBE_NODE_HOSTS: ["192.168.1.62", "192.168.1.63", "192.168.1.64"]
-
-# POD 网段 (Cluster CIDR），不要与内网已有网段冲突，网络位数不能大于20
-CLUSTER_CIDR: "172.30.16.0/20"
-
-# 双Master部署模式时使用的虚IP
-KUBE_MASTER_VIP: ""
-
-
-# ---------SourceID应用参数---------------
-
 #SourceID部署包版本号
 SOURCEID_KAD_VERSION: "r1.5.1"
 
@@ -37,9 +20,5 @@ SOURCEID_REDIRECT_URL: "http://www.baidu.com"
 #frontend资源文件目录
 SOURCEID_FRONTEND_RES: "ruijie"
 
-#部署规模：small, normal, single。normal为标准规模，small主要用于开发、测试，single为单机
-CLUSTER_SCALE: "normal"
-
 #部署模式：dev, prd。dev模式下会多一些和开发、测试有关的配置参数
 SOURCEID_DEPLOY_PROFILE: "prd"
-

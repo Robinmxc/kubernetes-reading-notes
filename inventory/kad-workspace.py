@@ -4,17 +4,55 @@
 import json
 import sys
 import yaml
+import os
 from ipaddress import IPv4Network
 
 def to_json(in_dict):
     return json.dumps(in_dict, sort_keys=True, indent=2)
 
-def parse_host_data(filename):
-    file = open(filename)
+def read_yml(file_path):
+    file = open(file_path)
     config = yaml.load(file)
-    master_hosts = config["KUBE_MASTER_HOSTS"]
-    node_hosts = config["KUBE_NODE_HOSTS"]
+    file.close()
+    return config
 
+def parse_module_config(dir):
+    result = {}
+    file_list = os.listdir(dir)
+    for x in file_list:
+        full_path = dir + "/" + x
+        full_path = full_path.replace("//", "/")
+        if (os.path.isdir(full_path)):
+            conf_file = full_path + "/conf/all.yml"
+            if (os.path.exists(conf_file)):
+                result[x] = read_yml(conf_file)
+    return result
+
+def parse_host_data(dir):
+    module_configs = parse_module_config(dir)
+
+    group_all_vars = {"module_configs": module_configs}
+    host_vars = {}
+
+    # k8s config
+    k8s_config = module_configs["k8s"]
+    for k in k8s_config:
+        group_all_vars[k] = k8s_config[k]
+
+    # app config
+    env = os.environ
+    if ("KAD_APP_NAMESPACE" in env):
+        app_namespace = os.environ["KAD_APP_NAMESPACE"]
+    else:
+        app_namespace = "ruijie-sourceid"
+    group_all_vars["APP_NAMESPACE"] = app_namespace
+    if app_namespace in module_configs:
+        app_config = module_configs[app_namespace]
+        for k in app_config:
+            group_all_vars[k] = app_config[k]
+
+    master_hosts = k8s_config["KUBE_MASTER_HOSTS"]
+    node_hosts = k8s_config["KUBE_NODE_HOSTS"]
     result = {
         "groups": {
             "kube_master": {"hosts": master_hosts},
@@ -24,15 +62,11 @@ def parse_host_data(filename):
             "deploy": {"hosts": [master_hosts[0]]},
             "rocketmq": {"hosts": [node_hosts[len(node_hosts) - 1]]},
             "all": {
-                "vars": {
-                }
+                "vars": group_all_vars
             }
         },
-        "host_vars": {
-        }
+        "host_vars": host_vars
     }
-    group_all_vars = result["groups"]["all"]["vars"]
-    host_vars = result["host_vars"]
 
     # 设置K8S部署模式
     deploy_mode = "single-master"
@@ -46,7 +80,7 @@ def parse_host_data(filename):
         # 设置负载均衡节点
         result["groups"]["lb"] = {"hosts": master_hosts}
         # 双Master部署模式设置为虚
-        group_all_vars["MASTER_IP"] = config["KUBE_MASTER_VIP"]
+        group_all_vars["MASTER_IP"] = k8s_config["KUBE_MASTER_VIP"]
         # 双Master部署模式设置端口为8443
         group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:8443"
     else:
@@ -54,10 +88,10 @@ def parse_host_data(filename):
         group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:6443"
 
     # 计算服务网段
-    if "SERVICE_CIDR" in config:
-        service_cidr = IPv4Network(config["SERVICE_CIDR"].decode("iso-8859-1"))
+    if "SERVICE_CIDR" in k8s_config:
+        service_cidr = IPv4Network(k8s_config["SERVICE_CIDR"].decode("iso-8859-1"))
     else:
-        cluster_cidr = IPv4Network(config["CLUSTER_CIDR"].decode("iso-8859-1"))
+        cluster_cidr = IPv4Network(k8s_config["CLUSTER_CIDR"].decode("iso-8859-1"))
         # POD网络位数是16~20时分别对应的服务网络位数。
         # 如：POD网络位数是20，对应的服务网络位数是24，可以有254个服务IP
         prefix_length_conf = [22, 23, 23, 23, 24]
@@ -70,11 +104,11 @@ def parse_host_data(filename):
         group_all_vars["SERVICE_CIDR"] = str(service_cidr)
 
     # kubernetes服务IP默认分配为服务网段一个IP
-    if "CLUSTER_KUBERNETES_SVC_IP" not in config:
+    if "CLUSTER_KUBERNETES_SVC_IP" not in k8s_config:
         group_all_vars["CLUSTER_KUBERNETES_SVC_IP"] = str(service_cidr.network_address + 1)
 
     # DNS服务IP默认分配为服务网段第2个IP
-    if "CLUSTER_DNS_SVC_IP" not in config:
+    if "CLUSTER_DNS_SVC_IP" not in k8s_config:
         group_all_vars["CLUSTER_DNS_SVC_IP"] = str(service_cidr.network_address + 2)
 
     # 初始化Host变量
@@ -97,7 +131,7 @@ def parse_host_data(filename):
     return result
 
 def main():
-    host_data = parse_host_data("/opt/kad/workspace/inventory/group_vars/all.yml")
+    host_data = parse_host_data(os.getcwd() + "/workspace")
     if len(sys.argv) == 2 and (sys.argv[1] == "--list"):
         print(to_json(host_data["groups"]))
     elif len(sys.argv) == 3 and (sys.argv[1] == "--host"):
