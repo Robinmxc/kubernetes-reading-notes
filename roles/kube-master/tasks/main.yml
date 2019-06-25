@@ -4,7 +4,11 @@
   - kube-apiserver
   - kube-controller-manager
   - kube-scheduler
+  - kubectl
   tags: upgrade_k8s
+
+- name: 创建 kubectl 命令的软连接
+  file: src={{ bin_dir }}/kubectl dest=/usr/bin/kubectl state=link
 
 - name: 分发证书相关
   copy: src={{ ca_dir }}/{{ item }} dest={{ ca_dir }}/{{ item }}
