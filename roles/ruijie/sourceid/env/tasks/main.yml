@@ -27,12 +27,6 @@
     dest: "{{ sourceid_kad_temp_dir }}"
   when: 'not p.stat.exists and zip_file is exists'
 
-- name: 拷贝kad.yml
-  vars:
-    dest_file: '{{ workspace_dir }}/kad.yml'
-  copy: src="{{ sourceid_kad_temp_dir }}/kad.yml" dest="{{ dest_file }}"
-  when: 'dest_file is not exists'
-
 - name: 拷贝SourceID配置文件
   vars:
     src_path: "{{ sourceid_kad_temp_dir }}/conf/{{ item }}"

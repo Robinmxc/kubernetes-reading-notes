@@ -31,6 +31,7 @@ cp -rpf /opt/kad/tools %{buildroot}/opt/kad/tools
 install -m 0644 /opt/kad/ansible.cfg %{buildroot}/opt/kad/
 install -m 0644 /opt/kad/meta-info.yml %{buildroot}/opt/kad/
 install -m 0750 /opt/kad/kad-play.sh %{buildroot}/opt/kad/
+install -m 0750 /opt/kad/sourceid-setup.sh %{buildroot}/opt/kad/
 install -m 0644 /opt/kad/down/sourceid-kad-r1.5.1.zip %{buildroot}/opt/kad/down/
 
 %pre

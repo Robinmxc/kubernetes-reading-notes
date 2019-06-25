@@ -29,10 +29,15 @@ def parse_module_config(dir):
     return result
 
 def parse_host_data(dir):
-    module_configs = parse_module_config(dir)
-
-    group_all_vars = {"module_configs": module_configs}
+    group_all_vars = {}
     host_vars = {}
+
+    kad_meta_info = read_yml("/opt/kad/meta-info.yml")
+    for k in kad_meta_info:
+        group_all_vars[k] = kad_meta_info[k]
+
+    module_configs = parse_module_config(dir)
+    group_all_vars["module_configs"] = module_configs
 
     # k8s config
     k8s_config = module_configs["k8s"]
@@ -50,6 +55,14 @@ def parse_host_data(dir):
         app_config = module_configs[app_namespace]
         for k in app_config:
             group_all_vars[k] = app_config[k]
+
+    # sourceid-kad package config
+    filename = "/opt/kad/down/sourceid-kad-" + group_all_vars["SOURCEID_KAD_VERSION"] + "/kad.yml"
+    if os.path.exists(filename):
+        sourceid_kad_conf = read_yml(filename)
+        for k in sourceid_kad_conf:
+            if (k not in group_all_vars):
+                group_all_vars[k] = sourceid_kad_conf[k]
 
     master_hosts = k8s_config["KUBE_MASTER_HOSTS"]
     node_hosts = k8s_config["KUBE_NODE_HOSTS"]
@@ -127,6 +140,7 @@ def parse_host_data(dir):
     for ip in node_hosts:
         host_vars[ip]["NODE_NAME"] = "etcd" + bytes(idx)
         idx = idx + 1
+
 
     return result
 

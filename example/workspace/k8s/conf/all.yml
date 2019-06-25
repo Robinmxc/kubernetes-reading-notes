@@ -10,5 +10,8 @@ CLUSTER_CIDR: "172.30.16.0/20"
 # 双Master部署模式时使用的虚IP
 KUBE_MASTER_VIP: ""
 
-#部署规模：small, normal, single。normal为标准规模，small主要用于开发、测试，single为单机
+# 部署规模：small, normal, single。normal为标准规模，small主要用于开发、测试，single为单机
 CLUSTER_SCALE: "normal"
+
+# 文件下载服务器，开发/测试环境请修改为内部地址
+KAD_FILES_REPO: "http://fs.rghall.com.cn"

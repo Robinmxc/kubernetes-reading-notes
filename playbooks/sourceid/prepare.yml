@@ -8,17 +8,13 @@
 - hosts:
   - localhost
   tags:
-  - download
+  - pull-images
   any_errors_fatal: true
-  vars_files:
-  - "{{ workspace_dir }}/kad.yml"
   roles:
-  - ruijie/sourceid/download
+  - ruijie/sourceid/pull-images
 
 - hosts:
   - kube_node
   any_errors_fatal: true
-  vars_files:
-  - "{{ workspace_dir }}/kad.yml"
   roles:
   - { role: ruijie/sourceid/load-images, tags: ["docker"] }
