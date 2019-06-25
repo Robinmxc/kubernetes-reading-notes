@@ -126,6 +126,6 @@
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
-    no_log: '{{ SOURCEID_DEPLOY_PROFILE=="prd" }}'
+    no_log: true
 
   when: 'inventory_hostname == groups.mongodb[0]'

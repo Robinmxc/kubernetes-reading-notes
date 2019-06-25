@@ -1,26 +1,3 @@
-- name: 自动配置
-  tags:
-    - config
-  replace: path="{{ workspace_dir }}/conf/component/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
-  with_items:
-    - {regexp: "mongodb:.*/component.*$", replace: "mongodb://{{ COMPONENT_DB_USER }}:{{ COMPONENT_DB_PWD }}@{{ mongodb_addr }}/component?replicaSet=rs0"}
-    - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
-  no_log: '{{ SOURCEID_DEPLOY_PROFILE=="prd" }}'
-  run_once: true
-  connection: local
-
-- name: 自定义配置
-  tags:
-    - config
-  replace:
-    path: '{{ workspace_dir }}/conf/component/conf/application-bus.properties'
-    regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
-    replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
-  with_items: '{{ component_configs }}'
-  no_log: '{{ SOURCEID_DEPLOY_PROFILE=="prd" }}'
-  run_once: true
-  connection: local
-
 - name: 复制配置文件
   tags:
     - config
@@ -28,7 +5,26 @@
     src: "{{ workspace_dir }}/conf/component/conf/"
     dest: "{{ config_base_dir }}/component/conf/"
 
-- name: 准备目录
+- name: 自动配置
+  tags:
+    - config
+  replace: path="{{ config_base_dir }}/component/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+    - {regexp: "mongodb:.*/component.*$", replace: "mongodb://{{ COMPONENT_DB_USER }}:{{ COMPONENT_DB_PWD }}@{{ mongodb_addr }}/component?replicaSet=rs0"}
+    - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+  no_log: true
+
+- name: 自定义配置
+  tags:
+    - config
+  replace:
+    path: '{{ config_base_dir }}/component/conf/application-bus.properties'
+    regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
+    replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
+  with_items: '{{ component_configs }}'
+  no_log: true
+
+- name: 准备部署文件目录
   tags:
     - config
   file: path={{ item }} state=directory
