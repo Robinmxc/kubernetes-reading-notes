@@ -2,7 +2,7 @@
   tags:
     - config
   copy:
-    src: "{{ workspace_dir }}/conf/sourceid/frontend/{{ SOURCEID_FRONTEND_RES }}/deploy/"
+    src: "{{ namespace_dir }}/conf/sourceid/frontend/{{ SOURCEID_FRONTEND_RES }}/deploy/"
     dest: "{{ config_base_dir }}/sourceid/frontend/deploy/"
 
 - name: 修改配置文件

@@ -1,12 +1,5 @@
 # ---------基础参数--------------------
 
-#部署目录，即 ansible 工作目录
-base_dir: "/opt/kad"
-
-img_download_dir: "{{ base_dir }}/down"
-
-img_copy_dir: "/opt/kube/images"
-
 # 集群网络插件
 CLUSTER_NETWORK: "flannel"
 

@@ -1,29 +1,14 @@
 # ---------基础参数--------------------
 
-#部署目录，即 ansible 工作目录
-base_dir: "/opt/kad"
-
 #默认二进制文件目录
 bin_dir: "/opt/kube/bin"
-
-img_download_dir: "{{ base_dir }}/down"
-
-img_copy_dir: "/opt/kube/images"
-
-
-#应用程序命名空间
-APP_NAMESPACE: "ruijie-sourceid"
-
-temp_dir: "{{ base_dir }}/temp"
-
-sourceid_kad_temp_dir: "{{ base_dir }}/down/sourceid-kad-{{ SOURCEID_KAD_VERSION }}"
 
 mongodb_addr: "{% if (groups['mongodb'] | length | int) == 1 %}mongo1{% else %}mongo1,mongo2,mongo3{% endif %}"
 mongodb_auth_mode: "yes"
 
-workspace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
+namespace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
 
-yaml_dir: "{{ workspace_dir }}/yaml"
+yaml_dir: "{{ namespace_dir }}/yaml"
 
 max_space_dir: "{{
     hostvars[groups['kube_node'][0]].ansible_mounts

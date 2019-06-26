@@ -13,18 +13,15 @@
 #   with_items: "{{ db_pwd_checklist }}"
 
 - block:
-  - name: 准备临时目录
-    file: path="{{ temp_dir }}/sourceid-{{SOURCEID_KAD_VERSION}}" state=directory
-
   - name: 压缩数据初始化脚本
     archive:
-      path: "{{ sourceid_kad_temp_dir }}/db/"
-      dest: "{{ temp_dir }}/sourceid-{{SOURCEID_KAD_VERSION}}/data.tgz"
+      path: "{{ KAD_PACKAGE_DIR }}/db/"
+      dest: "{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz"
     connection: local
     run_once: true
 
   - name: 复制数据初始化脚本
-    copy: src="{{ temp_dir }}/sourceid-{{SOURCEID_KAD_VERSION}}/data.tgz" dest="{{ mongodb_init_dir }}/"
+    copy: src="{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz" dest="{{ mongodb_init_dir }}/data.tgz"
 
   - name: 解压数据初始化脚本
     unarchive:

@@ -9,28 +9,28 @@
   with_items:
   - "{{ temp_dir }}"
   - "{{ yaml_dir }}"
-  - "{{ workspace_dir }}/conf"
+  - "{{ namespace_dir }}/conf"
 
 - name: 读取目录信息
-  stat: path="{{ sourceid_kad_temp_dir }}"
+  stat: path="{{ KAD_PACKAGE_DIR }}"
   register: p
 
 - name: 创建解压目录
-  file: path="{{ sourceid_kad_temp_dir }}" state=directory
+  file: path="{{ KAD_PACKAGE_DIR }}" state=directory
   when: 'not p.stat.exists'
 
-- name: 解压SourceID部署包
+- name: 解压SourceID安装包
   vars:
-    zip_file: "{{ img_download_dir }}/sourceid-kad-{{ SOURCEID_KAD_VERSION }}.zip"
+    zip_file: "{{ base_dir }}/down/{{ KAD_PACKAGE_NAME }}.zip"
   unarchive:
     src: "{{ zip_file }}"
-    dest: "{{ sourceid_kad_temp_dir }}"
+    dest: "{{ KAD_PACKAGE_DIR }}"
   when: 'not p.stat.exists and zip_file is exists'
 
 - name: 拷贝SourceID配置文件
   vars:
-    src_path: "{{ sourceid_kad_temp_dir }}/conf/{{ item }}"
-    dest_path: "{{ workspace_dir }}/conf/{{ item }}"
+    src_path: "{{ KAD_PACKAGE_DIR }}/conf/{{ item }}"
+    dest_path: "{{ namespace_dir }}/conf/{{ item }}"
   copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
   when: 'dest_path is not exists'
   with_items:

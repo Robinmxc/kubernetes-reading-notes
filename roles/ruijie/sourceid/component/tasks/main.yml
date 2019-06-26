@@ -2,7 +2,7 @@
   tags:
     - config
   copy:
-    src: "{{ workspace_dir }}/conf/component/conf/"
+    src: "{{ namespace_dir }}/conf/component/conf/"
     dest: "{{ config_base_dir }}/component/conf/"
 
 - name: 自动配置

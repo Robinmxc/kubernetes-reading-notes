@@ -2,7 +2,7 @@
   tags:
     - config
   copy:
-    src: "{{ workspace_dir }}/conf/sourceid/linkid/conf/"
+    src: "{{ namespace_dir }}/conf/sourceid/linkid/conf/"
     dest: "{{ config_base_dir }}/sourceid/linkid/conf/"
 
 - name: 自动配置

@@ -1,5 +1,11 @@
-#SourceID部署包版本号
-SOURCEID_KAD_VERSION: "r1.5.1"
+# 应用名称
+KAD_APP_NAME: "sourceid"
+
+# 应用版本
+KAD_APP_VERSION: "r1.5.1"
+
+#部署模式：dev, prd。dev模式下会多一些和开发、测试有关的配置参数
+SOURCEID_DEPLOY_PROFILE: "prd"
 
 #MongoDB管理员密码
 MONGODB_ADMIN_USER: "admin"
@@ -20,5 +26,3 @@ SOURCEID_REDIRECT_URL: "http://www.baidu.com"
 #frontend资源文件目录
 SOURCEID_FRONTEND_RES: "ruijie"
 
-#部署模式：dev, prd。dev模式下会多一些和开发、测试有关的配置参数
-SOURCEID_DEPLOY_PROFILE: "prd"

@@ -5,14 +5,14 @@
     tags:
       - config
     copy:
-      src: "{{ workspace_dir }}/conf/sourceid/license/conf/"
+      src: "{{ namespace_dir }}/conf/sourceid/license/conf/"
       dest: "{{ config_base_dir }}/sourceid/license/conf/"
 
   - name: 自动配置
     tags:
       - config
     no_log: true
-    replace: path="{{ workspace_dir }}/conf/sourceid/license/conf/application.yaml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    replace: path="{{ namespace_dir }}/conf/sourceid/license/conf/application.yaml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
       - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
@@ -22,7 +22,7 @@
       - config
     no_log: true
     replace:
-      path: '{{ workspace_dir }}/conf/sourceid/license/conf/application.yaml'
+      path: '{{ namespace_dir }}/conf/sourceid/license/conf/application.yaml'
       regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
       replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
     with_items: '{{ license_configs }}'

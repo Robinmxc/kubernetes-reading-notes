@@ -2,10 +2,11 @@
 #coding:utf8
 
 import json
+import os
 import sys
 import yaml
-import os
 from ipaddress import IPv4Network
+
 
 def to_json(in_dict):
     return json.dumps(in_dict, sort_keys=True, indent=2)
@@ -16,11 +17,11 @@ def read_yml(file_path):
     file.close()
     return config
 
-def parse_module_config(dir):
+def parse_module_config(workspace_dir):
     result = {}
-    file_list = os.listdir(dir)
+    file_list = os.listdir(workspace_dir)
     for x in file_list:
-        full_path = dir + "/" + x
+        full_path = workspace_dir + "/" + x
         full_path = full_path.replace("//", "/")
         if (os.path.isdir(full_path)):
             conf_file = full_path + "/conf/all.yml"
@@ -28,58 +29,81 @@ def parse_module_config(dir):
                 result[x] = read_yml(conf_file)
     return result
 
-def parse_host_data(dir):
-    group_all_vars = {}
+def parse_host_data(workspace_dir):
+    group_all_vars = {
+        "base_dir": "/opt/kad",
+        "temp_dir": "/opt/kad/temp",
+        "img_download_dir": "/opt/kad/down",
+        "img_copy_dir": "/opt/kube/images",
+        "workspace_dir": "/opt/kad/workspace"
+    }
     host_vars = {}
-
-    kad_meta_info = read_yml("/opt/kad/meta-info.yml")
-    for k in kad_meta_info:
-        group_all_vars[k] = kad_meta_info[k]
-
-    module_configs = parse_module_config(dir)
-    group_all_vars["module_configs"] = module_configs
-
-    # k8s config
-    k8s_config = module_configs["k8s"]
-    for k in k8s_config:
-        group_all_vars[k] = k8s_config[k]
-
-    # app config
-    env = os.environ
-    if ("KAD_APP_NAMESPACE" in env):
-        app_namespace = os.environ["KAD_APP_NAMESPACE"]
-    else:
-        app_namespace = "ruijie-sourceid"
-    group_all_vars["APP_NAMESPACE"] = app_namespace
-    if app_namespace in module_configs:
-        app_config = module_configs[app_namespace]
-        for k in app_config:
-            group_all_vars[k] = app_config[k]
-
-    # sourceid-kad package config
-    filename = "/opt/kad/down/sourceid-kad-" + group_all_vars["SOURCEID_KAD_VERSION"] + "/kad.yml"
-    if os.path.exists(filename):
-        sourceid_kad_conf = read_yml(filename)
-        for k in sourceid_kad_conf:
-            if (k not in group_all_vars):
-                group_all_vars[k] = sourceid_kad_conf[k]
-
-    master_hosts = k8s_config["KUBE_MASTER_HOSTS"]
-    node_hosts = k8s_config["KUBE_NODE_HOSTS"]
     result = {
         "groups": {
-            "kube_master": {"hosts": master_hosts},
-            "kube_node": {"hosts": node_hosts},
-            "etcd": {"hosts": node_hosts},
-            "mongodb": {"hosts": node_hosts},
-            "deploy": {"hosts": [master_hosts[0]]},
-            "rocketmq": {"hosts": [node_hosts[len(node_hosts) - 1]]},
             "all": {
                 "vars": group_all_vars
             }
         },
         "host_vars": host_vars
     }
+
+    kad_meta_info = read_yml("/opt/kad/meta-info.yml")
+    for k in kad_meta_info:
+        group_all_vars[k] = kad_meta_info[k]
+
+    # Parse all module configs
+    module_configs = parse_module_config(workspace_dir)
+    group_all_vars["module_configs"] = module_configs
+
+    # Copy k8s config to global
+    k8s_config = module_configs["k8s"]
+    for k in k8s_config:
+        group_all_vars[k] = k8s_config[k]
+
+    # Configure app namespace
+    env = os.environ
+    if ("KAD_APP_NAMESPACE" in env):
+        app_namespace = os.environ["KAD_APP_NAMESPACE"]
+    else:
+        app_namespace = "ruijie-sourceid"
+    group_all_vars["APP_NAMESPACE"] = app_namespace
+
+    # Copy app config to global
+    if app_namespace in module_configs:
+        app_config = module_configs[app_namespace]
+        for k in app_config:
+            group_all_vars[k] = app_config[k]
+
+    # Configure KAD_APP_NAME
+    if ("KAD_APP_NAME" in group_all_vars):
+        app_name = group_all_vars["KAD_APP_NAME"]
+    else:
+        app_name = "sourceid"
+        group_all_vars["KAD_APP_NAME"] = app_name
+
+    # Configure KAD_PACKAGE_NAME
+    if ("KAD_PACKAGE_NAME" in group_all_vars):
+        kad_package_name = group_all_vars["KAD_PACKAGE_NAME"]
+    else:
+        kad_package_name = app_name + "-kad-" + group_all_vars["KAD_APP_VERSION"]
+        group_all_vars["KAD_PACKAGE_NAME"] = kad_package_name
+
+    # Configure KAD_PACKAGE_DIR
+    if ("KAD_PACKAGE_DIR" not in group_all_vars):
+        kad_package_dir = "/opt/kad/down/" + kad_package_name
+        if not os.path.exists(kad_package_dir):
+            kad_package_dir = group_all_vars["temp_dir"] + "/"  + kad_package_name
+        group_all_vars["KAD_PACKAGE_DIR"] = kad_package_dir
+
+    # Configure host groups
+    master_hosts = k8s_config["KUBE_MASTER_HOSTS"]
+    node_hosts = k8s_config["KUBE_NODE_HOSTS"]
+    result["groups"]["kube_master"] = {"hosts": master_hosts}
+    result["groups"]["kube_node"] = {"hosts": node_hosts}
+    result["groups"]["etcd"] = {"hosts": node_hosts}
+    result["groups"]["mongodb"] = {"hosts": node_hosts}
+    result["groups"]["deploy"] = {"hosts": [master_hosts[0]]}
+    result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
 
     # 设置K8S部署模式
     deploy_mode = "single-master"

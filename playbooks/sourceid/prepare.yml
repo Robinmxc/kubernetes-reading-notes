@@ -3,6 +3,7 @@
   tags: always
   any_errors_fatal: true
   roles:
+  - ruijie/sourceid/download
   - ruijie/sourceid/env
 
 - hosts:
@@ -10,11 +11,15 @@
   tags:
   - pull-images
   any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   roles:
   - ruijie/sourceid/pull-images
 
 - hosts:
   - kube_node
   any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   roles:
   - { role: ruijie/sourceid/load-images, tags: ["docker"] }

@@ -28,6 +28,8 @@
   tags:
   - initdata
   any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   roles:
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
   - { role: ruijie/sourceid/dbinit }
@@ -37,6 +39,8 @@
   tags:
   - sourceid
   any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   roles:
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
   - { role: ruijie/sourceid/linkid, tags: ["linkid"]}
