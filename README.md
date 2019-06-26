@@ -12,7 +12,7 @@
 - [常见问题和解决办法](docs/ruijie/guide/solve-problem.md)
 
 ## 参与开发
-- [怎样准备开发环境](docs/ruijie/guide/develop.md)
+- [准备开发环境](docs/ruijie/guide/develop.md)
 
 ## 沟通交流
 

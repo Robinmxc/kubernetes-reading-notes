@@ -58,11 +58,17 @@ KAD_FILES_REPO: "http://172.17.8.20:8081/repository/files/ruijie/"
 修改`/opt/kad/workspace/ruijie-sourceid/conf/all.yml`文件，根据文件提示修改以下参数：
 
 ```
+#SourceId发布版本号
+KAD_APP_VERSION="r1.5.1"
+
 #部署模式：dev, prd。dev模式下会多一些和开发、测试有关的配置参数，比如sso服务器的hostAlias
 SOURCEID_DEPLOY_PROFILE: "dev"
 
-#SourceId发布版本号
-SOURCEID_RELEASE_VERSION="r1.5.1"
+#数据库管理员账号，只能由大/小写字母、数字、下划线组成，长度3~16字符
+MONGODB_ADMIN_USER="admin"
+
+#数据库管理员密码，只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符
+MONGODB_ADMIN_PWD=""
 
 #SSO域名
 SOURCEID_SSO_DOMAIN="id.example.com"
@@ -75,16 +81,10 @@ SOURCEID_GATEWAY_URL="http://gateway.example.com"
 
 #登录成功后的跳转地址
 SOURCEID_REDIRECT_URL="http://www.baidu.com"
-
-#数据库管理员账号，只能由大/小写字母、数字、下划线组成，长度3~16字符
-MONGODB_ADMIN_USER="admin"
-
-#数据库管理员密码，只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符
-MONGODB_ADMIN_PWD=""
 ```
 
 **注意：**
-- `SOURCEID_RELEASE_VERSION`参数是产品发布版本号，不是Docker镜像的版本号，必须根据产品发布文档进行设置
+- `KAD_APP_VERSION`参数是产品发布版本号，不是Docker镜像的版本号，必须根据产品发布文档进行设置
 
 #### 4. 执行部署
 
