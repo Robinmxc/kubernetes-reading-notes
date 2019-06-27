@@ -32,4 +32,5 @@
     - "sourceid/gate"
     - "sourceid/linkid"
     - "sourceid/frontend"
+    - "sourceid/license"
     - "component"
