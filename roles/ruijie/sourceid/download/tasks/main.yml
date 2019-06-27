@@ -34,7 +34,7 @@
   register: image_pkg_stat
 
 - name: 下载镜像包
-  when: 'not image_pkg_stat.stat.exists'
+  when: '"yes" != PRIVATE_REGISTRY_ENABLED and not image_pkg_stat.stat.exists'
   block:
   - name: 下载镜像包
     get_url:

@@ -8,6 +8,7 @@
 - [配置HTTPS服务](docs/ruijie/guide/traefik-https.md)
 - [配置时间同步服务器 ](docs/ruijie/guide/chrony.md)
 - [配置MongoDB和RocketMQ的数据存储目录](docs/ruijie/sourceid/config-data-dir.md)
+- [内部测试环境配置和使用方法](docs/ruijie/sourceid/debug-env.md)
 - [常用命令](docs/ruijie/sourceid/utils-command.md)
 - [常见问题和解决办法](docs/ruijie/guide/solve-problem.md)
 
