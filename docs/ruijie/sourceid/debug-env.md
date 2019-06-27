@@ -35,7 +35,7 @@ unzip sourceid-kad-r1.5.1.zip -d sourceid-kad-r1.6.0-test
 
 更新组件版本（以linkid为例）
 - 修改`/opt/kad/down/sourceid-kad-r1.6.0-test/kad.yml`文件中变量`SOURCEID_DOCKERS`中linkid的版本号
-- 依次执行以下命令：
+- 依次执行以下命令（在`/opt/kad目录下执行`）：
     ```
     kad-play playbooks/sourceid/clean.yml --tags linkid
     kad-play playbooks/sourceid/prepare.yml
