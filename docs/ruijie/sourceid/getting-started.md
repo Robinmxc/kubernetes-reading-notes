@@ -4,19 +4,13 @@
 
 #### 1. 准备
 
-1. 安装基础工具wget，如果wget已经存在可以跳过这一步
-    ```bash
-    yum install -y wget
-    ```
 1. 安装Ansible
     ```bash
     yum install -y ansible
     ```
 1. 安装部署工具
     ```bash
-    cd /opt
-    wget http://172.17.8.20:8081/repository/files/ruijie/kad/release/kad-1.0.0-1.x86_64.rpm
-    rpm -ivh kad-1.0.0-1.x86_64.rpm
+    rpm -ivh http://172.17.8.20:8081/repository/files/ruijie/kad/release/kad-1.0.0-1.x86_64.rpm
     ```
 
 #### 2. 设置K8S部署参数
