@@ -3,7 +3,7 @@
   tags: always
   any_errors_fatal: true
   roles:
-  - ruijie/sourceid/k8s-config
+  - ruijie/sourceid/env
 
 - hosts:
   - mongodb

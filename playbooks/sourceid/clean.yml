@@ -2,9 +2,6 @@
   - localhost
   gather_facts: false
 
-  vars:
-    yaml_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/yaml"
-
   tasks:
   - name: 获取所有已经创建的POD信息
     tags: always

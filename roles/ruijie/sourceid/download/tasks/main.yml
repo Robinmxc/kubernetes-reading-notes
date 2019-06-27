@@ -1,3 +1,9 @@
+- name: 安装unzip
+  yum:
+    name:
+      - unzip
+    state: present
+
 - name: 读取目录状态
   stat: path="{{ KAD_PACKAGE_DIR }}"
   register: pkg_dir_stat
@@ -13,8 +19,18 @@
     url: "{{ KAD_FILES_REPO }}/sourceid/kad/{{ KAD_PACKAGE_NAME }}.zip"
     dest: "{{ base_dir }}/down/"
 
+- name: 解压
+  when: 'not pkg_dir_stat.stat.exists'
+  block:
+  - name: 创建解压目录
+    file: path="{{ KAD_PACKAGE_DIR }}" state=directory
+  - name: 解压SourceID安装包
+    unarchive:
+      src: "{{ base_dir }}/down/{{ KAD_PACKAGE_NAME }}.zip"
+      dest: "{{ KAD_PACKAGE_DIR }}"
+
 - name: 读取镜像包状态
-  stat: path="{{ base_dir }}/down/sourceid-images-{{ KAD_APP_VERSION }}.ok"
+  stat: path="{{ KAD_PACKAGE_DIR }}/images-download.ok"
   register: image_pkg_stat
 
 - name: 下载镜像包
@@ -29,7 +45,7 @@
     register: tgz_info
   - name: 设置下载标识
     file:
-      path: "{{ base_dir }}/down/sourceid-images-{{ KAD_APP_VERSION }}.ok"
+      path: "{{ KAD_PACKAGE_DIR }}/images-download.ok"
       state: touch
     when: 'tgz_info.stat.exists'
   - name: 解压安装包
