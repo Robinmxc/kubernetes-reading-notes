@@ -43,10 +43,16 @@ fi
 if [ ! -f "/usr/bin/kad-play" ]; then
   link /opt/kad/kad-play.sh /usr/bin/kad-play
 fi
+if [ ! -f "/usr/bin/sourceid-setup" ]; then
+  link /opt/kad/sourceid-setup.sh /usr/bin/sourceid-setup
+fi
 
 %preun
 if [ -f "/usr/bin/kad-play" ]; then
   rm -f /usr/bin/kad-play
+fi
+if [ -f "/usr/bin/sourceid-setup" ]; then
+  rm -f /usr/bin/sourceid-setup
 fi
 
 %postun
