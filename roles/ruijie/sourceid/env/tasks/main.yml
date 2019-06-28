@@ -26,7 +26,7 @@
     src_path: "{{ KAD_PACKAGE_DIR }}/conf/{{ item }}"
     dest_path: "{{ namespace_dir }}/conf/{{ item }}"
   copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
-  when: 'dest_path is not exists'
+  when: 'src_path is exists and dest_path is not exists'
   with_items:
     - "sourceid/sso"
     - "sourceid/gate"
