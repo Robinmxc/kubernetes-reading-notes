@@ -10,8 +10,8 @@
     - config
   replace: path="{{ config_base_dir }}/sourceid/frontend/deploy/deploy.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-    - {regexp: "gate.test.com", replace: "{{ SOURCEID_GATE_DOMAIN }}"}
-    - {regexp: "service.test.com", replace: "{{ SOURCEID_SSO_DOMAIN }}"}
+    - {regexp: "http://gate.test.com", replace: "{{ SOURCEID_FRONTEND_URL }}"}
+    - {regexp: "http://service.test.com", replace: "{{ SOURCEID_SSO_URL }}"}
   no_log: true
 
 - name: 自定义配置

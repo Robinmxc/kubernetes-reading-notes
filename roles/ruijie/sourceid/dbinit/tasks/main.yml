@@ -105,8 +105,9 @@
     connection: local
 
   - name: 修改域名
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({update:"cas-service-registry", updates:[{q:{clientId:"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}, u:{$set:{"serviceId":"http://{{ SOURCEID_GATE_DOMAIN }}.*", "logoutUrl":"http://{{ SOURCEID_GATE_DOMAIN }}/logout"}}}]})'''
-    when: 'SOURCEID_GATE_DOMAIN not in mongo_result.stdout'
+    vars:
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({update:"cas-service-registry", updates:[{q:{clientId:"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}, u:{$set:{"serviceId":"{{ SOURCEID_FRONTEND_URL }}.*", "logoutUrl":"{{ SOURCEID_FRONTEND_URL }}/logout"}}}]})'''
+    when: 'SOURCEID_FRONTEND_URL not in mongo_result.stdout'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local

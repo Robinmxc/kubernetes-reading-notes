@@ -10,7 +10,9 @@
   run_once: true
   delegate_to: "{{ groups.deploy[0] }}"
 
-- block:
+- name: 部署ingress
+  when: '"traefik-ingress" not in pod_info.stdout'
+  block:
     - name: 尝试推送离线 traefik镜像（若执行失败，可忽略）
       copy: src={{ base_dir }}/down/{{ traefik_offline }} dest=/opt/kube/images/{{ traefik_offline }}
       when: 'traefik_offline in download_info.stdout'
@@ -44,37 +46,64 @@
       run_once: true
       delegate_to: "{{ groups.deploy[0] }}"
 
+    - name: 获取secret数据
+      command: "{{ bin_dir }}/kubectl get secret -n kube-system"
+      register: secret_info
+      connection: local
+      run_once: true
+      when: "'https' == traefik_mode"
+
+    - name: 删除旧的证书
+      command: "{{ bin_dir }}/kubectl delete secret traefik-cert -n kube-system"
+      connection: local
+      run_once: true
+      when: "'https' == traefik_mode and 'traefik-cert' in secret_info.stdout"
+
     - name: 保存证书到k8s
       vars:
         - ssl_files: "{% for f in traefik_ssl_names %} --from-file={{ ca_dir }}/{{ f }}.pem --from-file={{ ca_dir }}/{{ f }}-key.pem {% endfor %}"
       shell: "{{ bin_dir }}/kubectl create secret generic traefik-cert {{ ssl_files }} -n kube-system"
       run_once: true
-      delegate_to: "{{ groups.deploy[0] }}"
+      connection: local
       when: "'https' == traefik_mode"
+
+    - name: 获取configmap数据
+      command: "{{ bin_dir }}/kubectl get configmap -n kube-system"
+      register: configmap_info
+      connection: local
+      run_once: true
+      when: "'https' == traefik_mode"
+
+    - name: 删除旧的配置文件
+      command: "{{ bin_dir }}/kubectl delete configmap traefik-conf -n kube-system"
+      connection: local
+      run_once: true
+      when: "'https' == traefik_mode and 'traefik-conf' in configmap_info.stdout"
 
     - name: 创建traefik配置文件
       template: src=traefix.toml.j2 dest={{ traefik_temp_dir }}/traefix.toml
       run_once: true
-      delegate_to: "{{ groups.deploy[0] }}"
+      connection: local
       when: "'https' == traefik_mode"
 
     - name: 保存traefik配置文件到到k8s
       shell: "{{ bin_dir }}/kubectl create configmap traefik-conf --from-file={{ traefik_temp_dir }}/traefix.toml -n kube-system"
       run_once: true
-      delegate_to: "{{ groups.deploy[0] }}"
+      connection: local
       when: "'https' == traefik_mode"
 
-    - name: 创建 traefik部署
+    - name: 部署traefik
       shell: "{{ bin_dir }}/kubectl apply -f {{ traefik_temp_dir }}/manifests/"
-      delegate_to: "{{ groups.deploy[0] }}"
+      connection: local
       run_once: true
+
+    - name: 查询node数据
+      command: "{{ bin_dir }}/kubectl describe node {{ inventory_hostname }}"
+      register: node_info
+      connection: local
+      when: "'https' == traefik_mode"
 
     - name: node打标签
       shell: "{{ bin_dir }}/kubectl label nodes {{ inventory_hostname }} edgenode=true"
-      delegate_to: "{{ groups.deploy[0] }}"
-      ignore_errors: true
-  when:
-  - '"traefik-ingress" not in pod_info.stdout'
-  - 'ingress_install == "yes"'
-  - 'ingress_backend == "traefik"'
-  ignore_errors: true
+      connection: local
+      when: '"https" == traefik_mode and "edgenode=true" not in node_info.stdout'

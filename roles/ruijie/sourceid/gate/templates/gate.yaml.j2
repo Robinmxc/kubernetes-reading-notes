@@ -10,9 +10,9 @@ spec:
       labels:
         service: rg-gate
     spec:
-{% if "dev" == SOURCEID_DEPLOY_PROFILE %}
+{% if "" != SOURCEID_SSO_HOST_ALIAS %}
       hostAliases:
-      - ip: "{{ groups['kube_node'][0] }}"
+      - ip: "{{ SOURCEID_SSO_HOST_ALIAS }}"
         hostnames:
         - "{{ SOURCEID_SSO_DOMAIN }}"
 {% endif %}
