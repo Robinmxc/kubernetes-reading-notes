@@ -5,7 +5,7 @@
 ## 使用说明
 - [部署SourceID](docs/ruijie/sourceid/getting-started.md)
 - [单机部署SourceID](docs/ruijie/sourceid/single-node.md)
-- [配置HTTPS服务](docs/ruijie/guide/traefik-https.md)
+- [HTTPS模式](docs/ruijie/sourceid/config-https.md)
 - [配置时间同步服务器 ](docs/ruijie/guide/chrony.md)
 - [配置MongoDB和RocketMQ的数据存储目录](docs/ruijie/sourceid/config-data-dir.md)
 - [内部测试环境配置和使用方法](docs/ruijie/sourceid/debug-env.md)

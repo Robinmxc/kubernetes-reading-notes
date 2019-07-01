@@ -1,6 +1,0 @@
-- hosts:
-  - kube_node
-  vars:
-    - traefik_mode: "https"
-  roles:
-    - ruijie/ingress
