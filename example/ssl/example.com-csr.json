@@ -1,0 +1,20 @@
+{
+  "CN": "example",
+  "hosts": [
+    "127.0.0.1",
+    "*.example.com"
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "CN",
+      "ST": "BeiJing",
+      "L": "BeiJing",
+      "O": "RuiShan",
+      "OU": "System"
+    }
+  ]
+}
