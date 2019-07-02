@@ -148,6 +148,9 @@ def parse_host_data(workspace_dir):
     if "CLUSTER_DNS_SVC_IP" not in k8s_config:
         group_all_vars["CLUSTER_DNS_SVC_IP"] = str(service_cidr.network_address + 2)
 
+    if "traefik_mode" not in k8s_config:
+        group_all_vars["traefik_mode"] = "http"
+
     # 初始化Host变量
     for ip in master_hosts:
         host_vars[ip] = {}
