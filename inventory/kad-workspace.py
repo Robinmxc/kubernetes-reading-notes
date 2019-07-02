@@ -129,10 +129,10 @@ def parse_host_data(workspace_dir):
         service_cidr = IPv4Network(k8s_config["SERVICE_CIDR"].decode("iso-8859-1"))
     else:
         cluster_cidr = IPv4Network(k8s_config["CLUSTER_CIDR"].decode("iso-8859-1"))
-        # POD网络位数是16~20时分别对应的服务网络位数。
+        # POD网络位数是16~23时分别对应的服务网络位数。
         # 如：POD网络位数是20，对应的服务网络位数是24，可以有254个服务IP
-        prefix_length_conf = [22, 23, 23, 23, 24]
-        calc_masks = [0x0000fc00, 0x00007c00, 0x00003e00, 0x00001e00, 0x00000f00]
+        prefix_length_conf = [22, 23, 23, 23, 24, 24, 24, 24]
+        calc_masks = [0x0000fc00, 0x00007e00, 0x00003e00, 0x00001e00, 0x00000f00, 0x00000700, 0x00000300, 0x00000100]
         idx = cluster_cidr.prefixlen - 16
         if (idx < 0):
             idx = 0
