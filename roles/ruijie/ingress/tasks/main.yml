@@ -101,9 +101,8 @@
       command: "{{ bin_dir }}/kubectl describe node {{ inventory_hostname }}"
       register: node_info
       connection: local
-      when: "'https' == traefik_mode"
 
     - name: node打标签
       shell: "{{ bin_dir }}/kubectl label nodes {{ inventory_hostname }} edgenode=true"
       connection: local
-      when: '"https" == traefik_mode and "edgenode=true" not in node_info.stdout'
+      when: '"edgenode=true" not in node_info.stdout'
