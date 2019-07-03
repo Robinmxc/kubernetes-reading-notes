@@ -9,10 +9,11 @@
   tags:
     - config
   vars:
-    sso_url: "{% if 'normal' == SOURCEID_HTTPS_MODE %}https{% else %}http{% endif %}://{{ SOURCEID_SSO_DOMAIN }}"
+    sso_http_url: "{{ SOURCEID_SSO_URL  | regex_replace('https', 'http') }}"
+    cas_server_url: "{% if 'normal' == SOURCEID_HTTPS_MODE %}{{ SOURCEID_SSO_URL }}{% else %}{{ sso_http_url }}{% endif %}"
   replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-    - {regexp: "^cas.server.name=.*$", replace: "cas.server.name={{ sso_url }}"}
+    - {regexp: "^cas.server.name=.*$", replace: "cas.server.name={{ cas_server_url }}"}
     - {regexp: "^front.server.addr=.*$", replace: "front.server.addr={{ SOURCEID_FRONTEND_URL }}"}
     - {regexp: "^mongodb-base-url=.*$", replace: "mongodb-base-url=mongodb://{{ SOURCEID_CAS_DB_USER }}:{{ SOURCEID_CAS_DB_PWD }}@{{ mongodb_addr }}/cas?replicaSet=rs0"}
     - {regexp: "^gateway.feign.base.url.*$", replace: "gateway.feign.base.url={{ SOURCEID_GATEWAY_URL }}"}
