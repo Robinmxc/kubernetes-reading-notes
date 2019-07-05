@@ -1,5 +1,5 @@
 - hosts:
-  - localhost
+  - kube_node
   tags: always
   any_errors_fatal: true
   roles:
