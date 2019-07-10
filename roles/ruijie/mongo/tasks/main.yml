@@ -68,15 +68,6 @@
   connection: local
   run_once: true
 
-
-- name: 检查configmap
-  tags:
-  - config
-  command: "{{ bin_dir }}/kubectl get configmap -n {{ APP_NAMESPACE }}"
-  register: configmap_info
-  connection: local
-  run_once: true
-
 - name:
   tags:
   - config
@@ -87,7 +78,6 @@
     template: src=mongo-conf.yaml.j2 dest={{ yaml_dir }}/mongo/mongo-conf.yml
   - name: 创建configmap
     shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo-conf.yml"
-  when: '"mongodb-conf" not in configmap_info.stdout'
   connection: local
   run_once: true
 
