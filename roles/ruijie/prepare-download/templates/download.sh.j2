@@ -3,5 +3,16 @@
 {% for url in download_list %}
 {% if "" != url %}
 wget -P {{ base_dir }}/down/ {{ url }}
+if [ ! -f "{{ base_dir }}/down/{{ url | regex_replace('^.*/', '') }}" ]; then
+  echo "下载失败"
+  echo ""
+  echo ""
+  exit 1
+fi
 {% endif %}
 {% endfor %}
+
+echo "下载成功"
+echo ""
+echo ""
+
