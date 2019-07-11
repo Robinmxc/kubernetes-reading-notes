@@ -27,14 +27,14 @@ SourceID常用命令如下：
 
 1. 重新部署单个组件（以linkid为例，其他组件名称分别是：sso、gate、frontend、component、license）
     ```
-    kad-play playbooks/sourceid/reconfig --tags linkid
+    kad-play playbooks/sourceid/reconfig.yml --tags linkid
     ```
 
 1. 更新组件配置文件（以linkid为例）
     - 修改`workspace/ruijie-sourceid/conf/sourceid/linkid/conf/`目录下的配置文件
     - 执行命令：
       ```
-      kad-play playbooks/sourceid/reconfig --tags linkid
+      kad-play playbooks/sourceid/reconfig.yml --tags linkid
       ```
 
 1. 替换frontend资源文件
@@ -42,7 +42,7 @@ SourceID常用命令如下：
     - 修改`workspace/ruijie-sourceid/conf/all.yml`文件中的`SOURCEID_FRONTEND_RES`变量为`zstu`
     - 执行命令：
       ```
-      kad-play playbooks/sourceid/reconfig --tags frontend
+      kad-play playbooks/sourceid/reconfig.yml --tags frontend
       ```
 
 1. 更新组件版本：见[内部测试环境配置和使用方法](debug-env.md)

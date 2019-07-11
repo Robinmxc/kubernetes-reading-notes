@@ -38,5 +38,5 @@ unzip sourceid-kad-r1.5.1.zip -d sourceid-kad-r1.6.0-test
 - 依次执行以下命令（在`/opt/kad目录下执行`）：
     ```
     cd /op/kad
-    kad-play playbooks/sourceid/reconfig --tags linkid
+    kad-play playbooks/sourceid/reconfig.yml --tags linkid
     ```
