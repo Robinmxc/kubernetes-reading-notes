@@ -1,0 +1,7 @@
+#!/bin/bash
+
+{% for url in download_list %}
+{% if "" != url %}
+wget -P {{ base_dir }}/down/ {{ url }}
+{% endif %}
+{% endfor %}

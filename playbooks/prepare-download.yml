@@ -1,0 +1,9 @@
+- hosts:
+  - localhost
+  gather_facts: false
+  any_errors_fatal: true
+
+  roles:
+  - {role: "ruijie/cluster/prepare-download"}
+  - {role: "ruijie/sourceid/prepare-download", when: '"sourceid" == KAD_APP_NAME'}
+  - {role: "ruijie/prepare-download"}

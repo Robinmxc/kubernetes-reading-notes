@@ -1,0 +1,12 @@
+- name: 读取kubeclt状态
+  stat: path="{{ base_dir }}/bin/kubectl"
+  register: kubectl_info
+
+- name: 读取压缩包状态
+  stat: path="{{ base_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+  register: tgz_info
+
+- name: 准备k8s基础安装文件
+  when: 'not kubectl_info.stat.exists and not tgz_info.stat.exists'
+  set_fact:
+    kad_support_files_url: "{{ KAD_FILES_REPO }}/kad/support/kad-support-files-{{ kad_support_files_version }}.tar.gz"

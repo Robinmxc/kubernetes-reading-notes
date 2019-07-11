@@ -1,0 +1,4 @@
+download_list:
+- "{% if kad_support_files_url is defined %}{{ kad_support_files_url }}{% else %}{% endif %}"
+- "{% if app_setup_package_url is defined %}{{ app_setup_package_url }}{% else %}{% endif %}"
+- "{% if app_images_url is defined %}{{ app_images_url }}{% else %}{% endif %}"

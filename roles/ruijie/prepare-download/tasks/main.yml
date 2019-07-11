@@ -1,0 +1,10 @@
+- name: 安装用于下载的工具
+  yum:
+    name:
+      - unzip
+      - wget
+    state: present
+
+- name: 生成下载脚本
+  template: src=download.sh.j2 dest={{ base_dir }}/down/download.sh mode=750
+

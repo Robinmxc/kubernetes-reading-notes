@@ -1,0 +1,28 @@
+- name: 读取sourceid安装包目录状态
+  stat: path="{{ KAD_PACKAGE_DIR }}"
+  register: pkg_dir_stat
+
+- name: 读取sourceid安装包状态
+  stat: path="{{ base_dir }}/down/{{ KAD_PACKAGE_NAME }}.zip"
+  register: pkg_stat
+  when: 'not pkg_dir_stat.stat.exists'
+
+- name: 设置sourceid安装包下载地址
+  when: 'not pkg_dir_stat.stat.exists and not pkg_stat.stat.exists'
+  set_fact:
+    app_setup_package_url: "{{ KAD_FILES_REPO }}/sourceid/kad/{{ KAD_PACKAGE_NAME }}.zip"
+
+- name: 读取sourceid镜像包状态
+  stat: path="{{ KAD_PACKAGE_DIR }}/images-download.ok"
+  register: image_pkg_stat
+  when: '"yes" != PRIVATE_REGISTRY_ENABLED'
+
+- name: 读取sourceid镜像包状态2
+  stat: path="{{ base_dir }}/down/sourceid-images-{{ KAD_APP_VERSION }}.tar.gz"
+  register: tgz_info
+  when: '"yes" != PRIVATE_REGISTRY_ENABLED'
+
+- name: 设置sourceid镜像包下载地址
+  set_fact:
+    app_images_url: "{{ KAD_FILES_REPO }}/sourceid/images/sourceid-images-{{ KAD_APP_VERSION }}.tar.gz"
+  when: '"yes" != PRIVATE_REGISTRY_ENABLED and not image_pkg_stat.stat.exists and not tgz_info.stat.exists'
