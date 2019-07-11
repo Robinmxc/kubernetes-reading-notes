@@ -40,6 +40,8 @@ install -m 0644 /opt/kad/down/sourceid-kad-r1.5.1.zip %{buildroot}/opt/kad/down/
 %post
 if [ ! -d "/opt/kad/workspace" ]; then
   cp -rpf /opt/kad/example/workspace /opt/kad/workspace
+  chmod -R o-w /opt/kad/workspace
+  chmod -R o-r /opt/kad/workspace
 fi
 if [ ! -f "/usr/bin/kad-play" ]; then
   link /opt/kad/kad-play.sh /usr/bin/kad-play
@@ -59,8 +61,8 @@ fi
 %postun
 
 %files
-%defattr(-,root,root,0644)
+%defattr(-,root,root,0664)
 /opt/kad/
-%attr(0755,root,root) /opt/kad/inventory/kad-workspace.py
+%attr(0770,root,root) /opt/kad/inventory/kad-workspace.py
 
 %changelog
