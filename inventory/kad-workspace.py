@@ -136,6 +136,7 @@ def parse_host_data(workspace_dir):
         # 双Master部署模式设置端口为8443
         group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:8443"
     else:
+        result["groups"]["lb"] = {"hosts": []}
         group_all_vars["MASTER_IP"] = master_hosts[0]
         group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:6443"
 
