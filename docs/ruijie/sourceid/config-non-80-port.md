@@ -24,6 +24,8 @@ SourceID非80端口部署有两种部署模式：
       - port: 8000
         targetPort: 80
     ```
+    **注意：服务IP必须在`CLUSTER_CIDR`参数所定义的网段的最后一个C类子网中分配，且主机地址必须大于3。**
+    **例如：`CLUSTER_CIDR=172.30.16.0/20`，则最后一个C类子网是`172.30.31.0/24`，分配地址`172.30.31.5`。**
 
 1. 修改`/opt/kad/workspace/ruijie-sourceid/conf/all.yml`，设置以下参数：
     ```
