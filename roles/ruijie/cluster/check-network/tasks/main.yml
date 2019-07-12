@@ -1,0 +1,13 @@
+- name: 获取网卡配置文件名
+  shell: 'grep -rnl "{{ inventory_hostname }}" ifcfg-*'
+  args:
+    chdir: "/etc/sysconfig/network-scripts"
+  register: find_ifcfg
+
+- name: 获取BOOTPROTO配置
+  shell: 'grep BOOTPROTO /etc/sysconfig/network-scripts/{{ find_ifcfg.stdout }}'
+  register: bootproto
+
+- name: 检查是否静态IP
+  fail: msg="{{ inventory_hostname }}不是静态IP"
+  when: '"static" not in bootproto.stdout and "none" not in bootproto.stdout'

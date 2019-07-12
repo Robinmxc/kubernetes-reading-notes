@@ -1,0 +1,17 @@
+- hosts:
+  - kube_master
+  - kube_node
+  gather_facts: false
+  any_errors_fatal: true
+  roles:
+  - ruijie/cluster/check-os
+  - ruijie/cluster/check-network
+
+- hosts:
+  - kube_master
+  - kube_node
+  gather_facts: true
+  any_errors_fatal: true
+  roles:
+  - ruijie/cluster/check-cpu
+  - ruijie/cluster/check-mem

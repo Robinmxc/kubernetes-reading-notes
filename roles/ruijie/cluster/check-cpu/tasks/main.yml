@@ -1,0 +1,3 @@
+- name: 检查CPU
+  fail: msg="CPU核数少于{{ cpu_required[CLUSTER_SCALE][K8S_ROLE] }}"
+  when: 'ansible_processor_vcpus < cpu_required[CLUSTER_SCALE][K8S_ROLE]'

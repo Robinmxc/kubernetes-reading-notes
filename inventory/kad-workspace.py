@@ -1,15 +1,19 @@
-#!/usr/bin/env python
-#coding:utf8
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
 
 import json
 import os
+import re
 import sys
 import yaml
 from ipaddress import IPv4Network
 
-
 def to_json(in_dict):
     return json.dumps(in_dict, sort_keys=True, indent=2)
+
+def is_IP(str):
+    p = re.compile('^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$')
+    return p.match(str)
 
 def read_yml(file_path):
     file = open(file_path)
@@ -101,6 +105,12 @@ def parse_host_data(workspace_dir):
     # Configure host groups
     master_hosts = k8s_config["KUBE_MASTER_HOSTS"]
     node_hosts = k8s_config["KUBE_NODE_HOSTS"]
+    for ip in master_hosts:
+        if not is_IP(ip):
+            raise Exception(ip + u"不是有效的IP地址")
+    for ip in node_hosts:
+        if not is_IP(ip):
+            raise Exception(ip + u"不是有效的IP地址")
     result["groups"]["kube_master"] = {"hosts": master_hosts}
     result["groups"]["kube_node"] = {"hosts": node_hosts}
     result["groups"]["etcd"] = {"hosts": node_hosts}
@@ -117,6 +127,8 @@ def parse_host_data(workspace_dir):
     group_all_vars["DEPLOY_MODE"] = deploy_mode
 
     if (deploy_mode == "multi-master"):
+        if not is_IP(k8s_config["KUBE_MASTER_VIP"]):
+            raise Exception(k8s_config["KUBE_MASTER_VIP"] + u"不是有效的IP地址")
         # 设置负载均衡节点
         result["groups"]["lb"] = {"hosts": master_hosts}
         # 双Master部署模式设置为虚
@@ -127,14 +139,20 @@ def parse_host_data(workspace_dir):
         group_all_vars["MASTER_IP"] = master_hosts[0]
         group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:6443"
 
-    if (deploy_mode == "allinone"):
-        group_all_vars["CLUSTER_SCALE"] = "single"
-
     # 计算服务网段
     if "SERVICE_CIDR" in k8s_config:
-        service_cidr = IPv4Network(k8s_config["SERVICE_CIDR"].decode("iso-8859-1"))
+        config_value = k8s_config["SERVICE_CIDR"].decode("iso-8859-1")
+        try:
+            service_cidr = IPv4Network(config_value)
+        except ValueError:
+            raise Exception(config_value + u"不是有效的网络地址")
     else:
-        cluster_cidr = IPv4Network(k8s_config["CLUSTER_CIDR"].decode("iso-8859-1"))
+        config_value = k8s_config["CLUSTER_CIDR"].decode("iso-8859-1")
+        try:
+            cluster_cidr = IPv4Network(config_value)
+        except ValueError:
+            raise Exception(config_value + u"不是有效的网络地址")
+
         # POD网络位数是16~23时分别对应的服务网络位数。
         # 如：POD网络位数是20，对应的服务网络位数是24，可以有254个服务IP
         prefix_length_conf = [22, 23, 23, 23, 24, 24, 24, 24]
@@ -157,11 +175,17 @@ def parse_host_data(workspace_dir):
     if "traefik_mode" not in k8s_config:
         group_all_vars["traefik_mode"] = "http"
 
+    if ("CLUSTER_SCALE" not in k8s_config):
+        if (deploy_mode == "allinone"):
+            group_all_vars["CLUSTER_SCALE"] = "single"
+        else:
+            group_all_vars["CLUSTER_SCALE"] = "normal"
+
     # 初始化Host变量
     for ip in master_hosts:
-        host_vars[ip] = {}
+        host_vars[ip] = {"K8S_ROLE": "master"}
     for ip in node_hosts:
-        host_vars[ip] = {}
+        host_vars[ip] = {"K8S_ROLE": "node"}
 
     # 设置负载均衡角色
     if (deploy_mode == "multi-master"):
@@ -177,7 +201,20 @@ def parse_host_data(workspace_dir):
     return result
 
 def main():
-    host_data = parse_host_data(os.getcwd() + "/workspace")
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+
+    try:
+        host_data = parse_host_data(os.getcwd() + "/workspace")
+        if len(sys.argv) == 2 and (sys.argv[1] == "--check"):
+            print "ok"
+            exit(0)
+    except Exception as e:
+        if len(sys.argv) == 2 and (sys.argv[1] == "--check"):
+            print e.message
+            exit(0)
+        else:
+            raise
 
     if len(sys.argv) == 2 and (sys.argv[1] == "--list"):
         print(to_json(host_data["groups"]))
