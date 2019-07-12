@@ -35,7 +35,10 @@ def parse_host_data(workspace_dir):
         "temp_dir": "/opt/kad/temp",
         "img_download_dir": "/opt/kad/down",
         "img_copy_dir": "/opt/kube/images",
-        "workspace_dir": "/opt/kad/workspace"
+        "workspace_dir": "/opt/kad/workspace",
+        "KAD_FILES_REPO": "http://fs.rghall.com.cn",
+        "CLUSTER_SCALE": "normal",
+        "KUBE_MASTER_VIP": ""
     }
     host_vars = {}
     result = {
@@ -124,6 +127,9 @@ def parse_host_data(workspace_dir):
         group_all_vars["MASTER_IP"] = master_hosts[0]
         group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:6443"
 
+    if (deploy_mode == "allinone"):
+        group_all_vars["CLUSTER_SCALE"] = "single"
+
     # 计算服务网段
     if "SERVICE_CIDR" in k8s_config:
         service_cidr = IPv4Network(k8s_config["SERVICE_CIDR"].decode("iso-8859-1"))
@@ -168,11 +174,11 @@ def parse_host_data(workspace_dir):
         host_vars[ip]["NODE_NAME"] = "etcd" + bytes(idx)
         idx = idx + 1
 
-
     return result
 
 def main():
     host_data = parse_host_data(os.getcwd() + "/workspace")
+
     if len(sys.argv) == 2 and (sys.argv[1] == "--list"):
         print(to_json(host_data["groups"]))
     elif len(sys.argv) == 3 and (sys.argv[1] == "--host"):
