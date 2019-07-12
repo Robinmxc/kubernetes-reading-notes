@@ -2,7 +2,7 @@
 - hosts: all
   any_errors_fatal: true
   roles:
-  - ruijie/chrony
+  - ruijie/cluster/chrony
 
 # to create CA, kubeconfig, kube-proxy.kubeconfig etc. on 'deploy' node
 - hosts: deploy
@@ -19,7 +19,7 @@
   - lb
   any_errors_fatal: true
   roles:
-  - ruijie/prepare
+  - ruijie/cluster/prepare
 
 # [optional] to install loadbalance service, only needed by multi-master cluster
 - hosts: lb
@@ -39,7 +39,7 @@
   - kube_node
   any_errors_fatal: true
   roles:
-  - ruijie/docker
+  - ruijie/cluster/docker
 
 # to set up 'kube_master' nodes
 - hosts: kube_master
@@ -72,14 +72,14 @@
   - kube_node
   any_errors_fatal: true
   roles:
-  - ruijie/flannel
+  - ruijie/cluster/flannel
 
 # to install clust-addons
 - hosts:
   - kube_node
   any_errors_fatal: true
   roles:
-  - ruijie/kube-dns
-  - ruijie/ingress
-  - ruijie/dashboard
-  - ruijie/metrics-server
+  - ruijie/cluster/kube-dns
+  - ruijie/cluster/ingress
+  - ruijie/cluster/dashboard
+  - ruijie/cluster/metrics-server

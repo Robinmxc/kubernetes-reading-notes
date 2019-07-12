@@ -1,4 +1,4 @@
 - hosts:
   - kube_node
   roles:
-    - ruijie/ingress
+    - ruijie/cluster/ingress
