@@ -1,9 +1,3 @@
-- name: check disk space
-  vars:
-    check_dir: "/opt"
-    space_required: 5
-  import_tasks: ../../../utils/tasks/check_disk_space.yml
-
 - name: 获取namespace是否存在
   command: "{{ bin_dir }}/kubectl get namespaces"
   register: namespaces_info
