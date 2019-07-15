@@ -153,7 +153,7 @@
   block:
     - name: 分发镜像文件
       copy: src={{ base_dir }}/down/{{ mongodb_offline }} dest=/opt/kube/images/{{ mongodb_offline }}
-      when: '"single" != CLUSTER_SCALE and mongodb_offline in download_info.stdout'
+      when: '"allinone" != DEPLOY_MODE and mongodb_offline in download_info.stdout'
 
     - name: 获取docker已加载的镜像信息
       command: "docker images --format ''{{ '{{' }}.Repository{{ '}}' }}:{{ '{{' }}.Tag{{ '}}' }}''"
@@ -162,7 +162,7 @@
     - name: 导入镜像
       when: '"mongo" not in imgages_info.stdout'
       vars:
-        img_dir: '{% if "single" == CLUSTER_SCALE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'
+        img_dir: '{% if "allinone" = DEPLOY_MODE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'
       shell: "{{ bin_dir }}/docker load -i {{ img_dir }}/{{ mongodb_offline }}"
 
     - name: 部署第1个mongodb

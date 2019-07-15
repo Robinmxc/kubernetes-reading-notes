@@ -54,7 +54,7 @@
   block:
     - name: 复制RocketMQ镜像
       copy: src={{ base_dir }}/down/{{ rocketmq_offline }} dest=/opt/kube/images/{{ rocketmq_offline }}
-      when: '"single" != CLUSTER_SCALE and rocketmq_offline in download_info.stdout'
+      when: '"allinone" != DEPLOY_MODE and rocketmq_offline in download_info.stdout'
 
     - name: 获取docker已加载的镜像信息
       command: "docker images --format ''{{ '{{' }}.Repository{{ '}}' }}:{{ '{{' }}.Tag{{ '}}' }}''"
@@ -63,7 +63,7 @@
     - name: 导入RocketMQ的镜像
       when: '"rocketmq" not in imgages_info.stdout'
       vars:
-        img_dir: '{% if "single" == CLUSTER_SCALE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'
+        img_dir: '{% if "allinone" == DEPLOY_MODE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'
       shell: "{{ bin_dir }}/docker load -i {{ img_dir }}/{{ rocketmq_offline }}"
 
     - name: 部署RocketMQ

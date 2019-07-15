@@ -46,5 +46,5 @@
     img_id_ver: "{{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS[comp_name].name }}:{{ docker_version }}"
     img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
   command: 'docker save -o {{ img_download_dir }}/{{ img_file_name }} {{ img_id_ver }}'
-  when: '"single" != CLUSTER_SCALE and "" != docker_version and img_file_name not in download_info.stdout'
+  when: '"allinone" != DEPLOY_MODE and "" != docker_version and img_file_name not in download_info.stdout'
   with_items: "{{ SOURCEID_DOCKERS.keys() }}"

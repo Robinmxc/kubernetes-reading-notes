@@ -1,5 +1,5 @@
 - name: 复制镜像
-  when: '"single" != CLUSTER_SCALE'
+  when: '"allinone" != DEPLOY_MODE'
   block:
   - name: 准备镜像复制目录
     file: path={{ item }} state=directory
