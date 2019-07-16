@@ -1,1 +1,5 @@
 PRIVATE_REGISTRY_ENABLED: "no"
+
+kad_package_file: "{{ base_dir }}/down/{{ KAD_PACKAGE_NAME }}.zip"
+download_flag_file: "{{ KAD_PACKAGE_DIR }}/images-download.ok"
+images_tgz_file: "{{ base_dir }}/down/sourceid-images-{{ KAD_APP_VERSION }}.tar.gz"

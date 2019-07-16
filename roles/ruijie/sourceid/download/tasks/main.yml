@@ -9,7 +9,7 @@
   register: pkg_dir_stat
 
 - name: 读取安装包状态
-  stat: path="{{ base_dir }}/down/{{ KAD_PACKAGE_NAME }}.zip"
+  stat: path="{{ kad_package_file }}"
   register: pkg_stat
   when: 'not pkg_dir_stat.stat.exists'
 
@@ -26,35 +26,39 @@
     file: path="{{ KAD_PACKAGE_DIR }}" state=directory
   - name: 解压SourceID安装包
     unarchive:
-      src: "{{ base_dir }}/down/{{ KAD_PACKAGE_NAME }}.zip"
+      src: "{{ kad_package_file }}"
       dest: "{{ KAD_PACKAGE_DIR }}"
 
-- name: 读取镜像包状态
-  stat: path="{{ KAD_PACKAGE_DIR }}/images-download.ok"
+- name: 读取镜像包下载标识
+  stat: path="{{ download_flag_file }}"
   register: image_pkg_stat
 
+- name: 读取镜像包状态
+  stat: path="{{ images_tgz_file }}"
+  register: tgz_info
+
 - name: 下载镜像包
-  when: '"yes" != PRIVATE_REGISTRY_ENABLED and not image_pkg_stat.stat.exists'
+  when: '"yes" != PRIVATE_REGISTRY_ENABLED and not image_pkg_stat.stat.exists and not tgz_info.stat.exists'
   block:
   - name: 下载镜像包
     get_url:
       url: "{{ KAD_FILES_REPO }}/sourceid/images/sourceid-images-{{ KAD_APP_VERSION }}.tar.gz"
       dest: "{{ base_dir }}/down/"
-  - name: 读取压缩包状态
+  - name: 读取镜像包状态
     stat: path="{{ base_dir }}/down/sourceid-images-{{ KAD_APP_VERSION }}.tar.gz"
     register: tgz_info
   - name: 设置下载标识
     file:
-      path: "{{ KAD_PACKAGE_DIR }}/images-download.ok"
+      path: "{{ download_flag_file }}"
       state: touch
     when: 'tgz_info.stat.exists'
   - name: 解压安装包
     unarchive:
-      src: "{{ base_dir }}/down/sourceid-images-{{ KAD_APP_VERSION }}.tar.gz"
+      src: "{{ images_tgz_file }}"
       dest: "{{ base_dir }}/down/"
     when: 'tgz_info.stat.exists'
   - name: 删除压缩包
     file:
-      path: "{{ base_dir }}/down/sourceid-images-{{ KAD_APP_VERSION }}.tar.gz"
+      path: "{{ images_tgz_file }}"
       state: absent
     when: 'tgz_info.stat.exists'
