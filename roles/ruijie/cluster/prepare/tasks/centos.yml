@@ -7,7 +7,7 @@
     state: absent
 
 - name: 添加EPEL仓库
-  yum: name=epel-release state=latest
+  yum: name=epel-release state=present
 
 - name: 安装基础软件包
   yum: 
