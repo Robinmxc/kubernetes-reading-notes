@@ -3,7 +3,7 @@
   register: kubectl_info
 
 - name: 读取压缩包状态
-  stat: path="{{ base_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+  stat: path="{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
   register: tgz_info
 
 - name: 准备k8s基础安装文件
