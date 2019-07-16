@@ -162,7 +162,7 @@
     - name: 导入镜像
       when: '"mongo" not in imgages_info.stdout'
       vars:
-        img_dir: '{% if "allinone" = DEPLOY_MODE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'
+        img_dir: '{% if "allinone" == DEPLOY_MODE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'
       shell: "{{ bin_dir }}/docker load -i {{ img_dir }}/{{ mongodb_offline }}"
 
     - name: 部署第1个mongodb
