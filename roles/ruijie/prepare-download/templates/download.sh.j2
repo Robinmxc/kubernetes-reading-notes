@@ -20,7 +20,7 @@ echo "# 解压成功"
 echo ""
 {% endif %}
 
-{% if app_setup_package_url is defined %}
+{% if not KAD_PACKAGE_DIR is exists %}
 echo "# 解压{{ KAD_APP_NAME }}安装包..."
 unzip -o {{ base_dir }}/down/{{ KAD_PACKAGE_NAME }}.zip -d {{ KAD_PACKAGE_DIR }}
 echo "# 解压成功"
@@ -28,8 +28,8 @@ echo ""
 {% endif %}
 
 {% if app_images_url is defined %}
-echo "# 解压{{ KAD_APP_NAME }}镜像包..."
 touch {{ KAD_PACKAGE_DIR }}/images-download.ok
+echo "# 解压{{ KAD_APP_NAME }}镜像包..."
 tar xvf {{ base_dir }}/down/{{ KAD_APP_NAME }}-images-{{ KAD_APP_VERSION }}.tar.gz --directory={{ base_dir }}/down
 rm -f {{ base_dir }}/down/{{ KAD_APP_NAME }}-images-{{ KAD_APP_VERSION }}.tar.gz
 echo "# 解压成功"
@@ -39,4 +39,3 @@ echo ""
 echo "# 下载成功"
 echo ""
 echo ""
-
