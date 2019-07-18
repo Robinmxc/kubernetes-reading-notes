@@ -1,1 +1,1 @@
-img_dir: '{% if "single" == CLUSTER_SCALE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'
+img_dir: '{% if "allinone" == DEPLOY_MODE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'
