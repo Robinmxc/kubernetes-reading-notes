@@ -7,8 +7,7 @@
 
 - hosts:
   - localhost
-  tags:
-  - pull-images
+  tags: always
   any_errors_fatal: true
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
@@ -21,4 +20,4 @@
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   roles:
-  - { role: ruijie/sourceid/load-images, tags: ["docker"] }
+  - { role: ruijie/sourceid/load-images, tags: ["always"] }
