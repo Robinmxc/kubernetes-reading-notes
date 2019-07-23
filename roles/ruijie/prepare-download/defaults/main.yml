@@ -2,3 +2,9 @@ download_list:
 - "{% if kad_support_files_url is defined %}{{ kad_support_files_url }}{% else %}{% endif %}"
 - "{% if app_setup_package_url is defined %}{{ app_setup_package_url }}{% else %}{% endif %}"
 - "{% if app_images_url is defined %}{{ app_images_url }}{% else %}{% endif %}"
+
+kad_support_tgz_file: "{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+
+images_tgz_file: "{{ base_dir }}/down/{{ KAD_APP_NAME }}-images-{{ KAD_APP_VERSION }}.tar.gz"
+download_flag_file: "{{ KAD_PACKAGE_DIR }}/images-download.ok"
+kad_package_file: "{{ base_dir }}/down/{{ KAD_PACKAGE_NAME }}.zip"
