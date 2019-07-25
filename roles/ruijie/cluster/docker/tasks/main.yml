@@ -1,47 +1,17 @@
-- name: 获取是否运行名为'kubeasz'的容器
-  shell: 'systemctl status docker|grep Active && docker ps|grep kubeasz || echo "NOT FOUND"'
+- name: 获取docker安装状态
+  shell: 'systemctl status docker|grep Active'
   register: install_info
-  tags: upgrade_docker, download_docker
 
-# 18.09.x 版本二进制名字有变化，需要做判断
-- name: 获取docker版本信息
-  shell: "{{ base_dir }}/bin/dockerd --version|cut -d' ' -f3"
-  register: docker_ver
-  connection: local
-  run_once: true
-  tags: upgrade_docker, download_docker
-
-- name: 转换docker版本信息为浮点数
-  set_fact: 
-    DOCKER_VER: "{{ docker_ver.stdout.split('.')[0]|int + docker_ver.stdout.split('.')[1]|int/100 }}"
-  tags: upgrade_docker, download_docker
-
-- name: debug info
-  debug: var="DOCKER_VER"
-  tags: upgrade_docker, download_docker
-
-- block:
+- name: 安装docker
+  when: "'running' not in install_info.stdout"
+  block:
     - name: 准备docker相关目录
       file: name={{ item }} state=directory
       with_items:
       - "{{ bin_dir }}"
       - /etc/docker
     
-    - name: 下载 docker 二进制文件
-      copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
-      with_items:
-      - docker-containerd
-      - docker-containerd-shim
-      - docker-init
-      - docker-runc
-      - docker
-      - docker-containerd-ctr
-      - dockerd
-      - docker-proxy
-      tags: upgrade_docker, download_docker
-      when: "DOCKER_VER|float < 18.09"
-    
-    - name: 下载 docker 二进制文件(>= 18.09.x)
+    - name: 复制Docker相关文件
       copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
       with_items:
       - containerd
@@ -52,9 +22,7 @@
       - ctr
       - dockerd
       - docker-proxy
-      tags: upgrade_docker, download_docker
-      when: "DOCKER_VER|float >= 18.09"
-    
+
     - name: docker命令自动补全
       copy: src=docker dest=/etc/bash_completion.d/docker mode=0644
     
@@ -92,10 +60,27 @@
       retries: 8
       delay: 2
       tags: upgrade_docker
-    
+
     # 配置 docker 命令软链接，方便单独安装 docker
     - name: 配置 docker 命令软链接
       file: src={{ bin_dir }}/docker dest=/usr/bin/docker state=link
       ignore_errors: true
 
-  when: "'kubeasz' not in install_info.stdout"
+- name: 获取docker已加载的镜像信息
+  shell: "{{ bin_dir }}/docker images --format ''{{ '{{' }}.Repository{{ '}}' }}:{{ '{{' }}.Tag{{ '}}' }}''"
+  register: imgages_info
+
+- name: 加载busybox镜像
+  when: '"busybox:" + busybox_version not in imgages_info.stdout'
+  block:
+  - name: 创建存放镜像的目录
+    file: name=/opt/kube/images state=directory
+
+  - name: 复制busybox镜像文件
+    vars:
+      dest_file: "/opt/kube/images/{{ busybox_offline }}"
+    copy: src={{ base_dir }}/down/{{ busybox_offline }} dest={{ dest_file }}
+    when: 'dest_file is not exists'
+
+  - name: 导入busybox
+    shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ busybox_offline }}"

@@ -18,3 +18,6 @@ ENABLE_REMOTE_API: false
 
 # Docker服务绑定IP
 DOCKER_BIP: "127.17.0.1/24"
+
+busybox_version: "1.30.1"
+busybox_offline: "busybox-1.30.1.tar"
