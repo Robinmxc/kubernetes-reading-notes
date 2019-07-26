@@ -4,12 +4,14 @@ mongodb_port: 27017
 mongodb_deploy_mode: "{{ groups['mongodb'] | length }}"
 mongodb_auth_mode: "no"
 mongodb_nodeport: "no"
+busybox_version: "1.30.1"
 
 mongodb_check_data_dir: "no"
 mongodb_disk_space_required: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}100{%- else -%}3{%- endif -%}"
 
 wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- elif CLUSTER_SCALE == 'single' -%}4{%- else -%}0.5{%- endif -%}"
 
+mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin{% else %}{% endif %}"
 mongo_shell_fail_pattern: '"ok" : 0'
 mongo_shell_success_pattern: '"ok" : [1-9]+'
 

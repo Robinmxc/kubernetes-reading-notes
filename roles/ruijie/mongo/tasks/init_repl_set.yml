@@ -6,25 +6,30 @@
   template: src="init-repl-set-single.js.j2" dest="{{ mongodb_init_dir }}/init-repl-set.js"
   when: 'mongodb_deploy_mode == "1" and inventory_hostname == groups.mongodb[0]'
 
-- block:
+- name: init
+  connection: local
+  run_once: true
+  block:
+  - name: set vars
+    set_fact:
+      mongo_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- mongo {% if init_flag == '1' %}{{ mongo_auth_param }}{% endif %}"
+
   - name: 查询复制集状态
-    shell: "{{ pod_shell }} mongo --quiet --eval 'r1=rs.status(); r2=(r1.ok==0 && r1.code==94) ? 0 : 1;'"
+    shell: "{{ mongo_shell }} --quiet --eval 'r1=rs.status(); r2=(r1.ok==0 && r1.code==94) ? 0 : 1;'"
     register: rs_status
 
   - name: 初始化复制集
-    shell: "{{ pod_shell }} mongo /ruijie/init/init-repl-set.js"
+    shell: "{{ mongo_shell }} /ruijie/init/init-repl-set.js"
     when: '"0" == rs_status.stdout'
 
   - name: 暂停20秒等待复制集初始化完成
     wait_for: timeout=20
 
   - name: 检测复制集完成状态
-    shell: "{{ pod_shell }} mongo --eval 'rs.status()'"
+    shell: "{{ mongo_shell }} --eval 'rs.status()'"
     register: rs_status
     until: '"PRIMARY" in rs_status.stdout'
     retries: 3
     delay: 10
 
-  connection: local
-  run_once: true
 
