@@ -29,6 +29,10 @@ spec:
         service: {{ mongodb_node_name }}
     spec:
       nodeName: {{ mongodb_node_ip }}
+      initContainers:
+      - name: wait-service
+        image: busybox:{{ busybox_version }}
+        command: ['sh', '-c', 'until nslookup {{ mongodb_node_name }}; do echo waiting for {{ mongodb_node_name }}; sleep 2; done;']
       containers:
       - name: mongo
         image: mongo:{{ mongodb_version }}
