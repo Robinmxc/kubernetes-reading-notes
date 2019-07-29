@@ -12,109 +12,97 @@ spec:
   clusterIP: None
 
 ---
-apiVersion: apps/v1beta1
-kind: StatefulSet
+apiVersion: v1
+kind: Pod
 metadata:
   namespace: {{ APP_NAMESPACE }}
   name: {{ mongodb_node_name }}
+  labels:
+    service: {{ mongodb_node_name }}
 spec:
-  serviceName: {{ mongodb_node_name }}
-  replicas: 1
-  selector:
-    matchLabels:
-      service: {{ mongodb_node_name }}
-  template:
-    metadata:
-      labels:
-        service: {{ mongodb_node_name }}
-    spec:
-      nodeName: {{ mongodb_node_ip }}
-      initContainers:
-      - name: wait-service
-        image: busybox:{{ busybox_version }}
-        command: ['sh', '-c', 'until nslookup {{ mongodb_node_name }}; do echo waiting for {{ mongodb_node_name }}; sleep 2; done;']
-      containers:
-      - name: mongo
-        image: mongo:{{ mongodb_version }}
-        imagePullPolicy: IfNotPresent
-        command:
-          - mongod
-          - '--bind_ip_all'
-          - '--replSet'
-          - 'rs0'
-          - '--smallfiles'
-          - '--noprealloc'
-          - '--enableMajorityReadConcern'
-          - 'false'
-          - '--wiredTigerCacheSizeGB'
-          - '{{ wiredTigerCacheSizeGB }}'
+  nodeName: {{ mongodb_node_ip }}
+  containers:
+  - name: mongo
+    image: mongo:{{ mongodb_version }}
+    imagePullPolicy: IfNotPresent
+    command:
+      - mongod
+      - '--bind_ip_all'
+      - '--replSet'
+      - 'rs0'
+      - '--smallfiles'
+      - '--noprealloc'
+      - '--enableMajorityReadConcern'
+      - 'false'
+      - '--wiredTigerCacheSizeGB'
+      - '{{ wiredTigerCacheSizeGB }}'
 {% if mongodb_auth_mode == 'yes' %}
-          - '--clusterAuthMode'
-          - 'keyFile'
-          - '--keyFile'
-          - '/conf/keyfile'
-          - '--auth'
+      - '--clusterAuthMode'
+      - 'keyFile'
+      - '--keyFile'
+      - '/conf/keyfile'
+      - '--auth'
 {% endif %}
 {% if "dict" == (deploy_conf.resources | type_debug) %}
-        resources:
-          limits:
-            cpu: {{ deploy_conf.resources.limits.cpu }}
-            memory: {{ deploy_conf.resources.limits.memory }}
-          requests:
-            cpu: {{ deploy_conf.resources.requests.cpu }}
-            memory: {{ deploy_conf.resources.requests.memory }}
+    resources:
+      limits:
+        cpu: {{ deploy_conf.resources.limits.cpu }}
+        memory: {{ deploy_conf.resources.limits.memory }}
+      requests:
+        cpu: {{ deploy_conf.resources.requests.cpu }}
+        memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
-        ports:
-          - containerPort: {{ mongodb_port }}
-        volumeMounts:
-          - mountPath: /data/db
-            name: data
+    ports:
+      - containerPort: {{ mongodb_port }}
+    volumeMounts:
+      - mountPath: /data/db
+        name: data
 {% if mongodb_auth_mode == 'yes' %}
-          - mountPath: /conf/keyfile
-            name: keyfile
-            subPath: keyfile
+      - mountPath: /conf/keyfile
+        name: keyfile
+        subPath: keyfile
 {% endif %}
 {% if mongodb_init_dir != '' %}
-          - mountPath: /ruijie/init
-            name: init-dir
+      - mountPath: /ruijie/init
+        name: init-dir
 {% endif %}
 {% if mongodb_liveness_probe == 'yes' %}
-          - mountPath: /ruijie/bin/liveness-probe.sh
-            name: mongodb-conf
-            subPath: liveness-probe.sh
+      - mountPath: /ruijie/bin/liveness-probe.sh
+        name: mongodb-conf
+        subPath: liveness-probe.sh
 {% endif %}
 {% if mongodb_liveness_probe == 'yes' %}
-        livenessProbe:
-          exec:
-            command:
-            - '/ruijie/bin/liveness-probe.sh'
-          initialDelaySeconds: 60
-          periodSeconds: 10
-          timeoutSeconds: 1
-          failureThreshold: 3
+    livenessProbe:
+      exec:
+        command:
+        - '/ruijie/bin/liveness-probe.sh'
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 1
+      failureThreshold: 3
 {% endif %}
-      volumes:
-      - name: data
-        hostPath:
-          path: {{ mongodb_data_dir }}
+  volumes:
+  - name: data
+    hostPath:
+      path: {{ mongodb_data_dir }}
 {% if mongodb_auth_mode == 'yes' %}
-      - name: keyfile
-        secret:
-          secretName: mongo-key
-          defaultMode: 0400
+  - name: keyfile
+    secret:
+      secretName: mongo-key
+      defaultMode: 0400
 {% endif %}
 {% if mongodb_init_dir != '' %}
-      - name: init-dir
-        hostPath:
-          path: {{ mongodb_init_dir }}
+  - name: init-dir
+    hostPath:
+      path: {{ mongodb_init_dir }}
 {% endif %}
 {% if mongodb_liveness_probe == 'yes' %}
-      - name: mongodb-conf
-        configMap:
-          name: mongodb-conf
-          items:
-          - key: {{ liveness_probe_sh_config_key }}
-            path: liveness-probe.sh
-            mode: 0550
+  - name: mongodb-conf
+    configMap:
+      name: mongodb-conf
+      items:
+      - key: {{ liveness_probe_sh_config_key }}
+        path: liveness-probe.sh
+        mode: 0550
 {% endif %}
 
