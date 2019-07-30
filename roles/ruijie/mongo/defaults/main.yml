@@ -15,7 +15,7 @@ mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }
 mongo_shell_fail_pattern: '"ok" : 0'
 mongo_shell_success_pattern: '"ok" : [1-9]+'
 
-mongodb_liveness_probe: "yes"
+mongodb_liveness_probe: "no"
 
 deploy_conf_defaults:
   small:
