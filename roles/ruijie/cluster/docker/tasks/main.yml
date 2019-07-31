@@ -1,9 +1,9 @@
 - name: 获取docker安装状态
-  shell: 'systemctl status docker|grep Active'
-  register: install_info
+  stat: path=/etc/systemd/system/docker.service
+  register: stat_result
 
 - name: 安装docker
-  when: "'running' not in install_info.stdout"
+  when: "not stat_result.stat.exists"
   block:
     - name: 准备docker相关目录
       file: name={{ item }} state=directory
