@@ -3,7 +3,7 @@ disk_required:
     master: 5
     node: 5
   normal:
-    master: 80
+    master: 10
     node: 400
   single:
     master: 400
