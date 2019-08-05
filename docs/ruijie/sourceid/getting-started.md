@@ -10,7 +10,7 @@
     ```
 1. 安装部署工具
     ```bash
-    rpm -ivh http://172.17.8.20:8081/repository/files/ruijie/kad/release/kad-1.0.0-1.x86_64.rpm
+    rpm -ivh http://172.17.8.20:8081/repository/files/ruijie/kad/release/kad-1.0.1-1.x86_64.rpm
     ```
 
 #### 2. 设置K8S部署参数
