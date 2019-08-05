@@ -49,3 +49,6 @@
   - { role: ruijie/sourceid/component, tags: ["component"] }
   - { role: ruijie/sourceid/frontend, tags: ["frontend"] }
   - { role: ruijie/sourceid/license, tags: ["license"] }
+  - { role: ruijie/sourceid/faceid, tags: ["faceid"] }
+  - { role: ruijie/sourceid/faceid-display, tags: ["faceid-display"] }
+

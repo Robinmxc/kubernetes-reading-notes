@@ -1,0 +1,72 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-faceid-display
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  template:
+    metadata:
+      labels:
+        service: rg-faceid-display
+    spec:
+      containers:
+      - name: rg-faceid-display
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.faceid_display.name }}:{{ SOURCEID_DOCKERS.faceid_display.version }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ faceid_display_java_opt }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 8902
+        volumeMounts:
+        - mountPath: /ruijie/sourceid/faceid-display/conf
+          name: conf
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/faceid-display/conf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-faceid-display
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    service: rg-faceid-display
+  ports:
+  - port: 80
+    targetPort: 8902
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: rg-gate-ingress
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  rules:
+  - host: {{ SOURCEID_GATE_DOMAIN }}
+    http:
+      paths:
+      - path: /admin
+        backend:
+          serviceName: rg-faceid-display
+          servicePort: 80
+      - path: /group1
+        backend:
+          serviceName: rg-faceid-display
+          servicePort: 80

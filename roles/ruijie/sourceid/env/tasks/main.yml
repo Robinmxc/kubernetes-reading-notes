@@ -43,6 +43,8 @@
     - "sourceid/linkid"
     - "sourceid/frontend"
     - "sourceid/license"
+    - "sourceid/faceid"
+    - "sourceid/faceid-display"
     - "component"
   connection: local
   run_once: true

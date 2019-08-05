@@ -36,5 +36,6 @@
     SOURCEID_GATE_DB_PWD: '{% if SOURCEID_GATE_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_GATE_DB_PWD }}{% endif %}'
     SOURCEID_LINKID_DB_PWD: '{% if SOURCEID_LINKID_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_LINKID_DB_PWD }}{% endif %}'
     COMPONENT_DB_PWD: '{% if COMPONENT_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ COMPONENT_DB_PWD }}{% endif %}'
+    SOURCEID_FACEID_DB_PWD: '{% if SOURCEID_FACEID_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_FACEID_DB_PWD }}{% endif %}'
   connection: local
   run_once: true

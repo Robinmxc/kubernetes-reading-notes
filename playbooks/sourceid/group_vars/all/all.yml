@@ -72,6 +72,9 @@ SOURCEID_LINKID_DB_PWD: ""
 COMPONENT_DB_USER: "comp"
 COMPONENT_DB_PWD: ""
 
+SOURCEID_FACEID_DB_USER: "faceiduser"
+SOURCEID_FACEID_DB_PWD: ""
+
 sourceid_license_enabled: "{% if SOURCEID_DOCKERS.license is defined %}yes{% else %}no{% endif %}"
 
 SOURCEID_HTTPS_MODE: "{% if 'https' == traefik_mode %}normal{% else %}none{% endif %}"
@@ -81,3 +84,7 @@ SOURCEID_SSO_HOST_ALIAS: "{% if 'offload' == SOURCEID_HTTPS_MODE or 'dev' == SOU
 SOURCEID_FRONTEND_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}https{% endif %}://{{ SOURCEID_GATE_DOMAIN }}"
 
 SOURCEID_SSO_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}https{% endif %}://{{ SOURCEID_SSO_DOMAIN }}"
+
+sourceid_faceid_enabled: "{% if SOURCEID_DOCKERS.faceid is defined %}yes{% else %}no{% endif %}"
+
+sourceid_faceid_display_enabled: "{% if SOURCEID_DOCKERS.faceid_display is defined %}yes{% else %}no{% endif %}"
