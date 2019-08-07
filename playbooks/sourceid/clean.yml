@@ -44,14 +44,15 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/license/"
     when: '"rg-license" in pod_info.stdout'
 
+  - name: delete faceid-display
+    tags:
+    - faceid-display
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid/"
+    when: '"rg-faceid-display" in pod_info.stdout'
+
   - name: delete faceid
     tags:
     - faceid
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid/"
     when: '"rg-faceid" in pod_info.stdout'
 
-  - name: delete faceid-display
-    tags:
-    - faceid-display
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid/"
-    when: '"rg-faceid-display" in pod_info.stdout'
