@@ -11,6 +11,13 @@ mq_server_java_opt: "{%- if CLUSTER_SCALE == 'normal' -%}-Xms512m -Xmx512m -Xmn2
 
 deploy_conf_defaults:
   small:
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
   normal:
     resources:
       limits:
