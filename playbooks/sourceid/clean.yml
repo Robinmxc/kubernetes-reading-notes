@@ -47,7 +47,7 @@
   - name: delete faceid-display
     tags:
     - faceid-display
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid/"
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid-display/"
     when: '"rg-faceid-display" in pod_info.stdout'
 
   - name: delete faceid
