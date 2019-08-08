@@ -61,21 +61,3 @@
       file: src={{ bin_dir }}/docker dest=/usr/bin/docker state=link
       ignore_errors: true
 
-- name: 获取docker已加载的镜像信息
-  shell: "{{ bin_dir }}/docker images --format ''{{ '{{' }}.Repository{{ '}}' }}:{{ '{{' }}.Tag{{ '}}' }}''"
-  register: imgages_info
-
-- name: 加载busybox镜像
-  when: '"busybox:" + busybox_version not in imgages_info.stdout'
-  block:
-  - name: 创建存放镜像的目录
-    file: name=/opt/kube/images state=directory
-
-  - name: 复制busybox镜像文件
-    vars:
-      dest_file: "/opt/kube/images/{{ busybox_offline }}"
-    copy: src={{ base_dir }}/down/{{ busybox_offline }} dest={{ dest_file }}
-    when: 'dest_file is not exists'
-
-  - name: 导入busybox
-    shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ busybox_offline }}"
