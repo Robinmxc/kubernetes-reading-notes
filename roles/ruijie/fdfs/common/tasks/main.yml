@@ -1,0 +1,156 @@
+- name: 删除centos/redhat默认安装
+  yum:
+    name:
+      - firewalld
+      - python-firewall
+      - firewalld-filesystem
+    state: absent
+
+- name: 查询防火墙状态
+  shell: "systemctl list-units *.service"
+  register: firewall_info
+
+- name: 关闭防火墙
+  shell: "systemctl stop firewalld && systemctl disable firewalld"
+  when: '"firewalld" in firewall_info.stdout'
+  ignore_errors: true
+
+- name: 清理防火墙规则
+  shell: "iptables -F && iptables -X && iptables -F -t nat && iptables -X -t nat"
+  ignore_errors: true
+
+- name: 临时关闭 selinux
+  shell: "setenforce 0"
+  failed_when: false
+
+- name: 永久关闭 selinux
+  lineinfile:
+    dest: /etc/selinux/config
+    regexp: "^SELINUX="
+    line: "SELINUX=disabled"
+
+- name: 安装基础软件包
+  yum:
+    state: present
+    name:
+      - gcc
+      - gcc-c++
+      - make
+      - automake
+      - autoconf
+      - libtool
+      - pcre
+      - pcre-devel
+      - zlib
+      - zlib-devel
+      - openssl-devel
+      - wget
+
+- name: 准备目录
+  file: name={{ item }} state=directory
+  with_items:
+  - "{{ FDFS_BASE_PATH }}"
+  - "{{ FDFS_CONF_PATH }}"
+  - "{{ FDFS_SRC_PATH }}"
+
+
+- name: 下载libfastcommon源码
+  vars:
+    tgz_file: '{{ FDFS_SRC_PATH }}/libfastcommon-{{ libfastcommon_version }}.tar.gz'
+  get_url:
+    url: "https://github.com/happyfish100/libfastcommon/archive/V{{ libfastcommon_version }}.tar.gz"
+    dest: "{{ tgz_file }}"
+  when: 'tgz_file is not exists'
+
+- name: 解压libfastcommon源码
+  vars:
+    tgz_file: '{{ FDFS_SRC_PATH }}/libfastcommon-{{ libfastcommon_version }}.tar.gz'
+    src_dir: '{{ FDFS_SRC_PATH }}/libfastcommon-{{ libfastcommon_version }}'
+  unarchive:
+    src: "{{ tgz_file }}"
+    dest: "{{ FDFS_SRC_PATH }}"
+  when: 'tgz_file is exists and src_dir is not exists'
+
+- name: 安装libfatscommon
+  shell: "./make.sh && ./make.sh install"
+  args:
+      chdir: "{{ FDFS_SRC_PATH }}/libfastcommon-{{ libfastcommon_version }}"
+  when: '"/usr/lib64/libfastcommon.so" is not exists'
+
+
+- name: 下载FastDFS源代码
+  vars:
+    tgz_file: '{{ FDFS_SRC_PATH }}/fastdfs-{{ fastdfs_version }}.tar.gz'
+  get_url:
+    url: "https://github.com/happyfish100/fastdfs/archive/V{{ fastdfs_version }}.tar.gz"
+    dest: "{{ tgz_file }}"
+  when: 'tgz_file is not exists'
+
+- name: 解压FastDFS源代码
+  vars:
+    tgz_file: '{{ FDFS_SRC_PATH }}/fastdfs-{{ fastdfs_version }}.tar.gz'
+    src_dir: '{{ FDFS_SRC_PATH }}/fastdfs-{{ fastdfs_version }}'
+  unarchive:
+    src: "{{ tgz_file }}"
+    dest: "{{ FDFS_SRC_PATH }}"
+  when: 'tgz_file is exists and src_dir is not exists'
+
+- name: 安装FastDFS
+  shell: "./make.sh && ./make.sh install"
+  args:
+      chdir: "{{ FDFS_SRC_PATH }}/fastdfs-{{ fastdfs_version }}"
+  when: '"/usr/bin/fdfs_storaged" is not exists'
+
+- name: 复制配置文件
+  copy: src={{ FDFS_SRC_PATH }}/fastdfs-{{ fastdfs_version }}/conf/{{ item }} dest={{ FDFS_CONF_PATH }}/{{ item }}
+  with_items:
+  - "http.conf"
+  - "mime.types"
+
+
+- name: 下载fastdfs-nginx-module源代码
+  vars:
+    tgz_file: '{{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}.tar.gz'
+  get_url:
+    url: "https://github.com/happyfish100/fastdfs-nginx-module/archive/V{{ fastdfs_nginx_module_version }}.tar.gz"
+    dest: "{{ tgz_file }}"
+  when: 'tgz_file is not exists'
+
+- name: 解压fastdfs-nginx-module源代码
+  vars:
+    tgz_file: '{{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}.tar.gz'
+    src_dir: '{{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}'
+  unarchive:
+    src: "{{ tgz_file }}"
+    dest: "{{ FDFS_SRC_PATH }}"
+  when: 'tgz_file is exists and src_dir is not exists'
+
+- name: 修改fastdfs-nginx-module编译参数
+  replace: path="{{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}/src/config" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+    - {regexp: "ngx_module_incs=.*$", replace: 'ngx_module_incs="/usr/include/fastdfs /usr/include/fastcommon/"'}
+    - {regexp: "CORE_INCS=.*$", replace: 'CORE_INCS="$CORE_INCS /usr/include/fastdfs /usr/include/fastcommon/"'}
+
+
+- name: 下载nginx源码
+  vars:
+    tgz_file: '{{ FDFS_SRC_PATH }}/nginx-{{ fastdfs_nginx_version }}.tar.gz'
+  get_url:
+    url: "http://nginx.org/download/nginx-{{ fastdfs_nginx_version }}.tar.gz"
+    dest: "{{ FDFS_SRC_PATH }}"
+  when: 'tgz_file is not exists'
+
+- name: 解压nginx源码
+  vars:
+    tgz_file: '{{ FDFS_SRC_PATH }}/nginx-{{ fastdfs_nginx_version }}.tar.gz'
+    src_dir: '{{ FDFS_SRC_PATH }}/nginx-{{ fastdfs_nginx_version }}'
+  unarchive:
+    src: "{{ tgz_file }}"
+    dest: "{{ FDFS_SRC_PATH }}"
+  when: 'tgz_file is exists and src_dir is not exists'
+
+- name: 安装nginx
+  shell: "./configure --add-module={{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}/src && make && make install"
+  args:
+    chdir: "{{ FDFS_SRC_PATH }}/nginx-{{ fastdfs_nginx_version }}"
+  when: '"/usr/local/nginx/sbin/nginx" is not exists'

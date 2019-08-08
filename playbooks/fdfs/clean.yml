@@ -1,0 +1,27 @@
+- hosts:
+  - fdfs_tracker
+  tasks:
+  - name: stop and disable service
+    service: name={{ item }} state=stopped enabled=no
+    with_items:
+    - fdfs_trackerd
+    ignore_errors: true
+
+  - name: delete service files
+    file: name=/etc/systemd/system/fdfs_trackerd.service state=absent
+
+- hosts:
+  - fdfs_tracker
+  tasks:
+  - name: stop and disable service
+    service: name={{ item }} state=stopped enabled=no
+    with_items:
+    - nginx
+    - fdfs_storaged
+    ignore_errors: true
+
+  - name: delete service files
+    file: name={{ item }} state=absent
+    with_items:
+    - "/etc/systemd/system/nginx.service"
+    - "/etc/systemd/system/fdfs_storaged.service"

@@ -1,0 +1,15 @@
+[Unit]
+Description=the fastdfs tracker server
+After=network.target
+
+[Service]
+Type=forking
+PIDFile={{ FDFS_BASE_PATH }}/tracker/data/fdfs_trackerd.pid
+ExecStart=/usr/bin/fdfs_trackerd {{ FDFS_CONF_PATH }}/tracker.conf start
+ExecStop=/usr/bin/fdfs_trackerd {{ FDFS_CONF_PATH }}/tracker.conf stop
+ExecReload=/usr/bin/fdfs_trackerd {{ FDFS_CONF_PATH }}/tracker.conf restart
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

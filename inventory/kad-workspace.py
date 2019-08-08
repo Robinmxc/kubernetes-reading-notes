@@ -118,6 +118,30 @@ def parse_host_data(workspace_dir):
     result["groups"]["deploy"] = {"hosts": [master_hosts[0]]}
     result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
 
+    # 设置FDFS参数
+    if "FDFS_HOSTS" not in k8s_config:
+        group_all_vars["FDFS_MODE"] = "none"
+        group_all_vars["FDFS_ACCESS_IP"] = ""
+        result["groups"]["fdfs_tracker"] = []
+        result["groups"]["fdfs_storage"] = []
+    elif "FDFS_HOSTS" in k8s_config:
+        fdfs_hosts = k8s_config["FDFS_HOSTS"]
+        result["groups"]["fdfs_tracker"] = fdfs_hosts
+        result["groups"]["fdfs_storage"] = fdfs_hosts
+        fdfs_host_count = len(fdfs_hosts)
+        if fdfs_host_count == 0:
+            group_all_vars["FDFS_MODE"] = "none"
+            group_all_vars["FDFS_ACCESS_IP"] = ""
+        elif fdfs_host_count == 1:
+            group_all_vars["FDFS_MODE"] = "single"
+            group_all_vars["FDFS_ACCESS_IP"] = fdfs_hosts[0]
+        elif fdfs_host_count == 2:
+            group_all_vars["FDFS_MODE"] = "dual"
+            group_all_vars["FDFS_ACCESS_IP"] = group_all_vars["FDFS_VIP"]
+        else:
+            group_all_vars["FDFS_MODE"] = "large"
+            group_all_vars["FDFS_ACCESS_IP"] = group_all_vars["FDFS_VIP"]
+
     # 设置K8S部署模式
     deploy_mode = "single-master"
     if (len(master_hosts) == 2):

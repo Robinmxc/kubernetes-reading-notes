@@ -1,0 +1,21 @@
+- hosts:
+  - fdfs_tracker
+  - fdfs_storage
+  any_errors_fatal: true
+  vars:
+    local_ntp_server: '{{ groups["fdfs_tracker"][0] }}'
+  roles:
+  - ruijie/cluster/chrony
+  - ruijie/fdfs/common
+
+- hosts:
+  - fdfs_tracker
+  any_errors_fatal: true
+  roles:
+  - ruijie/fdfs/tracker
+
+- hosts:
+  - fdfs_storage
+  any_errors_fatal: true
+  roles:
+  - ruijie/fdfs/storage

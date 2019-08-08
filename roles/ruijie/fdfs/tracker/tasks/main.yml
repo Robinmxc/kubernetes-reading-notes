@@ -1,0 +1,28 @@
+- name: 准备目录
+  file: name="{{ FDFS_BASE_PATH }}/tracker" state=directory
+
+- name: 检查tracker服务状态
+  stat: path="/etc/systemd/system/fdfs_trackerd.service"
+  register: service_stat
+
+- name: 部署tracker
+  when: 'not service_stat.stat.exists'
+  block:
+  - name: 设置tracker参数
+    template: src=tracker.conf.j2 dest={{ FDFS_CONF_PATH }}/tracker.conf
+
+  - name: 创建tracker服务
+    template: src=fdfs_trackerd.service.j2 dest=/etc/systemd/system/fdfs_trackerd.service
+
+  - name: 开机启用tracker服务
+    shell: systemctl enable fdfs_trackerd
+
+  - name: 开启tracker服务
+    shell: systemctl daemon-reload && systemctl restart fdfs_trackerd
+
+  - name: 轮询等待tracker服务运行
+    shell: "systemctl status fdfs_trackerd.service|grep Active"
+    register: service_status
+    until: '"running" in service_status.stdout'
+    retries: 8
+    delay: 2

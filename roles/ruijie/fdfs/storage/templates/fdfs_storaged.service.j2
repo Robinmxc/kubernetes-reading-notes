@@ -1,0 +1,15 @@
+[Unit]
+Description=The fastdfs storage server
+After=network.target
+
+[Service]
+Type=forking
+PIDFile={{ FDFS_BASE_PATH }}/storage/data/fdfs_storaged.pid
+ExecStart=/usr/bin/fdfs_storaged {{ FDFS_CONF_PATH }}/storage.conf start
+ExecStop=/usr/bin/fdfs_storaged {{ FDFS_CONF_PATH }}/storage.conf stop
+ExecReload=/usr/bin/fdfs_storaged {{ FDFS_CONF_PATH }}/storage.conf restart
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

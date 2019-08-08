@@ -1,0 +1,55 @@
+- name: 准备目录
+  file: name="{{ FDFS_BASE_PATH }}/storage" state=directory
+
+- name: 检查storage服务状态
+  stat: path="/etc/systemd/system/fdfs_storaged.service"
+  register: service_stat
+
+- name: 部署storage
+  when: 'not service_stat.stat.exists'
+  block:
+  - name: 设置storage参数
+    template: src=storage.conf.j2 dest={{ FDFS_CONF_PATH }}/storage.conf
+
+  - name: 创建storage服务
+    template: src=fdfs_storaged.service.j2 dest=/etc/systemd/system/fdfs_storaged.service
+
+  - name: 开机启用storage服务
+    shell: systemctl enable fdfs_storaged
+
+  - name: 开启storage服务
+    shell: systemctl daemon-reload && systemctl restart fdfs_storaged
+
+  - name: 轮询等待storage服务运行
+    shell: "systemctl status fdfs_storaged.service|grep Active"
+    register: service_status
+    until: '"running" in service_status.stdout'
+    retries: 8
+    delay: 2
+
+
+- name: 检查nginx服务状态
+  stat: path="/etc/systemd/system/nginx.service"
+  register: service_stat
+
+- name: 部署nginx
+  when: 'not service_stat.stat.exists'
+  block:
+  - name: 设置nginx参数
+    template: src=nginx.conf.j2 dest=/usr/local/nginx/conf/nginx.conf
+
+  - name: 创建nginx服务
+    template: src=nginx.service.j2 dest=/etc/systemd/system/nginx.service
+
+  - name: 开机启用nginx服务
+    shell: systemctl enable nginx
+
+  - name: 开启nginx服务
+    shell: systemctl daemon-reload && systemctl restart nginx
+
+  - name: 轮询等待nginx服务运行
+    shell: "systemctl status nginx.service|grep Active"
+    register: service_status
+    until: '"running" in service_status.stdout'
+    retries: 8
+    delay: 2
