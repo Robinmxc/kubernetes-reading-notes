@@ -48,11 +48,11 @@
     tags:
     - faceid-display
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid-display/"
-    when: '"rg-faceid-display" in pod_info.stdout'
+    when: 'pod_info.stdout is search("rg-faceid-display-[a-z0-9]*-[a-z0-9]*\s")'
 
   - name: delete faceid
     tags:
     - faceid
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid/"
-    when: '"rg-faceid" in pod_info.stdout'
+    when: 'pod_info.stdout is search("rg-faceid-[a-z0-9]*-[a-z0-9]*\s")'
 

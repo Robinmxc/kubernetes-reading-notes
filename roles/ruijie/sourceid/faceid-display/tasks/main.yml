@@ -58,6 +58,6 @@
     tags:
       - deploy
     shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/faceid-display/"
-    when: '"rg-faceid-display" not in pod_info.stdout'
+    when: 'pod_info.stdout is not search("rg-faceid-display-[a-z0-9]*-[a-z0-9]*\s*[0-9]*/[0-9]*\s*Running")'
     run_once: true
     connection: local
