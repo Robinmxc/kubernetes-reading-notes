@@ -62,10 +62,6 @@ spec:
   - host: {{ SOURCEID_GATE_DOMAIN }}
     http:
       paths:
-      - path: /admin
-        backend:
-          serviceName: rg-faceid-display
-          servicePort: 80
       - path: /group1
         backend:
           serviceName: rg-faceid-display
