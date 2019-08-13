@@ -38,6 +38,9 @@
   - name: 设置nginx参数
     template: src=nginx.conf.j2 dest=/usr/local/nginx/conf/nginx.conf
 
+  - name: 设置nginx参数
+    template: src=mod_fastdfs.conf.j2 dest=/etc/fdfs/mod_fastdfs.conf
+
   - name: 创建nginx服务
     template: src=nginx.service.j2 dest=/etc/systemd/system/nginx.service
 
