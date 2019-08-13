@@ -1,0 +1,4 @@
+# <id>  <group_name>  <ip_or_hostname>
+{% for host in groups["fdfs_storage"] %}
+{{ 100000 + loop.index }}  group1 {{ host }}
+{% endfor %}

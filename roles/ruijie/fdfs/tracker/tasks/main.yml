@@ -11,6 +11,9 @@
   - name: 设置tracker参数
     template: src=tracker.conf.j2 dest={{ FDFS_CONF_PATH }}/tracker.conf
 
+  - name: 设置tracker参数
+    template: src=storage_ids.conf.j2 dest={{ FDFS_CONF_PATH }}/storage_ids.conf
+
   - name: 创建tracker服务
     template: src=fdfs_trackerd.service.j2 dest=/etc/systemd/system/fdfs_trackerd.service
 
