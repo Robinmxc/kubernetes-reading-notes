@@ -21,12 +21,6 @@
   when: 'mongodb_data_dir is search(pattern)'
   with_items: '{{ hostvars[inventory_hostname].ansible_mounts | sort(attribute="mount") | list }}'
 
-- name: 检查存储目录容量是否足够
-  tags:
-  - config
-  fail: msg="数据存储目录{{ mongodb_data_dir }}剩余空间不足"
-  when: '(data_dir_mount_info.size_available | int) < (mongodb_disk_space_required | int) * 1073741824'
-
 - name: 准备init目录
   tags:
   - config

@@ -6,7 +6,6 @@ mongodb_auth_mode: "no"
 mongodb_nodeport: "no"
 
 mongodb_check_data_dir: "no"
-mongodb_disk_space_required: "{%- if SOURCEID_DEPLOY_PROFILE == 'prd' -%}100{%- else -%}3{%- endif -%}"
 
 wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- elif CLUSTER_SCALE == 'single' -%}4{%- else -%}0.5{%- endif -%}"
 
