@@ -2,7 +2,7 @@
   file: name="{{ FDFS_BASE_PATH }}/tracker" state=directory
 
 - name: 检查tracker服务状态
-  stat: path="/etc/systemd/system/fdfs_trackerd.service"
+  stat: path="/etc/systemd/system/multi-user.target.wants/fdfs_trackerd.service"
   register: service_stat
 
 - name: 部署tracker

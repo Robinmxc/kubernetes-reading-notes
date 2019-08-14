@@ -33,7 +33,7 @@ http {
     #gzip  on;
 
     server {
-        listen       80;
+        listen       {{ FDFS_ACCESS_PORT }};
         server_name  localhost;
 
         #charset koi8-r;

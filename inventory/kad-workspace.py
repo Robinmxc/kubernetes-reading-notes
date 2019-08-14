@@ -119,6 +119,7 @@ def parse_host_data(workspace_dir):
     result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
 
     # 设置FDFS参数
+    fdfs_hosts = []
     if "FDFS_HOSTS" not in k8s_config:
         group_all_vars["FDFS_MODE"] = "none"
         group_all_vars["FDFS_ACCESS_IP"] = ""
@@ -126,6 +127,9 @@ def parse_host_data(workspace_dir):
         result["groups"]["fdfs_storage"] = []
     elif "FDFS_HOSTS" in k8s_config:
         fdfs_hosts = k8s_config["FDFS_HOSTS"]
+        for ip in fdfs_hosts:
+            if not is_IP(ip):
+                raise Exception(ip + u"不是有效的IP地址")
         result["groups"]["fdfs_tracker"] = fdfs_hosts
         result["groups"]["fdfs_storage"] = fdfs_hosts
         fdfs_host_count = len(fdfs_hosts)
@@ -136,9 +140,13 @@ def parse_host_data(workspace_dir):
             group_all_vars["FDFS_MODE"] = "single"
             group_all_vars["FDFS_ACCESS_IP"] = fdfs_hosts[0]
         elif fdfs_host_count == 2:
+            if not is_IP(group_all_vars["FDFS_VIP"]):
+                raise Exception(u"FDFS_VIP不是有效的IP地址")
             group_all_vars["FDFS_MODE"] = "dual"
             group_all_vars["FDFS_ACCESS_IP"] = group_all_vars["FDFS_VIP"]
         else:
+            if not is_IP(group_all_vars["FDFS_VIP"]):
+                raise Exception(u"FDFS_VIP不是有效的IP地址")
             group_all_vars["FDFS_MODE"] = "large"
             group_all_vars["FDFS_ACCESS_IP"] = group_all_vars["FDFS_VIP"]
 
@@ -211,6 +219,8 @@ def parse_host_data(workspace_dir):
         host_vars[ip] = {"K8S_ROLE": "master"}
     for ip in node_hosts:
         host_vars[ip] = {"K8S_ROLE": "node"}
+    for ip in fdfs_hosts:
+        host_vars[ip] = {}
 
     # 设置负载均衡角色
     if (deploy_mode == "multi-master"):
@@ -222,6 +232,17 @@ def parse_host_data(workspace_dir):
     for ip in node_hosts:
         host_vars[ip]["NODE_NAME"] = "etcd" + bytes(idx)
         idx = idx + 1
+
+    # 设置FDFS Storage节点ID
+    if "FDFS_MODE" in group_all_vars and "none" != group_all_vars["FDFS_MODE"]:
+        idx = 1
+        for ip in result["groups"]["fdfs_storage"]:
+            host_vars[ip]["FDFS_STORAGE_ID"] = str(100000 + idx)
+            if idx == 1:
+                host_vars[ip]["FDFS_STORAGE_ROLE"] = "MASTER"
+            else:
+                host_vars[ip]["FDFS_STORAGE_ROLE"] = "BACKUP"
+            idx = idx + 1
 
     return result
 

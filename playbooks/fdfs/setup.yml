@@ -19,3 +19,4 @@
   any_errors_fatal: true
   roles:
   - ruijie/fdfs/storage
+  - ruijie/fdfs/cluster

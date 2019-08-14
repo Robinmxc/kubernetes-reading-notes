@@ -2,7 +2,7 @@
   file: name="{{ FDFS_BASE_PATH }}/storage" state=directory
 
 - name: 检查storage服务状态
-  stat: path="/etc/systemd/system/fdfs_storaged.service"
+  stat: path="/etc/systemd/system/multi-user.target.wants/fdfs_storaged.service"
   register: service_stat
 
 - name: 部署storage
@@ -29,7 +29,7 @@
 
 
 - name: 检查nginx服务状态
-  stat: path="/etc/systemd/system/nginx.service"
+  stat: path="/etc/systemd/system/multi-user.target.wants/nginx.service"
   register: service_stat
 
 - name: 部署nginx

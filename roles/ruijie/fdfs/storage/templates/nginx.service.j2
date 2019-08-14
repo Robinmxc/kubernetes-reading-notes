@@ -11,6 +11,7 @@ ExecReload=/usr/local/nginx/sbin/nginx -s reload
 ExecStop=/usr/local/nginx/sbin/nginx -s  stop
 PrivateTmp=true
 Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

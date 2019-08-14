@@ -43,7 +43,7 @@ tracker_server={{ host }}:{{ FDFS_TRACKER_PORT }}
 
 # the port of the local storage server
 # the default value is 23000
-storage_server_port=23000
+storage_server_port={{ FDFS_STORAGE_PORT }}
 
 # the group name of the local storage server
 group_name=group1

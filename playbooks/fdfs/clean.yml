@@ -11,11 +11,12 @@
     file: name=/etc/systemd/system/fdfs_trackerd.service state=absent
 
 - hosts:
-  - fdfs_tracker
+  - fdfs_storage
   tasks:
   - name: stop and disable service
     service: name={{ item }} state=stopped enabled=no
     with_items:
+    - keepalived
     - nginx
     - fdfs_storaged
     ignore_errors: true
