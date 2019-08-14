@@ -10,7 +10,7 @@ spec:
       labels:
         service: rg-gate
     spec:
-{% if "" != SOURCEID_SSO_HOST_ALIAS %}
+{% if "" != SOURCEID_SSO_HOST_ALIAS and "offload" != SOURCEID_HTTPS_MODE %}
       hostAliases:
       - ip: "{{ SOURCEID_SSO_HOST_ALIAS }}"
         hostnames:

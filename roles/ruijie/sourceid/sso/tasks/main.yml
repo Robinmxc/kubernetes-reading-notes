@@ -9,8 +9,7 @@
   tags:
     - config
   vars:
-    sso_http_url: "{{ SOURCEID_SSO_URL  | regex_replace('https', 'http') }}"
-    cas_server_url: "{% if 'normal' == SOURCEID_HTTPS_MODE %}{{ SOURCEID_SSO_URL }}{% else %}{{ sso_http_url }}{% endif %}"
+    cas_server_url: "{{ SOURCEID_SSO_URL }}"
   replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
     - {regexp: "^cas.server.name=.*$", replace: "cas.server.name={{ cas_server_url }}"}

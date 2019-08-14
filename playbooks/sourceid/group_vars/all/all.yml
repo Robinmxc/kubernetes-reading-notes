@@ -79,7 +79,7 @@ sourceid_license_enabled: "{% if SOURCEID_DOCKERS.license is defined %}yes{% els
 
 SOURCEID_HTTPS_MODE: "{% if 'https' == traefik_mode %}normal{% else %}none{% endif %}"
 
-SOURCEID_SSO_HOST_ALIAS: "{% if 'offload' == SOURCEID_HTTPS_MODE or 'dev' == SOURCEID_DEPLOY_PROFILE %}{{ groups['kube_node'][0] }}{% else %}{% endif %}"
+SOURCEID_SSO_HOST_ALIAS: "{% if 'dev' == SOURCEID_DEPLOY_PROFILE %}{{ groups['kube_node'][0] }}{% else %}{% endif %}"
 
 SOURCEID_FRONTEND_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}https{% endif %}://{{ SOURCEID_GATE_DOMAIN }}"
 
