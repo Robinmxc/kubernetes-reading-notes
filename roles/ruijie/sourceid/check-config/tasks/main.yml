@@ -1,6 +1,6 @@
 - name: 检查人脸组件配置参数
   when: 'SOURCEID_FACEID_ENABLED == "yes"'
   block:
-  - name: 检查是否已经部署FDFS
-    fail: msg="安装人脸组件需要先部署FDFS"
+  - name: 检查是否已经设置FDFS参数
+    fail: msg="安装人脸组件需要先设置FDFS参数"
     when: 'FDFS_MODE == "none"'
