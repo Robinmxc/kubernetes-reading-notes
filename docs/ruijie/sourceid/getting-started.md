@@ -2,16 +2,13 @@
 
 本文以SourceID 1.5.1为例描述在开发、测试环境部署SourceID的步骤，生产环境部署请使用《SourceID部署操作说明.docx》。
 
-#### 1. 准备
+#### 1. 安装部署工具
 
-1. 安装Ansible
-    ```bash
-    yum install -y ansible
-    ```
-1. 安装部署工具
-    ```bash
-    rpm -ivh http://172.17.8.20:8081/repository/files/ruijie/kad/release/kad-1.0.1-1.x86_64.rpm
-    ```
+执行以下命令安装KAD部署工具
+
+```bash
+yum install -y http://172.17.8.20:8081/repository/files/ruijie/kad/release/kad-1.0.1-1.x86_64.rpm
+```
 
 #### 2. 设置K8S部署参数
 
