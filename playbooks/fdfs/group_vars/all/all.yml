@@ -1,11 +1,3 @@
-FDFS_GROUP_NAME: "group1"
-
-FDFS_TRACKER_PORT: "22122"
-
-FDFS_STORAGE_PORT: "23000"
-
-FDFS_ACCESS_PORT: "80"
-
 max_space_dir: "{{
     hostvars[groups['kube_node'][0]].ansible_mounts
     | selectattr('mount', 'match', '^(?!/var/lib/).*')
@@ -21,5 +13,3 @@ FDFS_SRC_PATH: "/usr/local/src"
 FDFS_BASE_PATH: "{{ DATA_DIR }}/ruijie/fdfs"
 
 FDFS_CONF_PATH: "/etc/fdfs"
-
-FDFS_GIT_HOME: "https://github.com/happyfish100"

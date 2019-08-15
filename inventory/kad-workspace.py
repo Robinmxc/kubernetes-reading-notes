@@ -118,38 +118,6 @@ def parse_host_data(workspace_dir):
     result["groups"]["deploy"] = {"hosts": [master_hosts[0]]}
     result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
 
-    # 设置FDFS参数
-    fdfs_hosts = []
-    if "FDFS_HOSTS" not in k8s_config:
-        group_all_vars["FDFS_MODE"] = "none"
-        group_all_vars["FDFS_ACCESS_IP"] = ""
-        result["groups"]["fdfs_tracker"] = []
-        result["groups"]["fdfs_storage"] = []
-    elif "FDFS_HOSTS" in k8s_config:
-        fdfs_hosts = k8s_config["FDFS_HOSTS"]
-        for ip in fdfs_hosts:
-            if not is_IP(ip):
-                raise Exception(ip + u"不是有效的IP地址")
-        result["groups"]["fdfs_tracker"] = fdfs_hosts
-        result["groups"]["fdfs_storage"] = fdfs_hosts
-        fdfs_host_count = len(fdfs_hosts)
-        if fdfs_host_count == 0:
-            group_all_vars["FDFS_MODE"] = "none"
-            group_all_vars["FDFS_ACCESS_IP"] = ""
-        elif fdfs_host_count == 1:
-            group_all_vars["FDFS_MODE"] = "single"
-            group_all_vars["FDFS_ACCESS_IP"] = fdfs_hosts[0]
-        elif fdfs_host_count == 2:
-            if not is_IP(group_all_vars["FDFS_VIP"]):
-                raise Exception(u"FDFS_VIP不是有效的IP地址")
-            group_all_vars["FDFS_MODE"] = "dual"
-            group_all_vars["FDFS_ACCESS_IP"] = group_all_vars["FDFS_VIP"]
-        else:
-            if not is_IP(group_all_vars["FDFS_VIP"]):
-                raise Exception(u"FDFS_VIP不是有效的IP地址")
-            group_all_vars["FDFS_MODE"] = "large"
-            group_all_vars["FDFS_ACCESS_IP"] = group_all_vars["FDFS_VIP"]
-
     # 设置K8S部署模式
     deploy_mode = "single-master"
     if (len(master_hosts) == 2):
@@ -219,8 +187,6 @@ def parse_host_data(workspace_dir):
         host_vars[ip] = {"K8S_ROLE": "master"}
     for ip in node_hosts:
         host_vars[ip] = {"K8S_ROLE": "node"}
-    for ip in fdfs_hosts:
-        host_vars[ip] = {}
 
     # 设置负载均衡角色
     if (deploy_mode == "multi-master"):
@@ -233,18 +199,90 @@ def parse_host_data(workspace_dir):
         host_vars[ip]["NODE_NAME"] = "etcd" + bytes(idx)
         idx = idx + 1
 
-    # 设置FDFS Storage节点ID
-    if "FDFS_MODE" in group_all_vars and "none" != group_all_vars["FDFS_MODE"]:
-        idx = 1
-        for ip in result["groups"]["fdfs_storage"]:
-            host_vars[ip]["FDFS_STORAGE_ID"] = str(100000 + idx)
-            if idx == 1:
-                host_vars[ip]["FDFS_STORAGE_ROLE"] = "MASTER"
-            else:
-                host_vars[ip]["FDFS_STORAGE_ROLE"] = "BACKUP"
-            idx = idx + 1
+    parse_fdfs_config(result)
 
     return result
+
+
+def parse_fdfs_config(host_data):
+    group_all_vars = host_data["groups"]["all"]["vars"]
+
+    # 设置FDFS参数
+    if "FDFS_MODE" in group_all_vars:
+        fdfs_mode = group_all_vars["FDFS_MODE"]
+    else:
+        fdfs_mode = "none"
+        group_all_vars["FDFS_MODE"] = fdfs_mode
+
+    if "none" == fdfs_mode:
+        group_all_vars["FDFS_ACCESS_IP"] = ""
+        host_data["groups"]["fdfs_tracker"] = []
+        host_data["groups"]["fdfs_storage"] = []
+        return
+
+    storage_hosts = group_all_vars["FDFS_STORAGE_HOSTS"] if "FDFS_STORAGE_HOSTS" in group_all_vars else []
+    if len(storage_hosts) == 0:
+        raise Exception(u"FDFS_STORAGE_HOSTS参数没有设置")
+    for ip in storage_hosts:
+        if not is_IP(ip):
+            raise Exception(ip + u"不是有效的IP地址")
+    host_data["groups"]["fdfs_storage"] = storage_hosts
+
+    if "FDFS_TRACKER_HOSTS" in group_all_vars:
+        tracker_hosts = group_all_vars["FDFS_TRACKER_HOSTS"]
+    else:
+        if "dual" == fdfs_mode or "single" == fdfs_mode:
+            tracker_hosts = storage_hosts
+        else:
+            tracker_hosts = []
+
+    if len(tracker_hosts) == 0:
+        raise Exception(u"FDFS_TRACKER_HOSTS参数没有设置")
+    for ip in tracker_hosts:
+        if not is_IP(ip):
+            raise Exception(ip + u"不是有效的IP地址")
+    host_data["groups"]["fdfs_tracker"] = tracker_hosts
+
+    if "single" == fdfs_mode:
+        if len(tracker_hosts) != 1 or len(storage_hosts) != 1 or tracker_hosts[0] != storage_hosts[0]:
+            raise Exception(u"FDFS单机部署只能配置一个IP地址")
+        group_all_vars["FDFS_ACCESS_IP"] = storage_hosts[0]
+    else:
+        fdfs_vip = group_all_vars["FDFS_VIP"] if "FDFS_VIP" in group_all_vars else ""
+        if "" == fdfs_vip:
+            raise Exception(u"FDFS_VIP参数没有设置")
+        if "" != fdfs_vip and not is_IP(fdfs_vip):
+            raise Exception(u"FDFS_VIP不是有效的IP地址")
+        group_all_vars["FDFS_ACCESS_IP"] = fdfs_vip
+
+        if len(storage_hosts) < 2:
+            raise Exception(u"FDFS_STORAGE_HOSTS必须配置两个IP地址")
+
+    if "FDFS_TRACKER_PORT" not in group_all_vars:
+        group_all_vars["FDFS_TRACKER_PORT"] = "22122"
+    if "FDFS_STORAGE_PORT" not in group_all_vars:
+        group_all_vars["FDFS_STORAGE_PORT"] = "23000"
+    if "FDFS_ACCESS_PORT" not in group_all_vars:
+        group_all_vars["FDFS_ACCESS_PORT"] = "80"
+    if "FDFS_GROUP_NAME" not in group_all_vars:
+        group_all_vars["FDFS_GROUP_NAME"] = "group1"
+
+    tmp = []
+    for ip in storage_hosts:
+        tmp.append(ip + ":" + group_all_vars["FDFS_TRACKER_PORT"])
+    group_all_vars["FDFS_TRACKER_SERVERS"] = ",".join(tmp)
+
+    # 设置FDFS Storage节点ID和角色
+    host_vars = host_data["host_vars"]
+    idx = 1
+    for ip in storage_hosts:
+        host_vars[ip] = {}
+        host_vars[ip]["FDFS_STORAGE_ID"] = str(100000 + idx)
+        if idx == 1:
+            host_vars[ip]["FDFS_STORAGE_ROLE"] = "MASTER"
+        else:
+            host_vars[ip]["FDFS_STORAGE_ROLE"] = "BACKUP"
+        idx = idx + 1
 
 def main():
     reload(sys)
