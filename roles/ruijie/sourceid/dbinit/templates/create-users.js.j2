@@ -23,7 +23,7 @@ db.getSiblingDB("component").runCommand({
   roles: [{role:"dbOwner", db: "component"}]
 });
 
-{% if sourceid_faceid_enabled == "yes" %}
+{% if SOURCEID_FACEID_ENABLED == "yes" %}
 db.getSiblingDB("faceid").runCommand({
   createUser: "{{ SOURCEID_FACEID_DB_USER }}",
   pwd: "{{ SOURCEID_FACEID_DB_PWD }}",

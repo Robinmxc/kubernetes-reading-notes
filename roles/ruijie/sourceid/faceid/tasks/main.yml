@@ -1,6 +1,12 @@
 - name: 部署License
-  when: 'sourceid_faceid_enabled == "yes"'
+  when: 'SOURCEID_FACEID_ENABLED == "yes"'
   block:
+  - name: 检查人脸组件版本
+    tags:
+      - all
+    fail: msg="人脸组件版本未设置"
+    when: 'SOURCEID_DOCKERS.faceid is not defined'
+
   - name: 复制配置文件
     tags:
       - config

@@ -85,6 +85,4 @@ SOURCEID_FRONTEND_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}http
 
 SOURCEID_SSO_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}https{% endif %}://{{ SOURCEID_SSO_DOMAIN }}"
 
-sourceid_faceid_enabled: "{% if SOURCEID_DOCKERS.faceid is defined %}yes{% else %}no{% endif %}"
-
-sourceid_faceid_display_enabled: "{% if SOURCEID_DOCKERS.faceid_display is defined %}yes{% else %}no{% endif %}"
+SOURCEID_FACEID_ENABLED: "no"
