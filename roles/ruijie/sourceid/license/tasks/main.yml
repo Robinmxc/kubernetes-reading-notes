@@ -1,5 +1,5 @@
 - name: 部署License
-  when: 'sourceid_license_enabled == "yes"'
+  when: 'SOURCEID_LICENSE_ENABLED == "yes"'
   block:
   - name: 复制配置文件
     tags:

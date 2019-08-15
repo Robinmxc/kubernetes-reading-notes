@@ -67,8 +67,6 @@
   - config
   block:
   - name: 准备configmap部署文件
-    vars:
-      mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin{% else %}{% endif %}"
     template: src=mongo-conf.yaml.j2 dest={{ yaml_dir }}/mongo/mongo-conf.yml
   - name: 创建configmap
     shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo-conf.yml"
@@ -186,15 +184,9 @@
       delay: 5
       ignore_errors: true
 
-    - name: 获取mongo1 POD 名称
-      shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
-      register: pod_name
-      connection: local
-      run_once: true
-
     - name: set vars
       set_fact:
-        pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- "
+        pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} mongo1 -- "
       connection: local
       run_once: true
 

@@ -74,17 +74,6 @@
     - "{{ mongodb_init_dir }}/component/rg-init-db/init-data.sh"
     - "{{ mongodb_init_dir }}/component/rg-init-db/upgrade_data.sh"
 
-  - name: 获取mongo1 POD 名称
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
-    register: pod_name
-    connection: local
-
-  - name: set vars
-    set_fact:
-      pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- "
-      mongo_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ pod_name.stdout }} -- mongo {{ mongo_auth_param }}"
-    connection: local
-
   - name: 查询数据初始化状态
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
     register: mongo_result
@@ -92,7 +81,7 @@
     connection: local
 
   - name: 执行初始化脚本
-    shell: '{{ pod_shell }} /ruijie/init/init-data.sh'
+    shell: '{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} mongo1 -- /ruijie/init/init-data.sh'
     when: '"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w" not in mongo_result.stdout'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'

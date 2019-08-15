@@ -6,9 +6,4 @@ db_pwd_checklist: [
     {user: "{{ COMPONENT_DB_USER }}", pwd: "{{ COMPONENT_DB_PWD }}", pwd_param_name: "COMPONENT_DB_PWD", user_param_name: "COMPONENT_DB_USER"},
   ]
 
-mongo_shell_fail_pattern: '"ok" : 0'
-mongo_shell_success_pattern: '"ok" : [1-9]+'
-
-mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin{% else %}{% endif %}"
-
 db_script_version: "2"

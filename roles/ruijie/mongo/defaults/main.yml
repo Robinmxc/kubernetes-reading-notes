@@ -9,10 +9,6 @@ mongodb_check_data_dir: "no"
 
 wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- elif CLUSTER_SCALE == 'single' -%}4{%- else -%}0.5{%- endif -%}"
 
-mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin{% else %}{% endif %}"
-mongo_shell_fail_pattern: '"ok" : 0'
-mongo_shell_success_pattern: '"ok" : [1-9]+'
-
 mongodb_liveness_probe: "no"
 
 deploy_conf_defaults:

@@ -1,5 +1,5 @@
 
-linkid_license_check: "{% if 'yes' == sourceid_license_enabled %}true{% else %}false{% endif %}"
+linkid_license_check: "{% if 'yes' == SOURCEID_LICENSE_ENABLED %}true{% else %}false{% endif %}"
 
 linkid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
 
