@@ -103,14 +103,14 @@
     connection: local
 
   - name: 查询用户状态
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({usersInfo: "cas"})'''
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({usersInfo: "{{ SOURCEID_CAS_DB_USER }}"})'''
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
   - name: 初始化数据库用户
     shell: "{{ mongo_shell }} /ruijie/init/create-users.js"
-    when: '"cas" not in mongo_result.stdout'
+    when: 'SOURCEID_CAS_DB_USER not in mongo_result.stdout'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
