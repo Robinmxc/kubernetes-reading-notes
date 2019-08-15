@@ -1,0 +1,3 @@
+- name: 检查是否已经部署FDFS
+  fail: msg="安装人脸组件需要先部署FDFS"
+  when: 'sourceid_faceid_enabled == "yes" and FDFS_MODE == "none"'

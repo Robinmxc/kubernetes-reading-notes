@@ -15,6 +15,7 @@
     with_items:
       - {regexp: "mongodb:.*/faceid.*$", replace: "mongodb://{{ SOURCEID_FACEID_DB_USER }}:{{ SOURCEID_FACEID_DB_PWD }}@{{ mongodb_addr }}/faceid?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+      - {regexp: "tracker-server:.*$", replace: "{{ FDFS_TRACKER_SERVERS }}"}
     no_log: true
 
   - name: 自定义配置

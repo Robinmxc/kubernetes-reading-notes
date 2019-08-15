@@ -266,6 +266,11 @@ def parse_fdfs_config(host_data):
         group_all_vars["FDFS_ACCESS_PORT"] = "80"
     if "FDFS_GROUP_NAME" not in group_all_vars:
         group_all_vars["FDFS_GROUP_NAME"] = "group1"
+    if "FDFS_ACCESS_URL" not in group_all_vars:
+        if "80" == group_all_vars["FDFS_ACCESS_PORT"]:
+            group_all_vars["FDFS_ACCESS_URL"] = "http://" + group_all_vars["FDFS_ACCESS_IP"] + "/" + group_all_vars["FDFS_GROUP_NAME"]
+        else:
+            group_all_vars["FDFS_ACCESS_URL"] = "http://" + group_all_vars["FDFS_ACCESS_IP"] + ":" + group_all_vars["FDFS_ACCESS_PORT"] + "/" + group_all_vars["FDFS_GROUP_NAME"]
 
     tmp = []
     for ip in storage_hosts:
