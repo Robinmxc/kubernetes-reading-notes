@@ -3,9 +3,11 @@
   block:
   - name: 检查人脸组件版本
     tags:
-      - all
+      - allways
     fail: msg="人脸组件版本未设置"
     when: 'SOURCEID_DOCKERS.faceid is not defined'
+    run_once: true
+    connection: local
 
   - name: 复制配置文件
     tags:
