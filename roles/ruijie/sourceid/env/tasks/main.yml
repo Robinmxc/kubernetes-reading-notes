@@ -45,6 +45,7 @@
     - "sourceid/license"
     - "sourceid/faceid"
     - "sourceid/faceid-display"
+    - "sourceid/gateway"
     - "component"
   connection: local
   run_once: true

@@ -19,12 +19,19 @@ SOURCEID_SSO_DOMAIN: "id.example.com"
 #自助和管理端域名
 SOURCEID_GATE_DOMAIN: "id-self.example.com"
 
-#二次认证网关地址
-SOURCEID_GATEWAY_URL: "http://gateway.example.com"
-
 #登录成功后的跳转地址
 SOURCEID_REDIRECT_URL: "http://www.baidu.com"
 
 #frontend资源文件目录
 SOURCEID_FRONTEND_RES: "ruijie"
+
+
+####二次认证网关相关配置参数####
+# SOURCEID_GATEWAY_DEPLOY_MODE: "standalone"
+
+# SOURCEID_GATEWAY_HOSTS: ["1.1.1.101", "1.1.1.102"]
+
+# SOURCEID_GATEWAY_VIP: "1.1.1.100"
+
+# SOURCEID_GATEWAY_COOKIE_DOMAIN: "ruijie.com.cn"
 

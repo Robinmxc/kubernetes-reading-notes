@@ -1,0 +1,20 @@
+- name: 删除centos/redhat默认安装的防火墙
+  yum:
+    name:
+      - firewalld
+      - python-firewall
+      - firewalld-filesystem
+    state: absent
+
+- name: 查询防火墙状态
+  shell: "systemctl list-units *.service"
+  register: firewall_info
+
+- name: 关闭防火墙
+  shell: "systemctl stop firewalld && systemctl disable firewalld"
+  when: '"firewalld" in firewall_info.stdout'
+  ignore_errors: true
+
+- name: 清理防火墙规则
+  shell: "iptables -F && iptables -X && iptables -F -t nat && iptables -X -t nat"
+  ignore_errors: true

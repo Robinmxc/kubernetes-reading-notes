@@ -79,6 +79,9 @@ COMPONENT_DB_PWD: ""
 SOURCEID_FACEID_DB_USER: "faceiduser"
 SOURCEID_FACEID_DB_PWD: ""
 
+SOURCEID_GATEWAY_DB_USER: "gatewayuser"
+SOURCEID_GATEWAY_DB_PWD: ""
+
 SOURCEID_LICENSE_ENABLED: "{% if SOURCEID_DOCKERS.license is defined %}yes{% else %}no{% endif %}"
 
 SOURCEID_HTTPS_MODE: "{% if 'https' == traefik_mode %}normal{% else %}none{% endif %}"
@@ -90,3 +93,12 @@ SOURCEID_FRONTEND_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}http
 SOURCEID_SSO_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}https{% endif %}://{{ SOURCEID_SSO_DOMAIN }}"
 
 SOURCEID_FACEID_ENABLED: "no"
+
+# 二次认证网关部署模式：none - 不部署；k8s - 部署在K8S集群里面；standalone - 单独部署
+SOURCEID_GATEWAY_DEPLOY_MODE: "none"
+
+# 二次认证网关单独部署时的服务器IP地址
+SOURCEID_GATEWAY_HOSTS: []
+
+# 二次认证网关双机模式时的虚IP
+SOURCEID_GATEWAY_VIP: ""

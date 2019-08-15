@@ -1,0 +1,69 @@
+- name: 获取所有已经创建的POD信息
+  command: "{{ base_dir }}/bin/kubectl get pod -n {{ APP_NAMESPACE }}"
+  when: 'SOURCEID_GATEWAY_DEPLOY_MODE == "standalone" and "" != MONGODB_NODEPORT'
+  register: pod_info
+  run_once: true
+  connection: local
+
+- block:
+  - name: 准备MongoDB NodePort部署文件
+    template: src=mongo-nodeport.yaml.j2 dest={{ yaml_dir }}/mongo/mongo-nodeport.yaml
+  - name: 部署MongoDB NodePort
+    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo-nodeport.yaml"
+  when: 'SOURCEID_GATEWAY_DEPLOY_MODE == "standalone" and "" != MONGODB_NODEPORT and "mongo-node" not in pod_info.stdout'
+  run_once: true
+  connection: local
+
+- name: 部署二次认证网关
+  when: 'SOURCEID_GATEWAY_DEPLOY_MODE == "standalone"'
+  block:
+  - import_tasks: "../../../../utils/tasks/os_disable_swap.yml"
+  - import_tasks: "../../../../utils/tasks/os_disable_firewall.yml"
+  - import_tasks: "../../../../utils/tasks/os_disable_selinux.yml"
+
+  - name: 准备目录
+    file: path={{ item }} state=directory
+    with_items:
+    - "{{ img_copy_dir }}"
+    - "{{ config_base_dir }}/sourceid/gateway/bin"
+
+  - name: 安装docker
+    include_role:
+      name: ruijie/cluster/docker
+
+  - name: 获取docker已加载的镜像信息
+    command: "docker images --format ''{{ '{{' }}.Repository{{ '}}' }}:{{ '{{' }}.Tag{{ '}}' }}''"
+    register: imgages_info
+
+  - name: 准备镜像复制目录
+    file: path={{ item }} state=directory
+    with_items:
+    - "{{ img_copy_dir }}"
+
+  - name: 获取已复制的镜像文件信息
+    command: "ls {{ img_copy_dir}}"
+    register: images_copy_info
+
+  - name: 复制镜像文件
+    copy: src={{ img_download_dir }}/{{ img_file_name }} dest={{ img_copy_dir }}/{{ img_file_name }}
+    when: 'img_file_name not in images_copy_info.stdout and img_id_ver not in imgages_info.stdout'
+
+  - name: 加载镜像
+    command: 'docker load -i {{ img_copy_dir }}/{{ img_file_name }}'
+    when: 'img_id_ver not in imgages_info.stdout'
+
+  - name: 删除复制的镜像文件
+    file: path="{{ img_copy_dir }}/{{ img_file_name }}" state=absent
+
+  - name: 准备启动脚本文件
+    template: src='gateway.sh.j2' dest={{ config_base_dir }}/sourceid/gateway/bin/gateway.sh mode=0750
+
+  - name: 启动gateway
+    shell: "{{ config_base_dir }}/sourceid/gateway/bin/gateway.sh"
+
+- name: 删除本地的镜像文件
+  file: path="{{ img_download_dir }}/{{ img_file_name }}" state=absent
+  when: 'SOURCEID_GATEWAY_DEPLOY_MODE == "standalone"'
+  run_once: true
+  connection: local
+

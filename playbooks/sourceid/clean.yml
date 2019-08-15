@@ -56,3 +56,13 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid/"
     when: 'pod_info.stdout is search("rg-faceid-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: delete gateway
+    tags:
+    - gateway
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/gateway/"
+    when: '"rg-gateway" in pod_info.stdout'
+
+- hosts:
+  - gateway
+  roles:
+  - { role: ruijie/sourceid/gateway/standalone/clean, tags: ["gateway"] }

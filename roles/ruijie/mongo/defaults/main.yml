@@ -3,7 +3,6 @@ mongodb_offline: "mongo-4.0.6.tar"
 mongodb_port: 27017
 mongodb_deploy_mode: "{{ groups['mongodb'] | length }}"
 mongodb_auth_mode: "no"
-mongodb_nodeport: "no"
 
 mongodb_check_data_dir: "no"
 

@@ -28,3 +28,7 @@ deploy_conf_defaults:
         memory: 2Gi
 
 sso_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+
+# 二次认证网关参数默认值
+SOURCEID_GATEWAY_COOKIE_DOMAIN: ""
+SOURCEID_GATEWAY_URL: ""

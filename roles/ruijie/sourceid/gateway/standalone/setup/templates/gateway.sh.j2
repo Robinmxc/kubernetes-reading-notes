@@ -1,0 +1,6 @@
+docker run --name rg-gateway \
+  -v {{ config_base_dir }}/sourceid/gateway/conf:/ruijie/sourceid/gateway/conf \
+  --net=host \
+  --add-host mongo1:{{ GATEWAY_MONGODB_IP }} \
+  -d --restart=unless-stopped \
+  {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.gateway.name }}:{{ SOURCEID_DOCKERS.gateway.version }}

@@ -176,11 +176,14 @@ def parse_host_data(workspace_dir):
     if "traefik_mode" not in k8s_config:
         group_all_vars["traefik_mode"] = "http"
 
-    if ("CLUSTER_SCALE" not in k8s_config):
-        if (deploy_mode == "allinone"):
+    if "CLUSTER_SCALE" not in k8s_config:
+        if deploy_mode == "allinone":
             group_all_vars["CLUSTER_SCALE"] = "single"
         else:
             group_all_vars["CLUSTER_SCALE"] = "normal"
+
+    if "MONGODB_NODEPORT" not in group_all_vars:
+        group_all_vars["MONGODB_NODEPORT"] = ""
 
     # 初始化Host变量
     for ip in master_hosts:
@@ -201,9 +204,57 @@ def parse_host_data(workspace_dir):
 
     parse_fdfs_config(result)
 
+    parse_sourceid_gateway_config(result)
+
     return result
 
 
+# 处理二次认证网关配置参数
+def parse_sourceid_gateway_config(host_data):
+    group_all_vars = host_data["groups"]["all"]["vars"]
+
+    if "SOURCEID_GATEWAY_DEPLOY_MODE" not in group_all_vars:
+        group_all_vars["SOURCEID_GATEWAY_DEPLOY_MODE"] = "none"
+    gateway_mode = group_all_vars["SOURCEID_GATEWAY_DEPLOY_MODE"]
+
+    if "none" == gateway_mode or "k8s" == gateway_mode:
+        host_data["groups"]["gateway"] = []
+        return
+
+    gateway_hosts =  group_all_vars["SOURCEID_GATEWAY_HOSTS"] if "SOURCEID_GATEWAY_HOSTS" in group_all_vars else []
+    if len(gateway_hosts) == 0:
+        raise Exception(u"SOURCEID_GATEWAY_HOSTS参数没有设置")
+    for ip in gateway_hosts:
+        if not is_IP(ip):
+            raise Exception(ip + u"不是有效的IP地址")
+    host_data["groups"]["gateway"] = gateway_hosts
+
+    if "SOURCEID_GATEWAY_VIP" not in group_all_vars:
+        group_all_vars["SOURCEID_GATEWAY_VIP"] = ""
+    if "" != group_all_vars["SOURCEID_GATEWAY_VIP"]:
+        if not is_IP(fdfs_vip):
+            raise Exception(u"SOURCEID_GATEWAY_VIP不是有效的IP地址")
+        if len(gateway_hosts) != 2:
+            raise Exception(u"SOURCEID_GATEWAY_HOSTS需要设置两个地址")
+    else:
+        if len(gateway_hosts) == 2:
+            raise Exception(u"SOURCEID_GATEWAY_VIP没有设置")
+
+    if "standalone" == gateway_mode and "" == group_all_vars["MONGODB_NODEPORT"]:
+        group_all_vars["MONGODB_NODEPORT"] = "30031"
+
+    access_host = gateway_hosts[0]
+    if "k8s" == gateway_mode:
+        access_host = "rg-gateway." + group_all_vars["APP_NAMESPACE"] + ".svc"
+    elif "standalone" == gateway_mode:
+        if "" != group_all_vars["SOURCEID_GATEWAY_VIP"]:
+            access_host = group_all_vars["SOURCEID_GATEWAY_VIP"]
+        else:
+            access_host = gateway_hosts[0]
+    group_all_vars["SOURCEID_GATEWAY_URL"] = "http://" + access_host + "/gateway"
+
+
+# 处理FDFS配置参数
 def parse_fdfs_config(host_data):
     group_all_vars = host_data["groups"]["all"]["vars"]
 

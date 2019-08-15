@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-gateway
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  template:
+    metadata:
+      labels:
+        service: rg-gateway
+    spec:
+      containers:
+      - name: gateway
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.gateway.name }}:{{ SOURCEID_DOCKERS.gateway.version }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ gateway_java_opt }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /ruijie/sourceid/gateway/conf
+          name: conf
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/gateway/conf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-gateway
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    service: rg-gateway
+  ports:
+  - port: 80
+    targetPort: 80

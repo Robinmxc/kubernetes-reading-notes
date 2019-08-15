@@ -1,0 +1,28 @@
+
+gateway_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1024m -Xmx1024m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx1024m{% else %}-Xms256m -Xmx512m{% endif %}"
+
+gateway_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1.5Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1.5Gi
+
+gateway_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

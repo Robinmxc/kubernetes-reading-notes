@@ -4,3 +4,4 @@
   - name: 检查是否已经设置FDFS参数
     fail: msg="安装人脸组件需要先设置FDFS参数"
     when: 'FDFS_MODE == "none"'
+

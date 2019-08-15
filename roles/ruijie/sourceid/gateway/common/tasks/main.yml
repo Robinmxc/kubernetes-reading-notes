@@ -1,0 +1,61 @@
+- name: 部署二次认证网关
+  when: 'SOURCEID_GATEWAY_DEPLOY_MODE != "none"'
+  block:
+  - name: 检查组件版本
+    tags:
+      - always
+    fail: msg="二次认证网关版本未设置"
+    when: 'SOURCEID_DOCKERS.gateway is not defined'
+    run_once: true
+    connection: local
+
+  - name: 复制配置文件
+    tags:
+      - config
+    copy:
+      src: "{{ namespace_dir }}/conf/sourceid/gateway/conf/"
+      dest: "{{ config_base_dir }}/sourceid/gateway/conf/"
+
+  - name: 自动配置
+    tags:
+      - config
+    vars:
+      mongo_url: '{% if "k8s" == SOURCEID_GATEWAY_DEPLOY_MODE %}{{ mongodb_addr }}/api-gate?replicaSet=rs0{% else %}mongo1:{{ MONGODB_NODEPORT }}/api-gate{% endif %}'
+    replace: path="{{ config_base_dir }}/sourceid/gateway/conf/application-prod.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "mongodb:.*/api-gate.*$", replace: "mongodb://{{ SOURCEID_GATEWAY_DB_USER }}:{{ SOURCEID_GATEWAY_DB_PWD }}@{{ mongo_url }}"}
+      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+      - {regexp: "sso-redirect-url:.*$", replace: "sso-redirect-url: {{ SOURCEID_SSO_URL }}/login"}
+      - {regexp: "sso-logout-url:.*$", replace: "sso-logout-url: {{ SOURCEID_SSO_URL }}/logout"}
+    no_log: true
+
+  - name: 自定义配置
+    tags:
+      - config
+    replace:
+      path: '{{ config_base_dir }}/sourceid/gateway/conf/application-prod.yml'
+      regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
+      replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
+    with_items: '{{ gateway_configs }}'
+    no_log: true
+
+  - name: 查询GATEWAY数据库用户状态
+    tags:
+      - deploy
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("api-gate").runCommand({usersInfo: "{{ SOURCEID_GATEWAY_DB_USER }}"})'''
+    register: mongo_result
+    when: '"none" != SOURCEID_GATEWAY_DEPLOY_MODE'
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    run_once: true
+    connection: local
+
+  - name: 初始化GATEWAY数据库用户
+    tags:
+      - deploy
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("api-gate").runCommand({createUser: "{{ SOURCEID_GATEWAY_DB_USER }}", pwd: "{{ SOURCEID_GATEWAY_DB_PWD }}", roles: [{role:"dbOwner", db: "api-gate"}]})'''
+    when: '"none" != SOURCEID_GATEWAY_DEPLOY_MODE and SOURCEID_GATEWAY_DB_USER not in mongo_result.stdout'
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    run_once: true
+    connection: local
+    no_log: true

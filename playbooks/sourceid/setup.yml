@@ -51,4 +51,19 @@
   - { role: ruijie/sourceid/license, tags: ["license"] }
   - { role: ruijie/sourceid/faceid, tags: ["faceid"] }
   - { role: ruijie/sourceid/faceid-display, tags: ["faceid-display"] }
+  - { role: ruijie/sourceid/gateway/common, tags: ["gateway"] }
+  - { role: ruijie/sourceid/gateway/k8s, tags: ["gateway"] }
 
+- hosts:
+  - gateway
+  tags:
+  - sourceid
+  any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  roles:
+  - ruijie/cluster/prepare
+  - ruijie/cluster/docker
+  - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
+  - { role: ruijie/sourceid/gateway/common, tags: ["gateway"] }
+  - { role: ruijie/sourceid/gateway/standalone/setup, tags: ["gateway"] }

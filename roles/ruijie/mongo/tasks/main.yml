@@ -218,6 +218,6 @@
     template: src=mongo-nodeport.yaml.j2 dest={{ yaml_dir }}/mongo/mongo-nodeport.yaml
   - name: 部署MongoDB NodePort
     shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo-nodeport.yaml"
-  when: '"yes" == mongodb_nodeport and "mongo-node" not in pod_info.stdout'
+  when: '"" != MONGODB_NODEPORT and "mongo-node" not in pod_info.stdout'
   run_once: true
   connection: local
