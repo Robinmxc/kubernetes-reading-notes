@@ -4,11 +4,13 @@ KAD_APP_NAME: "sourceid"
 # 应用版本
 KAD_APP_VERSION: "r1.5.1"
 
-#部署模式：dev, prd。dev模式下会多一些和开发、测试有关的配置参数
+# 部署模式：dev, prd。dev模式下会多一些和开发、测试有关的配置参数
 SOURCEID_DEPLOY_PROFILE: "prd"
 
-#MongoDB管理员密码
+# 数据库管理员账号，只能由大/小写字母、数字、下划线组成，长度3~16字符。默认值 ：admin。
 MONGODB_ADMIN_USER: "admin"
+
+# 数据库管理员密码，只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符。
 MONGODB_ADMIN_PWD: ""
 
 #SSO域名
