@@ -63,7 +63,6 @@
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     run_once: true
     connection: local
-    run_once: true
 
   - name: 初始化FACEID数据库用户
     tags:
