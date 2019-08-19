@@ -58,7 +58,7 @@ store_group=group2
 # 1: the first server order by ip address
 # 2: the first server order by priority (the minimal)
 # Note: if use_trunk_file set to true, must set store_server to 1 or 2
-store_server=0
+store_server=1
 
 # which path(means disk or mount point) of the storage server to upload file
 # 0: round robin
@@ -139,23 +139,23 @@ storage_sync_file_max_time = 300
 # if use a trunk file to store several small files
 # default value is false
 # since V3.00
-use_trunk_file = false 
+use_trunk_file = {{ FDFS_USE_TRUNK_FILE }}
 
 # the min slot size, should <= 4KB
 # default value is 256 bytes
 # since V3.00
-slot_min_size = 256
+slot_min_size = 512
 
 # the max slot size, should > slot_min_size
 # store the upload file to trunk file when it's size <=  this value
 # default value is 16MB
 # since V3.00
-slot_max_size = 16MB
+slot_max_size = 4MB
 
 # the trunk file size, should >= 4MB
 # default value is 64MB
 # since V3.00
-trunk_file_size = 64MB
+trunk_file_size = 16MB
 
 # if create trunk file advancely
 # default value is false
@@ -178,7 +178,7 @@ trunk_create_file_interval = 86400
 # the trunk files
 # default value is 0
 # since V3.06
-trunk_create_file_space_threshold = 20G
+trunk_create_file_space_threshold = 1G
 
 # if check trunk space occupying when loading trunk free spaces
 # the occupied spaces will be ignored
