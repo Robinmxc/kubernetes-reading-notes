@@ -7,3 +7,5 @@ img_file_name: "gateway-{{ docker_version }}.tar"
 GATEWAY_PORT: 80
 
 mongodb_port: 27017
+
+GATEWAY_ROUTER_ID: 143

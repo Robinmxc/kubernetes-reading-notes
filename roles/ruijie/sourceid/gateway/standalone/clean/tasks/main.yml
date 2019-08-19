@@ -1,12 +1,28 @@
-- name: 查询容器状态
-  command: "docker ps -a --filter name=rg-gateway --format ''{{ '{{' }}.Names{{ '}}' }},{{ '{{' }}.Status{{ '}}' }}''"
-  register: container_info
+- name: 检查docker服务状态
+  stat: path="/etc/systemd/system/multi-user.target.wants/docker.service"
+  register: service_stat
+  when: 'SOURCEID_GATEWAY_DEPLOY_MODE == "standalone"'
 
-- name: 停止容器
-  command: "docker stop rg-gateway"
-  when: 'container_info.stdout is search(",Up.*")'
+- name: 删除gateway容器
+  when: 'service_stat.stat.exists'
+  block:
+  - name: 查询容器状态
+    command: "docker ps -a --filter name=rg-gateway --format ''{{ '{{' }}.Names{{ '}}' }},{{ '{{' }}.Status{{ '}}' }}''"
+    register: container_info
 
-- name: 删除容器
-  command: "docker rm rg-gateway"
-  when: '"rg-gateway" in container_info.stdout'
+  - name: 停止容器
+    command: "docker stop rg-gateway"
+    when: 'container_info.stdout is search(",Up.*")'
 
+  - name: 删除容器
+    command: "docker rm rg-gateway"
+    when: '"rg-gateway" in container_info.stdout'
+
+- name: 检查keepalived服务状态
+  stat: path="/etc/systemd/system/multi-user.target.wants/keepalived.service"
+  register: service_stat
+  when: 'SOURCEID_GATEWAY_DEPLOY_MODE == "standalone" and SOURCEID_GATEWAY_VIP != ""'
+
+- name: stop and disable service
+  service: name=keepalived state=stopped enabled=no
+  when: 'service_stat.stat.exists'

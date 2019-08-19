@@ -1,9 +1,9 @@
 global_defs {
-    router_id fdfs-storage-{{ hostvars[inventory_hostname]["KEEPALIVED_ID"] }}
+    router_id gateway-{{ hostvars[inventory_hostname]["KEEPALIVED_ID"] }}
 }
 
-vrrp_script chk_nginx {
-    script "/etc/keepalived/nginx_check.sh"
+vrrp_script chk_gateway {
+    script "/etc/keepalived/gateway_check.sh"
     interval 2
     weight -20
 }
@@ -14,33 +14,33 @@ vrrp_instance VI-fdfs-storage {
     nopreempt
     unicast_src_ip {{ inventory_hostname }}
     unicast_peer {
-{% for h in groups['fdfs_storage'] %}{% if h != inventory_hostname %}
+{% for h in groups['gateway'] %}{% if h != inventory_hostname %}
         {{ h }}
 {% endif %}{% endfor %}
     }
-    interface {{ FDFS_ACCESS_IF }}
-    virtual_router_id {{ FDFS_ROUTER_ID }}
+    interface {{ GATEWAY_ACCESS_IF }}
+    virtual_router_id {{ GATEWAY_ROUTER_ID }}
     advert_int 1
     track_script {
-        chk_nginx
+        chk_gateway
     }
     virtual_ipaddress {
-        {{ FDFS_VIP }}
+        {{ SOURCEID_GATEWAY_VIP }}
     }
 }
 
-virtual_server {{ FDFS_VIP }} {{ FDFS_STORAGE_PORT }} {
+virtual_server {{ SOURCEID_GATEWAY_VIP }} {{ GATEWAY_PORT }} {
     delay_loop 6
     lb_algo rr
     lb_kind DR
     persistence_timeout 50
     protocol TCP
 
-{% for h in groups['fdfs_storage'] %}
-    real_server {{ h }} {{ FDFS_STORAGE_PORT }} {
+{% for h in groups['gateway'] %}
+    real_server {{ h }} {{ GATEWAY_PORT }} {
         weight 1
         TCP_CHECK {
-            connect_port {{ FDFS_STORAGE_PORT }}
+            connect_port {{ GATEWAY_PORT }}
             connect_timeout 3
             nb_get_retry 3
             delay_before_retry 3

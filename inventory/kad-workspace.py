@@ -228,16 +228,17 @@ def parse_sourceid_gateway_config(host_data):
         if not is_IP(ip):
             raise Exception(ip + u"不是有效的IP地址")
     host_data["groups"]["gateway"] = gateway_hosts
+    is_dual_hosts = len(gateway_hosts) == 2
 
     if "SOURCEID_GATEWAY_VIP" not in group_all_vars:
         group_all_vars["SOURCEID_GATEWAY_VIP"] = ""
     if "" != group_all_vars["SOURCEID_GATEWAY_VIP"]:
-        if not is_IP(fdfs_vip):
+        if not is_IP(group_all_vars["SOURCEID_GATEWAY_VIP"]):
             raise Exception(u"SOURCEID_GATEWAY_VIP不是有效的IP地址")
-        if len(gateway_hosts) != 2:
+        if not is_dual_hosts:
             raise Exception(u"SOURCEID_GATEWAY_HOSTS需要设置两个地址")
     else:
-        if len(gateway_hosts) == 2:
+        if is_dual_hosts:
             raise Exception(u"SOURCEID_GATEWAY_VIP没有设置")
 
     access_host = gateway_hosts[0]
@@ -249,6 +250,18 @@ def parse_sourceid_gateway_config(host_data):
         else:
             access_host = gateway_hosts[0]
     group_all_vars["SOURCEID_GATEWAY_URL"] = "http://" + access_host + "/gateway"
+
+    # 节点ID和角色
+    host_vars = host_data["host_vars"]
+    idx = 1
+    for ip in gateway_hosts:
+        host_vars[ip] = {}
+        if is_dual_hosts:
+            host_vars[ip]["KEEPALIVED_ID"] = str(100000 + idx)
+            if idx == 1:
+                host_vars[ip]["KEEPALIVED_ROLE"] = "MASTER"
+            else:
+                host_vars[ip]["KEEPALIVED_ROLE"] = "BACKUP"
 
 
 # 处理FDFS配置参数
@@ -330,11 +343,11 @@ def parse_fdfs_config(host_data):
     idx = 1
     for ip in storage_hosts:
         host_vars[ip] = {}
-        host_vars[ip]["FDFS_STORAGE_ID"] = str(100000 + idx)
+        host_vars[ip]["KEEPALIVED_ID"] = str(100000 + idx)
         if idx == 1:
-            host_vars[ip]["FDFS_STORAGE_ROLE"] = "MASTER"
+            host_vars[ip]["KEEPALIVED_ROLE"] = "MASTER"
         else:
-            host_vars[ip]["FDFS_STORAGE_ROLE"] = "BACKUP"
+            host_vars[ip]["KEEPALIVED_ROLE"] = "BACKUP"
         idx = idx + 1
 
 def main():
