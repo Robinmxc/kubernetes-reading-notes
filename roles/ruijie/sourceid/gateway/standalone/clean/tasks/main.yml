@@ -1,10 +1,10 @@
 - name: 查询容器状态
-  command: "docker ps -a --filter name=rg-gateway"
+  command: "docker ps -a --filter name=rg-gateway --format ''{{ '{{' }}.Names{{ '}}' }},{{ '{{' }}.Status{{ '}}' }}''"
   register: container_info
 
 - name: 停止容器
   command: "docker stop rg-gateway"
-  when: 'container_info.stdout is search("Up.*days")'
+  when: 'container_info.stdout is search(",Up.*")'
 
 - name: 删除容器
   command: "docker rm rg-gateway"
