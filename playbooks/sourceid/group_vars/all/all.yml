@@ -3,7 +3,7 @@
 #默认二进制文件目录
 bin_dir: "/opt/kube/bin"
 
-mongodb_addr: "{% if (groups['mongodb'] | length | int) == 1 %}mongo1{% else %}mongo1,mongo2,mongo3{% endif %}"
+mongodb_addr: "{{ groups['mongodb'] | join(',') }}"
 mongodb_auth_mode: "yes"
 mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin{% else %}{% endif %}"
 mongo_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} mongo1 -- mongo {{ mongo_auth_param }}"

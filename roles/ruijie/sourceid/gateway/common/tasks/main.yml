@@ -19,11 +19,9 @@
   - name: 自动配置
     tags:
       - config
-    vars:
-      mongo_url: '{% if "k8s" == SOURCEID_GATEWAY_DEPLOY_MODE %}{{ mongodb_addr }}/api-gate?replicaSet=rs0{% else %}mongo1:{{ MONGODB_NODEPORT }}/api-gate{% endif %}'
     replace: path="{{ config_base_dir }}/sourceid/gateway/conf/application-prod.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-      - {regexp: "mongodb:.*/api-gate.*$", replace: "mongodb://{{ SOURCEID_GATEWAY_DB_USER }}:{{ SOURCEID_GATEWAY_DB_PWD }}@{{ mongo_url }}"}
+      - {regexp: "mongodb:.*/api-gate.*$", replace: "mongodb://{{ SOURCEID_GATEWAY_DB_USER }}:{{ SOURCEID_GATEWAY_DB_PWD }}@{{ mongodb_addr }}/api-gate?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
       - {regexp: "sso-redirect-url:.*$", replace: "sso-redirect-url: {{ SOURCEID_SSO_URL }}/login"}
       - {regexp: "sso-logout-url:.*$", replace: "sso-logout-url: {{ SOURCEID_SSO_URL }}/logout"}

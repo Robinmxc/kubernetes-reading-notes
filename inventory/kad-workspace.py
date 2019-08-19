@@ -240,9 +240,6 @@ def parse_sourceid_gateway_config(host_data):
         if len(gateway_hosts) == 2:
             raise Exception(u"SOURCEID_GATEWAY_VIP没有设置")
 
-    if "standalone" == gateway_mode and "" == group_all_vars["MONGODB_NODEPORT"]:
-        group_all_vars["MONGODB_NODEPORT"] = "30031"
-
     access_host = gateway_hosts[0]
     if "k8s" == gateway_mode:
         access_host = "rg-gateway." + group_all_vars["APP_NAMESPACE"] + ".svc"

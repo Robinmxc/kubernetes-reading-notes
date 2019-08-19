@@ -8,7 +8,7 @@ spec:
     service: {{ mongodb_node_name }}
   ports:
   - port: {{ mongodb_port }}
-    targetPort: {{ mongodb_port }}
+    targetPort: 27017
   clusterIP: None
 
 ---
@@ -21,6 +21,7 @@ metadata:
     service: {{ mongodb_node_name }}
 spec:
   nodeName: {{ mongodb_node_ip }}
+  hostNetwork: true
   containers:
   - name: mongo
     image: mongo:{{ mongodb_version }}
@@ -53,7 +54,8 @@ spec:
         memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
     ports:
-      - containerPort: {{ mongodb_port }}
+      - containerPort: 27017
+        hostPort: 27017
     volumeMounts:
       - mountPath: /data/db
         name: data

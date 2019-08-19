@@ -5,15 +5,6 @@
   run_once: true
   connection: local
 
-- block:
-  - name: 准备MongoDB NodePort部署文件
-    template: src=mongo-nodeport.yaml.j2 dest={{ yaml_dir }}/mongo/mongo-nodeport.yaml
-  - name: 部署MongoDB NodePort
-    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo-nodeport.yaml"
-  when: 'SOURCEID_GATEWAY_DEPLOY_MODE == "standalone" and "" != MONGODB_NODEPORT and "mongo-node" not in pod_info.stdout'
-  run_once: true
-  connection: local
-
 - name: 部署二次认证网关
   when: 'SOURCEID_GATEWAY_DEPLOY_MODE == "standalone"'
   block:
