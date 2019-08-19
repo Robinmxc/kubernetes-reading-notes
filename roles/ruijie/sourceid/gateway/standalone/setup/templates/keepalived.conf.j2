@@ -1,5 +1,5 @@
 global_defs {
-    router_id gateway-{{ hostvars[inventory_hostname]["KEEPALIVED_ID"] }}
+    router_id gateway-{{ hostvars[inventory_hostname]["HOST_ID"] }}
 }
 
 vrrp_script chk_gateway {
