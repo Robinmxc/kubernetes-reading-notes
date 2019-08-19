@@ -4,7 +4,7 @@
 #
 
 Name:     kad
-Version:  1.0.1
+Version:  1.1.0
 Release:  1
 Summary:  KAD RPM package
 License:  GPLv2
@@ -46,19 +46,15 @@ fi
 if [ ! -f "/usr/bin/kad-play" ]; then
   link /opt/kad/kad-play.sh /usr/bin/kad-play
 fi
-if [ ! -f "/usr/bin/sourceid-setup" ]; then
-  link /opt/kad/sourceid-setup.sh /usr/bin/sourceid-setup
-fi
 
 %preun
-if [ -f "/usr/bin/kad-play" ]; then
-  rm -f /usr/bin/kad-play
-fi
-if [ -f "/usr/bin/sourceid-setup" ]; then
-  rm -f /usr/bin/sourceid-setup
-fi
 
 %postun
+if [ "$1" = "0" ] ; then
+  if [ -f "/usr/bin/kad-play" ]; then
+    rm -f /usr/bin/kad-play
+  fi
+fi
 
 %files
 %defattr(-,root,root,0664)
