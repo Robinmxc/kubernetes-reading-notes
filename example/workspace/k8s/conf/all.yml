@@ -15,3 +15,15 @@ KUBE_MASTER_VIP: ""
 
 # 文件下载服务器，开发/测试环境请修改为内部地址
 KAD_FILES_REPO: "http://fs.rghall.com.cn"
+
+
+#### FastDFS配置参数 ####
+# FastDFS部署模式：none - 不部署；single - 单机；dual - 双机
+FDFS_MODE: "none"
+
+# FastDFS存储服务器地址。双机模式必须配置两个IP
+# FDFS_STORAGE_HOSTS: ["1.1.1.101"]
+
+# FastDFS集群虚IP，双机模式必须设置
+# FDFS_VIP: ""
+

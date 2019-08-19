@@ -26,12 +26,15 @@ SOURCEID_REDIRECT_URL: "http://www.baidu.com"
 SOURCEID_FRONTEND_RES: "ruijie"
 
 
-####二次认证网关相关配置参数####
-# SOURCEID_GATEWAY_DEPLOY_MODE: "standalone"
+#### 二次认证网关配置参数 ####
+# 二次认证网关部署模式：none - 不部署；standalone - 独立部署
+SOURCEID_GATEWAY_DEPLOY_MODE: "none"
 
+# 二次认证网关服务器IP。双机模式必须配置两个IP
 # SOURCEID_GATEWAY_HOSTS: ["1.1.1.101", "1.1.1.102"]
 
-# SOURCEID_GATEWAY_VIP: "1.1.1.100"
+# 二次认证网关集群虚IP，双机模式必须设置
+# SOURCEID_GATEWAY_VIP: ""
 
+# 二次认证网关Cookie存储域名
 # SOURCEID_GATEWAY_COOKIE_DOMAIN: "ruijie.com.cn"
-
