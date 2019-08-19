@@ -94,11 +94,4 @@ SOURCEID_SSO_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}https{% e
 
 SOURCEID_FACEID_ENABLED: "no"
 
-# 二次认证网关部署模式：none - 不部署；k8s - 部署在K8S集群里面；standalone - 单独部署
-SOURCEID_GATEWAY_DEPLOY_MODE: "none"
-
-# 二次认证网关单独部署时的服务器IP地址
-SOURCEID_GATEWAY_HOSTS: []
-
-# 二次认证网关双机模式时的虚IP
-SOURCEID_GATEWAY_VIP: ""
+SOURCEID_IMPORT_USER_ENABLED: "{% if SOURCEID_DOCKERS.import_user is defined %}yes{% else %}no{% endif %}"

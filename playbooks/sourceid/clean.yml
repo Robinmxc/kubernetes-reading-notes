@@ -62,6 +62,12 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/gateway/"
     when: '"rg-gateway" in pod_info.stdout'
 
+  - name: delete import-user
+    tags:
+    - import-user
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/import-user/"
+    when: '"rg-import-user" in pod_info.stdout'
+
 - hosts:
   - gateway
   roles:

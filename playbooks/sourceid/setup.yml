@@ -53,6 +53,7 @@
   - { role: ruijie/sourceid/faceid-display, tags: ["faceid-display"] }
   - { role: ruijie/sourceid/gateway/common, tags: ["gateway"] }
   - { role: ruijie/sourceid/gateway/k8s, tags: ["gateway"] }
+  - { role: ruijie/sourceid/import-user, tags: ["import-user"] }
 
 - hosts:
   - gateway

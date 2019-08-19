@@ -46,6 +46,7 @@
     - "sourceid/faceid"
     - "sourceid/faceid-display"
     - "sourceid/gateway"
+    - "sourceid/import-user"
     - "component"
   connection: local
   run_once: true
