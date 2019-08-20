@@ -25,4 +25,4 @@
 
 - name: stop and disable service
   service: name=keepalived state=stopped enabled=no
-  when: 'service_stat.stat.exists'
+  when: 'SOURCEID_GATEWAY_DEPLOY_MODE == "standalone" and SOURCEID_GATEWAY_VIP != "" and service_stat.stat.exists'
