@@ -1,5 +1,8 @@
 docker run --name rg-gateway \
   -v {{ config_base_dir }}/sourceid/gateway/conf:/ruijie/sourceid/gateway/conf \
   --net=host \
+{% for host in groups['mongodb'] %}
+  --add-host hostvars[host]['MONGO_NODE_NAME']:{{ host }} \
+{% endfor %}
   -d --restart=unless-stopped \
   {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.gateway.name }}:{{ SOURCEID_DOCKERS.gateway.version }}
