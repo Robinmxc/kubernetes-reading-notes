@@ -263,11 +263,11 @@ def parse_sourceid_gateway_config(host_data):
     for ip in gateway_hosts:
         host_vars[ip] = {}
         if is_dual_hosts:
-            host_vars[ip]["HOST_ID"] = str(100000 + idx)
+            host_vars[ip]["GATEWAY_HOST_ID"] = str(100000 + idx)
             if idx == 1:
-                host_vars[ip]["KEEPALIVED_ROLE"] = "MASTER"
+                host_vars[ip]["GATEWAY_ROLE"] = "MASTER"
             else:
-                host_vars[ip]["KEEPALIVED_ROLE"] = "BACKUP"
+                host_vars[ip]["GATEWAY_ROLE"] = "BACKUP"
 
 
 # 处理FDFS配置参数
@@ -349,11 +349,11 @@ def parse_fdfs_config(host_data):
     idx = 1
     for ip in storage_hosts:
         host_vars[ip] = {}
-        host_vars[ip]["HOST_ID"] = str(100000 + idx)
+        host_vars[ip]["FDFS_HOST_ID"] = str(100000 + idx)
         if idx == 1:
-            host_vars[ip]["KEEPALIVED_ROLE"] = "MASTER"
+            host_vars[ip]["FDFS_ROLE"] = "MASTER"
         else:
-            host_vars[ip]["KEEPALIVED_ROLE"] = "BACKUP"
+            host_vars[ip]["FDFS_ROLE"] = "BACKUP"
         idx = idx + 1
 
 def main():

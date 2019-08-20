@@ -1,4 +1,4 @@
 # <id>  <group_name>  <ip_or_hostname>
 {% for host in groups["fdfs_storage"] %}
-{{ hostvars[host]["HOST_ID"] }}  {{ FDFS_GROUP_NAME }} {{ host }}
+{{ hostvars[host]["FDFS_HOST_ID"] }}  {{ FDFS_GROUP_NAME }} {{ host }}
 {% endfor %}

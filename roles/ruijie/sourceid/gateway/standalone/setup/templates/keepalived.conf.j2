@@ -1,5 +1,5 @@
 global_defs {
-    router_id gateway-{{ hostvars[inventory_hostname]["HOST_ID"] }}
+    router_id gateway-{{ hostvars[inventory_hostname]["GATEWAY_HOST_ID"] }}
 }
 
 vrrp_script chk_gateway {
@@ -9,8 +9,8 @@ vrrp_script chk_gateway {
 }
 
 vrrp_instance VI-fdfs-storage {
-    state hostvars[inventory_hostname]["KEEPALIVED_ROLE"]
-    priority {% if "MASTER" == hostvars[inventory_hostname]["KEEPALIVED_ROLE"] %}100{% else %}{{ 99 | random(61, 1) }}{% endif %}
+    state hostvars[inventory_hostname]["GATEWAY_ROLE"]
+    priority {% if "MASTER" == hostvars[inventory_hostname]["GATEWAY_ROLE"] %}100{% else %}{{ 99 | random(61, 1) }}{% endif %}
     nopreempt
     unicast_src_ip {{ inventory_hostname }}
     unicast_peer {
