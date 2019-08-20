@@ -202,6 +202,12 @@ def parse_host_data(workspace_dir):
         host_vars[ip]["NODE_NAME"] = "etcd" + bytes(idx)
         idx = idx + 1
 
+    # 设置mongodb节点名称
+    idx = 1
+    for ip in result["groups"]["mongodb"]["hosts"]:
+        host_vars[ip]["MONGO_NODE_NAME"] = "mongo" + bytes(idx)
+        idx = idx + 1
+
     parse_fdfs_config(result)
 
     parse_sourceid_gateway_config(result)

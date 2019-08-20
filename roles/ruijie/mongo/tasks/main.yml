@@ -93,7 +93,7 @@
   tags:
   - config
   vars:
-    mongodb_node_name: "mongo1"
+    mongodb_node_name: "{{ hostvars[groups.mongodb[0]]['MONGO_NODE_NAME'] }}"
     mongodb_node_ip: "{{ groups.mongodb[0] }}"
     liveness_probe_sh_config_key: "liveness-probe-sh"
     deploy_conf: '{{ mongodb_1_deploy_conf | default(mongodb_deploy_conf) }}'
@@ -105,7 +105,7 @@
   tags:
   - config
   vars:
-    mongodb_node_name: "mongo2"
+    mongodb_node_name: "{{ hostvars[groups.mongodb[1]]['MONGO_NODE_NAME'] }}"
     mongodb_node_ip: "{{ groups.mongodb[1] }}"
     liveness_probe_sh_config_key: "liveness-probe-sh"
     deploy_conf: '{{ mongodb_deploy_conf }}'
@@ -118,7 +118,7 @@
   tags:
   - config
   vars:
-    mongodb_node_name: "mongo3"
+    mongodb_node_name: "{{ hostvars[groups.mongodb[2]]['MONGO_NODE_NAME'] }}"
     mongodb_node_ip: "{{ groups.mongodb[2] }}"
     liveness_probe_sh_config_key: "liveness-probe-sh-noauth"
     deploy_conf: '{{ mongodb_deploy_conf }}'

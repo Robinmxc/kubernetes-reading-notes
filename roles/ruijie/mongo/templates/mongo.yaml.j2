@@ -22,6 +22,12 @@ metadata:
 spec:
   nodeName: {{ mongodb_node_ip }}
   hostNetwork: true
+  hostAliases:
+{% for host in groups['mongodb'] %}
+  - ip: "{{ host }}"
+    hostnames:
+    - "mongo{{ mongodb_node_name }}"
+{% endfor %}
   containers:
   - name: mongo
     image: mongo:{{ mongodb_version }}
