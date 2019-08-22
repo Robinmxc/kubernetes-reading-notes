@@ -26,7 +26,7 @@ spec:
 {% for host in groups['mongodb'] %}
   - ip: "{{ host }}"
     hostnames:
-    - "mongo{{ mongodb_node_name }}"
+    - "{{ hostvars[host]['MONGO_NODE_NAME'] }}"
 {% endfor %}
   containers:
   - name: mongo
