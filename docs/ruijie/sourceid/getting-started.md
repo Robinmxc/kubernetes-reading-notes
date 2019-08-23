@@ -67,9 +67,6 @@ SOURCEID_SSO_DOMAIN="id.example.com"
 #自助和管理端域名
 SOURCEID_GATE_DOMAIN="id-self.example.com"
 
-#二次认证网关地址
-SOURCEID_GATEWAY_URL="http://gateway.example.com"
-
 #登录成功后的跳转地址
 SOURCEID_REDIRECT_URL="http://www.baidu.com"
 ```
