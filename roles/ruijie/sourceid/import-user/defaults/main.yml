@@ -1,5 +1,5 @@
 
-import_user_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms512m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
+import_user_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx1024m{% elif CLUSTER_SCALE == 'single' %}-Xms512m -Xmx1024m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 import_user_configs: []
 
@@ -11,7 +11,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 1
-        memory: 1Gi
+        memory: 1.5Gi
       requests:
         cpu: 500m
         memory: 512Mi
@@ -20,7 +20,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 1
-        memory: 1Gi
+        memory: 1.5Gi
       requests:
         cpu: 500m
         memory: 512Mi
