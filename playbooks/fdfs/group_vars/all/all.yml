@@ -13,3 +13,5 @@ FDFS_SRC_PATH: "/usr/local/src"
 FDFS_BASE_PATH: "{{ DATA_DIR }}/ruijie/fdfs"
 
 FDFS_CONF_PATH: "/etc/fdfs"
+
+FDFS_VIP: ""

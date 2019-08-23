@@ -56,15 +56,17 @@
 
 - name: 下载libfastcommon源码
   vars:
-    tgz_file: '{{ FDFS_SRC_PATH }}/libfastcommon-{{ libfastcommon_version }}.tar.gz'
+    tgz_file: '{{ base_dir }}/down/libfastcommon-{{ libfastcommon_version }}.tar.gz'
   get_url:
     url: "https://github.com/happyfish100/libfastcommon/archive/V{{ libfastcommon_version }}.tar.gz"
     dest: "{{ tgz_file }}"
+  connection: local
+  run_once: true
   when: 'tgz_file is not exists'
 
 - name: 解压libfastcommon源码
   vars:
-    tgz_file: '{{ FDFS_SRC_PATH }}/libfastcommon-{{ libfastcommon_version }}.tar.gz'
+    tgz_file: '{{ base_dir }}/down/libfastcommon-{{ libfastcommon_version }}.tar.gz'
     src_dir: '{{ FDFS_SRC_PATH }}/libfastcommon-{{ libfastcommon_version }}'
   unarchive:
     src: "{{ tgz_file }}"
@@ -80,15 +82,17 @@
 
 - name: 下载FastDFS源代码
   vars:
-    tgz_file: '{{ FDFS_SRC_PATH }}/fastdfs-{{ fastdfs_version }}.tar.gz'
+    tgz_file: '{{ base_dir }}/down/fastdfs-{{ fastdfs_version }}.tar.gz'
   get_url:
     url: "https://github.com/happyfish100/fastdfs/archive/V{{ fastdfs_version }}.tar.gz"
     dest: "{{ tgz_file }}"
+  connection: local
+  run_once: true
   when: 'tgz_file is not exists'
 
 - name: 解压FastDFS源代码
   vars:
-    tgz_file: '{{ FDFS_SRC_PATH }}/fastdfs-{{ fastdfs_version }}.tar.gz'
+    tgz_file: '{{ base_dir }}/down/fastdfs-{{ fastdfs_version }}.tar.gz'
     src_dir: '{{ FDFS_SRC_PATH }}/fastdfs-{{ fastdfs_version }}'
   unarchive:
     src: "{{ tgz_file }}"
@@ -110,15 +114,17 @@
 
 - name: 下载fastdfs-nginx-module源代码
   vars:
-    tgz_file: '{{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}.tar.gz'
+    tgz_file: '{{ base_dir }}/down/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}.tar.gz'
   get_url:
     url: "https://github.com/happyfish100/fastdfs-nginx-module/archive/V{{ fastdfs_nginx_module_version }}.tar.gz"
     dest: "{{ tgz_file }}"
+  connection: local
+  run_once: true
   when: 'tgz_file is not exists'
 
 - name: 解压fastdfs-nginx-module源代码
   vars:
-    tgz_file: '{{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}.tar.gz'
+    tgz_file: '{{ base_dir }}/down/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}.tar.gz'
     src_dir: '{{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}'
   unarchive:
     src: "{{ tgz_file }}"
@@ -134,15 +140,17 @@
 
 - name: 下载nginx源码
   vars:
-    tgz_file: '{{ FDFS_SRC_PATH }}/nginx-{{ fastdfs_nginx_version }}.tar.gz'
+    tgz_file: '{{ base_dir }}/down/nginx-{{ fastdfs_nginx_version }}.tar.gz'
   get_url:
     url: "http://nginx.org/download/nginx-{{ fastdfs_nginx_version }}.tar.gz"
-    dest: "{{ FDFS_SRC_PATH }}"
+    dest: "{{ tgz_file }}"
+  connection: local
+  run_once: true
   when: 'tgz_file is not exists'
 
 - name: 解压nginx源码
   vars:
-    tgz_file: '{{ FDFS_SRC_PATH }}/nginx-{{ fastdfs_nginx_version }}.tar.gz'
+    tgz_file: '{{ base_dir }}/down/nginx-{{ fastdfs_nginx_version }}.tar.gz'
     src_dir: '{{ FDFS_SRC_PATH }}/nginx-{{ fastdfs_nginx_version }}'
   unarchive:
     src: "{{ tgz_file }}"
