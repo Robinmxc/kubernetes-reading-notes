@@ -6,7 +6,7 @@
       - config
     copy:
       src: "{{ namespace_dir }}/conf/sourceid/import-user/"
-      dest: "{{ config_base_dir }}/sourceid/import-user/"
+      dest: "{{ config_base_dir }}/sourceid/import-user/conf/"
 
   - name: 自动配置
     tags:
