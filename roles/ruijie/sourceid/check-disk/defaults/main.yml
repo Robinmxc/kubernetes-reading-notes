@@ -1,3 +1,5 @@
+sys_disk_required: 30
+
 disk_required:
   small:
     master: 5
