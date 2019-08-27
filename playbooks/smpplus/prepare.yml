@@ -3,7 +3,7 @@
   tags: always
   any_errors_fatal: true
   roles:
-  - ruijie/smpplus/download
+  - ruijie/smpplus/conf-unzip
 
 - hosts:
   - localhost

@@ -1,0 +1,9 @@
+- name: 解压
+  when: 'not pkg_dir_stat.stat.exists'
+  block:
+  - name: 创建解压目录
+    file: path="{{ KAD_PACKAGE_DIR }}" state=directory
+  - name: 解压安装包
+    unarchive:
+      src: "{{ base_dir }}/down/{{ KAD_PACKAGE_NAME }}.zip"
+      dest: "{{ KAD_PACKAGE_DIR }}"
