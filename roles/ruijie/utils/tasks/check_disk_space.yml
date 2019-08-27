@@ -7,4 +7,4 @@
 
 - name: 检查存储{{ check_dir }}目录容量是否足够
   fail: msg="目录{{ check_dir }}剩余空间不足{{ space_required }}G"
-  when: '(check_dir_mount_info.size_available | int) < (space_required | int) * 1073741824'
+  when: '(check_dir_mount_info.size_available | int) < (space_required | int - 0.5) * 1073741824'
