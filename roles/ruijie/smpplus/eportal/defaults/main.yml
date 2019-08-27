@@ -1,0 +1,29 @@
+eportal_java_opt: "-Xms1024m -Xmx1024m"
+
+eportal_configs: []
+
+eportal_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 2
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 2Gi
+
+eportal_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

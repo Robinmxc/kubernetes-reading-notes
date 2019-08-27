@@ -1,0 +1,24 @@
+- hosts:
+  - localhost
+  tags: always
+  any_errors_fatal: true
+  roles:
+  - ruijie/smpplus/download
+
+- hosts:
+  - localhost
+  tags:
+  - pull-images
+  any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  roles:
+  - ruijie/smpplus/pull-images
+
+- hosts:
+  - kube_node
+  any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  roles:
+  - { role: ruijie/smpplus/load-images, tags: ["docker"] }

@@ -1,0 +1,9 @@
+- hosts:
+  - kube_master
+  - kube_node
+  gather_facts: true
+  any_errors_fatal: true
+  roles:
+  - ruijie/sourceid/check-cpu
+  - ruijie/sourceid/check-mem
+ # - ruijie/sourceid/check-disk

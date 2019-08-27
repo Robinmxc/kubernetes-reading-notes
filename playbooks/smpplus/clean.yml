@@ -1,0 +1,74 @@
+- hosts:
+  - localhost
+  gather_facts: false
+
+  tasks:
+  - name: 获取所有已经创建的POD信息
+    tags: always
+    command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+
+  - name: delete frontend-smp
+    tags:
+    - frontend-smp
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/frontend-smp/"
+    when: '"frontend-smp" in pod_info.stdout'
+  - name: delete frontend-portal
+    tags:
+    - frontend-portal
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/frontend-portal/"
+    when: '"frontend-portal" in pod_info.stdout'
+
+  - name: delete eportal
+    tags:
+    - eportal
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/eportal/"
+    when: '"portal" in pod_info.stdout'
+
+  - name: delete freeradius
+    tags:
+    - freeradius
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/freeradius/"
+    when: '"freeradius" in pod_info.stdout'
+
+  - name: delete aggregation
+    tags:
+    - aggregation
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aggregation/"
+    when: '"aggregation" in pod_info.stdout'
+
+  - name: delete linkid
+    tags:
+    - linkid
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/linkid/"
+    when: '"linkid" in pod_info.stdout'
+
+  - name: delete component
+    tags:
+    - component
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/component/"
+    when: '"component" in pod_info.stdout'
+
+  - name: delete authentication
+    tags:
+    - authentication
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/authentication/"
+    when: '"authentication" in pod_info.stdout'
+
+  - name: delete adminui
+    tags:
+    - adminui
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/adminui/"
+    when: '"adminui" in pod_info.stdout'
+
+  - name: delete license
+    tags:
+    - license
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/license/"
+    when: '"license" in pod_info.stdout'
+
+  - name: delete nodemanager-scan
+    tags:
+    - nodemanager-scan
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodemanager-scan/"
+    when: '"nodemanager-scan" in pod_info.stdout'

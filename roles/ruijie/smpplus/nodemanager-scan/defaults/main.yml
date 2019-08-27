@@ -1,0 +1,30 @@
+
+nodemanager_scan_java_opt: "-Xms256m -Xmx512m"
+
+nodemanager_scan_configs: []
+
+nodemanager_scan_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 512Mi
+
+nodemanager_scan_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

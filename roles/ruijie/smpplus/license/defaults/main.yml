@@ -1,0 +1,29 @@
+license_java_opt: "-Xms256m -Xmx512m"
+
+license_configs: []
+
+license_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+
+license_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

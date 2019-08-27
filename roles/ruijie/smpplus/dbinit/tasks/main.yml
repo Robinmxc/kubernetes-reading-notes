@@ -1,0 +1,69 @@
+- name: 检查数据库账号
+  fail: msg="数据库账号{{ item.user_param_name }}不符合要求，{{ db_user_invalid_msg }}"
+  when: 'item.user is not search(db_user_pattern)'
+  connection: local
+  run_once: true
+  with_items: "{{ db_pwd_checklist }}"
+
+- block:
+  - name: 压缩数据初始化脚本
+    archive:
+      path: "{{ KAD_PACKAGE_DIR }}/db/"
+      dest: "{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz"
+    connection: local
+    run_once: true
+
+  - name: 复制数据初始化脚本
+    copy: src="{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz" dest="{{ mongodb_init_dir }}/data.tgz"
+
+  - name: 解压数据初始化脚本
+    unarchive:
+      src: "{{ mongodb_init_dir }}/data.tgz"
+      dest: "{{ mongodb_init_dir }}/"
+      remote_src: yes
+
+
+  - name: 设置文件执行权限
+    file: name="{{ item }}" mode=0700
+    with_items:
+    - "{{ mongodb_init_dir }}/smpplus/rg-init-db/init-data.sh"
+    - "{{ mongodb_init_dir }}/smpplus/rg-upgrade-db/upgrade_data.sh"
+
+  - name: 获取mongo1 POD 名称
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
+    register: pod_name
+    connection: local
+
+  - name: set vars
+    set_fact:
+      pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} mongo1 -- "
+    connection: local
+
+  - name: 执行初始化数据库解压
+    shell: 'unrar x -o+ {{ mongodb_init_dir }}/smpplus/rg-init-db/SMP_DATA.rar {{ mongodb_init_dir }}/smpplus/rg-init-db/'
+    connection: local
+
+  - name: 执行初始化基础库脚本
+    shell: '{{ pod_shell }} /ruijie/init/smpplus/rg-init-db/init-data.sh 127.0.0.1 27017 {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}'
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+
+  - name: 执行基于基础库的升级脚本
+    shell: "{{ pod_shell }} /ruijie/init/smpplus/rg-upgrade-db/upgrade_data.sh 127.0.0.1 27017 {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}"
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+    no_log: true
+
+  - name: 准备创建数据库用户的脚本
+    template: src="create-users.js.j2" dest="{{ mongodb_init_dir }}/create-users.js"
+
+
+  - name: 初始化数据库用户
+    shell: "{{ mongo_shell }} /ruijie/init/create-users.js"
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+    no_log: true
+  when: 'inventory_hostname == groups.mongodb[0]'
