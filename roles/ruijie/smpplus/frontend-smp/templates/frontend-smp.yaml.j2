@@ -26,14 +26,14 @@ spec:
         ports:
         - containerPort: 8088
         volumeMounts:
-        - mountPath: /usr/share/nginx/html/portal/assets/
+        - mountPath: /usr/share/nginx/html/portal/assets/Environment.js
           name: conf
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}/conf
+            path: {{ config_base_dir }}/{{comp_name}}/conf/Environment.js
 
 ---
 apiVersion: v1

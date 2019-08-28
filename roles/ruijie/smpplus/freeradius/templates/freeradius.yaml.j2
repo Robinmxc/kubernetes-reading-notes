@@ -14,6 +14,7 @@ spec:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
         imagePullPolicy: IfNotPresent
+        command: ["radiusd","-X"]
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:

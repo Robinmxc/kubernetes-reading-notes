@@ -27,7 +27,7 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
-        - containerPort: 8080
+        - containerPort: 8086
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
@@ -47,6 +47,9 @@ metadata:
 spec:
   selector:
     service: rg-{{comp_name}}
+  type: NodePort
   ports:
-  - port: 8080
-    targetPort: 8080
+  - port: 8086
+    targetPort: 8086
+    nodePort: 8086
+

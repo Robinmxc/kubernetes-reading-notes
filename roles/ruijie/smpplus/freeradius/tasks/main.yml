@@ -12,7 +12,6 @@
   - config
   vars:
     deploy_conf: '{{freeradius_deploy_conf}}'
-    JAVA_OPT_EXT: '{{freeradius_java_opt}}'
     comp_name: 'freeradius'
   template: src='freeradius.yaml.j2' dest={{ yaml_dir }}/freeradius/freeradius.yml
   run_once: true

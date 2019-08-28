@@ -47,6 +47,8 @@ metadata:
 spec:
   selector:
     service: rg-{{comp_name}}
+  type: NodePort
   ports:
   - port: 8000
     targetPort: 8000
+    nodePort: 8000
