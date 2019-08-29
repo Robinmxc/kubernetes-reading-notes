@@ -1,0 +1,29 @@
+authentication_java_opt: "-Xms4096m -Xmx4096m"
+
+authentication_configs: []
+
+authentication_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 2
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 5Gi
+      requests:
+        cpu: 1
+        memory: 3Gi
+
+authentication_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

@@ -24,7 +24,7 @@
       - net-tools
       - unzip
     state: present
-
+  when: '"sourceid" == KAD_APP_NAME'
 - name: 查询防火墙状态
   shell: "systemctl list-units *.service"
   register: firewall_info

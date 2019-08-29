@@ -1,0 +1,37 @@
+- name: 获取secret数据
+  command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
+  register: secret_info
+  connection: local
+  run_once: true
+
+- name: 使用现有密码
+  block:
+  - name: 获取数据库密码
+    command: '{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }} smpplus-db-pwd -o ''go-template={{ "{{" }} index .data "pwd" {{ "}}" }}'''
+    register: secret_result
+  - name: 设置数据库密码为现有密码
+    set_fact:
+      smpplus_db_pwd: '{{ secret_result.stdout | b64decode }}'
+  when: '"smpplus-db-pwd" in secret_info.stdout'
+  connection: local
+  run_once: true
+
+- name: 生成数据库密码
+  block:
+  - name: 生成随机数
+    shell: "openssl rand -hex 6"
+    register: rand_result
+  - name: 保存到secret
+    shell: "{{ bin_dir }}/kubectl create secret generic -n {{ APP_NAMESPACE }} smpplus-db-pwd --from-literal=pwd={{ rand_result.stdout }}"
+  - name: 设置数据库密码为新密码
+    set_fact:
+      smpplus_db_pwd: '{{ rand_result.stdout }}'
+  when: '"smpplus-db-pwd" not in secret_info.stdout'
+  connection: local
+  run_once: true
+
+- name: 设置各个数据库的密码参数
+  set_fact:
+    COMPONENT_DB_PWD: '{% if MONGODB_ADMIN_PWD == "" %}{{ smpplus_db_pwd }}{% else %}{{ MONGODB_ADMIN_PWD }}{% endif %}'
+  connection: local
+  run_once: true

@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: rg-rocket
+  name: rg-rocket2
   namespace: {{ APP_NAMESPACE }}
 spec:
   replicas: 1
@@ -14,7 +14,12 @@ spec:
       containers:
       - name: broker
         image: rocketmqinc/rocketmq:{{ rocketmq_version }}
+{% if "yes" == (rocketmq_public) %}
+        command: ["sh","mqbroker", "-n","localhost:9876 autoCreateTopicEnable=true","-c /opt/rocketmq/conf/broker.conf"]
+{% endif %}
+{% if "yes" != (rocketmq_public) %}
         command: ["sh","mqbroker", "-n","localhost:9876 autoCreateTopicEnable=true"]
+{% endif %}
         env:
         - name: JAVA_OPT_EXT
           value: "{{ mq_broker_java_opt }}"
@@ -36,6 +41,8 @@ spec:
             name: brokeroptlogs
           - mountPath: /root/store
             name: brokeroptstore
+          - mountPath: /opt/rocketmq/conf
+            name: brokerconf
       - name: namesrv
         image: rocketmqinc/rocketmq:{{ rocketmq_version }}
         command: ["sh","mqnamesrv"]
@@ -57,6 +64,9 @@ spec:
       - name: brokeroptstore
         hostPath:
           path: {{ rocketmq_data_dir }}/broker
+      - name: brokerconf
+        hostPath:
+          path: {{ rocketmq_conf_dir }}
       - name: namesrvoptlogs
         hostPath:
           path: {{ rocketmq_logs_dir }}/namesrv
@@ -73,6 +83,25 @@ metadata:
 spec:
   selector:
     service: rg-rocket
+{% if "yes" == (rocketmq_public) %}
+  type: NodePort
+  ports:
+  - name: n9876
+    port: 9876
+    targetPort: 9876
+    nodePort: 9876
+  - name: n10909
+    port: 10909
+    targetPort: 10909
+    nodePort: 10909
+  - name: n10911
+    port: 10911
+    targetPort: 10911
+    nodePort: 10911
+{% endif %}
+{% if "yes" != (rocketmq_public) %}
   ports:
   - port: 9876
     targetPort: 9876
+{% endif %}
+

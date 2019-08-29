@@ -1,3 +1,4 @@
+rocketmq_public: "no"
 rocketmq_version: "4.3.0"
 rocketmq_offline: "rocketmq-4.3.0.tar"
 
