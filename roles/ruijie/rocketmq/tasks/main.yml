@@ -27,6 +27,7 @@
   run_once: true
   connection: local
 
+
 - name: 准备RocketMQ的部署文件
   tags:
   - config
@@ -34,6 +35,25 @@
     rocketmq_node_ip: "{{ groups.rocketmq[0] }}"
     deploy_conf: '{{ mq_deploy_conf }}'
   template: src=rocketmq.yaml.j2 dest={{ yaml_dir }}/rocketmq/rocketmq.yml
+  run_once: true
+  connection: local
+
+- name: 准备RocketMQ的broker的配置文件目录
+  tags:
+  - config
+  file: path={{ item }} state=directory
+  with_items:
+  - "{{ rocketmq_conf_dir }}"
+  run_once: true
+  connection: local
+
+- name: 准备RocketMQ的broker文件
+  tags:
+  - config
+  vars:
+    rocketmq_node_ip: "{{ groups.rocketmq[0] }}"
+    deploy_conf: '{{ mq_deploy_conf }}'
+  template: src=broker.conf dest={{ rocketmq_conf_dir }}/broker.conf
   run_once: true
   connection: local
 

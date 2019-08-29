@@ -1,0 +1,30 @@
+db.getSiblingDB("nodes").runCommand({
+  createUser: "{{ MONGODB_ADMIN_USER }}",
+  pwd: "{{ MONGODB_ADMIN_PWD }}",
+  roles: [{role:"dbOwner", db: "nodes"}]
+});
+
+db.getSiblingDB("license").runCommand({
+  createUser: "{{ MONGODB_ADMIN_USER }}",
+  pwd: "{{ MONGODB_ADMIN_PWD }}",
+  roles: [{role:"dbOwner", db: "license"}]
+});
+
+db.getSiblingDB("component").runCommand({
+  createUser: "{{ MONGODB_ADMIN_USER }}",
+  pwd: "{{ MONGODB_ADMIN_PWD }}",
+  roles: [{role:"dbOwner", db: "component"}]
+});
+
+db.getSiblingDB("linkid-dev").runCommand({
+  createUser: "{{ MONGODB_ADMIN_USER }}",
+  pwd: "{{ MONGODB_ADMIN_PWD }}",
+  roles: [{role:"dbOwner", db: "linkid-dev"}]
+});
+
+db.getSiblingDB("linkid-job").runCommand({
+  createUser: "{{ MONGODB_ADMIN_USER }}",
+  pwd: "{{ MONGODB_ADMIN_PWD }}",
+  roles: [{role:"dbOwner", db: "linkid-job"}]
+});
+

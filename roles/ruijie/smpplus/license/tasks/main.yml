@@ -1,0 +1,64 @@
+- name: 复制配置文件
+  tags:
+  - config
+  copy:
+    src: "{{ namespace_dir }}/conf/license/conf/"
+    dest: "{{ config_base_dir }}/license/conf/"
+
+- name: 自动配置
+  tags:
+  - config
+  replace: path="{{ config_base_dir }}/license/conf/application-prd.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+  - {regexp: "mongodb:.*/nodes.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/nodes?replicaSet=rs0"}
+  - {regexp: "mongodb:.*/license.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/license?replicaSet=rs0"}
+  - {regexp: "mongodb:.*/component.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/component?replicaSet=rs0"}
+  - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
+  - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
+  no_log: true
+
+- name: 自定义配置
+  tags:
+  - config
+  replace:
+    path: '{{ config_base_dir }}/license/conf/application-prd.yml'
+    regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
+    replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
+  with_items: '{{ license_configs }}'
+  no_log: true
+
+- name: 准备部署文件目录
+  tags:
+  - config
+  file: path={{ item }} state=directory
+  with_items:
+  - "{{ yaml_dir }}/license"
+  run_once: true
+  connection: local
+
+- name: 准备部署文件
+  tags:
+  - config
+  vars:
+    deploy_conf: '{{license_deploy_conf}}'
+    JAVA_OPT_EXT: '{{license_java_opt}}'
+    comp_name: 'license'
+  template: src='license.yaml.j2' dest={{ yaml_dir }}/license/license.yml
+  run_once: true
+  connection: local
+
+- name: 获取所有已经创建的POD信息
+  tags:
+  - deploy
+  command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+  register: pod_info
+  run_once: true
+  connection: local
+
+- name: 执行部署
+  tags:
+  - deploy
+  shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/license/"
+  when: '"rg-license" not in pod_info.stdout'
+  run_once: true
+  connection: local

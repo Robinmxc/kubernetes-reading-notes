@@ -1,0 +1,78 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-{{ comp_name }}
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  template:
+    metadata:
+      labels:
+        service: rg-{{ comp_name }}
+    spec:
+      containers:
+      - name: rg-{{ comp_name }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ JAVA_OPT_EXT}}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 80
+        - containerPort: 161
+          protocol: UDP
+        - containerPort: 162
+          protocol: UDP
+        - containerPort: 2000
+          protocol: UDP
+        - containerPort: 50100
+          protocol: UDP
+        volumeMounts:
+        - mountPath: /ruijie/{{comp_name}}
+          name: conf
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/{{comp_name}}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-{{comp_name}}
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    service: rg-{{comp_name}}
+  type: NodePort
+  ports:
+  - port: 80
+    name: port80
+    targetPort: 80
+    nodePort: 8090
+  - protocol: UDP
+    port: 161
+    name: port161
+    targetPort: 161
+    nodePort: 161
+  - protocol: UDP
+    port: 162
+    name: port162
+    targetPort: 162
+    nodePort: 162
+  - protocol: UDP
+    port: 50100
+    name: port50100
+    targetPort: 50100
+    nodePort: 50100

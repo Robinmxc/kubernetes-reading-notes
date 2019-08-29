@@ -1,0 +1,28 @@
+
+frontend_portal_configs: []
+
+frontend_portal_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 1
+        memory: 512Mi
+      requests:
+        cpu: 1
+        memory: 256Mi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 512Mi
+      requests:
+        cpu: 1
+        memory: 256Mi
+
+frontend_portal_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

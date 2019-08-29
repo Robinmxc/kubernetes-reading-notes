@@ -1,0 +1,29 @@
+linkid_java_opt: "-Xms1024m -Xmx1024m"
+
+linkid_configs: []
+
+linkid_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 4
+        memory: 2Gi
+      requests:
+        cpu: 2
+        memory: 2Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 2Gi
+
+linkid_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

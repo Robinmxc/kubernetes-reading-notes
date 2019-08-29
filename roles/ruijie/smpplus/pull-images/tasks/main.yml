@@ -1,0 +1,15 @@
+- name: 读取daemon.json
+  command: "cat /etc/docker/daemon.json"
+  register: daemon_json
+
+- block:
+  - name: 准备daemon.json
+    replace:
+      path: '/etc/docker/daemon.json'
+      regexp: '^.*insecure-registries.*$'
+      replace: '  "insecure-registries": ["{{ PRIVATE_INSECURE_REGISTRY }}"],'
+  - name: 重新加载服务配置
+    command: "systemctl daemon-reload"
+  - name: 重启docker服务
+    service: name=docker state=restarted
+  when: '"yes" == PRIVATE_REGISTRY_ENABLED and PRIVATE_INSECURE_REGISTRY not in daemon_json.stdout'
