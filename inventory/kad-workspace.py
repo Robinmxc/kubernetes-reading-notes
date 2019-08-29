@@ -261,7 +261,8 @@ def parse_sourceid_gateway_config(host_data):
     host_vars = host_data["host_vars"]
     idx = 1
     for ip in gateway_hosts:
-        host_vars[ip] = {}
+        if ip not in host_vars:
+            host_vars[ip] = {}
         if is_dual_hosts:
             host_vars[ip]["GATEWAY_HOST_ID"] = str(100000 + idx)
             if idx == 1:
@@ -348,7 +349,8 @@ def parse_fdfs_config(host_data):
     host_vars = host_data["host_vars"]
     idx = 1
     for ip in storage_hosts:
-        host_vars[ip] = {}
+        if ip not in host_vars:
+            host_vars[ip] = {}
         host_vars[ip]["FDFS_HOST_ID"] = str(100000 + idx)
         if idx == 1:
             host_vars[ip]["FDFS_ROLE"] = "MASTER"
@@ -372,7 +374,9 @@ def main():
         else:
             raise
 
-    if len(sys.argv) == 2 and (sys.argv[1] == "--list"):
+    if len(sys.argv) == 2 and (sys.argv[1] == '--all'):
+        print(to_json(host_data))
+    elif len(sys.argv) == 2 and (sys.argv[1] == "--list"):
         print(to_json(host_data["groups"]))
     elif len(sys.argv) == 3 and (sys.argv[1] == "--host"):
         ip = sys.argv[2]

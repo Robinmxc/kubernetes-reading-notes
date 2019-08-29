@@ -94,4 +94,4 @@ SOURCEID_SSO_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}https{% e
 
 SOURCEID_FACEID_ENABLED: "no"
 
-SOURCEID_IMPORT_USER_ENABLED: "{% if SOURCEID_DOCKERS.import_user is defined %}yes{% else %}no{% endif %}"
+SOURCEID_IMPORT_USER_ENABLED: "{% if SOURCEID_DOCKERS['import-user'] is defined %}yes{% else %}no{% endif %}"
