@@ -28,12 +28,13 @@ spec:
         volumeMounts:
         - mountPath: /usr/share/nginx/html/portal/assets/Environment.js
           name: conf
+          subPath: Environment.js
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}/conf/Environment.js
+            path: {{ config_base_dir }}/{{comp_name}}/conf
 
 ---
 apiVersion: v1
