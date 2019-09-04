@@ -1,3 +1,45 @@
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: license-admin
+  namespace: {{ APP_NAMESPACE }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - nodes
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: license-admin-binding
+  namespace: {{ APP_NAMESPACE }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: license-admin
+subjects:
+  - kind: ServiceAccount
+    name: license
+    namespace: {{ APP_NAMESPACE }}
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: license
+  namespace: {{ APP_NAMESPACE }}
+
+---
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -10,6 +52,7 @@ spec:
       labels:
         service: rg-{{ comp_name }}
     spec:
+      serviceAccountName: license
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
