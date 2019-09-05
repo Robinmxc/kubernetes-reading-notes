@@ -2,8 +2,8 @@
   tags:
   - config
   copy:
-    src: "{{ namespace_dir }}/conf/authentication/conf/"
-    dest: "{{ config_base_dir }}/authentication/conf/"
+    src: "{{ namespace_dir }}/conf/authentication/"
+    dest: "{{ config_base_dir }}/authentication/"
 
 - name: 自动配置
   tags:
@@ -16,6 +16,7 @@
   - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
   - {regexp: "namesrv:", replace: "{{groups['kube_node'][0]}}:"}
+  - {regexp: "host-address-ip.*$", replace: "host-address-ip: {{groups['kube_node'][0]}}"}
   no_log: true
 
 - name: 自定义配置

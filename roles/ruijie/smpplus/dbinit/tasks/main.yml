@@ -22,10 +22,13 @@
       dest: "{{ mongodb_init_dir }}/"
       remote_src: yes
 
+  - name: 准备数据库升级的脚本
+    template: src="update-data.sh.j2" dest="{{ mongodb_init_dir }}/update-data.sh"
 
   - name: 设置文件执行权限
     file: name="{{ item }}" mode=0700
     with_items:
+    - "{{ mongodb_init_dir }}/update-data.sh"
     - "{{ mongodb_init_dir }}/smpplus/rg-init-db/init-data.sh"
     - "{{ mongodb_init_dir }}/smpplus/rg-upgrade-db/upgrade_data.sh"
 
@@ -50,11 +53,10 @@
     connection: local
 
   - name: 执行基于基础库的升级脚本
-    shell: "{{ pod_shell }} /ruijie/init/smpplus/rg-upgrade-db/upgrade_data.sh 127.0.0.1 27017 {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}"
+    shell: '{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} mongo1 -- /ruijie/init/update-data.sh'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
-    no_log: true
 
   - name: 准备创建数据库用户的脚本
     template: src="create-users.js.j2" dest="{{ mongodb_init_dir }}/create-users.js"
