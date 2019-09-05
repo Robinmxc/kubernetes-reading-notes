@@ -6,4 +6,4 @@
   roles:
   - ruijie/sourceid/check-cpu
   - ruijie/sourceid/check-mem
- # - ruijie/sourceid/check-disk
+  - ruijie/sourceid/check-disk
