@@ -14,4 +14,4 @@
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   roles:
-  - { role: ruijie/smpplus/load-images, tags: ["docker"] }
+  - { role: ruijie/smpplus/load-images, tags: ["always"] }
