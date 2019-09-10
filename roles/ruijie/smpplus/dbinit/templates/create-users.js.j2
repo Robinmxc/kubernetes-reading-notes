@@ -28,3 +28,9 @@ db.getSiblingDB("linkid-job").runCommand({
   roles: [{role:"dbOwner", db: "linkid-job"}]
 });
 
+db.getSiblingDB("eportal").runCommand({
+  createUser: "{{ MONGODB_ADMIN_USER }}",
+  pwd: "{{ MONGODB_ADMIN_PWD }}",
+  roles: [{role:"dbOwner", db: "eportal"}]
+});
+
