@@ -1,0 +1,26 @@
+
+data_sync_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx1024m{% elif CLUSTER_SCALE == 'single' %}-Xms512m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1.5Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+
+data_sync_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

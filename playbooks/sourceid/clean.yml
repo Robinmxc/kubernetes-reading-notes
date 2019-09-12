@@ -68,6 +68,12 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/import-user/"
     when: '"rg-import-user" in pod_info.stdout'
 
+  - name: delete data-sync
+    tags:
+    - data-sync
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/data-sync/"
+    when: '"rg-data-sync" in pod_info.stdout'
+
 - hosts:
   - gateway
   roles:
