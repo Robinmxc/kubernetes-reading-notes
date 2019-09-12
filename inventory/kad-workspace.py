@@ -99,7 +99,9 @@ def parse_host_data(workspace_dir):
     if ("KAD_PACKAGE_DIR" not in group_all_vars):
         kad_package_dir = "/opt/kad/down/" + kad_package_name
         if not os.path.exists(kad_package_dir):
-            kad_package_dir = group_all_vars["temp_dir"] + "/"  + kad_package_name
+            kad_package_dir2 = group_all_vars["temp_dir"] + "/"  + kad_package_name
+            if os.path.exists(kad_package_dir):
+                kad_package_dir = kad_package_dir2
         group_all_vars["KAD_PACKAGE_DIR"] = kad_package_dir
 
     # Configure host groups
