@@ -29,12 +29,17 @@ spec:
         - mountPath: /usr/share/nginx/html/portal/assets/config.js
           name: conf
           subPath: config.js
+        - mountPath: /usr/share/nginx/html/portal/assets/plugin
+          name: plugin
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}/conf
+        - name: plugin
+          hostPath:
+            path: /home/ruijie/ruijie-smpplus/frontend-portal/plugin
 
 ---
 apiVersion: v1
