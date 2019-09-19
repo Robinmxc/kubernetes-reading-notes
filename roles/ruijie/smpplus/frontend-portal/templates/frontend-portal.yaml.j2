@@ -39,7 +39,7 @@ spec:
             path: {{ config_base_dir }}/{{comp_name}}/conf
         - name: plugin
           hostPath:
-            path: /home/ruijie/ruijie-smpplus/frontend-portal/plugin
+            path: {{ config_base_dir }}/{{comp_name}}/plugin
 
 ---
 apiVersion: v1
