@@ -1,4 +1,4 @@
-authentication_java_opt: "-Xms4096m -Xmx4096m"
+authentication_java_opt: "-Xms{{ (ansible_memtotal_mb/32*5)|int }}m -Xmx{{ (ansible_memtotal_mb/32*5)|int }}m"
 
 authentication_configs: []
 
@@ -20,10 +20,10 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 2
-        memory: 5Gi
+        cpu: "({{ ansible_processor_vcpus/16*2*1000)|int }}m"
+        memory: "{{ (ansible_memtotal_mb/32*5)|int }}Mi"
       requests:
-        cpu: 1
-        memory: 3Gi
+        cpu: "({{ ansible_processor_vcpus/16*1000)|int }}m"
+        memory: "{{ (ansible_memtotal_mb/32*3)|int }}Mi"
 
 authentication_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

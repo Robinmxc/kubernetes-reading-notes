@@ -25,6 +25,7 @@
 
 - hosts:
   - kube_node
+  gather_facts: true
   tags:
   - initdata
   any_errors_fatal: true
@@ -32,7 +33,7 @@
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   roles:
   - { role: ruijie/smpplus/prepare-db-pwd, tags: always }
-  - { role: ruijie/smpplus/dbinit }
+    - { role: ruijie/smpplus/dbinit }
 - hosts:
   - kube_node
   tags:

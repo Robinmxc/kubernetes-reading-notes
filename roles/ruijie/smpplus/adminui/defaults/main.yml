@@ -1,4 +1,4 @@
-adminui_java_opt: "-Xms256m -Xmx512m"
+adminui_java_opt: "-Xms{{ (ansible_memtotal_mb/32/2)|int }}m -Xmx{{ (ansible_memtotal_mb/32/2)|int }}m"
 
 adminui_configs: []
 
@@ -20,10 +20,10 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 500m
-        memory: 1Gi
+        cpu: "({{ ansible_processor_vcpus/32*1000)|int }}m"
+        memory: "{{ (ansible_memtotal_mb/32)|int }}Mi"
       requests:
-        cpu: 500m
-        memory: 512Mi
+        cpu: "({{ ansible_processor_vcpus/32*1000)|int }}m"
+        memory: "{{ (ansible_memtotal_mb/32/2)|int }}Mi"
 
 adminui_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

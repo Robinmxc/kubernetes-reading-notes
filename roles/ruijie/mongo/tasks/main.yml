@@ -66,7 +66,7 @@
   tags:
   - config
   block:
-  - name: 准备configmap部署文件
+  - name: 准备configmap部署文
     template: src=mongo-conf.yaml.j2 dest={{ yaml_dir }}/mongo/mongo-conf.yml
   - name: 创建configmap
     shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo-conf.yml"

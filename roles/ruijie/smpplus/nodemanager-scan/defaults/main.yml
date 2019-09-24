@@ -1,5 +1,5 @@
 
-nodemanager_scan_java_opt: "-Xms256m -Xmx512m"
+nodemanager_scan_java_opt: "-Xms{{ (ansible_memtotal_mb/32)|int }}m -Xmx{{ (ansible_memtotal_mb/32)|int }}m"
 
 nodemanager_scan_configs: []
 
@@ -21,10 +21,10 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 1
-        memory: 1Gi
+        cpu: "({{ ansible_processor_vcpus/16*1000)|int }}m"
+        memory: "{{ (ansible_memtotal_mb/32)|int }}Mi"
       requests:
-        cpu: 1
-        memory: 512Mi
+        cpu: "({{ ansible_processor_vcpus/16*1000)|int }}m"
+        memory: "{{ (ansible_memtotal_mb/32/2)|int }}Mi"
 
 nodemanager_scan_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

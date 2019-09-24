@@ -17,7 +17,7 @@ yaml_dir: "{{ namespace_dir }}/yaml"
 max_space_dir: "{{
     hostvars[groups['kube_node'][0]].ansible_mounts
     | selectattr('mount', 'match', '^(?!/var/lib/).*')
-    | sort('size_available' | int)
+    | sort('size_available' | int
     | map(attribute='mount')
     | list
     | last }}"
