@@ -30,10 +30,10 @@ deploy_conf_defaults:
   single:
     resources:
       limits:
-        cpu: "({{ ansible_processor_vcpus/16*1000)|int }}m"
+        cpu: "{{ (ansible_processor_vcpus/16*1000)|int }}m"
         memory: "{{ (ansible_memtotal_mb/32*8)|int }}Mi"
       requests:
-        cpu: "({{ ansible_processor_vcpus/16*1000)|int }}m"
+        cpu: "{{ (ansible_processor_vcpus/16*1000)|int }}m"
         memory: "{{ (ansible_memtotal_mb/32*4)|int }}Mi"
 
 mongodb_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
