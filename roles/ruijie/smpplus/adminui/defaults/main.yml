@@ -1,4 +1,4 @@
-adminui_java_opt: "-Xms{{ (ansible_memtotal_mb/32/2)|int }}m -Xmx{{ (ansible_memtotal_mb/32/2)|int }}m"
+adminui_java_opt: "-Xms{{ (ansible_memtotal_mb/32/2/2)|int }}m -Xmx{{ (ansible_memtotal_mb/32/2)|int }}m"
 
 adminui_configs: []
 

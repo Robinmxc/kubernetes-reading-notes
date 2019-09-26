@@ -1,4 +1,4 @@
-authentication_java_opt: "-Xms{{ (ansible_memtotal_mb/32*5)|int }}m -Xmx{{ (ansible_memtotal_mb/32*5)|int }}m"
+authentication_java_opt: "-Xms{{ (ansible_memtotal_mb/32*4)|int }}m -Xmx{{ (ansible_memtotal_mb/32*4)|int }}m"
 
 authentication_configs: []
 

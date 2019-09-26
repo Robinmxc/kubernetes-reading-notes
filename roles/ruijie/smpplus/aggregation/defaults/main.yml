@@ -1,4 +1,4 @@
-aggregation_java_opt:  "-Xms{{ (ansible_memtotal_mb/32*3)|int }}m -Xmx{{ (ansible_memtotal_mb/32*3)|int }}m"
+aggregation_java_opt:  "-Xms{{ (ansible_memtotal_mb/32)|int }}m -Xmx{{ (ansible_memtotal_mb/32*2)|int }}m"
 
 aggregation_configs: []
 
