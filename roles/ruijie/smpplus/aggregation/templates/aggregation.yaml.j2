@@ -45,6 +45,7 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
+  externalTrafficPolicy: Local
   selector:
     service: rg-{{comp_name}}
   type: NodePort
