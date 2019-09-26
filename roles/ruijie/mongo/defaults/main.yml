@@ -1,14 +1,12 @@
-mongodb_version: "4.0.6"
-mongodb_offline: "mongo-4.0.6.tar"
-mongodb_port: 27017
-mongodb_deploy_mode: "{{ groups['mongodb'] | length }}"
-mongodb_auth_mode: "no"
+rocketmq_public: "no"
+rocketmq_version: "4.3.0"
+rocketmq_offline: "rocketmq-4.3.0.tar"
 
-mongodb_check_data_dir: "no"
+rocketmq_check_data_dir: "no"
 
-wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}8{%- elif CLUSTER_SCALE == 'single' -%}4{%- else -%}0.5{%- endif -%}"
+mq_broker_java_opt: "{%- if CLUSTER_SCALE == 'normal' -%}-Xms4096m -Xmx4096m -Xmn2g -XX:MaxDirectMemorySize=4096m{%- else -%}-Xms512m -Xmx512m -Xmn256m -XX:MaxDirectMemorySize=256m{%- endif -%}"
 
-mongodb_liveness_probe: "no"
+mq_server_java_opt: "{%- if CLUSTER_SCALE == 'normal' -%}-Xms512m -Xmx512m -Xmn256m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx512m -Xmn256m{%- else -%}-Xms256m -Xmx256m -Xmn128m{%- endif -%}"
 
 deploy_conf_defaults:
   small:
@@ -17,25 +15,23 @@ deploy_conf_defaults:
         cpu: 1
         memory: 1Gi
       requests:
-        cpu: 1
+        cpu: 500m
         memory: 1Gi
   normal:
     resources:
       limits:
-        cpu: 16
-        memory: 24Gi
-      requests:
         cpu: 8
-        memory: 16Gi
+        memory: 8Gi
+      requests:
+        cpu: 4
+        memory: 8Gi
   single:
     resources:
       limits:
-        cpu: "{{ (ansible_processor_vcpus/16*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32*8)|int }}Mi"
+        cpu: 1
+        memory: 1Gi
       requests:
-        cpu: "{{ (ansible_processor_vcpus/16*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32*4)|int }}Mi"
+        cpu: 500m
+        memory: 1Gi
 
-mongodb_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
-
-
+mq_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
