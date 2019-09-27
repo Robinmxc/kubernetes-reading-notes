@@ -4,6 +4,6 @@
   gather_facts: true
   any_errors_fatal: true
   roles:
-  - ruijie/sourceid/check-cpu
-  - ruijie/sourceid/check-mem
-  - ruijie/sourceid/check-disk
+  - ruijie/smpplus/check-cpu
+  - ruijie/smpplus/check-mem
+  - ruijie/smpplus/check-disk
