@@ -31,7 +31,7 @@
     tags:
       - config
     vars:
-      deploy_conf: '{{ import_user_deploy_conf }}'
+      deploy_conf: '{{ data_sync_deploy_conf }}'
     template: src='data-sync.yaml.j2' dest={{ yaml_dir }}/data-sync/data-sync.yml
     run_once: true
     connection: local
