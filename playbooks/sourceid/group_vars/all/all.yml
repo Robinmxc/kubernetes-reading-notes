@@ -28,6 +28,7 @@ config_base_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}"
 
 mongodb_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/data"
 mongodb_init_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/init"
+mongodb_backup_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/backup"
 
 rocketmq_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/data"
 rocketmq_logs_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/log"
