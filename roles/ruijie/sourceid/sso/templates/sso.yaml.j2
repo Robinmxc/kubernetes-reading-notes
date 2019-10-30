@@ -84,6 +84,10 @@ spec:
   - host: {{ SOURCEID_SSO_DOMAIN }}
     http:
       paths:
+      - path: /v2/api-docs
+        backend:
+          serviceName: rg-frontend
+          servicePort: 80
       - path: /
         backend:
           serviceName: rg-sso
