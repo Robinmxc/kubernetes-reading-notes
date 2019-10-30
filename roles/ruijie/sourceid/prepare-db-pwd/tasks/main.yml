@@ -40,3 +40,18 @@
     SOURCEID_GATEWAY_DB_PWD: '{% if SOURCEID_GATEWAY_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_GATEWAY_DB_PWD }}{% endif %}'
   connection: local
   run_once: true
+
+- name: 获取mongo1 POD 名称
+  shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
+  register: shell_result
+  connection: local
+  run_once: true
+
+- name: 设置mongo shell
+  set_fact:
+    mongo_pod_name: "{{ shell_result.stdout }}"
+    mongo_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
+    mongo_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- mongo {{ mongo_auth_param }}"
+  connection: local
+  run_once: true
+

@@ -32,28 +32,18 @@
     - "{{ mongodb_init_dir }}/smpplus/rg-init-db/init-data.sh"
     - "{{ mongodb_init_dir }}/smpplus/rg-upgrade-db/upgrade_data.sh"
 
-  - name: 获取mongo1 POD 名称
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
-    register: pod_name
-    connection: local
-
-  - name: set vars
-    set_fact:
-      pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} mongo1 -- "
-    connection: local
-
   - name: 执行初始化数据库解压
     shell: 'unrar x -o+ {{ mongodb_init_dir }}/smpplus/rg-init-db/SMP_DATA.rar {{ mongodb_init_dir }}/smpplus/rg-init-db/'
     connection: local
 
   - name: 执行初始化基础库脚本
-    shell: '{{ pod_shell }} /ruijie/init/smpplus/rg-init-db/init-data.sh 127.0.0.1 27017 {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}'
+    shell: '{{ mongo_pod_shell }} /ruijie/init/smpplus/rg-init-db/init-data.sh 127.0.0.1 27017 {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
   - name: 执行基于基础库的升级脚本
-    shell: '{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} mongo1 -- /ruijie/init/update-data.sh'
+    shell: '{{ mongo_pod_shell }} /ruijie/init/update-data.sh'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local

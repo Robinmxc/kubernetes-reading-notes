@@ -81,7 +81,7 @@
     connection: local
 
   - name: 执行初始化脚本
-    shell: '{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} mongo1 -- /ruijie/init/init-data.sh'
+    shell: '{{ mongo_pod_shell }} /ruijie/init/init-data.sh'
     when: '"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w" not in mongo_result.stdout'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'

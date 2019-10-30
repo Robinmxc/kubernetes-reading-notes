@@ -12,7 +12,7 @@
   block:
   - name: set vars
     set_fact:
-      mongo_shell_init_rs: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} mongo1 -- mongo {% if init_flag == '1' %}{{ mongo_auth_param }}{% endif %}"
+      mongo_shell_init_rs: "{{ mongo_pod_shell }} mongo {% if init_flag == '1' %}{{ mongo_auth_param }}{% endif %}"
 
   - name: 查询复制集状态
     shell: "{{ mongo_shell_init_rs }} --quiet --eval 'r1=rs.status(); r2=(r1.ok==0 && r1.code==94) ? 0 : 1;'"

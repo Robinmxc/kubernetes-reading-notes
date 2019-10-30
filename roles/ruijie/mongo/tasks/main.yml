@@ -184,14 +184,21 @@
       delay: 5
       ignore_errors: true
 
+    - name: 获取mongo1 POD 名称
+      shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
+      register: shell_result
+      connection: local
+      run_once: true
+
     - name: set vars
       set_fact:
-        pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} mongo1 -- "
+        mongo_pod_name: "{{ shell_result.stdout }}"
+        mongo_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ mongo_pod_name }} -- "
       connection: local
       run_once: true
 
     - name: 尝试查询复制集状态
-      shell: "{{ pod_shell }} mongo --quiet --eval 'rs.status()'"
+      shell: "{{ mongo_pod_shell }} mongo --quiet --eval 'rs.status()'"
       register: rs_status
       connection: local
       run_once: true
@@ -205,7 +212,7 @@
     - import_tasks: init_repl_set.yml
 
     - name: 创建数据库管理员账号
-      shell: '{{ pod_shell }} mongo --eval ''db.getSiblingDB("admin").runCommand({createUser: "{{ MONGODB_ADMIN_USER }}",pwd: "{{ MONGODB_ADMIN_PWD }}",roles: [{role:"root", db: "admin"}]})'''
+      shell: '{{ mongo_pod_shell }} mongo --eval ''db.getSiblingDB("admin").runCommand({createUser: "{{ MONGODB_ADMIN_USER }}",pwd: "{{ MONGODB_ADMIN_PWD }}",roles: [{role:"root", db: "admin"}]})'''
       when: 'mongodb_auth_mode == "yes" and "0" == init_flag'
       register: mongo_result
       failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
@@ -221,8 +228,10 @@
   when: '"" != MONGODB_NODEPORT and "mongo-node" not in pod_info.stdout'
   run_once: true
   connection: local
-  
-  
+
+- name: 准备backup目录
+  file: path="{{ mongodb_backup_dir }}" state=directory
+
 - name: 复制mongodb安装工具 rpms
   copy:
     src: "{{ base_dir }}/down/rpms/{{ mongodb_tool }}"
