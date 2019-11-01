@@ -76,3 +76,19 @@ spec:
         backend:
           serviceName: rg-gate
           servicePort: 80
+      - path: /data-sync/v2/api-docs
+        backend:
+          serviceName: rg-frontend
+          servicePort: 80
+      - path: /component/v2/api-docs
+        backend:
+          serviceName: rg-frontend
+          servicePort: 80
+      - path: /faceid/v2/api-docs
+        backend:
+          serviceName: rg-frontend
+          servicePort: 80
+      - path: /import/v2/api-docs
+        backend:
+          serviceName: rg-frontend
+          servicePort: 80
