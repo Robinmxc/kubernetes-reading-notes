@@ -81,5 +81,3 @@
   roles:
   - ruijie/cluster/kube-dns
   - ruijie/cluster/ingress
-  - ruijie/cluster/dashboard
-  - ruijie/cluster/metrics-server
