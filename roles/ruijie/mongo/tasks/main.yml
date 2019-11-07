@@ -193,7 +193,7 @@
     - name: set vars
       set_fact:
         mongo_pod_name: "{{ shell_result.stdout }}"
-        mongo_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ mongo_pod_name }} -- "
+        mongo_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
       connection: local
       run_once: true
 
