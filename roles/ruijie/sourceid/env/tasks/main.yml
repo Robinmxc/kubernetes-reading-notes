@@ -48,6 +48,7 @@
     - "sourceid/gateway"
     - "sourceid/import-user"
     - "sourceid/data-sync"
+    - "sourceid/security"
     - "component"
   connection: local
   run_once: true

@@ -73,6 +73,12 @@
     - data-sync
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/data-sync/"
     when: '"rg-data-sync" in pod_info.stdout'
+    
+  - name: delete security
+    tags:
+    - security
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/security/"
+    when: '"rg-security" in pod_info.stdout'
 
 - hosts:
   - gateway

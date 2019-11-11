@@ -55,6 +55,7 @@
   - { role: ruijie/sourceid/gateway/k8s, tags: ["gateway"] }
   - { role: ruijie/sourceid/import-user, tags: ["import-user"] }
   - { role: ruijie/sourceid/data-sync, tags: ["data-sync"] }
+  - { role: ruijie/sourceid/security, tags: ["security"] }
 
 - hosts:
   - gateway

@@ -4,7 +4,7 @@
 #
 
 Name:     kad
-Version:  1.3.0
+Version:  1.4.0
 Release:  1
 Summary:  KAD RPM package
 License:  GPLv2

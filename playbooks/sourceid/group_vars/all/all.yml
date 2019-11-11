@@ -98,3 +98,5 @@ SOURCEID_FACEID_ENABLED: "no"
 SOURCEID_IMPORT_USER_ENABLED: "{% if SOURCEID_DOCKERS['import-user'] is defined %}yes{% else %}no{% endif %}"
 
 SOURCEID_DATA_SYNC_ENABLED: "{% if SOURCEID_DOCKERS['data-sync'] is defined %}yes{% else %}no{% endif %}"
+
+SOURCEID_SECURITY_ENABLED: "{% if SOURCEID_DOCKERS['security'] is defined %}yes{% else %}no{% endif %}"
