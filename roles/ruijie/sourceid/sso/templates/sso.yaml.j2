@@ -88,6 +88,14 @@ spec:
         backend:
           serviceName: rg-frontend
           servicePort: 80
+      - path: /public
+        backend:
+          serviceName: rg-gate
+          servicePort: 80
+      - path: /linkid
+        backend:
+          serviceName: rg-gate
+          servicePort: 80
       - path: /
         backend:
           serviceName: rg-sso
