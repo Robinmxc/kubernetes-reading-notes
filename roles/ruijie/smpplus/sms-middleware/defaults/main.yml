@@ -1,8 +1,8 @@
 aggregation_java_opt:  "-Xms{{ (ansible_memtotal_mb/32/2)|int }}m -Xmx{{ (ansible_memtotal_mb/32)|int }}m"
 
-aggregation_configs: []
+sms_middleware_configs: []
 
-aggregation_templates_path: ""
+sms_middleware_templates_path: ""
 
 deploy_conf_defaults:
   small:

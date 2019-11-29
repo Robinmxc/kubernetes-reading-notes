@@ -24,7 +24,7 @@
     path: '{{ config_base_dir }}/sms-middleware/conf/application-prd.yml'
     regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
     replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
-  with_items: '{{ sms-middleware_configs }}'
+  with_items: '{{ sms_middleware_configs }}'
   no_log: true
 
 - name: 准备部署文件目录
