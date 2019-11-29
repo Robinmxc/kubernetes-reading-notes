@@ -1,0 +1,29 @@
+aggregation_java_opt:  "-Xms{{ (ansible_memtotal_mb/32/2)|int }}m -Xmx{{ (ansible_memtotal_mb/32)|int }}m"
+
+aggregation_configs: []
+
+aggregation_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 1
+        memory: 3Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: "{{ (ansible_processor_vcpus/16*1000)|int }}m"
+        memory: "{{ (ansible_memtotal_mb/32)|int }}Mi"
+      requests:
+        cpu: "{{ (ansible_processor_vcpus/16*1000)|int }}m"
+        memory: "{{ (ansible_memtotal_mb/32/2)|int }}Mi"
+
+aggregation_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

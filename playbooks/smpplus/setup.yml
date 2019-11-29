@@ -53,3 +53,4 @@
   - { role: ruijie/smpplus/license, tags: ["license"] }
   - { role: ruijie/smpplus/adminui, tags: ["adminui"] }
   - { role: ruijie/smpplus/nodemanager-scan, tags: ["nodemanager-scan"] }
+  - { role: ruijie/smpplus/sms-middleware, tags: ["sms-middleware"] }
