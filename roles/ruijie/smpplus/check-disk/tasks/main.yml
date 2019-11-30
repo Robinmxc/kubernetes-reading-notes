@@ -10,8 +10,8 @@
     space_required: '{% if "0" == deploy_state %}30{% else %}10{% endif %}'
   import_tasks: "../../../utils/tasks/check_disk_space.yml"
 
-- name: 检查数据盘空间
-  vars:
-    check_dir: '{% if "" == DATA_DIR %}/{% else %}{{ DATA_DIR }}{% endif %}'
-    space_required: '{{ disk_required[CLUSTER_SCALE][K8S_ROLE] }}'
-  import_tasks: "../../../utils/tasks/check_disk_space.yml"
+#- name: 检查数据盘空间
+#  vars:
+#    check_dir: '{% if "" == DATA_DIR %}/{% else %}{{ DATA_DIR }}{% endif %}'
+#    space_required: '{{ disk_required[CLUSTER_SCALE][K8S_ROLE] }}'
+#  import_tasks: "../../../utils/tasks/check_disk_space.yml"

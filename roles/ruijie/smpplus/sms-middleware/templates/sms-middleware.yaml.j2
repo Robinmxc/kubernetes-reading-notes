@@ -27,7 +27,7 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
-        - containerPort: 9999
+        - containerPort: 9191
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
@@ -52,4 +52,4 @@ spec:
   ports:
   - port: 9191
     targetPort: 9191
-    nodePort: 9999
+    nodePort: 9191
