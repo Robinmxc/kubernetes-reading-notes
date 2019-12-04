@@ -40,4 +40,5 @@
     - "nodemanager-scan"
     - "adminui"
     - "sms-middleware"
+    - "gate"
 

@@ -72,3 +72,9 @@
     - nodemanager-scan
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodemanager-scan/"
     when: '"nodemanager-scan" in pod_info.stdout'
+
+  - name: delete gate
+    tags:
+    - gate
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/gate/"
+    when: '"gate" in pod_info.stdout'
