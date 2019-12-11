@@ -49,6 +49,7 @@
     - "sourceid/import-user"
     - "sourceid/data-sync"
     - "sourceid/security"
+    - "sourceid/convert"
     - "component"
   connection: local
   run_once: true

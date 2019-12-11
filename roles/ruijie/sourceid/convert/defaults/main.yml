@@ -1,0 +1,26 @@
+
+convert_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms256m -Xmx256m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx256m{% else %}-Xms256m -Xmx256m{% endif %}"
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 512Mi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 512Mi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+
+convert_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
