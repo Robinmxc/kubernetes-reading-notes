@@ -10,10 +10,8 @@
     - config
   replace: path="{{ config_base_dir }}/gate/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "^auth-server:.*$", replace: "auth-server: {{ SOURCEID_SSO_URL }}"}
   - {regexp: "mongodb:.*/gate.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/gate?replicaSet=rs0"}
   - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
-  no_log: true
 
 - name: 自定义配置
   tags:
@@ -39,6 +37,7 @@
     - config
   vars:
     deploy_conf: '{{ gate_deploy_conf }}'
+    JAVA_OPT_EXT: '{{ gate_java_opt }}'
   template: src='{{ gate_templates_path }}gate.yaml.j2' dest={{ yaml_dir }}/gate/gate.yml
   run_once: true
   connection: local

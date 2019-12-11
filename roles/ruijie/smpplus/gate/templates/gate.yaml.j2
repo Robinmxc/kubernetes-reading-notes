@@ -10,12 +10,6 @@ spec:
       labels:
         service: rg-gate
     spec:
-{% if "" != SOURCEID_SSO_HOST_ALIAS and "offload" != SOURCEID_HTTPS_MODE %}
-      hostAliases:
-      - ip: "{{ SOURCEID_SSO_HOST_ALIAS }}"
-        hostnames:
-        - "{{ SOURCEID_SSO_DOMAIN }}"
-{% endif %}
       containers:
       - name: rg-gate
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS.gate.name }}:{{ SMPPLUS_DOCKERS.gate.version }}
@@ -23,6 +17,7 @@ spec:
         env:
         - name: JAVA_OPT_EXT
           value: "{{ JAVA_OPT_EXT }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
             cpu: {{ deploy_conf.resources.limits.cpu }}
@@ -64,8 +59,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   rules:
-  - host: {{ SOURCEID_GATE_DOMAIN }}
-    http:
+  - http:
       paths:
       - path: /
         backend:

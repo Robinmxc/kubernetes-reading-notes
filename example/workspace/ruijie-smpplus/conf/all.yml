@@ -3,7 +3,7 @@ KAD_APP_NAME: "smpplus"
 
 rocketmq_public: "yes"
 # 应用版本
-KAD_APP_VERSION: "r1.0.0"
+KAD_APP_VERSION: "r1.0.0-test"
 
 #MongoDB管理员密码
 MONGODB_ADMIN_USER: "admin"
