@@ -79,6 +79,12 @@
     - security
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/security/"
     when: '"rg-security" in pod_info.stdout'
+    
+  - name: delete convert
+    tags:
+    - convert
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/convert/"
+    when: '"rg-convert" in pod_info.stdout'
 
 - hosts:
   - gateway
