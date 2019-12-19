@@ -31,3 +31,15 @@ PRIVATE_REGISTRY_ENABLED: "no"
 PRIVATE_INSECURE_REGISTRY: "id.ruijie.com.cn:25082"
 PRIVATE_REGISTRY_USER: ""
 PRIVATE_REGISTRY_PWD: ""
+
+max_space_dir: "{{
+    hostvars[groups['kube_node'][0]].ansible_mounts
+    | selectattr('mount', 'match', '^(?!/var/lib/).*')
+    | sort('size_available' | int)
+    | map(attribute='mount')
+    | list
+    | last }}"
+
+DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}"
+
+DOCKER_STORAGE_DIR: "{{ DATA_DIR }}/docker"
