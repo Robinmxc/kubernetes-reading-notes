@@ -67,8 +67,13 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/license/"
     when: '"license" in pod_info.stdout'
 
-  - name: delete nodemanager-scan
+    #   - name: delete nodemanager-scan
+    #    tags:
+    #    - nodemanager-scan
+    #    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodemanager-scan/"
+  #     when: '"nodemanager-scan" in pod_info.stdout'
+  - name: delete nodeidentify
     tags:
-    - nodemanager-scan
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodemanager-scan/"
-    when: '"nodemanager-scan" in pod_info.stdout'
+    - nodeidentify
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodeidentify/"
+    when: '"nodeidentify" in pod_info.stdout'
