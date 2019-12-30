@@ -34,3 +34,9 @@ db.getSiblingDB("eportal").runCommand({
   roles: [{role:"dbOwner", db: "eportal"}]
 });
 
+db.getSiblingDB("node-identify").runCommand({
+  createUser: "{{ MONGODB_ADMIN_USER }}",
+  pwd: "{{ MONGODB_ADMIN_PWD }}",
+  roles: [{role:"dbOwner", db: "node-identify"}]
+});
+
