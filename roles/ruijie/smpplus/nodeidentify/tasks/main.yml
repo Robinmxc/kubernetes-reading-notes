@@ -1,5 +1,5 @@
 - name: 复制配置文件
-  tags:
+  tag
   - config
   copy:
     src: "{{ namespace_dir }}/conf/nodeidentify/conf/"
@@ -15,6 +15,7 @@
   - {regexp: "mongodb:.*/component.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/component?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
+  - {regexp: "mongodb:.*/node-identify.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/node-identify?replicaSet=rs0"}
   - {regexp: "namesrv:", replace: "{{groups['kube_node'][0]}}:"}
   no_log: true
 
