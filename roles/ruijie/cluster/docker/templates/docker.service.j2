@@ -1,6 +1,7 @@
 [Unit]
 Description=Docker Application Container Engine
 Documentation=http://docs.docker.io
+StartLimitInterval=0
 
 [Service]
 EnvironmentFile=-/run/flannel/docker
@@ -10,6 +11,7 @@ ExecStart={{ bin_dir }}/dockerd $DOCKER_NETWORK_OPTIONS
 ExecStartPost=/sbin/iptables -I FORWARD -s 0.0.0.0/0 -j ACCEPT
 ExecReload=/bin/kill -s HUP $MAINPID
 Restart=always
+RestartSec=5
 LimitNOFILE=infinity
 LimitNPROC=infinity
 LimitCORE=infinity

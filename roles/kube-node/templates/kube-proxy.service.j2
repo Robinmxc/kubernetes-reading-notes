@@ -2,6 +2,7 @@
 Description=Kubernetes Kube-Proxy Server
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 After=network.target
+StartLimitInterval=0
 
 [Service]
 # kube-proxy 根据 --cluster-cidr 判断集群内部和外部流量，指定 --cluster-cidr 或 --masquerade-all 选项后
@@ -14,6 +15,7 @@ ExecStart={{ bin_dir }}/kube-proxy \
   --logtostderr=true \
   --proxy-mode={{ PROXY_MODE }}
 Restart=always
+RestartSec=5
 LimitNOFILE=65536
 
 [Install]

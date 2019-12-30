@@ -3,6 +3,7 @@ Description=Kubernetes Kubelet
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 After=docker.service
 Requires=docker.service
+StartLimitInterval=0
 
 [Service]
 WorkingDirectory=/var/lib/kubelet
@@ -40,6 +41,7 @@ ExecStart={{ bin_dir }}/kubelet \
   --eviction-hard={{ HARD_EVICTION }} \
   --v=2
 Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
