@@ -1,5 +1,5 @@
 - name: 复制配置文件
-  tag
+  tag:
   - config
   copy:
     src: "{{ namespace_dir }}/conf/nodeidentify/conf/"
