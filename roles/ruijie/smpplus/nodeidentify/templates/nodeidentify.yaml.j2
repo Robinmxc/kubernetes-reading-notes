@@ -31,12 +31,19 @@ spec:
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
+        - mountPath: /usr/share/nmap/scripts/ruishanhttp.nse
+          name: script
+          subPath: ruishanhttp.nse
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}
+        - name: script
+          hostPath:
+            path: {{ config_base_dir }}/{{comp_name}}/scripts
+
 
 ---
 apiVersion: v1
