@@ -92,3 +92,9 @@ spec:
         backend:
           serviceName: rg-frontend
           servicePort: 80
+{% if "yes" == SOURCEID_FGM_VERSION_ENABLED %}
+      - path: /linkid/api/ztfgm
+        backend:
+          serviceName: rg-linkid
+          servicePort: 80
+{% endif %}

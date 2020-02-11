@@ -102,3 +102,5 @@ SOURCEID_DATA_SYNC_ENABLED: "{% if SOURCEID_DOCKERS['data-sync'] is defined %}ye
 SOURCEID_SECURITY_ENABLED: "{% if SOURCEID_DOCKERS['security'] is defined %}yes{% else %}no{% endif %}"
 
 SOURCEID_CONVERT_ENABLED: "{% if SOURCEID_DOCKERS['convert'] is defined %}yes{% else %}no{% endif %}"
+
+SOURCEID_FGM_VERSION_ENABLED: "yes"
