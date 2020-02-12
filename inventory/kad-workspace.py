@@ -228,6 +228,8 @@ def parse_sourcedata_config(host_data):
             raise Exception(ip + u"不是有效的IP地址")
     host_data["groups"]["sourcedata"] = sourcedata_hosts
 
+    host_data["groups"]["sourcedata_mysql"] = sourcedata_hosts
+
 
 # 处理二次认证网关配置参数
 def parse_sourceid_gateway_config(host_data):

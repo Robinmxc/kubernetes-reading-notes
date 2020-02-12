@@ -1,0 +1,24 @@
+[Unit]
+Description=MySQL Server
+After=network.target
+After=syslog.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=mysql
+Group=mysql
+Type=forking
+PIDFile=/var/run/mysqld/mysqld.pid
+TimeoutSec=0
+PermissionsStartOnly=true
+ExecStartPre=/usr/bin/mysqld_pre_systemd
+ExecStart=/usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid
+EnvironmentFile=-/etc/sysconfig/mysql
+LimitNOFILE=65535
+Restart=always
+RestartSec=5
+StartLimitIntervalSec=0
+RestartPreventExitStatus=1
+PrivateTmp=false

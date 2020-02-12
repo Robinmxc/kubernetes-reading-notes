@@ -1,0 +1,78 @@
+- name: 获取mysql安装情况
+  command: ls /usr/sbin/
+  register: ls_remote_info
+
+- name: 获取本地文件信息
+  command: "ls {{base_dir}}/down"
+  register: ls_local_info
+  connection: local
+  run_once: true
+
+- name: 安装mysql
+  when: 'MYSQL_TGZ_FILE in ls_local_info.stdout and "mysqld" not in ls_remote_info.stdout'
+  block:
+  - name: 复制安装文件
+    unarchive:
+      src: "{{base_dir}}/down/{{MYSQL_TGZ_FILE}}"
+      dest: /opt/
+
+  - name: 删除mariadb-libs
+    yum:
+      name:
+        - mariadb-libs
+      state: absent
+
+  - name: 查询防火墙状态
+    shell: "systemctl list-units *.service"
+    register: firewall_info
+
+  - name: 关闭防火墙
+    shell: "systemctl stop firewalld && systemctl disable firewalld"
+    when: '"firewalld" in firewall_info.stdout'
+    ignore_errors: true
+
+  - name: 清理防火墙规则
+    shell: "iptables -F && iptables -X && iptables -F -t nat && iptables -X -t nat"
+    ignore_errors: true
+
+  - name: 临时关闭 selinux
+    shell: "setenforce 0"
+    failed_when: false
+
+  - name: 永久关闭 selinux
+    lineinfile:
+      dest: /etc/selinux/config
+      regexp: "^SELINUX="
+      line: "SELINUX=disabled"
+
+  - name: 准备service文件
+    template: src="mysqld.service.j2" dest="/etc/systemd/system/mysqld.service"
+
+  - name: 安装mysql
+    yum:
+      state: present
+      name:
+      - "/opt/mysql-community-common-{{MYSQL_VERSION}}-1.el7.x86_64.rpm"
+      - "/opt/mysql-community-client-{{MYSQL_VERSION}}-1.el7.x86_64.rpm"
+      - "/opt/mysql-community-server-{{MYSQL_VERSION}}-1.el7.x86_64.rpm"
+      - "/opt/mysql-community-libs-{{MYSQL_VERSION}}-1.el7.x86_64.rpm"
+
+  - name: 启动mysql
+    service: name=mysqld state=started enabled=yes
+
+  - name: 轮询等待mysql服务运行
+    shell: "systemctl status mysqld.service|grep Active"
+    register: mysqld_status
+    until: '"running" in mysqld_status.stdout'
+    retries: 8
+    delay: 2
+
+  - name: 查询默认密码
+    shell: "grep 'password is generated' /var/log/mysqld.log | awk '{print $NF}'"
+    register: pwd_info
+    no_log: true
+
+  - name: 设置新密码
+    shell: |
+      mysql -uroot -p'{{pwd_info.stdout}}' -S /var/lib/mysql/mysql.sock -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{MYSQL_PWD}}'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '{{MYSQL_PWD}}' WITH GRANT OPTION; FLUSH PRIVILEGES;" --connect-expired-password
+    no_log: true
