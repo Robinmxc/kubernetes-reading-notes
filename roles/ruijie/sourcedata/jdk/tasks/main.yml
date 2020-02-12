@@ -1,0 +1,42 @@
+- name: 获取JDK安装情况
+  command:
+    cmd: rpm -qa
+    warn: false
+  register: remote_java_info
+
+- name: 安装JDK
+  vars:
+    jdk_name: "jdk-{{ SOURCE_DATA_JDK_VERSION }}"
+  when: 'jdk_name not in remote_java_info.stdout'
+  block:
+  - name: 获取远程文件信息
+    command: "ls /opt/"
+    register: ls_remote_info
+
+  - name: 获取本地文件信息
+    command: "ls {{ base_dir }}/down"
+    register: ls_local_info
+    connection: local
+    run_once: true
+
+  - name: 复制JDK安装文件
+    copy: src={{ base_dir }}/down/{{ SOURCE_DATA_JDK_RPM }} dest=/opt/{{ SOURCE_DATA_JDK_RPM }}
+    when: 'SOURCE_DATA_JDK_RPM in ls_local_info.stdout and SOURCE_DATA_JDK_RPM not in ls_remote_info.stdout'
+
+  - name: 安装JDK
+    yum: name=/opt/{{ SOURCE_DATA_JDK_RPM }} disable_gpg_check=yes state=present
+
+- name: 设置JAVA_HOME
+  lineinfile:
+    path: /etc/profile
+    regexp: "^export JAVA_HOME="
+    line: "export JAVA_HOME={{SOURCE_DATA_JDK_PATH}}"
+
+- name: 设置PATH
+  lineinfile:
+    path: /etc/profile
+    regexp: "^export PATH=\\$JAVA_HOME"
+    line: export PATH=$JAVA_HOME/bin:$PATH
+
+- name: 刷新环境变量
+  shell: source /etc/profile

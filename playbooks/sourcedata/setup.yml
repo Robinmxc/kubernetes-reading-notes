@@ -1,0 +1,6 @@
+- hosts:
+  - sourcedata
+  tags: always
+  any_errors_fatal: true
+  roles:
+  - ruijie/sourcedata/jdk
