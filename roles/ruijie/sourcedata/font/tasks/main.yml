@@ -1,0 +1,44 @@
+- name: 获取本地文件信息
+  command: "ls {{ base_dir }}/down"
+  register: ls_local_info
+  connection: local
+  run_once: true
+
+- name: 创建fonts目录
+  file: path=/usr/share/fonts state=directory
+
+- name: 获取远程文件信息
+  command: ls /usr/share/fonts/
+  register: ls_remote_info
+
+- name: 安装字体
+  when: '"fonts.dir" not in ls_remote_info.stdout and SOURCEDATA_FONT_FILE in ls_local_info.stdout'
+  block:
+  - name: 安装字体相关软件包
+    yum:
+      name:
+      - mkfontscale
+      - fontconfig
+      - unzip
+      state: present
+
+  - name: 复制字体文件
+    unarchive:
+      src: "{{ base_dir }}/down/{{ SOURCEDATA_FONT_FILE }}"
+      dest: /usr/share/
+      mode: 0755
+
+  - name: mkfontscale
+    command:
+      cmd: mkfontscale
+      chdir: /usr/share/fonts/
+
+  - name: mkfontdir
+    command:
+      cmd: mkfontdir
+      chdir: /usr/share/fonts/
+
+  - name: fc-cache
+    command:
+      cmd: fc-cache
+      chdir: /usr/share/fonts/
