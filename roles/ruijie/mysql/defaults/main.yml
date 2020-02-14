@@ -3,4 +3,4 @@ MYSQL_VERSION: "5.7.29"
 
 MYSQL_TGZ_FILE: "mysql-{{MYSQL_VERSION}}-rpms.tar.gz"
 
-MYSQL_PWD: "12345aA!"
+MYSQL_PWD: ""

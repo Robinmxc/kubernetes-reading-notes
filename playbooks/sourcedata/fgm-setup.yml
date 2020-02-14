@@ -10,3 +10,5 @@
   roles:
   - { role: ruijie/sourcedata/jdk, tags: ["jdk"]}
   - { role: ruijie/sourcedata/font, tags: ["font"]}
+  - { role: ruijie/fgm/init-mysql, tags: ["mysql"]}
+

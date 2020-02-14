@@ -9,3 +9,5 @@ max_space_dir: "{{
     | last }}"
 
 DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}"
+
+MYSQL_PWD: "12345aA!"
