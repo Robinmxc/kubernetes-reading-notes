@@ -5,9 +5,7 @@
   register: remote_java_info
 
 - name: 安装JDK
-  vars:
-    jdk_name: "jdk-{{ SOURCEDATA_JDK_VERSION }}"
-  when: 'jdk_name not in remote_java_info.stdout'
+  when: '"jdk-" not in remote_java_info.stdout'
   block:
   - name: 获取远程文件信息
     command: "ls /opt/"

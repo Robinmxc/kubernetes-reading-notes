@@ -12,3 +12,8 @@
   - { role: ruijie/sourcedata/font, tags: ["font"]}
   - { role: ruijie/fgm/init-mysql, tags: ["mysql"]}
 
+- hosts:
+  - localhost
+  any_errors_fatal: true
+  roles:
+  - { role: ruijie/sourcedata/jdk, tags: ["jdk"]}
