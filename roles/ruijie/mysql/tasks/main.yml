@@ -76,3 +76,9 @@
     shell: |
       mysql -uroot -p'{{pwd_info.stdout}}' -S /var/lib/mysql/mysql.sock -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{MYSQL_PWD}}'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '{{MYSQL_PWD}}' WITH GRANT OPTION; FLUSH PRIVILEGES;" --connect-expired-password
     no_log: true
+
+- name: 修改mysql配置文件
+  template: src="{{ MYSQL_CNF_TEPLATE_FILE }}" dest="/etc/my.cnf"
+
+- name: 启动mysql
+  service: name=mysqld state=restarted
