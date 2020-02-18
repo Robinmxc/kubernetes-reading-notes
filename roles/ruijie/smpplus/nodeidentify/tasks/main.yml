@@ -2,8 +2,8 @@
   tag:
   - config
   copy:
-    src: "{{ namespace_dir }}/conf/nodeidentify/conf/"
-    dest: "{{ config_base_dir }}/nodeidentify/conf/"
+    src: "{{ namespace_dir }}/conf/nodeidentify/"
+    dest: "{{ config_base_dir }}/nodeidentify/"
 
 - name: 自动配置
   tags:
