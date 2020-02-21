@@ -10,6 +10,8 @@ max_space_dir: "{{
 
 DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}"
 
-MYSQL_PWD: "12345aA!"
+MYSQL_PWD: "{% if '' == SOURCEDATA_MYSQL_PWD %}{{SOURCEDATA_MYSQL_PWD}}{% else %}{% endif %}"
 
 MYSQL_MODE: "{% if ansible_memtotal_mb > 62000 %}24g{% elif ansible_memtotal_mb > 30000 %}12g{% elif ansible_memtotal_mb > 12000 %}6g{% else %}small{% endif %}"
+
+SOURCEDATA_USER_SYNC_TABLE_NAME: "sid_user_info"

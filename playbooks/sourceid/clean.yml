@@ -86,6 +86,12 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/convert/"
     when: '"rg-convert" in pod_info.stdout'
 
+  - name: delete fgm-backend
+    tags:
+    - convert
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/fgm-backend/"
+    when: '"fgm-backend" in pod_info.stdout'
+
 - hosts:
   - gateway
   roles:
