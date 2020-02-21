@@ -90,7 +90,7 @@
     tags:
     - convert
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/fgm-backend/"
-    when: '"fgm-backend" in pod_info.stdout'
+    when: '"rg-fgm-backend" in pod_info.stdout'
 
 - hosts:
   - gateway

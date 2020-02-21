@@ -15,7 +15,7 @@
     with_items:
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
       - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
-      - {regexp: "mysql:.*/epidemic_situation_information", replace: "mongodb://{{ fgm_db_user }}:{{ fgm_db_pwd }}@{{ fgm_db_host }}/{{fgm_db_name}}"}
+      - {regexp: "mysql:.*/epidemic_situation_information", replace: "mysql://{{ fgm_db_user }}:{{ fgm_db_pwd }}@{{ fgm_db_host }}/{{fgm_db_name}}"}
       - {regexp: "table-name:.*sid_user_info.*$", replace: "table-name: {{SOURCEDATA_USER_SYNC_TABLE_NAME}}"}
       - {regexp: "db-name:.*epidemic_situation_information.*$", replace: "db-name: {{fgm_db_name}}"}
     no_log: true
