@@ -1,0 +1,99 @@
+- name: 准备基础目录
+  file: path={{ item }} state=directory
+  connection: local
+  with_items:
+    - "{{base_dir}}"
+
+- name: 准备下载目录
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{base_dir}}/down"
+
+- name: 读取目录状态
+  stat: path="{{base_dir}}/bin/kubectl"
+  register: pkg_dir_stat
+  connection: local
+
+#  run_once: true
+- name: 准备k8s基础安装文件
+  when: 'not pkg_dir_stat.stat.exists'
+  connection: local
+  run_once: true
+  ignore_errors: true
+  block:
+    - name: 读取压缩包状态
+      stat: path="{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+      register: tgz_info
+    - name: 下载k8s基础文件
+      get_url:
+        url: "{{ KAD_FILES_REPO }}/kad/support/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+        dest: "{{base_dir}}/down/"
+      when: 'not tgz_info.stat.exists'
+    - name: 读取压缩包状态
+      stat: path="{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+      register: tgz_info
+    - name: 解压k8s基础文件
+      unarchive:
+        src: "{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+        dest: "{{base_dir}}/"
+      when: 'tgz_info.stat.exists'
+
+- name: 准备离线下载目录
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ offline_dir }}"
+
+- name: 读取离线目录状态
+  stat: path="{{ offline_dir }}/down/rpms"
+  register: offline_down_dir_stat
+  connection: local
+
+- name: 准备离线k8s基础安装文件
+  when: 'offline_down_dir_stat is not exists'
+  connection: local
+  ignore_errors: true
+  block:
+    - name: 读取压缩包状态
+      stat: path="{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+      register: tgz_info
+    - name: 复制压缩包到离线安装目录
+      copy: src="{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz" dest="{{ offline_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+      when: 'tgz_info.stat.exists'
+    - name: 读取离线目录压缩包状态
+      stat: path="{{ offline_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+      register: offline_dir_tgz_info
+    - name: 解压离线压缩包
+      unarchive:
+        src: "{{ offline_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+        dest: "{{ offline_dir }}/"
+      when: 'offline_dir_tgz_info.stat.exists'
+    - name: Oniguruma must be installed first
+      command: "ls {{ offline_dir }}/down/rpms"
+      register: offline_install_dirs
+    - name: add home dirs to the backup spooler
+      vars:
+        rpm_name: "{{item}}"
+      yum: name={{ offline_dir }}/down/rpms/{{ item }} disable_gpg_check=Yes state=present
+      when: rpm_name is search("oniguruma*|ansible*")
+      with_items:
+        - "{{ offline_install_dirs.stdout_lines }}"
+    - name: add home dirs to the backup spooler
+    vars:
+      rpm_name: "{{item}}"
+      yum: name={{ offline_dir }}/down/rpms/{{ item }} disable_gpg_check=Yes state=present
+    when: rpm_name is not search("python*|ansible*")
+      with_items:
+        - "{{ offline_install_dirs.stdout_lines }}"
+
+- name: 读取压缩包状态
+  stat: path="{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+  register: tgz_info
+  connection: local
+  run_once: true
+- name: 删除压缩包
+  file:
+    path: "{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+    state: absent
+  when: 'tgz_info.stat.exists'
+  connection: local
+  run_once: true

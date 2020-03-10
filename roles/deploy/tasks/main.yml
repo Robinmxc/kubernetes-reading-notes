@@ -12,32 +12,33 @@
   connection: local
   run_once: true
 
-- name: 准备k8s基础安装文件
-  when: 'not kubectl_info.stat.exists'
-  connection: local
-  run_once: true
-  block:
-  - name: 读取压缩包状态
-    stat: path="{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-    register: tgz_info
-  - name: 下载k8s基础文件
-    get_url:
-      url: "{{ KAD_FILES_REPO }}/kad/support/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-      dest: "{{ base_dir }}/down/"
-    when: 'not tgz_info.stat.exists'
-  - name: 读取压缩包状态
-    stat: path="{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-    register: tgz_info
-  - name: 解压k8s基础文件
-    unarchive:
-      src: "{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-      dest: "{{ base_dir }}/"
-    when: 'tgz_info.stat.exists'
-  - name: 删除压缩包
-    file:
-      path: "{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-      state: absent
-    when: 'tgz_info.stat.exists'
+#前面离线安装已经执行过，无需重复执行
+#- name: 准备k8s基础安装文件
+#  when: 'not kubectl_info.stat.exists'
+#  connection: local
+#  run_once: true
+#  block:
+#  - name: 读取压缩包状态
+#    stat: path="{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+#    register: tgz_info
+#  - name: 下载k8s基础文件
+#    get_url:
+#      url: "{{ KAD_FILES_REPO }}/kad/support/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+#      dest: "{{ base_dir }}/down/"
+#    when: 'not tgz_info.stat.exists'
+#  - name: 读取压缩包状态
+#    stat: path="{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+#    register: tgz_info
+#  - name: 解压k8s基础文件
+#    unarchive:
+#      src: "{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+#      dest: "{{ base_dir }}/"
+#    when: 'tgz_info.stat.exists'
+#  - name: 删除压缩包
+#    file:
+#      path: "{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+#      state: absent
+#    when: 'tgz_info.stat.exists'
 
 - name: 下载证书工具 CFSSL和 kubectl
   copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
