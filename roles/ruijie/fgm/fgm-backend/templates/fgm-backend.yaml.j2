@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-fgm-backend
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  template:
+    metadata:
+      labels:
+        service: rg-fgm-backend
+    spec:
+      containers:
+      - name: rg-fgm-backend
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS['fgm-backend'].name }}:{{ SOURCEID_DOCKERS['fgm-backend'].version }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ fgm_backend_java_opt }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        volumeMounts:
+        - mountPath: /ruijie/sourceid/fgm-backend/conf
+          name: conf
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/fgm-backend/conf

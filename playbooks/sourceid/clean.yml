@@ -8,77 +8,229 @@
     command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
 
-  - name: delete linkid
+  - name: 停止linkid
     tags:
     - linkid
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/linkid/"
-    when: '"linkid" in pod_info.stdout'
+    when: '"rg-linkid" in pod_info.stdout'
 
-  - name: delete sso
+  - name: 等待linkid结束运行
+    tags:
+    - linkid
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-linkid" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止sso
     tags:
     - sso
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/sso/"
-    when: '"sso" in pod_info.stdout'
+    when: '"rg-sso" in pod_info.stdout'
 
-  - name: delete gate
+  - name: 等待sso结束运行
+    tags:
+    - sso
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-sso" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止gate
     tags:
     - gate
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/gate/"
     when: '"gate" in pod_info.stdout'
 
-  - name: delete frontend
+  - name: 等待gate结束运行
+    tags:
+    - gate
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-gate" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止frontend
     tags:
     - frontend
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/frontend/"
     when: '"frontend" in pod_info.stdout'
 
-  - name: delete component
+  - name: 等待frontend结束运行
+    tags:
+    - frontend
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-frontend" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止 component
     tags:
     - component
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/component/"
     when: '"component" in pod_info.stdout'
 
-  - name: delete license
+  - name: 等待component结束运行
+    tags:
+    - frontend
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-component" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止 license
     tags:
     - license
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/license/"
     when: '"rg-license" in pod_info.stdout'
 
-  - name: delete faceid-display
+  - name: 等待license结束运行
+    tags:
+    - license
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-license" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止 faceid-display
     tags:
     - faceid-display
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid-display/"
     when: 'pod_info.stdout is search("rg-faceid-display-[a-z0-9]*-[a-z0-9]*\s")'
 
-  - name: delete faceid
+  - name: 等待faceid-display结束运行
+    tags:
+    - faceid-display
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-faceid-display" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止 faceid
     tags:
     - faceid
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid/"
     when: 'pod_info.stdout is search("rg-faceid-[a-z0-9]*-[a-z0-9]*\s")'
 
-  - name: delete gateway
+  - name: 等待faceid结束运行
+    tags:
+    - faceid
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-faceid" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止 gateway
     tags:
     - gateway
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/gateway/"
     when: '"rg-gateway" in pod_info.stdout'
 
-  - name: delete import-user
+  - name: 等待gateway结束运行
+    tags:
+    - gateway
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-gateway" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止 import-user
     tags:
     - import-user
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/import-user/"
     when: '"rg-import-user" in pod_info.stdout'
 
-  - name: delete data-sync
+  - name: 等待import-user结束运行
+    tags:
+    - import-user
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-import-user" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止 data-sync
     tags:
     - data-sync
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/data-sync/"
     when: '"rg-data-sync" in pod_info.stdout'
+
+  - name: 等待data-sync结束运行
+    tags:
+    - data-sync
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-data-sync" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
     
-  - name: delete security
+  - name: 停止 security
     tags:
     - security
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/security/"
     when: '"rg-security" in pod_info.stdout'
+
+  - name: 等待security结束运行
+    tags:
+    - security
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-security" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+    
+  - name: 停止 convert
+    tags:
+    - convert
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/convert/"
+    when: '"rg-convert" in pod_info.stdout'
+
+  - name: 等待convert结束运行
+    tags:
+    - convert
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-convert" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止 fgm-backend
+    tags:
+    - fgm-backend
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/fgm-backend/"
+    when: '"rg-fgm-backend" in pod_info.stdout'
+
+  - name: 等待convert结束运行
+    tags:
+    - fgm-backend
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-fgm-backend" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
 
 - hosts:
   - gateway

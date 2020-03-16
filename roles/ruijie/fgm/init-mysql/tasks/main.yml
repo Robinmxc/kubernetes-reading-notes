@@ -1,0 +1,18 @@
+- name: 查询数据库信息
+  shell: "{{mysql_shell}} -e 'show databases;'"
+  register: db_info
+  no_log: true
+
+- name: 初始化数据库
+  when: 'fgm_db_name not in db_info.stdout'
+  block:
+  - name: 创建数据库
+    shell: "{{mysql_shell}} -e 'create database {{fgm_db_name}};'"
+    no_log: true
+
+  - name: 复制sql文件
+    copy: src=init.ddl dest=/tmp/fgm--mysql-init.ddl mode=0666
+
+  - name: 运行sql文件
+    shell: "{{mysql_shell}} -D {{fgm_db_name}} -e 'source /tmp/fgm--mysql-init.ddl;'"
+    no_log: true

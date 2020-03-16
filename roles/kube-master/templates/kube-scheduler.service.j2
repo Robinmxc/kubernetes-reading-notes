@@ -1,6 +1,7 @@
 [Unit]
 Description=Kubernetes Scheduler
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+StartLimitInterval=0
 
 [Service]
 ExecStart={{ bin_dir }}/kube-scheduler \
@@ -9,6 +10,7 @@ ExecStart={{ bin_dir }}/kube-scheduler \
   --leader-elect=true \
   --v=2
 Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

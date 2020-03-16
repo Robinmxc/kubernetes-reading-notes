@@ -49,6 +49,8 @@
     - "sourceid/import-user"
     - "sourceid/data-sync"
     - "sourceid/security"
+    - "sourceid/convert"
+    - "sourceid/fgm-backend"
     - "component"
   connection: local
   run_once: true

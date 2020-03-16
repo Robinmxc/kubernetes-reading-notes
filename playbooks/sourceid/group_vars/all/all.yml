@@ -100,3 +100,11 @@ SOURCEID_IMPORT_USER_ENABLED: "{% if SOURCEID_DOCKERS['import-user'] is defined 
 SOURCEID_DATA_SYNC_ENABLED: "{% if SOURCEID_DOCKERS['data-sync'] is defined %}yes{% else %}no{% endif %}"
 
 SOURCEID_SECURITY_ENABLED: "{% if SOURCEID_DOCKERS['security'] is defined %}yes{% else %}no{% endif %}"
+
+SOURCEID_CONVERT_ENABLED: "{% if SOURCEID_DOCKERS['convert'] is defined %}yes{% else %}no{% endif %}"
+
+FGM_BACKEND_ENABLED: "{% if SOURCEID_DOCKERS['fgm-backend'] is defined %}yes{% else %}no{% endif %}"
+
+SOURCEID_FGM_VERSION_ENABLED: "yes"
+
+SOURCEDATA_USER_SYNC_TABLE_NAME: "sid_user_info"

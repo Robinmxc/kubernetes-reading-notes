@@ -56,8 +56,9 @@
   register: offline_tgz_info
   run_once: true
 
+
 - name: 准备离线k8s基础安装文件
-  when: 'not offline_install_stat.stat.exists'
+  when: 'not offline_install_stat.stat.exists and offline_tgz_info.stat.exists'
   ignore_errors: true
   block:
     - name: 设置下载标识

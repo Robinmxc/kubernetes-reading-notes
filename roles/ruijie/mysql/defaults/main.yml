@@ -1,0 +1,11 @@
+# JDK版本
+MYSQL_VERSION: "5.7.29"
+
+MYSQL_TGZ_FILE: "mysql-{{MYSQL_VERSION}}-rpms.tar.gz"
+
+MYSQL_PWD: ""
+
+MYSQL_MODE: "small"
+
+MYSQL_CNF_TEPLATE_FILE: "{% if MYSQL_MODE == 'small' %}my-small.cnf.j2{% else %}my-{{MYSQL_MODE}}.cnf.j2{% endif %}"
+

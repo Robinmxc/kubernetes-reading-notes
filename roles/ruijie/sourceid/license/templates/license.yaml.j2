@@ -62,10 +62,6 @@ spec:
         env:
         - name: JAVA_OPT_EXT
           value: "{{ license_java_opt }}"
-        command:
-        - '/bin/bash'
-        - '-c'
-        - 'java -jar -Dspring.config.location=/ruijie/sourceid/license/conf/ $JAVA_OPT_EXT /app/rg-license-1.0.0.jar'
         ports:
         - containerPort: 8080
         volumeMounts:

@@ -56,6 +56,8 @@
   - { role: ruijie/sourceid/import-user, tags: ["import-user"] }
   - { role: ruijie/sourceid/data-sync, tags: ["data-sync"] }
   - { role: ruijie/sourceid/security, tags: ["security"] }
+  - { role: ruijie/sourceid/convert, tags: ["convert"] }
+  - { role: ruijie/fgm/fgm-backend, tags: ["fgm-backend"] }
 
 - hosts:
   - gateway

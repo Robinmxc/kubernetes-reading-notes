@@ -1,0 +1,31 @@
+
+fgm_backend_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms128m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms128m -Xmx512m{% else %}-Xms128m -Xmx512m{% endif %}"
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
+
+fgm_backend_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+
+fgm_db_host: "{{SOURCEDATA_HOSTS[0]}}"
+fgm_db_user: "{% if '' == SOURCEDATA_MYSQL_USER %}root{% else %}{{SOURCEDATA_MYSQL_USER}}{% endif %}"
+fgm_db_pwd: "{{SOURCEDATA_MYSQL_PWD}}"
+fgm_db_name: "epidemic_situation_information"

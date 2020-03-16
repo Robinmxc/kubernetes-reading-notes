@@ -35,12 +35,18 @@ spec:
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
+        - mountPath: /ruijie/{{comp_name}}/complianceSoftware
+          name: share
+          readOnly: true
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}
+        - name: share
+          hostPath:
+            path: {{ config_base_dir }}/share
 
 ---
 apiVersion: v1

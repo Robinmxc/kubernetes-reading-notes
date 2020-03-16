@@ -17,10 +17,6 @@ spec:
         env:
         - name: JAVA_OPT_EXT
           value: "{{ component_java_opt }}"
-        command:
-        - '/bin/bash'
-        - '-c'
-        - 'java -jar -Dspring.config.location=/ruijie/component/conf/ $JAVA_OPT_EXT /app/rs-component-0.0.1.jar'
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
