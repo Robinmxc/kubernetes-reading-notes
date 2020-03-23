@@ -80,7 +80,7 @@
 
   - name: 等待component结束运行
     tags:
-    - frontend
+    - component
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-component" not in pod_info.stdout'
