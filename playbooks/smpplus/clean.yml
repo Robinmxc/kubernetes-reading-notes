@@ -67,6 +67,11 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/license/"
     when: '"license" in pod_info.stdout'
 
+  - name: delete sms-middleware
+    tags:
+      - sms-middleware
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/sms-middleware/"
+    when: '"sms-middleware" in pod_info.stdout'
     #   - name: delete nodemanager-scan
     #    tags:
     #    - nodemanager-scan
