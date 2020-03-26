@@ -10,7 +10,7 @@
   - config
   replace: path="{{ config_base_dir }}/eportal/conf/application-prd.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "mongodb:.*/eportal.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/eportal?replicaSet=rs0"}
+  - {regexp: "mongodb:.*/eportal.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ groups.kube_node[0] }}/eportal?replicaSet=rs0"}
 
 - name: 自定义配置
   tags:
@@ -38,6 +38,7 @@
     deploy_conf: '{{eportal_deploy_conf}}'
     JAVA_OPT_EXT: '{{eportal_java_opt}}'
     comp_name: 'eportal'
+    eportal_node_ip: "{{ groups.kube_node[0] }}"
   template: src='eportal.yaml.j2' dest={{ yaml_dir }}/eportal/eportal.yml
   run_once: true
   connection: local
