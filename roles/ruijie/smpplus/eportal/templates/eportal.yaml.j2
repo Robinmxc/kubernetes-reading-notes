@@ -12,10 +12,6 @@ spec:
     spec:
       nodeName: {{ eportal_node_ip }}
       hostNetwork: true
-      hostAliases:
-      - ip: "{{{ eportal_node_ip }}"
-        hostnames:
-        - "rg-{{ comp_name }}"
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
