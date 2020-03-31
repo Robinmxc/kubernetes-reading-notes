@@ -102,6 +102,45 @@
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
+- name: 查询sourceiddb数据库版本字段
+  shell: |-
+    echo '{{mongo_result.stdout}}' | grep -n sourceiddbversion | awk -F ":" '{print $3}'| sed 's/\"//g' | sed 's/\,//g' | sed -e 's/^[ ]*//g' | sed -e 's/[ ]*$//g'
+  register: mongo_sourceid_db_version
+  when: '"sourceiddbversion" in mongo_result.stdout'
+  connection: local
+
+- name: 查询componentdb数据库版本字段
+  shell: |-
+    echo '{{mongo_result.stdout}}' | grep -n componentdbversion | awk -F ":" '{print $3}'| sed 's/\"//g' | sed 's/\,//g' | sed -e 's/^[ ]*//g' | sed -e 's/[ ]*$//g'
+  register: mongo_component_db_version
+  when: '"componentdbversion" in mongo_result.stdout'
+  connection: local
+
+- name: 准备升级数据的脚本
+  vars:
+    mongo_sourceid_db_version1: '{% if mongo_sourceid_db_version.stdout is defined %}{{mongo_sourceid_db_version.stdout}}{% else %}{{OLD_SOURCEID_DB_VERSION}}{% endif %}'
+    mongo_component_db_version1: '{% if mongo_component_db_version.stdout is defined %}{{mongo_component_db_version.stdout}}{% else %}{{OLD_COMPONENT_DB_VERSION}}{% endif %}'
+    src_file: update-data.sh.j2
+  template: src="{{ src_file }}" dest="{{ mongodb_init_dir }}/update-data.sh"
+
+- name: 执行升级脚本
+  shell: '{{ mongo_pod_shell }} /ruijie/init/update-data.sh'
+  when: '"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w" not in mongo_result.stdout'
+  register: mongo_result
+  failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+  connection: local
+
+- name: 保存sourceid数据库版本
+  shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({"findAndModify":"cas-service-registry","query":{"clientId":"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"},"update":{"$set":{"description":"{{SOURCEID_DB_VERSION}}"}},"new":true})'''
+  register: mongo_result2
+  connection: local
+
+- name: 保存component数据库版本
+  vars:
+  shell: '{{ mongo_shell }} --eval db.getSiblingDB("cas").runCommand({"findAndModify":"cas-service-registry","query":{"clientId":"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"},"update":{"$set":{"componentdbversion":"{{COMPONENT_DB_VERSION}}"}},"new":true})
+  register: mongo_result2
+  connection: local
+
   - name: 查询用户状态
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({usersInfo: "{{ SOURCEID_CAS_DB_USER }}"})'''
     register: mongo_result

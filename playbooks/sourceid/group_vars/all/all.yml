@@ -47,6 +47,12 @@ SOURCEID_DB_VERSION: "R1.3"
 #component数据库脚本版本号
 COMPONENT_DB_VERSION: "v1.0"
 
+#升级前SourceId数据库脚本版本号
+OLD_SOURCEID_DB_VERSION: "R0.0"
+
+#升级前component数据库脚本版本号
+OLD_COMPONENT_DB_VERSION: "v0.0"
+
 #SourceId镜像
 SOURCEID_DOCKERS: {
   linkid: {name: "sourceid/linkid", version: "dlmu.r1.3"},
