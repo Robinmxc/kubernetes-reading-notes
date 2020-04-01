@@ -102,11 +102,23 @@
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
+  - name: 查询数据初始化状态
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+
   - name: 查询sourceiddb数据库版本字段
     shell: |-
       echo '{{mongo_result.stdout}}' | grep -n sourceiddbversion | awk -F ":" '{print $3}'| sed 's/\"//g' | sed 's/\,//g' | sed -e 's/^[ ]*//g' | sed -e 's/[ ]*$//g'
     register: mongo_sourceid_db_version
-    when: '"sourceiddbversion" in mongo_result.stdout'
+    when: '"componentdbversion" in mongo_result.stdout'
+    connection: local
+
+  - name: 查询数据初始化状态
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
   - name: 查询componentdb数据库版本字段
