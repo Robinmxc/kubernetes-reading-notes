@@ -130,16 +130,6 @@
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
-  - name: 保存sourceid数据库版本
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({"findAndModify":"cas-service-registry","query":{"clientId":"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"},"update":{"$set":{"sourceiddbversion":"{{SOURCEID_DB_VERSION}}"}},"new":true})'''
-    register: mongo_result2
-    connection: local
-
-  - name: 保存component数据库版本
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({"findAndModify":"cas-service-registry","query":{"clientId":"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"},"update":{"$set":{"componentdbversion":"{{COMPONENT_DB_VERSION}}"}},"new":true})'''
-    register: mongo_result2
-    connection: local
-
   - name: 查询用户状态
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({usersInfo: "{{ SOURCEID_CAS_DB_USER }}"})'''
     register: mongo_result
@@ -154,4 +144,13 @@
     connection: local
     no_log: true
 
+  - name: 保存sourceid数据库版本
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({"findAndModify":"cas-service-registry","query":{"clientId":"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"},"update":{"$set":{"sourceiddbversion":"{{SOURCEID_DB_VERSION}}"}},"new":true})'''
+    register: mongo_result2
+    connection: local
+
+  - name: 保存component数据库版本
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({"findAndModify":"cas-service-registry","query":{"clientId":"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"},"update":{"$set":{"componentdbversion":"{{COMPONENT_DB_VERSION}}"}},"new":true})'''
+    register: mongo_result2
+    connection: local
   when: 'inventory_hostname == groups.mongodb[0]'
