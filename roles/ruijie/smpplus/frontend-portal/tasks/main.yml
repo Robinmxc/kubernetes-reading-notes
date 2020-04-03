@@ -23,7 +23,7 @@
   - {regexp: "rg-linkid", replace: "{{groups['kube_node'][0]}}"}
   - {regexp: "rg-nodemanager-scan", replace: "{{groups['kube_node'][0]}}"}
   - {regexp: "rg-rocketmq", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "var ip =.*", replace: "var ip = \'{{groups['kube_node'][0]}}":8090\'"}
+  - {regexp: "var ip =.*", replace: "var ip = \'{{groups['kube_node'][0]}}:8090\'"}
   - {regexp: "smpdomain:.*", replace: "smpdomain: \'http://{{groups['kube_node'][0]}}:9999/api/aggregation\',"}
 - name: 准备部署文件目录
   tags:
