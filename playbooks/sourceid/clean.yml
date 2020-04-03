@@ -232,6 +232,22 @@
     delay: 3
     ignore_errors: true
 
+  - name: 停止 groupview
+    tags:
+      - groupview
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/groupview/"
+    when: 'pod_info.stdout is search("rg-groupview-[a-z0-9]*-[a-z0-9]*\s")'
+
+  - name: 等待groupview结束运行
+    tags:
+      - groupview
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-groupview" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
 - hosts:
   - gateway
   roles:

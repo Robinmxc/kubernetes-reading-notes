@@ -51,6 +51,7 @@
     - "sourceid/security"
     - "sourceid/convert"
     - "sourceid/fgm-backend"
+    - "sourceid/groupview"
     - "component"
   connection: local
   run_once: true

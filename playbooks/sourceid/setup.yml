@@ -58,6 +58,7 @@
   - { role: ruijie/sourceid/security, tags: ["security"] }
   - { role: ruijie/sourceid/convert, tags: ["convert"] }
   - { role: ruijie/fgm/fgm-backend, tags: ["fgm-backend"] }
+  - { role: ruijie/sourceid/groupview, tags: ["groupview"] }
 
 - hosts:
   - gateway
