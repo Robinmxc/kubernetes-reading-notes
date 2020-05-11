@@ -34,6 +34,7 @@
   roles:
   - { role: ruijie/smpplus/prepare-db-pwd, tags: always }
   - { role: ruijie/smpplus/dbinit }
+
 - hosts:
   - kube_node
   tags:
