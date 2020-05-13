@@ -69,6 +69,7 @@
     file: name="{{ item }}" mode=0700
     with_items:
     - "{{ mongodb_init_dir }}/init-data.sh"
+    - "{{ mongodb_init_dir }}/upgrade_data.sh"
     - "{{ mongodb_init_dir }}/sourceid/rg-init-db/init-data.sh"
     - "{{ mongodb_init_dir }}/sourceid/rg-upgrade-db/upgrade_data.sh"
     - "{{ mongodb_init_dir }}/component/rg-init-db/init-data.sh"
