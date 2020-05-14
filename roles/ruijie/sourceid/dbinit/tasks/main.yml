@@ -142,7 +142,7 @@
 
   - name: 执行升级脚本
     shell: '{{ mongo_pod_shell }} /ruijie/init/update-data.sh'
-    when: '"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w" not in mongo_result.stdout'
+    when: '"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w" in mongo_result.stdout'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
