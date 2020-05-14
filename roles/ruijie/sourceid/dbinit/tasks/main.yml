@@ -138,7 +138,7 @@
   - name: 设置升级脚本文件执行权限
     file: name="{{ item }}" mode=0700
     with_items:
-    - "{{ mongodb_init_dir }}/upgrade_data.sh"
+    - "{{ mongodb_init_dir }}/update-data.sh"
 
   - name: 执行升级脚本
     shell: '{{ mongo_pod_shell }} /ruijie/init/update-data.sh'
