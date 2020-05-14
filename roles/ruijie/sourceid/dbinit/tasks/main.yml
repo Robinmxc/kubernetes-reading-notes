@@ -69,7 +69,6 @@
     file: name="{{ item }}" mode=0700
     with_items:
     - "{{ mongodb_init_dir }}/init-data.sh"
-    - "{{ mongodb_init_dir }}/upgrade_data.sh"
     - "{{ mongodb_init_dir }}/sourceid/rg-init-db/init-data.sh"
     - "{{ mongodb_init_dir }}/sourceid/rg-upgrade-db/upgrade_data.sh"
     - "{{ mongodb_init_dir }}/component/rg-init-db/init-data.sh"
@@ -135,6 +134,11 @@
       mongo_component_db_version1: '{% if mongo_component_db_version.stdout is defined %}{{mongo_component_db_version.stdout}}{% else %}{{OLD_COMPONENT_DB_VERSION}}{% endif %}'
       src_file: update-data.sh.j2
     template: src="{{ src_file }}" dest="{{ mongodb_init_dir }}/update-data.sh"
+
+  - name: 设置升级脚本文件执行权限
+    file: name="{{ item }}" mode=0700
+    with_items:
+    - "{{ mongodb_init_dir }}/upgrade_data.sh"
 
   - name: 执行升级脚本
     shell: '{{ mongo_pod_shell }} /ruijie/init/update-data.sh'
