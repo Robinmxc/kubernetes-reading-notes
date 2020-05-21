@@ -111,6 +111,8 @@ SOURCEID_CONVERT_ENABLED: "{% if SOURCEID_DOCKERS['convert'] is defined %}yes{% 
 
 FGM_BACKEND_ENABLED: "{% if SOURCEID_DOCKERS['fgm-backend'] is defined %}yes{% else %}no{% endif %}"
 
+SOURCEID_GROUPVIEW_ENABLED: "{% if SOURCEID_DOCKERS['groupview'] is defined %}yes{% else %}no{% endif %}"
+
 SOURCEID_FGM_VERSION_ENABLED: "yes"
 
 SOURCEDATA_USER_SYNC_TABLE_NAME: "sid_user_info"
