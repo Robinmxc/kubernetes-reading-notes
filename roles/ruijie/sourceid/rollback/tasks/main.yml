@@ -1,0 +1,14 @@
+- name: 恢复旧版本kad workspace配置文件
+  copy:
+    src: "{{BAK_DIR}}/workspace/"
+    dest: "{{ base_dir }}/workspace/"
+
+
+- name: 恢复 mongodb备份数据
+  vars:
+    mongebackpath: "{{BAK_DIR}}/mongodbbak"
+  shell: "mongorestore -h {{ groups.mongodb[0] }} -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase 'admin' --drop {{BAK_DIR}}/mongodbbak"
+  register: shell_result
+  connection: local
+  run_once: true
+  when: mongebackpath is exit

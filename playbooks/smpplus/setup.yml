@@ -31,6 +31,7 @@
   any_errors_fatal: true
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/smpplus/prepare-db-pwd, tags: always }
   - { role: ruijie/smpplus/dbinit }
@@ -42,6 +43,7 @@
   any_errors_fatal: true
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/smpplus/component, tags: ["component"] }
   - { role: ruijie/smpplus/linkid, tags: ["linkid"] }

@@ -31,6 +31,11 @@
   connection: local
   run_once: true
 
+- name: 创建/etc/kad/config.yml文件
+  file: path="/etc/kad/config.yml" state=touch
+  connection: local
+  run_once: true
+  
 - name: 拷贝SourceID配置文件
   vars:
     src_path: "{{ KAD_PACKAGE_DIR }}/conf/{{ item }}"
@@ -52,6 +57,6 @@
     - "sourceid/convert"
     - "sourceid/fgm-backend"
     - "sourceid/groupview"
-    - "component"
+    - "sourceid/component"
   connection: local
   run_once: true

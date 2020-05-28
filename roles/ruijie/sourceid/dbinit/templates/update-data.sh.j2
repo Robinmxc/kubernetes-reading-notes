@@ -1,16 +1,7 @@
 #!/bin/bash
 
 cd /ruijie/init/sourceid/rg-upgrade-db
-./upgrade_data.sh 127.0.0.1 27017 cas sourceid {{mongo_sourceid_db_version1}} {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin
-./upgrade_data.sh 127.0.0.1 27017 linkid sourceid {{mongo_sourceid_db_version1}} {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin
-./upgrade_data.sh 127.0.0.1 27017 gate sourceid {{mongo_sourceid_db_version1}} {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin
-./upgrade_data.sh 127.0.0.1 27017 gateway sourceid {{mongo_sourceid_db_version1}} {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin
-./upgrade_data.sh 127.0.0.1 27017 component sourceid {{mongo_sourceid_db_version1}} {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin
-{% if "yes" == SOURCEID_FACEID_ENABLED %}
-./upgrade_data.sh 127.0.0.1 27017 faceid sourceid {{mongo_sourceid_db_version1}} {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin
-{% endif %}
-
-cd /ruijie/init/component/rg-init-db
-
-./upgrade_data.sh 127.0.0.1 27017 component {{mongo_component_db_version1}}  {{ COMPONENT_DB_VERSION }}
+{% for value in {{DB_VERSION.values}} %}
+./upgrade_data.sh 127.0.0.1 27017 {{value.name}} sourceid {{current_db_version[${value.name}_version]}} {{ value.version }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin
+{% endfor %}
 

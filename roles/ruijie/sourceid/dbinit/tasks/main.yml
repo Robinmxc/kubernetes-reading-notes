@@ -51,8 +51,6 @@
     when: 'mongodb_auth_mode == "yes"'
     with_items:
       - "sourceid/rg-init-db/init-data.sh"
-      - "component/rg-init-db/init-data.sh"
-      - "component/rg-init-db/upgrade_data.sh"
 
   - name: 修改数据库连接参数
     replace: path="{{ mongodb_init_dir }}/sourceid/rg-upgrade-db/upgrade_data.sh" regexp="^\\s*mongo\\s+" replace="mongo {{ mongo_auth_param }} "
@@ -63,7 +61,6 @@
     when: 'mongodb_auth_mode == "yes"'
     with_items:
       - "sourceid/rg-init-db/init-data.sh"
-      - "component/rg-init-db/init-data.sh"
 
   - name: 设置文件执行权限
     file: name="{{ item }}" mode=0700
@@ -71,8 +68,6 @@
     - "{{ mongodb_init_dir }}/init-data.sh"
     - "{{ mongodb_init_dir }}/sourceid/rg-init-db/init-data.sh"
     - "{{ mongodb_init_dir }}/sourceid/rg-upgrade-db/upgrade_data.sh"
-    - "{{ mongodb_init_dir }}/component/rg-init-db/init-data.sh"
-    - "{{ mongodb_init_dir }}/component/rg-init-db/upgrade_data.sh"
 
   - name: 查询数据初始化状态
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
@@ -102,36 +97,21 @@
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
-  - name: 查询数据初始化状态
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
-    register: mongo_result
-    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
-    connection: local
-
-  - name: 查询sourceiddb数据库版本字段
-    shell: |-
-      echo '{{mongo_result.stdout}}' | grep -n sourceiddbversion | awk -F ":" '{print $3}'| sed 's/\"//g' | sed 's/\,//g' | sed -e 's/^[ ]*//g' | sed -e 's/[ ]*$//g'
-    register: mongo_sourceid_db_version
-    when: '"componentdbversion" in mongo_result.stdout'
+  - name: 查询各数据库版本
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
+    register: db_version
+    failed_when: 'db_version.stdout is search(mongo_shell_fail_pattern) and db_version.stdout is not search(mongo_shell_success_pattern)' 
     connection: local
 
   - name: 查询数据初始化状态
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
-    connection: local
-
-  - name: 查询componentdb数据库版本字段
-    shell: |-
-      echo '{{mongo_result.stdout}}' | grep -n componentdbversion | awk -F ":" '{print $3}'| sed 's/\"//g' | sed 's/\,//g' | sed -e 's/^[ ]*//g' | sed -e 's/[ ]*$//g'
-    register: mongo_component_db_version
-    when: '"componentdbversion" in mongo_result.stdout'
     connection: local
 
   - name: 准备升级数据的脚本
     vars:
-      mongo_sourceid_db_version1: '{% if mongo_sourceid_db_version.stdout is defined %}{{mongo_sourceid_db_version.stdout}}{% else %}{{OLD_SOURCEID_DB_VERSION}}{% endif %}'
-      mongo_component_db_version1: '{% if mongo_component_db_version.stdout is defined %}{{mongo_component_db_version.stdout}}{% else %}{{OLD_COMPONENT_DB_VERSION}}{% endif %}'
+      current_db_version: '{% if db_version.stdout is defined %} {{db_version.stdout_lines|last|from_json}}{% endif%}'
       src_file: update-data.sh.j2
     template: src="{{ src_file }}" dest="{{ mongodb_init_dir }}/update-data.sh"
 
@@ -161,13 +141,4 @@
     connection: local
     no_log: true
 
-  - name: 保存sourceid数据库版本
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({"findAndModify":"cas-service-registry","query":{"clientId":"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"},"update":{"$set":{"sourceiddbversion":"{{SOURCEID_DB_VERSION}}"}},"new":true})'''
-    register: mongo_result2
-    connection: local
-
-  - name: 保存component数据库版本
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({"findAndModify":"cas-service-registry","query":{"clientId":"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"},"update":{"$set":{"componentdbversion":"{{COMPONENT_DB_VERSION}}"}},"new":true})'''
-    register: mongo_result2
-    connection: local
   when: 'inventory_hostname == groups.mongodb[0]'
