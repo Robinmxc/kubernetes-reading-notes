@@ -16,4 +16,5 @@
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   - "/etc/kad/config.yml"
   roles:
+  - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
   - { role: ruijie/sourceid/upgrade, tags: always }
