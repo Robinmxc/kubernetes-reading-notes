@@ -41,18 +41,6 @@ db_pwd_pattern2: "^.*(?=.*\\d)(?=.*[A-Z]{1,})(?=.*[a-z]{1,}).*$"
 db_pwd_invalid_msg: "密码只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符"
 
 
-#SourceId数据库脚本版本号
-SOURCEID_DB_VERSION: "R1.3"
-
-#component数据库脚本版本号
-COMPONENT_DB_VERSION: "v1.0"
-
-#升级前SourceId数据库脚本版本号
-OLD_SOURCEID_DB_VERSION: "R0.0"
-
-#升级前component数据库脚本版本号
-OLD_COMPONENT_DB_VERSION: "v0.0"
-
 #SourceId镜像
 SOURCEID_DOCKERS: {
   linkid: {name: "sourceid/linkid", version: "dlmu.r1.3"},

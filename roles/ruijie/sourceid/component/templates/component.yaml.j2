@@ -29,14 +29,14 @@ spec:
         ports:
         - containerPort: 8080
         volumeMounts:
-        - mountPath: /ruijie/component/conf
+        - mountPath: /ruijie/sourceid/component/conf
           name: conf
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/component/conf
+            path: {{ config_base_dir }}/sourceid/component/conf
 
 ---
 apiVersion: v1

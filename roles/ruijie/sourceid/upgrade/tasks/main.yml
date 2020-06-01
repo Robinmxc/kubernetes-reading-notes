@@ -1,0 +1,117 @@
+- name: 读取kad文件
+  shell: 'cat {{KAD_PACKAGE_DIR}}/kad.yml'
+  register: kad_content
+
+- name: 查找需要升级的db版本号
+  shell: |-
+    grep "SOURCEID_DB_VERSION:*" {{KAD_PACKAGE_DIR}}/kad.yml | awk -F ":" '{print $2}' | awk '{gsub(/^\s+|\s+$/, "");print}' | awk -F "\"" '{print $2}'
+  register: sid_version
+  when: '"SOURCEID_DB_VERSION" in kad_content.stdout'
+
+- name: 查找需要升级的component版本号
+  shell: |-
+    grep "COMPONENT_DB_VERSION:*" {{KAD_PACKAGE_DIR}}/kad.yml | awk -F ":" '{print $2}' | awk '{gsub(/^\s+|\s+$/, "");print}' | awk -F "\"" '{print $2}'
+  register: component_version
+  when: '"COMPONENT_DB_VERSION" in kad_content.stdout'
+
+- name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
+  shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
+  register: db_version
+  failed_when: 'db_version.stdout is search(mongo_shell_fail_pattern) and db_version.stdout is not search(mongo_shell_success_pattern)' 
+  connection: local
+
+- name: SYSTEM_VERSION表中新增组件数据库版本记录
+  shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").insert({"_id":"DB_VERSION"})'''
+  when: '"DB_VERSION" not in db_version.stdout'
+
+- name: 保存当前数据库版本到SYSTEM_VERSION表中
+  shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ item }}_version":"{{ sid_version.stdout }}"}},"new":true})'''
+  when: '"SOURCEID_DB_VERSION" in kad_content.stdout'
+  with_items:
+    - "cas"
+    - "linkid-dev"
+    - "gate"
+    - "gateway"
+    - "faceid"
+
+- name: 保存当前component版本到SYSTEM_VERSION表中
+  shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"component_version":"{{ component_version.stdout }}"}},"new":true})'''
+  when: '"COMPONENT_DB_VERSION" in kad_content.stdout'
+
+- name: 删除历史备份
+  file:
+    path: "{{BAK_DIR}}_history"
+    state: absent
+
+- name: 备份备份
+  copy:
+    src: "{{BAK_DIR}}"
+    dest: "{{BAK_DIR}}_history"
+
+- name: 删除备份
+  file:
+    path: "{{BAK_DIR}}"
+    state: absent
+
+- name: 准备备份目录
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{BAK_DIR}}"
+    - "{{BAK_DIR}}/workspace"
+    - "{{BAK_DIR}}/mongodbbak"
+
+- name: 备份component配置(为了兼容老的component位置)
+  vars:
+    src_path: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/conf/component"
+    dest_path: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/conf/sourceid/component"
+  copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+  when: 'src_path is exists and dest_path is not exists'
+  connection: local
+  run_once: true
+
+- name: 备份kadworkspace
+  copy:
+    src: "{{ base_dir }}/workspace/"
+    dest: "{{BAK_DIR}}/workspace/"
+
+- name: 准备backup目录
+  file: path="{{ mongodb_backup_dir }}" state=directory
+    
+  
+- name: 安装mongodb工具 rpms
+  yum: 
+    name: "{{UPGRADE_DIR}}/kad/down/rpms/mongodb-org-tools-4.0.13-1.el7.x86_64.rpm"
+    disable_gpg_check: Yes 
+    state: present
+
+- name: bak mongodb
+  shell: "mongodump -h {{ groups.mongodb[0] }} -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase 'admin' -o {{BAK_DIR}}/mongodbbak"
+  register: shell_result
+  connection: local
+  run_once: true
+- name: 替换kad
+  shell: "cp -rpf {{UPGRADE_DIR}}/kad/* {{base_dir}}"
+- name: 拷贝SourceID配置文件
+  vars:
+    src_path: "{{UPGRADE_DIR}}/kad/down/{{KAD_UPGRADE_PACKAGE_NAME}}/conf/{{ item }}"
+    dest_path: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/conf/{{ item }}"
+  copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+  when: 'src_path is exists'
+  with_items:
+    - "sourceid/sso"
+    - "sourceid/gate"
+    - "sourceid/linkid"
+    - "sourceid/frontend"
+    - "sourceid/license"
+    - "sourceid/faceid"
+    - "sourceid/faceid-display"
+    - "sourceid/gateway"
+    - "sourceid/import-user"
+    - "sourceid/data-sync"
+    - "sourceid/security"
+    - "sourceid/convert"
+    - "sourceid/fgm-backend"
+    - "sourceid/groupview"
+    - "sourceid/component"
+  connection: local
+  run_once: true

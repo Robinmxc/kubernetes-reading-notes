@@ -30,7 +30,7 @@
   - "{{ namespace_dir }}/conf"
   connection: local
   run_once: true
-
+  
 - name: 拷贝SourceID配置文件
   vars:
     src_path: "{{ KAD_PACKAGE_DIR }}/conf/{{ item }}"
@@ -52,6 +52,6 @@
     - "sourceid/convert"
     - "sourceid/fgm-backend"
     - "sourceid/groupview"
-    - "component"
+    - "sourceid/component"
   connection: local
   run_once: true
