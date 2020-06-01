@@ -109,7 +109,14 @@
       db_name: "{{ DB_VERSION[comp_name].name }}_version"
     shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"R0.0"}},"new":true})'''
     when: 'db_name not in db_version.stdout'
-    with_items: "{{ DB_VERSION.keys() }}"
+    with_items:
+      - "cas"
+      - "linkid-dev"
+      - "gate"
+      - "gateway"
+      - "component"
+      - "faceid"
+
 
   - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
