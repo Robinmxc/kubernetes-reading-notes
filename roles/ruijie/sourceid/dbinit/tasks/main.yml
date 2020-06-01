@@ -106,7 +106,7 @@
   - name: 新增组件对应的数据库版本初始化
     vars:
       comp_name: "{{ item }}"
-      db_name: "{{ DB_VERSION[comp_name].name }}_version"
+      db_name: "{{ comp_name }}_version"
     shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"R0.0"}},"new":true})'''
     when: 'db_name not in db_version.stdout'
     with_items:
@@ -155,6 +155,30 @@
       db_cur_version: "{{ DB_VERSION[comp_name].version }}"
     shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"{{ db_cur_version }}"}},"new":true})'''
     with_items: "{{ DB_VERSION.keys() }}"
+    when: "DB_VERSION is defined"
+
+  - name: 保存组件数据库版本到SYSTEM_VERSION表中
+    vars:
+      comp_name: "{{ item }}"
+      db_name: "{{ comp_name }}_version"
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"{{ SOURCEID_DB_VERSION }}"}},"new":true})'''
+    when: 'DB_VERSION is not defined '
+    with_items:
+      - "cas"
+      - "linkid-dev"
+      - "gate"
+      - "gateway"
+      - "faceid"
+
+  - name: 保存组件数据库版本到SYSTEM_VERSION表中
+    vars:
+      comp_name: "{{ item }}"
+      db_name: "{{ comp_name }}_version"
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"{{ COMPONENT_DB_VERSION }}"}},"new":true})'''
+    when: 'DB_VERSION is not defined '
+    with_items:
+      - "component"
+
 
   - name: 查询用户状态
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({usersInfo: "{{ SOURCEID_CAS_DB_USER }}"})'''

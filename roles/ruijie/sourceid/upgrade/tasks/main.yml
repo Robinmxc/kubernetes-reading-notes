@@ -38,6 +38,21 @@
   shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"component_version":"{{ component_version.stdout }}"}},"new":true})'''
   when: '"COMPONENT_DB_VERSION" in kad_content.stdout'
 
+- name: 删除历史备份
+  file:
+    path: "{{BAK_DIR}}_history"
+    state: absent
+
+- name: 备份备份
+  copy:
+    src: "{{BAK_DIR}}"
+    dest: "{{BAK_DIR}}_history"
+
+- name: 删除备份
+  file:
+    path: "{{BAK_DIR}}"
+    state: absent
+
 - name: 准备备份目录
   file: path={{ item }} state=directory
   with_items:
