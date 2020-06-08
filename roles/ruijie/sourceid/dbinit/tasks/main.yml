@@ -102,6 +102,10 @@
     register: db_version
     failed_when: 'db_version.stdout is search(mongo_shell_fail_pattern) and db_version.stdout is not search(mongo_shell_success_pattern)' 
     connection: local
+    
+  - name: SYSTEM_VERSION表中新增组件数据库版本记录
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").insert({"_id":"DB_VERSION"})'''
+    when: '"DB_VERSION" not in db_version.stdout'
 
   - name: 新增组件对应的数据库版本初始化
     vars:
