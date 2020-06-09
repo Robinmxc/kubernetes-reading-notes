@@ -43,6 +43,14 @@
     path: "{{BAK_DIR}}_history"
     state: absent
 
+
+- name: 准备备份目录
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{BAK_DIR}}"
+    - "{{BAK_DIR}}/workspace"
+    - "{{BAK_DIR}}/mongodbbak"
+
 - name: 备份备份
   copy:
     src: "{{BAK_DIR}}"
@@ -52,13 +60,6 @@
   file:
     path: "{{BAK_DIR}}"
     state: absent
-
-- name: 准备备份目录
-  file: path={{ item }} state=directory
-  with_items:
-    - "{{BAK_DIR}}"
-    - "{{BAK_DIR}}/workspace"
-    - "{{BAK_DIR}}/mongodbbak"
 
 - name: 备份component配置(为了兼容老的component位置)
   vars:
