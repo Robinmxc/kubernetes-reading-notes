@@ -8,20 +8,23 @@
       src: "{{ namespace_dir }}/conf/sourceid/groupview/conf/"
       dest: "{{ config_base_dir }}/sourceid/groupview/conf/"
 
-  - name: 自动配置
+  - name: 自动配置application.yml
     tags:
       - config
     replace: path="{{ config_base_dir }}/sourceid/groupview/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-      - {regexp: "mongodb:.*/groupview.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/groupview?replicaSet=rs0"}
+      - {regexp: "mongodb:.*/groupview.*$", replace: "mongodb://{{ SOURCEID_GROUPVIEW_DB_USER }}:{{ SOURCEID_GROUPVIEW_DB_PWD }}@{{ mongodb_addr }}/groupview?replicaSet=rs0"}
+      - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
+      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
     no_log: true
 
-  - name: 自动配置2
+  - name: 自动配置application-job.properties
     tags:
       - config
     replace: path="{{ config_base_dir }}/sourceid/groupview/conf/application-job.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-      - {regexp: "mongodb:.*/groupview.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/groupview?replicaSet=rs0"}
+      - {regexp: "mongodb:.*/groupview.*$", replace: "mongodb://{{ SOURCEID_GROUPVIEW_DB_USER }}:{{ SOURCEID_GROUPVIEW_DB_PWD }}@{{ mongodb_addr }}/groupview?replicaSet=rs0"}
+      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
     no_log: true
 
   - name: 自定义配置

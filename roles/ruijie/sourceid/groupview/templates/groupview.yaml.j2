@@ -1,17 +1,27 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
+  labels:
+    service: groupview
   name: rg-groupview
   namespace: {{ APP_NAMESPACE }}
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      service: groupview
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
   template:
     metadata:
       labels:
-        service: rg-groupview
+        service: groupview
     spec:
       containers:
-      - name: rg-groupview
+      - name: groupview
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.groupview.name }}:{{ SOURCEID_DOCKERS.groupview.version }}
         imagePullPolicy: IfNotPresent
         env:
@@ -50,3 +60,6 @@ spec:
   ports:
   - port: 80
     targetPort: 8080
+  selector:
+    service: groupview
+  type: ClusterIP
