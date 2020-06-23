@@ -22,9 +22,9 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: "{{ (ansible_processor_vcpus/16*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32)|int }}Mi"
+        memory: "{{ (ansible_memtotal_mb/32*2)|int }}Mi"
       requests:
         cpu: "{{ (ansible_processor_vcpus/16*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32/2)|int }}Mi"
+        memory: "{{ (ansible_memtotal_mb/32*2)|int }}Mi"
 
 nodeidentify_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
