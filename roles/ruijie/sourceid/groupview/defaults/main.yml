@@ -27,4 +27,4 @@ deploy_conf_defaults:
         cpu: 500m
         memory: 512Mi
 
-linkid_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+groupview_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
