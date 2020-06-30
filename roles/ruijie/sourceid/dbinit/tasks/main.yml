@@ -106,6 +106,7 @@
   - name: SYSTEM_VERSION表中新增组件数据库版本记录
     shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").insert({"_id":"DB_VERSION"})'''
     when: '"DB_VERSION" not in db_version.stdout'
+    connection: local
 
   - name: 新增组件对应的数据库版本初始化
     vars:
@@ -120,7 +121,7 @@
       - "gateway"
       - "component"
       - "faceid"
-
+    connection: local
 
   - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
@@ -160,6 +161,7 @@
     shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"{{ db_cur_version }}"}},"new":true})'''
     with_items: "{{ DB_VERSION.keys() }}"
     when: "DB_VERSION is defined"
+    connection: local
 
   - name: 保存组件数据库版本到SYSTEM_VERSION表中
     vars:
@@ -173,6 +175,7 @@
       - "gate"
       - "gateway"
       - "faceid"
+    connection: local
 
   - name: 保存组件数据库版本到SYSTEM_VERSION表中
     vars:
@@ -182,7 +185,7 @@
     when: 'DB_VERSION is not defined '
     with_items:
       - "component"
-
+    connection: local
 
   - name: 查询用户状态
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({usersInfo: "{{ SOURCEID_CAS_DB_USER }}"})'''
