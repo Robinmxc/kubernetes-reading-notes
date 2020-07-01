@@ -24,8 +24,8 @@ db.getSiblingDB("component").runCommand({
 });
 
 db.getSiblingDB("groupview").runCommand({
-  createUser: "{{ COMPONENT_DB_USER }}",
-  pwd: "{{ COMPONENT_DB_PWD }}",
+  createUser: "{{ SOURCEID_GROUPVIEW_DB_USER }}",
+  pwd: "{{ SOURCEID_GROUPVIEW_DB_PWD }}",
   roles: [{role:"dbOwner", db: "groupview"}]
 });
 
