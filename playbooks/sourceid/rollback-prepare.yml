@@ -7,8 +7,7 @@
   - name: 创建/etc/kad/config.yml文件
     file: path="/etc/kad/config.yml" state=touch
     
-- hosts:
-  - localhost
+- hosts: all
   tags:
   - sourceid
   any_errors_fatal: true
