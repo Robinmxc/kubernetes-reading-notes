@@ -1,5 +1,5 @@
 
-faceid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
+faceid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms2048m -Xmx2048m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 faceid_configs: []
 
@@ -9,7 +9,7 @@ deploy_conf_defaults:
   small:
     replicas: 1
   normal:
-    replicas: 2
+    replicas: 1
     resources:
       limits:
         cpu: 2
