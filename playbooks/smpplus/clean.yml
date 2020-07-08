@@ -13,11 +13,32 @@
     - frontend-smp
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/frontend-smp/"
     when: '"frontend-smp" in pod_info.stdout'
+
+  - name: 等待frontend-smp结束运行
+    tags:
+      - frontend-smp
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-frontend-smp" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
   - name: delete frontend-portal
     tags:
     - frontend-portal
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/frontend-portal/"
     when: '"frontend-portal" in pod_info.stdout'
+
+  - name: 等待frontend-portal结束运行
+    tags:
+      - frontend-portal
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-frontend-portal" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
 
   - name: delete eportal
     tags:
@@ -25,11 +46,31 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/eportal/"
     when: '"portal" in pod_info.stdout'
 
+  - name: 等待eportal结束运行
+    tags:
+      - eportal
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-eportal" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
   - name: delete freeradius
     tags:
     - freeradius
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/freeradius/"
     when: '"freeradius" in pod_info.stdout'
+
+  - name: 等待freeradius结束运行
+    tags:
+      - freeradius
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-freeradius" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
 
   - name: delete aggregation
     tags:
@@ -37,11 +78,31 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aggregation/"
     when: '"aggregation" in pod_info.stdout'
 
+  - name: 等待aggregation结束运行
+    tags:
+      - aggregation
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-aggregation" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
   - name: delete linkid
     tags:
     - linkid
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/linkid/"
     when: '"linkid" in pod_info.stdout'
+
+  - name: 等待linkid结束运行
+    tags:
+      - linkid
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-linkid" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
 
   - name: delete component
     tags:
@@ -49,11 +110,31 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/component/"
     when: '"component" in pod_info.stdout'
 
+  - name: 等待component结束运行
+    tags:
+      - component
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-component" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
   - name: delete authentication
     tags:
     - authentication
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/authentication/"
     when: '"authentication" in pod_info.stdout'
+
+  - name: 等待authentication结束运行
+    tags:
+      - authentication
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-authentication" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
 
   - name: delete adminui
     tags:
@@ -61,11 +142,31 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/adminui/"
     when: '"adminui" in pod_info.stdout'
 
+  - name: 等待adminui结束运行
+    tags:
+      - adminui
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-adminui" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
   - name: delete license
     tags:
     - license
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/license/"
     when: '"license" in pod_info.stdout'
+
+  - name: 等待license结束运行
+    tags:
+      - license
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-license" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
 
   - name: delete sms-middleware
     tags:
@@ -77,8 +178,45 @@
     #    - nodemanager-scan
     #    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodemanager-scan/"
   #     when: '"nodemanager-scan" in pod_info.stdout'
+
+  - name: 等待sms-middleware结束运行
+    tags:
+      - sms-middleware
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-sms-middleware" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
   - name: delete nodeidentify
     tags:
     - nodeidentify
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodeidentify/"
     when: '"nodeidentify" in pod_info.stdout'
+
+  - name: 等待nodeidentify结束运行
+    tags:
+      - nodeidentify
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-nodeidentify" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: delete operations
+    tags:
+      - operations
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/operations/"
+    when: '"operations" in pod_info.stdout'
+
+  - name: 等待operations结束运行
+    tags:
+      - operations
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-operations" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
