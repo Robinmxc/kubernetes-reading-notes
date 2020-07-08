@@ -27,3 +27,7 @@ FDFS_MODE: "none"
 # FastDFS集群虚IP，双机模式必须设置
 # FDFS_VIP: ""
 
+PRIVATE_REGISTRY_ENABLED: "yes"
+PRIVATE_INSECURE_REGISTRY: "id.ruijie.com.cn:25082"
+PRIVATE_REGISTRY_USER: "client"
+PRIVATE_REGISTRY_PWD: "ruijie"
