@@ -67,11 +67,15 @@ spec:
         volumeMounts:
         - mountPath: /ruijie/sourceid/license/conf
           name: conf
+        - mountPath: /logs
+          name: logpath
       volumes:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/sourceid/license/conf
-
+        - name: logpath
+          hostPath:
+            path: {{ config_base_dir }}/logs
 ---
 apiVersion: v1
 kind: Service

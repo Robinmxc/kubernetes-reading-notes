@@ -31,12 +31,17 @@ spec:
         volumeMounts:
         - mountPath: /ruijie/sourceid/data-sync/conf
           name: conf
+        - mountPath: /logs
+          name: logpath
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/sourceid/data-sync/conf
+        - name: logpath
+          hostPath:
+            path: {{ config_base_dir }}/logs
 
 ---
 apiVersion: v1

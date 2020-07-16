@@ -43,6 +43,8 @@ spec:
               name: cas
             - mountPath: /ruijie/sourceid/sso/conf
               name: conf
+            - mountPath: /logs
+              name: logpath
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -55,7 +57,9 @@ spec:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/sourceid/sso/conf
-
+        - name: logpath
+          hostPath:
+            path: {{ config_base_dir }}/logs
 ---
 apiVersion: v1
 kind: Service
