@@ -42,9 +42,7 @@ spec:
         - name: logpath
           hostPath:
             path: {{ config_base_dir }}/logs
-        - name: logpath
-          hostPath:
-            path: {{ config_base_dir }}/logs
+
 ---
 apiVersion: v1
 kind: Service
