@@ -7,8 +7,14 @@
   - name: 创建/etc/kad/config.yml文件
     file: path="/etc/kad/config.yml" state=touch
 
-  - name: coredns
+  - name: 获取所有已经创建的POD信息
+    tags: always
+    command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    
+  - name: 停止coredns组件
     command: "{{ bin_dir }}/kubectl delete -f /opt/kube/kube-system/{{ dns_backend }}"
+    when: '"coredns" in pod_info.stdout'
 
   - name: 等待coredns结束运行
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
