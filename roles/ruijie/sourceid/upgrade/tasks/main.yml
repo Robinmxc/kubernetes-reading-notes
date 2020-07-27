@@ -18,6 +18,16 @@
     when: '"COMPONENT_DB_VERSION" in kad_content.stdout'
     connection: local
 
+  - name: 轮询等待mongodb运行
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} | grep 'mongo1' | awk '{print $3}'"
+    register: pod_status
+    until: pod_status.stdout == "Running"
+    connection: local
+    run_once: true
+    retries: 12
+    delay: 5
+    ignore_errors: true
+    
   - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
     register: db_version

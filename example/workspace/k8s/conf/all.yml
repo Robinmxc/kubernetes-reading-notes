@@ -14,7 +14,7 @@ CLUSTER_CIDR: "172.30.16.0/20"
 KUBE_MASTER_VIP: ""
 
 # 文件下载服务器，开发/测试环境请修改为内部地址
-KAD_FILES_REPO: "http://fs.rghall.com.cn"
+KAD_FILES_REPO: ""
 
 
 #### FastDFS配置参数 ####

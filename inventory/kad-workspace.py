@@ -40,7 +40,7 @@ def parse_host_data(workspace_dir):
         "img_download_dir": "/opt/kad/down",
         "img_copy_dir": "/opt/kube/images",
         "workspace_dir": "/opt/kad/workspace",
-        "KAD_FILES_REPO": "http://fs.rghall.com.cn",
+        "KAD_FILES_REPO": "",
         "CLUSTER_SCALE": "normal",
         "KUBE_MASTER_VIP": ""
     }
