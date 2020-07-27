@@ -17,10 +17,6 @@ spec:
         env:
         - name: JAVA_OPT_EXT
           value: "{{ linkid_java_opt }}"
-        command:
-        - '/bin/bash'
-        - '-c'
-        - 'java -jar -Dspring.config.location=/ruijie/sourceid/linkid/conf/ $JAVA_OPT_EXT /app/rg-linkid-bootstrap-0.0.1-SNAPSHOT.jar'
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
@@ -35,12 +31,17 @@ spec:
         volumeMounts:
         - mountPath: /ruijie/sourceid/linkid/conf
           name: conf
+        - mountPath: /logs
+          name: logpath
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/sourceid/linkid/conf
+        - name: logpath
+          hostPath:
+            path: {{ config_base_dir }}/logs
 
 ---
 apiVersion: v1

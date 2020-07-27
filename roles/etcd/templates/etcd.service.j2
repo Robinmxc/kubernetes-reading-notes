@@ -4,6 +4,7 @@ After=network.target
 After=network-online.target
 Wants=network-online.target
 Documentation=https://github.com/coreos
+StartLimitInterval=0
 
 [Service]
 Type=notify
@@ -26,6 +27,7 @@ ExecStart={{ bin_dir }}/etcd \
   --data-dir=/var/lib/etcd
   --auto-compaction-retention=1
 Restart=always
+RestartSec=5
 LimitNOFILE=65536
 
 [Install]

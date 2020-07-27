@@ -40,7 +40,7 @@ def parse_host_data(workspace_dir):
         "img_download_dir": "/opt/kad/down",
         "img_copy_dir": "/opt/kube/images",
         "workspace_dir": "/opt/kad/workspace",
-        "KAD_FILES_REPO": "http://fs.rghall.com.cn",
+        "KAD_FILES_REPO": "",
         "CLUSTER_SCALE": "normal",
         "KUBE_MASTER_VIP": ""
     }
@@ -214,7 +214,21 @@ def parse_host_data(workspace_dir):
 
     parse_sourceid_gateway_config(result)
 
+    parse_sourcedata_config(result)
+
     return result
+
+# 处理SourceData配置参数
+def parse_sourcedata_config(host_data):
+    group_all_vars = host_data["groups"]["all"]["vars"]
+
+    sourcedata_hosts =  group_all_vars["SOURCEDATA_HOSTS"] if "SOURCEDATA_HOSTS" in group_all_vars else []
+    for ip in sourcedata_hosts:
+        if not is_IP(ip):
+            raise Exception(ip + u"不是有效的IP地址")
+    host_data["groups"]["sourcedata"] = sourcedata_hosts
+
+    host_data["groups"]["sourcedata_mysql"] = sourcedata_hosts
 
 
 # 处理二次认证网关配置参数

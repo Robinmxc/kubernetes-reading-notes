@@ -2,13 +2,13 @@
   tags:
     - config
   copy:
-    src: "{{ namespace_dir }}/conf/component/conf/"
-    dest: "{{ config_base_dir }}/component/conf/"
+    src: "{{ namespace_dir }}/conf/sourceid/component/conf/"
+    dest: "{{ config_base_dir }}/sourceid/component/conf/"
 
 - name: 自动配置
   tags:
     - config
-  replace: path="{{ config_base_dir }}/component/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  replace: path="{{ config_base_dir }}/sourceid/component/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
     - {regexp: "mongodb:.*/component.*$", replace: "mongodb://{{ COMPONENT_DB_USER }}:{{ COMPONENT_DB_PWD }}@{{ mongodb_addr }}/component?replicaSet=rs0"}
     - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
@@ -18,7 +18,7 @@
   tags:
     - config
   replace:
-    path: '{{ config_base_dir }}/component/conf/application-bus.properties'
+    path: '{{ config_base_dir }}/sourceid/component/conf/application-bus.properties'
     regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
     replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
   with_items: '{{ component_configs }}'

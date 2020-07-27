@@ -1,0 +1,19 @@
+- hosts:
+  - sourcedata_mysql
+  any_errors_fatal: true
+  roles:
+  - { role: ruijie/mysql, tags: ["mysql"]}
+
+- hosts:
+  - sourcedata
+  any_errors_fatal: true
+  roles:
+  - { role: ruijie/sourcedata/jdk, tags: ["jdk"]}
+  - { role: ruijie/sourcedata/font, tags: ["font"]}
+  - { role: ruijie/fgm/init-mysql, tags: ["mysql"]}
+
+- hosts:
+  - localhost
+  any_errors_fatal: true
+  roles:
+  - { role: ruijie/sourcedata/jdk, tags: ["jdk"]}

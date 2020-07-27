@@ -1,0 +1,87 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rg-gate
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  template:
+    metadata:
+      labels:
+        service: rg-gate
+    spec:
+      containers:
+      - name: rg-gate
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS.gate.name }}:{{ SMPPLUS_DOCKERS.gate.version }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ JAVA_OPT_EXT }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /ruijie/gate/
+          name: conf
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/gate/
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-gate
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    service: rg-gate
+  ports:
+  - port: 80
+    targetPort: 80
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: rg-gate-ingress
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rg-gate
+          servicePort: 80
+      - path: /data-sync/v2/api-docs
+        backend:
+          serviceName: rg-frontend
+          servicePort: 80
+      - path: /component/v2/api-docs
+        backend:
+          serviceName: rg-frontend
+          servicePort: 80
+      - path: /faceid/v2/api-docs
+        backend:
+          serviceName: rg-frontend
+          servicePort: 80
+      - path: /import/v2/api-docs
+        backend:
+          serviceName: rg-frontend
+          servicePort: 80
+      - path: /linkid/v2/api-docs
+        backend:
+          serviceName: rg-frontend
+          servicePort: 80

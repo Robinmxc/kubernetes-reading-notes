@@ -37,7 +37,9 @@
     - "linkid"
     - "component"
     - "license"
-    - "nodemanager-scan"
+    - "nodeidentify"
     - "adminui"
     - "sms-middleware"
+    - "gate"
+    - "operations"
 

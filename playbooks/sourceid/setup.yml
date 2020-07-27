@@ -30,6 +30,7 @@
   any_errors_fatal: true
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
   - { role: ruijie/sourceid/dbinit }
@@ -41,6 +42,7 @@
   any_errors_fatal: true
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
   - { role: ruijie/sourceid/linkid, tags: ["linkid"]}
@@ -56,6 +58,9 @@
   - { role: ruijie/sourceid/import-user, tags: ["import-user"] }
   - { role: ruijie/sourceid/data-sync, tags: ["data-sync"] }
   - { role: ruijie/sourceid/security, tags: ["security"] }
+  - { role: ruijie/sourceid/convert, tags: ["convert"] }
+  - { role: ruijie/fgm/fgm-backend, tags: ["fgm-backend"] }
+  - { role: ruijie/sourceid/groupview, tags: ["groupview"] }
 
 - hosts:
   - gateway
@@ -64,6 +69,7 @@
   any_errors_fatal: true
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
   roles:
   - ruijie/cluster/docker
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }

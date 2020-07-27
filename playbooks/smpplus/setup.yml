@@ -31,9 +31,11 @@
   any_errors_fatal: true
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/smpplus/prepare-db-pwd, tags: always }
   - { role: ruijie/smpplus/dbinit }
+
 - hosts:
   - kube_node
   tags:
@@ -41,6 +43,7 @@
   any_errors_fatal: true
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/smpplus/component, tags: ["component"] }
   - { role: ruijie/smpplus/linkid, tags: ["linkid"] }
@@ -52,5 +55,8 @@
   - { role: ruijie/smpplus/freeradius, tags: ["freeradius"] }
   - { role: ruijie/smpplus/license, tags: ["license"] }
   - { role: ruijie/smpplus/adminui, tags: ["adminui"] }
-  - { role: ruijie/smpplus/nodemanager-scan, tags: ["nodemanager-scan"] }
+##  - { role: ruijie/smpplus/nodemanager-scan, tags: ["nodemanager-scan"] }
+  - { role: ruijie/smpplus/nodeidentify, tags: ["nodeidentify"] }
   - { role: ruijie/smpplus/sms-middleware, tags: ["sms-middleware"] }
+  - { role: ruijie/smpplus/operations, tags: ["operations"] }
+  - { role: ruijie/smpplus/cron-mongo-backup, tags: ["cron-mongo-backup"] }

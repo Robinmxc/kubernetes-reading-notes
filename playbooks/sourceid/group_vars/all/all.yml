@@ -41,12 +41,6 @@ db_pwd_pattern2: "^.*(?=.*\\d)(?=.*[A-Z]{1,})(?=.*[a-z]{1,}).*$"
 db_pwd_invalid_msg: "密码只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符"
 
 
-#SourceId数据库脚本版本号
-SOURCEID_DB_VERSION: "R1.3"
-
-#component数据库脚本版本号
-COMPONENT_DB_VERSION: "v1.0"
-
 #SourceId镜像
 SOURCEID_DOCKERS: {
   linkid: {name: "sourceid/linkid", version: "dlmu.r1.3"},
@@ -83,6 +77,9 @@ SOURCEID_FACEID_DB_PWD: ""
 SOURCEID_GATEWAY_DB_USER: "gatewayuser"
 SOURCEID_GATEWAY_DB_PWD: ""
 
+SOURCEID_GROUPVIEW_DB_USER: "groupview"
+SOURCEID_GROUPVIEW_DB_PWD: ""
+
 SOURCEID_LICENSE_ENABLED: "{% if SOURCEID_DOCKERS.license is defined %}yes{% else %}no{% endif %}"
 
 SOURCEID_HTTPS_MODE: "{% if 'https' == traefik_mode %}normal{% else %}none{% endif %}"
@@ -100,3 +97,30 @@ SOURCEID_IMPORT_USER_ENABLED: "{% if SOURCEID_DOCKERS['import-user'] is defined 
 SOURCEID_DATA_SYNC_ENABLED: "{% if SOURCEID_DOCKERS['data-sync'] is defined %}yes{% else %}no{% endif %}"
 
 SOURCEID_SECURITY_ENABLED: "{% if SOURCEID_DOCKERS['security'] is defined %}yes{% else %}no{% endif %}"
+
+SOURCEID_CONVERT_ENABLED: "{% if SOURCEID_DOCKERS['convert'] is defined %}yes{% else %}no{% endif %}"
+
+FGM_BACKEND_ENABLED: "{% if SOURCEID_DOCKERS['fgm-backend'] is defined %}yes{% else %}no{% endif %}"
+
+SOURCEID_GROUPVIEW_ENABLED: "{% if SOURCEID_DOCKERS['groupview'] is defined %}yes{% else %}no{% endif %}"
+
+SOURCEID_FGM_VERSION_ENABLED: "yes"
+
+SOURCEDATA_USER_SYNC_TABLE_NAME: "sid_user_info"
+
+
+# dns 自动安装，可选"coredns"和“kubedns”
+dns_install: "yes"
+dns_backend: "coredns"
+kubedns_offline: "kubedns_1.14.13.tar"
+coredns_offline: "coredns-1.6.9.tar"
+dns_offline: "{%- if dns_backend == 'coredns' -%} \
+                {{ coredns_offline }} \
+              {%- else -%} \
+                {{ kubedns_offline }} \
+              {%- endif -%}"
+
+dns_replicas: "{% if DEPLOY_MODE == 'allinone' %}1{% else %}2{% endif %}"
+
+# 集群 DNS 域名
+CLUSTER_DNS_DOMAIN: "cluster.local."

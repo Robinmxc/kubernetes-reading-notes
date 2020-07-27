@@ -51,8 +51,6 @@
     when: 'mongodb_auth_mode == "yes"'
     with_items:
       - "sourceid/rg-init-db/init-data.sh"
-      - "component/rg-init-db/init-data.sh"
-      - "component/rg-init-db/upgrade_data.sh"
 
   - name: 修改数据库连接参数
     replace: path="{{ mongodb_init_dir }}/sourceid/rg-upgrade-db/upgrade_data.sh" regexp="^\\s*mongo\\s+" replace="mongo {{ mongo_auth_param }} "
@@ -63,7 +61,6 @@
     when: 'mongodb_auth_mode == "yes"'
     with_items:
       - "sourceid/rg-init-db/init-data.sh"
-      - "component/rg-init-db/init-data.sh"
 
   - name: 设置文件执行权限
     file: name="{{ item }}" mode=0700
@@ -71,8 +68,6 @@
     - "{{ mongodb_init_dir }}/init-data.sh"
     - "{{ mongodb_init_dir }}/sourceid/rg-init-db/init-data.sh"
     - "{{ mongodb_init_dir }}/sourceid/rg-upgrade-db/upgrade_data.sh"
-    - "{{ mongodb_init_dir }}/component/rg-init-db/init-data.sh"
-    - "{{ mongodb_init_dir }}/component/rg-init-db/upgrade_data.sh"
 
   - name: 查询数据初始化状态
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
@@ -102,15 +97,106 @@
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
+  - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
+    register: db_version
+    failed_when: 'db_version.stdout is search(mongo_shell_fail_pattern) and db_version.stdout is not search(mongo_shell_success_pattern)' 
+    connection: local
+    
+  - name: SYSTEM_VERSION表中新增组件数据库版本记录
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").insert({"_id":"DB_VERSION"})'''
+    when: '"DB_VERSION" not in db_version.stdout'
+    connection: local
+
+  - name: 新增组件对应的数据库版本初始化
+    vars:
+      comp_name: "{{ item }}"
+      db_name: "{{ comp_name }}_version"
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"R0.0"}},"new":true})'''
+    when: 'db_name not in db_version.stdout'
+    with_items:
+      - "cas"
+      - "linkid-dev"
+      - "gate"
+      - "gateway"
+      - "component"
+      - "faceid"
+      - "groupview"
+    connection: local
+
+  - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
+    register: db_version
+    failed_when: 'db_version.stdout is search(mongo_shell_fail_pattern) and db_version.stdout is not search(mongo_shell_success_pattern)' 
+    connection: local
+
+  - name: 准备升级数据的脚本
+    vars:
+      current_db_version: '{% if db_version.stdout is defined %}{{db_version.stdout_lines|last|from_json}}{% endif%}'
+      src_file: update-data.sh.j2
+    template: src="{{ src_file }}" dest="{{ mongodb_init_dir }}/update-data.sh"
+
+  - name: 设置升级脚本文件执行权限
+    file: name="{{ item }}" mode=0700
+    with_items:
+    - "{{ mongodb_init_dir }}/update-data.sh"
+
+  - name: 查询数据初始化状态
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+
+  - name: 执行升级脚本
+    shell: '{{ mongo_pod_shell }} /ruijie/init/update-data.sh'
+    when: '"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w" in mongo_result.stdout'
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+
+  - name: 保存数据库版本到SYSTEM_VERSION表中
+    vars:
+      comp_name: "{{ item }}"
+      db_name: "{{ DB_VERSION[comp_name].name }}_version"
+      db_cur_version: "{{ DB_VERSION[comp_name].version }}"
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"{{ db_cur_version }}"}},"new":true})'''
+    with_items: "{{ DB_VERSION.keys() }}"
+    when: "DB_VERSION is defined"
+    connection: local
+
+  - name: 保存组件数据库版本到SYSTEM_VERSION表中
+    vars:
+      comp_name: "{{ item }}"
+      db_name: "{{ comp_name }}_version"
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"{{ SOURCEID_DB_VERSION }}"}},"new":true})'''
+    when: 'DB_VERSION is not defined '
+    with_items:
+      - "cas"
+      - "linkid-dev"
+      - "gate"
+      - "gateway"
+      - "faceid"
+    connection: local
+
+  - name: 保存组件数据库版本到SYSTEM_VERSION表中
+    vars:
+      comp_name: "{{ item }}"
+      db_name: "{{ comp_name }}_version"
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"{{ COMPONENT_DB_VERSION }}"}},"new":true})'''
+    when: 'DB_VERSION is not defined '
+    with_items:
+      - "component"
+    connection: local
+
   - name: 查询用户状态
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({usersInfo: "{{ SOURCEID_CAS_DB_USER }}"})'''
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({usersInfo: "{{ SOURCEID_GROUPVIEW_DB_USER }}"})'''
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
   - name: 初始化数据库用户
     shell: "{{ mongo_shell }} /ruijie/init/create-users.js"
-    when: 'SOURCEID_CAS_DB_USER not in mongo_result.stdout'
+    when: 'SOURCEID_GROUPVIEW_DB_USER not in mongo_result.stdout'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local

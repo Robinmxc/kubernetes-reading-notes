@@ -1,0 +1,7 @@
+- block:
+  - name: 恢复 mongodb备份数据
+    shell: "mongorestore -h {{ groups.mongodb[0] }} -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase 'admin' --drop {{BAK_DIR}}/mongodbbak"
+    register: shell_result
+    connection: local
+    run_once: true
+  when: 'inventory_hostname == groups.kube_master[0]'

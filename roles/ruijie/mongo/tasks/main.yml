@@ -21,6 +21,15 @@
   when: 'mongodb_data_dir is search(pattern)'
   with_items: '{{ hostvars[inventory_hostname].ansible_mounts | sort(attribute="mount") | list }}'
 
+- name: 创建/etc/kad目录
+  file: path="/etc/kad/" state=directory
+
+- name: 创建/etc/kad/config.yml文件
+  file: path="/etc/kad/config.yml" state=touch
+
+- name: 将数据目录写入/etc/kad/config.yml
+  template: src=config.yml.j2 dest=/etc/kad/config.yml
+
 - name: 准备init目录
   tags:
   - config

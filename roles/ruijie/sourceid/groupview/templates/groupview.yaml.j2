@@ -1,0 +1,69 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    service: groupview
+  name: rg-groupview
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      service: groupview
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        service: groupview
+    spec:
+      containers:
+      - name: groupview
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.groupview.name }}:{{ SOURCEID_DOCKERS.groupview.version }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ groupview_java_opt }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /ruijie/sourceid/groupview/conf
+          name: conf
+        - mountPath: /logs
+          name: logpath
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/groupview/conf
+        - name: logpath
+          hostPath:
+            path: {{ config_base_dir }}/logs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-groupview
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    service: rg-groupview
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    service: groupview
+  type: ClusterIP

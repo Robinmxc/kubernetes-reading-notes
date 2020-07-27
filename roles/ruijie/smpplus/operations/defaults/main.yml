@@ -1,0 +1,13 @@
+operations_java_opt: "-Xms{{ (ansible_memtotal_mb/32/2/2)|int }}m -Xmx{{ (ansible_memtotal_mb/32/2)|int }}m"
+
+operations_configs: []
+
+operations_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  single:
+    replicas: 1
+
+operations_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

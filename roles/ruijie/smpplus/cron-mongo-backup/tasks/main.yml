@@ -1,0 +1,8 @@
+- name: cron mongodb backup
+  cron:
+    name: "每天凌晨2点，开始备份数据库"
+    minute: "0"
+    hour: "0"
+    day: "2"
+    job:  "cd {{ mongodb_backup_dir }}/tool && sh dump.sh -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} -h 127.0.0.1:27017"
+

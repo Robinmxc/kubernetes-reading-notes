@@ -23,3 +23,9 @@ db.getSiblingDB("component").runCommand({
   roles: [{role:"dbOwner", db: "component"}]
 });
 
+db.getSiblingDB("groupview").runCommand({
+  createUser: "{{ SOURCEID_GROUPVIEW_DB_USER }}",
+  pwd: "{{ SOURCEID_GROUPVIEW_DB_PWD }}",
+  roles: [{role:"dbOwner", db: "groupview"}]
+});
+

@@ -1,0 +1,4 @@
+
+mysql_shell: "mysql -uroot -p'{{MYSQL_PWD}}' "
+
+fgm_db_name: "epidemic_situation_information"
