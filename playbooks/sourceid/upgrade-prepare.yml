@@ -9,7 +9,7 @@
 
   - name: 获取所有已经创建的POD信息
     tags: always
-    command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    command: "{{ bin_dir }}/kubectl get pod -n kube-system"
     register: pod_info
     
   - name: 停止coredns组件
@@ -17,7 +17,7 @@
     when: '"coredns" in pod_info.stdout'
 
   - name: 等待coredns结束运行
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    shell: "{{ bin_dir }}/kubectl get pod -n kube-system"
     register: pod_info
     until: '"coredns" not in pod_info.stdout'
     retries: 30
