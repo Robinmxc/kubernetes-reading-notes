@@ -58,5 +58,5 @@
 ##  - { role: ruijie/smpplus/nodemanager-scan, tags: ["nodemanager-scan"] }
   - { role: ruijie/smpplus/nodeidentify, tags: ["nodeidentify"] }
   - { role: ruijie/smpplus/sms-middleware, tags: ["sms-middleware"] }
-  - { role: ruijie/smpplus/operations, tags: ["operations"] }
+#  - { role: ruijie/smpplus/operations, tags: ["operations"] }
   - { role: ruijie/smpplus/cron-mongo-backup, tags: ["cron-mongo-backup"] }

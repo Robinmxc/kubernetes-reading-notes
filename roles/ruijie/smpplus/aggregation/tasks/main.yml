@@ -2,8 +2,11 @@
   tags:
   - config
   copy:
-    src: "{{ namespace_dir }}/conf/aggregation/conf/"
-    dest: "{{ config_base_dir }}/aggregation/conf/"
+    src: "{{ namespace_dir }}/conf/{{ item }}/conf/"
+    dest: "{{ config_base_dir }}/{{ item }}/conf/"
+  with_items:
+    - "aggregation"
+    - "authentication-api"
 
 - name: 自动配置
   tags:
@@ -43,6 +46,7 @@
   vars:
     deploy_conf: '{{aggregation_deploy_conf}}'
     JAVA_OPT_EXT: '{{aggregation_java_opt}}'
+    JAVA_AUTHENTICATION_API_OPT_EXT: '{{authentication_api_java_opt}}'
     comp_name: 'aggregation'
     comp_api_name: 'authentication-api'
   template: src='aggregation.yaml.j2' dest={{ yaml_dir }}/aggregation/aggregation.yml
