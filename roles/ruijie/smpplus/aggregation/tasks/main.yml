@@ -44,6 +44,7 @@
     deploy_conf: '{{aggregation_deploy_conf}}'
     JAVA_OPT_EXT: '{{aggregation_java_opt}}'
     comp_name: 'aggregation'
+    comp_api_name: 'authentication-api'
   template: src='aggregation.yaml.j2' dest={{ yaml_dir }}/aggregation/aggregation.yml
   run_once: true
   connection: local
