@@ -42,4 +42,5 @@
     - "sms-middleware"
     - "gate"
     - "operations"
+    - "authentication-api"
 

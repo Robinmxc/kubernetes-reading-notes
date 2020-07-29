@@ -17,6 +17,12 @@ spec:
         env:
         - name: JAVA_OPT_EXT
           value: "{{ JAVA_OPT_EXT}}"
+        - name: JAVA_AUTHENTICATION_API_OPT_EXT
+          value: "{{ JAVA_AUTHENTICATION_API_OPT_EXT}}"
+        command:
+        - '/bin/bash'
+        - '-c'
+        - 'java -jar -Dspring.config.location={{ config_base_dir }}/authentication-api/conf/ $JAVA_AUTHENTICATION_API_OPT_EXT /app/rg-authentication-api.jar'
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
