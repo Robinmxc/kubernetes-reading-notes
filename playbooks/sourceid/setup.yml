@@ -10,6 +10,8 @@
   tags:
   - mongodb
   - midware
+  vars_files:
+  - "/etc/kad/config.yml"
   any_errors_fatal: true
   roles:
   - { role: ruijie/mongo}
@@ -19,6 +21,8 @@
   tags:
   - rocketmq
   - midware
+  vars_files:
+  - "/etc/kad/config.yml"
   any_errors_fatal: true
   roles:
   - { role: ruijie/rocketmq}
