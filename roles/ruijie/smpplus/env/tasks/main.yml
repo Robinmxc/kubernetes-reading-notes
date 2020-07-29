@@ -41,6 +41,6 @@
     - "adminui"
     - "sms-middleware"
     - "gate"
-    - "operations"
+#   - "operations"
     - "authentication-api"
 
