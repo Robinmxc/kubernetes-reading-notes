@@ -19,6 +19,8 @@
   - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
   - {regexp: "softwarePackageDownLoadAddress:.*$", replace: "softwarePackageDownLoadAddress: http://{{ groups.kube_node[0] }}:9888"}
+  - {regexp: "protectEnable.*$", replace: "protectEnable: true"}
+  - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
   no_log: true
 
 - name: 自定义配置
@@ -48,7 +50,6 @@
     JAVA_OPT_EXT: '{{aggregation_java_opt}}'
     JAVA_AUTHENTICATION_API_OPT_EXT: '{{authentication_api_java_opt}}'
     comp_name: 'aggregation'
-    comp_api_name: 'authentication-api'
   template: src='aggregation.yaml.j2' dest={{ yaml_dir }}/aggregation/aggregation.yml
   run_once: true
   connection: local
