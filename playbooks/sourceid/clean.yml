@@ -177,7 +177,7 @@
     - faceid
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
-    until: '"rg-faceid" not in pod_info.stdout'
+    until: 'pod_info.stdout is not search("rg-faceid-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
     delay: 3
     ignore_errors: true
