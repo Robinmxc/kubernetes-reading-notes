@@ -27,3 +27,5 @@ FDFS_MODE: "none"
 # FastDFS集群虚IP，双机模式必须设置
 # FDFS_VIP: ""
 
+# SorceID集群虚IP，集群环境下配置才生效
+# SOURCEID_VIP: ""

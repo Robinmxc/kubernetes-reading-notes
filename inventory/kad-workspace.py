@@ -6,6 +6,14 @@ import os
 import re
 import sys
 import yaml
+Py_version = sys.version_info
+Py_v_info = str(Py_version.major) + '.' + str(Py_version.minor) + '.' + str(Py_version.micro)
+if Py_version < (3, 0):
+    print('检测到该电脑的Python版本为:' + Py_v_info)
+else:
+    print('检测到该电脑的Python版本为:' + Py_v_info)
+    import importlib
+
 from ipaddress import IPv4Network
 
 def to_json(in_dict):
@@ -198,6 +206,16 @@ def parse_host_data(workspace_dir):
         host_vars[master_hosts[0]]["LB_ROLE"] = "master"
         host_vars[master_hosts[1]]["LB_ROLE"] = "backup"
 
+    # 设置nodekeepalive角色
+    idx = 1
+    for ip in node_hosts:
+        host_vars[ip]["NODE_LB_ID"] = str(100000 + idx)
+        if idx == 1:
+            host_vars[ip]["NODE_LB_ROLE"] = "MASTER"
+        else:
+            host_vars[ip]["NODE_LB_ROLE"] = "BACKUP"
+        idx = idx + 1
+
     # 设置ETCD节点名称
     idx = 1
     for ip in node_hosts:
@@ -375,17 +393,19 @@ def parse_fdfs_config(host_data):
         idx = idx + 1
 
 def main():
-    reload(sys)
-    sys.setdefaultencoding('utf8')
-
+    if Py_version < (3, 0):
+        reload(sys)
+        sys.setdefaultencoding('utf8')
+    else:
+        importlib.reload(sys)
     try:
         host_data = parse_host_data(os.getcwd() + "/workspace")
         if len(sys.argv) == 2 and (sys.argv[1] == "--check"):
-            print "ok"
+            print ("ok")
             exit(0)
     except Exception as e:
         if len(sys.argv) == 2 and (sys.argv[1] == "--check"):
-            print e.message
+            print (str(e))
             exit(0)
         else:
             raise

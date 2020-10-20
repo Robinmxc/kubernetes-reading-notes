@@ -1,0 +1,32 @@
+- name: 检查keepalived服务状态
+  stat: path="/etc/systemd/system/multi-user.target.wants/keepalived.service"
+  register: service_stat
+  when: '"" != SOURCEID_VIP'
+
+- name: 部署keepalived
+  when: '"" != SOURCEID_VIP and not service_stat.stat.exists'
+  block:
+  - name: 读取网卡名称
+    shell: "ip a|grep '{{ inventory_hostname }}/'|awk '{print $NF}'"
+    register: if_info
+
+  - name: 设置负载均衡网卡
+    set_fact: SOURCEID_ACCESS_IF="{{ if_info.stdout }}"
+
+  - name: 创建keepalived目录
+    file: name=/etc/keepalived state=directory
+
+  - name: 设置keepalived配置文件
+    template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
+
+  - name: 设置traefik存活检测脚本
+    template: src=traefik_check.sh.j2 dest=/etc/keepalived/traefik_check.sh mode=755
+
+  - name: 安装 keepalived
+    package: name=keepalived state=present
+
+  - name: 开机启用keepalived服务
+    shell: systemctl enable keepalived
+
+  - name: 启动keepalived服务
+    shell: systemctl start keepalived
