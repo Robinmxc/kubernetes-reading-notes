@@ -1,14 +1,16 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-faceid-display
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-faceid-display
 spec:
   replicas: {{ deploy_conf.replicas }}
   template:
     metadata:
       labels:
-        service: rg-faceid-display
+        k8s-app: rg-faceid-display
     spec:
       containers:
       - name: rg-faceid-display
@@ -50,23 +52,23 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-faceid-display
+    k8s-app: rg-faceid-display
   ports:
   - port: 80
     targetPort: 8902
 
 ---
-apiVersion: extensions/v1beta1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
   name: rg-faceid-ingress
   namespace: {{ APP_NAMESPACE }}
 spec:
-  rules:
-  - host: {{ SOURCEID_GATE_DOMAIN }}
-    http:
-      paths:
-      - path: /group1
-        backend:
-          serviceName: rg-faceid-display
-          servicePort: 80
+  entryPoints:
+    - http
+  routes:
+    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/group1`)
+      kind: Rule
+      services:
+        - name: rg-faceid-display
+          port: 80

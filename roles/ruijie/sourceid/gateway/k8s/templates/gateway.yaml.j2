@@ -1,10 +1,15 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-gateway
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-gateway
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-gateway
   template:
     metadata:
       labels:
@@ -46,7 +51,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-gateway
+    k8s-app: rg-gateway
   ports:
   - port: 80
     targetPort: 80

@@ -1,14 +1,19 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-import-user
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-import-user
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-import-user
   template:
     metadata:
       labels:
-        service: rg-import-user
+        k8s-app: rg-import-user
     spec:
       containers:
       - name: rg-import-user
@@ -50,7 +55,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-import-user
+    k8s-app: rg-import-user
   ports:
   - port: 80
     targetPort: 8080

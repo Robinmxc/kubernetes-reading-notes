@@ -1,15 +1,15 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    service: groupview
+    k8s-app: rg-groupview
   name: rg-groupview
   namespace: {{ APP_NAMESPACE }}
 spec:
   replicas: {{ deploy_conf.replicas }}
   selector:
     matchLabels:
-      service: groupview
+      k8s-app: rg-groupview
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       labels:
-        service: groupview
+        k8s-app: rg-groupview
     spec:
       containers:
       - name: groupview
@@ -60,10 +60,8 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-groupview
+    k8s-app: rg-groupview
   ports:
   - port: 80
     targetPort: 8080
-  selector:
-    service: groupview
   type: ClusterIP

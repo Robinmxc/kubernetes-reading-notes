@@ -1,14 +1,19 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-security
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-security
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-security
   template:
     metadata:
       labels:
-        service: rg-security
+        k8s-app: rg-security
     spec:
       containers:
       - name: rg-security
@@ -50,7 +55,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-security
+    k8s-app: rg-security
   ports:
   - port: 80
     targetPort: 8080

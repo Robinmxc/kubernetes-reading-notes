@@ -1,23 +1,26 @@
-apiVersion: extensions/v1beta1
-kind: DaemonSet
+kind: Deployment
+apiVersion: apps/v1
 metadata:
-  name: traefik-ingress
   namespace: kube-system
+  name: traefik
   labels:
     k8s-app: traefik-ingress
+
 spec:
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress
   template:
     metadata:
       labels:
         k8s-app: traefik-ingress
-        name: traefik-ingress
     spec:
       terminationGracePeriodSeconds: 60
       hostNetwork: true
       restartPolicy: Always
       serviceAccountName: ingress-sa
       containers:
-      - image: traefik:v1.7.4
+      - image: traefik:v2.3.0
         name: traefik-ingress
         ports:
         - name: http
@@ -27,9 +30,38 @@ spec:
           containerPort: 8580
           hostPort: 8580
         args:
-        - --web
-        - --kubernetes
-        - --logLevel=INFO
-        - --web.address=:8580
+        - --accesslog
+        - --entrypoints.http.Address=:80
+        - --entrypoints.traefik.Address=:8580
+        - --providers.kubernetescrd
+        - --api
+        - --api.dashboard=true
+        - --api.insecure=true
+        - --metrics.prometheus=true
+        - --log.level=INFO
       nodeSelector:
         edgenode: "true"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-ingress
+  namespace: kube-system
+  annotations:
+    prometheus.io/port: "8580"
+    prometheus.io/scrape: "true"
+  labels:
+    k8s-app: traefik-ingress
+spec:
+  selector:
+    k8s-app: traefik-ingress
+  ports:
+  - name: web
+    port: 80
+    protocol: TCP
+  - name: admin
+    port: 8580
+    protocol: TCP
+
+

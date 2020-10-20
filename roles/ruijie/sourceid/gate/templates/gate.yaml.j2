@@ -1,14 +1,19 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-gate
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-gate
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-gate
   template:
     metadata:
       labels:
-        service: rg-gate
+        k8s-app: rg-gate
     spec:
 {% if "" != SOURCEID_SSO_HOST_ALIAS and "offload" != SOURCEID_HTTPS_MODE %}
       hostAliases:
@@ -56,49 +61,62 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-gate
+    k8s-app: rg-gate
   ports:
   - port: 80
     targetPort: 80
 
 ---
-apiVersion: extensions/v1beta1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
   name: rg-gate-ingress
   namespace: {{ APP_NAMESPACE }}
 spec:
-  rules:
-  - host: {{ SOURCEID_GATE_DOMAIN }}
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: rg-gate
-          servicePort: 80
-      - path: /data-sync/v2/api-docs
-        backend:
-          serviceName: rg-frontend
-          servicePort: 80
-      - path: /component/v2/api-docs
-        backend:
-          serviceName: rg-frontend
-          servicePort: 80
-      - path: /faceid/v2/api-docs
-        backend:
-          serviceName: rg-frontend
-          servicePort: 80
-      - path: /import/v2/api-docs
-        backend:
-          serviceName: rg-frontend
-          servicePort: 80
-      - path: /linkid/v2/api-docs
-        backend:
-          serviceName: rg-frontend
-          servicePort: 80
+  entryPoints:
+    - http
+  routes:
+    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: rg-gate
+          port: 80
+    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/data-sync/v2/api-docs`)
+      kind: Rule
+      services:
+        - name: rg-frontend
+          port: 80
+
+    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/component/v2/api-docs`)
+      kind: Rule
+      services:
+        - name: rg-frontend
+          port: 80
+
+    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/faceid/v2/api-docs`)
+      kind: Rule
+      services:
+        - name: rg-frontend
+          port: 80
+
+    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/import/v2/api-docs`)
+      kind: Rule
+      services:
+        - name: rg-frontend
+          port: 80
+
+    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/linkid/v2/api-docs`)
+      kind: Rule
+      services:
+        - name: rg-frontend
+          port: 80
+
 {% if "yes" == SOURCEID_FGM_VERSION_ENABLED %}
-      - path: /linkid/api/ztfgm
-        backend:
-          serviceName: rg-linkid
-          servicePort: 80
+    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/linkid/api/ztfgm`)
+      kind: Rule
+      services:
+        - name: rg-linkid
+          port: 80
 {% endif %}
+
+
