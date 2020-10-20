@@ -1,14 +1,16 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-convert
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-convert
 spec:
   replicas: {{ deploy_conf.replicas }}
   template:
     metadata:
       labels:
-        service: rg-convert
+        k8s-app: rg-convert
     spec:
       containers:
       - name: rg-convert
@@ -46,7 +48,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-convert
+    k8s-app: rg-convert
   ports:
   - port: 80
     targetPort: 8080

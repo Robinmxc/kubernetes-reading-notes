@@ -1,14 +1,18 @@
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
   name: rg-rocket
   namespace: {{ APP_NAMESPACE }}
 spec:
+  serviceName: rg-rocket
   replicas: 1
+  selector:
+    matchLabels:
+      name: rg-rocket
   template:
     metadata:
      labels:
-       service: rg-rocket
+       name: rg-rocket
     spec:
       nodeName: {{ rocketmq_node_ip }}
       containers:
@@ -82,7 +86,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-rocket
+    name: rg-rocket
 {% if "yes" == (rocketmq_public) %}
   type: NodePort
   ports:
