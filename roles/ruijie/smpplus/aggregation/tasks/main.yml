@@ -2,8 +2,11 @@
   tags:
   - config
   copy:
-    src: "{{ namespace_dir }}/conf/aggregation/conf/"
-    dest: "{{ config_base_dir }}/aggregation/conf/"
+    src: "{{ namespace_dir }}/conf/{{ item }}/conf/"
+    dest: "{{ config_base_dir }}/{{ item }}/conf/"
+  with_items:
+    - "aggregation"
+    - "authentication-api"
 
 - name: 自动配置
   tags:
@@ -16,6 +19,8 @@
   - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
   - {regexp: "softwarePackageDownLoadAddress:.*$", replace: "softwarePackageDownLoadAddress: http://{{ groups.kube_node[0] }}:9888"}
+  - {regexp: "protectEnable.*$", replace: "protectEnable: true"}
+  - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
   no_log: true
 
 - name: 自定义配置
@@ -43,6 +48,7 @@
   vars:
     deploy_conf: '{{aggregation_deploy_conf}}'
     JAVA_OPT_EXT: '{{aggregation_java_opt}}'
+    JAVA_AUTHENTICATION_API_OPT_EXT: '{{authentication_api_java_opt}}'
     comp_name: 'aggregation'
   template: src='aggregation.yaml.j2' dest={{ yaml_dir }}/aggregation/aggregation.yml
   run_once: true

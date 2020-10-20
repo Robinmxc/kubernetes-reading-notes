@@ -14,6 +14,91 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/linkid/"
     when: '"rg-linkid" in pod_info.stdout'
 
+  - name: 停止sso
+    tags:
+    - sso
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/sso/"
+    when: '"rg-sso" in pod_info.stdout'
+
+  - name: 停止gate
+    tags:
+    - gate
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/gate/"
+    when: '"gate" in pod_info.stdout'
+
+  - name: 停止frontend
+    tags:
+    - frontend
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/frontend/"
+    when: '"frontend" in pod_info.stdout'
+
+  - name: 停止 component
+    tags:
+    - component
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/component/"
+    when: '"component" in pod_info.stdout'
+
+  - name: 停止 license
+    tags:
+    - license
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/license/"
+    when: '"rg-license" in pod_info.stdout'
+
+  - name: 停止 faceid-display
+    tags:
+    - faceid-display
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid-display/"
+    when: 'pod_info.stdout is search("rg-faceid-display-[a-z0-9]*-[a-z0-9]*\s")'
+
+  - name: 停止 faceid
+    tags:
+    - faceid
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid/"
+    when: 'pod_info.stdout is search("rg-faceid-[a-z0-9]*-[a-z0-9]*\s")'
+
+  - name: 停止 gateway
+    tags:
+    - gateway
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/gateway/"
+    when: '"rg-gateway" in pod_info.stdout'
+
+  - name: 停止 import-user
+    tags:
+    - import-user
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/import-user/"
+    when: '"rg-import-user" in pod_info.stdout'
+
+
+  - name: 停止 data-sync
+    tags:
+    - data-sync
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/data-sync/"
+    when: '"rg-data-sync" in pod_info.stdout'
+
+  - name: 停止 security
+    tags:
+    - security
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/security/"
+    when: '"rg-security" in pod_info.stdout'
+
+  - name: 停止 convert
+    tags:
+    - convert
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/convert/"
+    when: '"rg-convert" in pod_info.stdout'
+
+  - name: 停止 fgm-backend
+    tags:
+    - fgm-backend
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/fgm-backend/"
+    when: '"rg-fgm-backend" in pod_info.stdout'
+
+  - name: 停止 groupview
+    tags:
+      - groupview
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/groupview/"
+    when: 'pod_info.stdout is search("rg-groupview-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 等待linkid结束运行
     tags:
     - linkid
@@ -23,12 +108,6 @@
     retries: 30
     delay: 3
     ignore_errors: true
-
-  - name: 停止sso
-    tags:
-    - sso
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/sso/"
-    when: '"rg-sso" in pod_info.stdout'
 
   - name: 等待sso结束运行
     tags:
@@ -40,11 +119,6 @@
     delay: 3
     ignore_errors: true
 
-  - name: 停止gate
-    tags:
-    - gate
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/gate/"
-    when: '"gate" in pod_info.stdout'
 
   - name: 等待gate结束运行
     tags:
@@ -56,11 +130,6 @@
     delay: 3
     ignore_errors: true
 
-  - name: 停止frontend
-    tags:
-    - frontend
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/frontend/"
-    when: '"frontend" in pod_info.stdout'
 
   - name: 等待frontend结束运行
     tags:
@@ -72,12 +141,6 @@
     delay: 3
     ignore_errors: true
 
-  - name: 停止 component
-    tags:
-    - component
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/component/"
-    when: '"component" in pod_info.stdout'
-
   - name: 等待component结束运行
     tags:
     - component
@@ -87,12 +150,6 @@
     retries: 30
     delay: 3
     ignore_errors: true
-
-  - name: 停止 license
-    tags:
-    - license
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/license/"
-    when: '"rg-license" in pod_info.stdout'
 
   - name: 等待license结束运行
     tags:
@@ -104,12 +161,6 @@
     delay: 3
     ignore_errors: true
 
-  - name: 停止 faceid-display
-    tags:
-    - faceid-display
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid-display/"
-    when: 'pod_info.stdout is search("rg-faceid-display-[a-z0-9]*-[a-z0-9]*\s")'
-
   - name: 等待faceid-display结束运行
     tags:
     - faceid-display
@@ -120,27 +171,17 @@
     delay: 3
     ignore_errors: true
 
-  - name: 停止 faceid
-    tags:
-    - faceid
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid/"
-    when: 'pod_info.stdout is search("rg-faceid-[a-z0-9]*-[a-z0-9]*\s")'
 
   - name: 等待faceid结束运行
     tags:
     - faceid
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
-    until: '"rg-faceid" not in pod_info.stdout'
+    until: 'pod_info.stdout is not search("rg-faceid-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
     delay: 3
     ignore_errors: true
 
-  - name: 停止 gateway
-    tags:
-    - gateway
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/gateway/"
-    when: '"rg-gateway" in pod_info.stdout'
 
   - name: 等待gateway结束运行
     tags:
@@ -152,12 +193,6 @@
     delay: 3
     ignore_errors: true
 
-  - name: 停止 import-user
-    tags:
-    - import-user
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/import-user/"
-    when: '"rg-import-user" in pod_info.stdout'
-
   - name: 等待import-user结束运行
     tags:
     - import-user
@@ -168,11 +203,6 @@
     delay: 3
     ignore_errors: true
 
-  - name: 停止 data-sync
-    tags:
-    - data-sync
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/data-sync/"
-    when: '"rg-data-sync" in pod_info.stdout'
 
   - name: 等待data-sync结束运行
     tags:
@@ -184,12 +214,6 @@
     delay: 3
     ignore_errors: true
     
-  - name: 停止 security
-    tags:
-    - security
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/security/"
-    when: '"rg-security" in pod_info.stdout'
-
   - name: 等待security结束运行
     tags:
     - security
@@ -200,12 +224,6 @@
     delay: 3
     ignore_errors: true
     
-  - name: 停止 convert
-    tags:
-    - convert
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/convert/"
-    when: '"rg-convert" in pod_info.stdout'
-
   - name: 等待convert结束运行
     tags:
     - convert
@@ -216,12 +234,6 @@
     delay: 3
     ignore_errors: true
 
-  - name: 停止 fgm-backend
-    tags:
-    - fgm-backend
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/fgm-backend/"
-    when: '"rg-fgm-backend" in pod_info.stdout'
-
   - name: 等待convert结束运行
     tags:
     - fgm-backend
@@ -231,12 +243,6 @@
     retries: 30
     delay: 3
     ignore_errors: true
-
-  - name: 停止 groupview
-    tags:
-      - groupview
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/groupview/"
-    when: 'pod_info.stdout is search("rg-groupview-[a-z0-9]*-[a-z0-9]*\s")'
 
   - name: 等待groupview结束运行
     tags:

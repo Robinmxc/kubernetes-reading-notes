@@ -8,7 +8,7 @@ KUBE_NODE_HOSTS: ["192.168.1.62", "192.168.1.63", "192.168.1.64"]
 CLUSTER_CIDR: "172.30.16.0/20"
 
 # 部署规模：small, normal, single。normal为标准规模，small主要用于开发、测试，single为单机
-# CLUSTER_SCALE: "normal"
+#CLUSTER_SCALE: "normal"
 
 # 双Master部署模式时使用的虚IP
 KUBE_MASTER_VIP: ""

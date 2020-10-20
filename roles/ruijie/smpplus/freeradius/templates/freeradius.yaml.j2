@@ -10,11 +10,11 @@ spec:
       labels:
         service: rg-{{ comp_name }}
     spec:
+      hostNetwork: true
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
         imagePullPolicy: IfNotPresent
-        command: ["radiusd","-X"]
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
@@ -27,17 +27,28 @@ spec:
         ports:
         - containerPort: 1812
           protocol: UDP
+          hostPort: 1812
         - containerPort: 1813
           protocol: UDP
+          hostPort: 1813
         volumeMounts:
-        - mountPath: /ruijie/{{comp_name}}
-          name: conf
+         - mountPath: /usr/local/etc/raddb/mods-enabled
+           name: mods
+         - mountPath: /usr/local/etc/raddb/sites-enabled
+           name: sites
+         - mountPath: /usr/local/var/log/radius
+           name: log
       imagePullSecrets:
       - name: regsecret
       volumes:
-        - name: conf
+        - name: mods
           hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}
+            path: {{ config_base_dir }}/{{comp_name}}/mods-enabled
+        - name: sites
+          hostPath:
+            path: {{ config_base_dir }}/{{comp_name}}/sites-enabled
+        - mountPath: {{ config_base_dir }}/{{comp_name}}/log
+          name: log
 
 ---
 apiVersion: v1
@@ -46,18 +57,15 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-  externalTrafficPolicy: Local
   selector:
     service: rg-{{comp_name}}
-  type: NodePort
   ports:
   - protocol: UDP
     port: 1812
     name: port1812
     targetPort: 1812
-    nodePort: 1812
   - protocol: UDP
     port: 1813
     name: port1813
     targetPort: 1813
-    nodePort: 1813
+  clusterIP: None
