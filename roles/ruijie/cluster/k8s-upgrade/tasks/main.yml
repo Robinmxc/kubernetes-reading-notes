@@ -1,0 +1,66 @@
+- name: 获取Kubernetes版本
+  shell: "{{ bin_dir }}/kube-apiserver --version"
+  register: k8s_ver
+
+- block:
+  - name: 停止rocketmq服务
+    shell: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/rocketmq/"
+    connection: local
+    run_once: true
+
+  - name: 停止mongo服务
+    shell: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/mongo/"
+    connection: local
+    run_once: true
+
+  - name: 等待rocketmq结束运行
+    shell: "{{ bin_dir }}/kubectl get pod -A"
+    register: pod_info
+    until: '"rocketmq" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待mongo结束运行
+    shell: "{{ bin_dir }}/kubectl get pod -A"
+    register: pod_info
+    until: '"mongo" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 停止kubernetes服务
+
+  - name: stop and disable kube_node service
+    service: name={{ item }} state=stopped enabled=no
+    with_items:
+    - kubelet
+    - kube-proxy
+    ignore_errors: true
+    connection:  
+    - kube_master
+    - kube_node
+
+  - name: stop and disable kube_master service
+    service: name={{ item }} state=stopped enabled=no
+    with_items:
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+    ignore_errors: true
+    connection:  
+    - kube_master
+
+  - name: 下载 kube_master 二进制
+    copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
+    with_items:
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+    - kubectl
+    tags: upgrade_k8s
+    
+    
+  when: "'v1.18.8' in k8s_ver.stdout"
+
+  
