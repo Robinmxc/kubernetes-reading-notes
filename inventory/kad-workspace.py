@@ -119,6 +119,7 @@ def parse_host_data(workspace_dir):
     result["groups"]["mongodb"] = {"hosts": node_hosts}
     result["groups"]["deploy"] = {"hosts": [master_hosts[0]]}
     result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
+    result["groups"]["mgob"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
 
     # 设置K8S部署模式
     deploy_mode = "single-master"
