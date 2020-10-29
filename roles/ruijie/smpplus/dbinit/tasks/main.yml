@@ -66,6 +66,16 @@
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
+  - name: 保存数据库版本到SYSTEM_VERSION表中
+    vars:
+      comp_name: "{{ item }}"
+      db_name: "{{ DB_VERSION[comp_name].name }}_version"
+      db_cur_version: "{{ DB_VERSION[comp_name].version }}"
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"{{ db_cur_version }}"}},"new":true})'''
+    with_items: "{{ DB_VERSION.keys() }}"
+    when: "DB_VERSION is defined"
+    connection: local
+    
   - name: 准备创建数据库用户的脚本
     template: src="create-users.js.j2" dest="{{ mongodb_init_dir }}/create-users.js"
 
