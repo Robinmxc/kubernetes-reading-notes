@@ -2,8 +2,8 @@
   tags:
   - config
   copy:
-    src: "{{ namespace_dir }}/conf/freeradius/conf/"
-    dest: "{{ config_base_dir }}/freeradius/conf/"
+    src: "{{ namespace_dir }}/conf/freeradius/"
+    dest: "{{ config_base_dir }}/freeradius/"
 
 - name: 准备部署文件目录
   tags:
