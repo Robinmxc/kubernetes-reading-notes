@@ -1,5 +1,5 @@
 mgob_offline: "sourceid/mgob:1.0"
-
+MGOB_SFTP_ENABLED: "no"
 deploy_conf_defaults:
   small:
     resources:
