@@ -151,3 +151,13 @@
   shell: "{{ bin_dir }}/kubectl label node {{ inventory_hostname }} kubernetes.io/role=node --overwrite"
   ignore_errors: true
   delegate_to: "{{ groups.deploy[0] }}"
+
+- name: 查询系统日志自动滚动机制
+  shell: "cat /etc/logrotate.d/syslog"
+  register: syslog_info
+  ignore_errors: true
+
+- name: 设置系统日志自动滚动机制
+  shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/syslog"
+  when: "'rotate' not in syslog_info.stdout"
+  ignore_errors: true
