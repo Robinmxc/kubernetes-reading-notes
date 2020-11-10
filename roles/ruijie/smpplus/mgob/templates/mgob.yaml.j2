@@ -17,7 +17,7 @@ spec:
       nodeName: {{ mgob_node_ip }}
       containers:
       - name: rg-mgob
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ mgob_offline }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/{{ mgob_offline }}
         imagePullPolicy: IfNotPresent
         resources:
           limits:
