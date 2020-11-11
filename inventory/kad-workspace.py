@@ -8,10 +8,7 @@ import sys
 import yaml
 Py_version = sys.version_info
 Py_v_info = str(Py_version.major) + '.' + str(Py_version.minor) + '.' + str(Py_version.micro)
-if Py_version < (3, 0):
-    print('检测到该电脑的Python版本为:' + Py_v_info)
-else:
-    print('检测到该电脑的Python版本为:' + Py_v_info)
+if Py_version >= (3, 0):
     import importlib
 
 from ipaddress import IPv4Network
