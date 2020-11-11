@@ -1,5 +1,7 @@
-mgob_offline: "mgob:1.0"
+mgob_offline: "mgob-1.0.tar"
+mgob_version: "1.0"
 MGOB_SFTP_ENABLED: "no"
+MGOB_SFTP_RETENTION: "3"
 deploy_conf_defaults:
   small:
     resources:
