@@ -99,6 +99,12 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/groupview/"
     when: 'pod_info.stdout is search("rg-groupview-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 rocketmq
+    tags:
+      - rocketmq
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/rocketmq/"
+    when: 'pod_info.stdout is search("rg-rocket-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 等待linkid结束运行
     tags:
     - linkid
@@ -250,6 +256,16 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-groupview" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待rocketmq结束运行
+    tags:
+      - rocketmq
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-rocket" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
