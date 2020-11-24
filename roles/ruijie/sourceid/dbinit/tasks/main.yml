@@ -41,6 +41,9 @@
   - name: 准备创建数据库用户的脚本
     template: src="create-users.js.j2" dest="{{ mongodb_init_dir }}/create-users.js"
 
+  - name: 准备更新据库用户的脚本
+    template: src="update-users.js.j2" dest="{{ mongodb_init_dir }}/update-users.js"
+
   - name: 准备初始化数据的脚本
     vars:
       src_file: '{% if "2" == db_script_version %}init-data-2.sh.j2{% else %}init-data.sh.j2{% endif %}'
@@ -202,4 +205,11 @@
     connection: local
     no_log: true
 
+  - name: 更新数据库用户
+    shell: "{{ mongo_shell }} /ruijie/init/update-users.js"
+    when: 'SOURCEID_GROUPVIEW_DB_USER in mongo_result.stdout'
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+    no_log: true
   when: 'inventory_hostname == groups.mongodb[0]'
