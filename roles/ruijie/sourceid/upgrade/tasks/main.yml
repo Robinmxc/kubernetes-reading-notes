@@ -115,7 +115,7 @@
     run_once: true
 
   - name: 替换kad
-    shell: "cp -rpf {{UPGRADE_DIR}}/kad/* {{base_dir}}"
+    shell: "\\cp -rpf {{UPGRADE_DIR}}/kad/* {{base_dir}}"
     connection: local
     
   - name: 拷贝SourceID配置文件
