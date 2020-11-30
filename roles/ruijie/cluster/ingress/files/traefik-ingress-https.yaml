@@ -74,8 +74,8 @@ spec:
     port: 80
     protocol: TCP
   - name: https
-    containerPort: 443
-    hostPort: 443
+    port: 443
+    protocol: TCP
   - name: admin
     port: 8580
     protocol: TCP
@@ -85,7 +85,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: TLSStore
 metadata:
   name: default
-  namespace: ruijie-sourceid
+  namespace: kube-system
 
 spec:
   defaultCertificate:

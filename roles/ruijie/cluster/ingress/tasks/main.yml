@@ -61,8 +61,8 @@
 
     - name: 保存证书到k8s
       vars:
-        - ssl_files: "{% for f in traefik_ssl_names %} --from-file={{ ca_dir }}/{{ f }}.pem --from-file={{ ca_dir }}/{{ f }}-key.pem {% endfor %}"
-      shell: "{{ bin_dir }}/kubectl create secret generic traefik-cert {{ ssl_files }} -n kube-system"
+        - ssl_files: "{% for f in traefik_ssl_names %} --cert={{ ca_dir }}/{{ f }}.pem --key={{ ca_dir }}/{{ f }}-key.pem {% endfor %}"
+      shell: "{{ bin_dir }}/kubectl create secret tls traefik-cert {{ ssl_files }} -n kube-system"
       run_once: true
       connection: local
       when: "'https' == traefik_mode"
