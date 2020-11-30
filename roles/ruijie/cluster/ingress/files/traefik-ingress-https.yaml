@@ -25,8 +25,6 @@ spec:
         volumeMounts:
         - mountPath: "/ssl"
           name: "ssl"
-        - mountPath: "/config"
-          name: "config"
         ports:
         - name: http
           containerPort: 80
@@ -39,9 +37,11 @@ spec:
           hostPort: 8580
         args:
         - --accesslog
-        - --entrypoints.http.Address=:80
-        - --entrypoints.https.Address=:443
+        - --entrypoints.web.address=:80
+        - --entrypoints.websecure.address=:443
         - --entrypoints.traefik.Address=:8580
+        - --entrypoints.web.http.redirections.entrypoint.to=websecure
+        - --entrypoints.web.http.redirections.entrypoint.scheme=https
         - --providers.kubernetescrd
         - --api
         - --api.dashboard=true
@@ -52,9 +52,6 @@ spec:
       - name: ssl
         secret:
           secretName: traefik-cert
-      - name: config
-        configMap:
-          name: traefik-conf
       nodeSelector:
         edgenode: "true"
 
@@ -83,4 +80,14 @@ spec:
     port: 8580
     protocol: TCP
 
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: ruijie-sourceid
 
+spec:
+  defaultCertificate:
+    secretName: traefik-cert
+---

@@ -74,7 +74,11 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   entryPoints:
-    - http
+{% if 'https' == traefik_mode %}
+    - websecure
+{% else %}
+    - web
+{% endif %}
   routes:
     - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/`)
       kind: Rule
@@ -119,4 +123,9 @@ spec:
           port: 80
 {% endif %}
 
-
+{% if 'https' == traefik_mode %}
+  tls:
+    store:
+      name: default
+      namespace: ruijie-sourceid
+{% endif %}

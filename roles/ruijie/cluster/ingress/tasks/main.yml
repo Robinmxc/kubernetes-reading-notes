@@ -67,31 +67,6 @@
       connection: local
       when: "'https' == traefik_mode"
 
-    - name: 获取configmap数据
-      command: "{{ bin_dir }}/kubectl get configmap -n kube-system"
-      register: configmap_info
-      connection: local
-      run_once: true
-      when: "'https' == traefik_mode"
-
-    - name: 删除旧的配置文件
-      command: "{{ bin_dir }}/kubectl delete configmap traefik-conf -n kube-system"
-      connection: local
-      run_once: true
-      when: "'https' == traefik_mode and 'traefik-conf' in configmap_info.stdout"
-
-    - name: 创建traefik配置文件
-      template: src=traefix.toml.j2 dest={{ traefik_temp_dir }}/traefix.toml
-      run_once: true
-      connection: local
-      when: "'https' == traefik_mode"
-
-    - name: 保存traefik配置文件到到k8s
-      shell: "{{ bin_dir }}/kubectl create configmap traefik-conf --from-file={{ traefik_temp_dir }}/traefix.toml -n kube-system"
-      run_once: true
-      connection: local
-      when: "'https' == traefik_mode"
-
     - name: 部署traefik
       shell: "{{ bin_dir }}/kubectl apply -f {{ traefik_temp_dir }}/manifests/"
       connection: local
