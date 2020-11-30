@@ -10,8 +10,6 @@ spec:
       labels:
         service: rg-{{ comp_name }}
     spec:
-      nodeName: {{ eportal_node_ip }}
-      hostNetwork: true
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
@@ -30,19 +28,14 @@ spec:
 {% endif %}
         ports:
         - containerPort: 8090
-          hostPort: 8090
         - containerPort: 161
           protocol: UDP
-          hostPort: 161
         - containerPort: 162
           protocol: UDP
-          hostPort: 162
         - containerPort: 2000
           protocol: UDP
-          hostPort: 2000
         - containerPort: 50100
           protocol: UDP
-          hostPort: 50100
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
@@ -60,22 +53,27 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
+  externalTrafficPolicy: Local
   selector:
     service: rg-{{comp_name}}
+  type: NodePort
   ports:
   - port: 8090
     name: port8090
     targetPort: 8090
+    nodePort: 8090
   - protocol: UDP
     port: 161
     name: port161
     targetPort: 161
+    nodePort: 161
   - protocol: UDP
     port: 162
     name: port162
     targetPort: 162
+    nodePort: 162
   - protocol: UDP
     port: 50100
     name: port50100
     targetPort: 50100
-  clusterIP: None
+    nodePort: 50100
