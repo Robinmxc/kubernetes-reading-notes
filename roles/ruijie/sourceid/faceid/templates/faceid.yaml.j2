@@ -1,14 +1,16 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-faceid
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-faceid
 spec:
   replicas: {{ deploy_conf.replicas }}
   template:
     metadata:
       labels:
-        service: rg-faceid
+        k8s-app: rg-faceid
     spec:
       containers:
       - name: rg-faceid
@@ -50,7 +52,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-faceid
+    k8s-app: rg-faceid
   ports:
   - port: 80
     targetPort: 8901

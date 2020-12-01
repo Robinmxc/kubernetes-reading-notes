@@ -10,6 +10,7 @@ StartLimitInterval=0
 WorkingDirectory=/var/lib/kube-proxy
 ExecStart={{ bin_dir }}/kube-proxy \
   --bind-address={{ inventory_hostname }} \
+  --metrics-bind-address={{ inventory_hostname }} \
   --hostname-override={{ inventory_hostname }} \
   --kubeconfig=/etc/kubernetes/kube-proxy.kubeconfig \
   --logtostderr=true \

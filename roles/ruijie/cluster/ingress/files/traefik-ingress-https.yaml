@@ -1,29 +1,30 @@
-apiVersion: extensions/v1beta1
 kind: DaemonSet
+apiVersion: apps/v1
 metadata:
-  name: traefik-ingress
   namespace: kube-system
+  name: traefik
   labels:
     k8s-app: traefik-ingress
+
 spec:
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress
   template:
     metadata:
       labels:
         k8s-app: traefik-ingress
-        name: traefik-ingress
     spec:
       terminationGracePeriodSeconds: 60
       hostNetwork: true
       restartPolicy: Always
       serviceAccountName: ingress-sa
       containers:
-      - image: traefik:v1.7.4
+      - image: traefik:v2.3.0
         name: traefik-ingress
         volumeMounts:
         - mountPath: "/ssl"
           name: "ssl"
-        - mountPath: "/config"
-          name: "config"
         ports:
         - name: http
           containerPort: 80
@@ -35,17 +36,58 @@ spec:
           containerPort: 8580
           hostPort: 8580
         args:
-        - --web
-        - --kubernetes
-        - --logLevel=INFO
-        - --web.address=:8580
-        - --configfile=/config/traefix.toml
+        - --accesslog
+        - --entrypoints.web.address=:80
+        - --entrypoints.websecure.address=:443
+        - --entrypoints.traefik.Address=:8580
+        - --entrypoints.web.http.redirections.entrypoint.to=websecure
+        - --entrypoints.web.http.redirections.entrypoint.scheme=https
+        - --providers.kubernetescrd
+        - --api
+        - --api.dashboard=true
+        - --api.insecure=true
+        - --metrics.prometheus=true
+        - --log.level=INFO
       volumes:
       - name: ssl
         secret:
           secretName: traefik-cert
-      - name: config
-        configMap:
-          name: traefik-conf
       nodeSelector:
         edgenode: "true"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-ingress
+  namespace: kube-system
+  annotations:
+    prometheus.io/port: "8580"
+    prometheus.io/scrape: "true"
+  labels:
+    k8s-app: traefik-ingress
+spec:
+  selector:
+    k8s-app: traefik-ingress
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+  - name: https
+    port: 443
+    protocol: TCP
+  - name: admin
+    port: 8580
+    protocol: TCP
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: kube-system
+
+spec:
+  defaultCertificate:
+    secretName: traefik-cert
+---

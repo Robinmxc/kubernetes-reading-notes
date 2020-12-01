@@ -7,30 +7,6 @@
   - name: 创建/etc/kad/config.yml文件
     file: path="/etc/kad/config.yml" state=touch
 
-  - name: 获取所有已经创建的POD信息
-    tags: always
-    command: "{{ bin_dir }}/kubectl get pod -n kube-system"
-    register: pod_info
-    
-  - name: 停止coredns组件
-    command: "{{ bin_dir }}/kubectl delete -f /opt/kube/kube-system/{{ dns_backend }}"
-    when: '"coredns" in pod_info.stdout'
-
-  - name: 等待coredns结束运行
-    shell: "{{ bin_dir }}/kubectl get pod -n kube-system"
-    register: pod_info
-    until: '"coredns" not in pod_info.stdout'
-    retries: 30
-    delay: 3
-    ignore_errors: true
-
-# to install clust-addons
-- hosts:
-  - kube_node
-  any_errors_fatal: true
-  roles:
-  - ruijie/cluster/kube-dns
-
 - hosts: all
   tags:
   - sourceid
@@ -41,3 +17,21 @@
   roles:
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
   - { role: ruijie/sourceid/upgrade, tags: always }
+
+
+- hosts: all
+  tasks:
+  - name: 获取当前k8s版本
+    shell: "kubectl version --short"
+    register: k8s_result
+    connection: local
+    ignore_errors: true
+    run_once: true
+
+- name: 清理k8s
+  when: '"v1.18.8" not in k8s_result.stdout'
+  import_playbook: ../cluster/k8s-clean.yml
+
+- name: 安装k8s
+  when: '"v1.18.8" not in k8s_result.stdout'
+  import_playbook: ../cluster/k8s-setup.yml

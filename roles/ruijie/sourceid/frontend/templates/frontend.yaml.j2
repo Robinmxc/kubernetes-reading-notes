@@ -1,14 +1,19 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-frontend
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-frontend
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-frontend
   template:
     metadata:
       labels:
-        service: rg-frontend
+        k8s-app: rg-frontend
     spec:
       imagePullSecrets:
       - name: regsecret
@@ -43,7 +48,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-frontend
+    k8s-app: rg-frontend
   ports:
   - port: 80
     targetPort: 8081

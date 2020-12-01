@@ -61,39 +61,19 @@
 
     - name: 保存证书到k8s
       vars:
-        - ssl_files: "{% for f in traefik_ssl_names %} --from-file={{ ca_dir }}/{{ f }}.pem --from-file={{ ca_dir }}/{{ f }}-key.pem {% endfor %}"
-      shell: "{{ bin_dir }}/kubectl create secret generic traefik-cert {{ ssl_files }} -n kube-system"
+        - ssl_files: "{% for f in traefik_ssl_names %} --cert={{ ca_dir }}/{{ f }}.pem --key={{ ca_dir }}/{{ f }}-key.pem {% endfor %}"
+      shell: "{{ bin_dir }}/kubectl create secret tls traefik-cert {{ ssl_files }} -n kube-system"
       run_once: true
       connection: local
       when: "'https' == traefik_mode"
 
-    - name: 获取configmap数据
-      command: "{{ bin_dir }}/kubectl get configmap -n kube-system"
-      register: configmap_info
+    - name: 部署traefik-rbac
+      shell: "{{ bin_dir }}/kubectl apply -f {{ traefik_temp_dir }}/manifests/ingress-rbac.yaml"
       connection: local
       run_once: true
-      when: "'https' == traefik_mode"
-
-    - name: 删除旧的配置文件
-      command: "{{ bin_dir }}/kubectl delete configmap traefik-conf -n kube-system"
-      connection: local
-      run_once: true
-      when: "'https' == traefik_mode and 'traefik-conf' in configmap_info.stdout"
-
-    - name: 创建traefik配置文件
-      template: src=traefix.toml.j2 dest={{ traefik_temp_dir }}/traefix.toml
-      run_once: true
-      connection: local
-      when: "'https' == traefik_mode"
-
-    - name: 保存traefik配置文件到到k8s
-      shell: "{{ bin_dir }}/kubectl create configmap traefik-conf --from-file={{ traefik_temp_dir }}/traefix.toml -n kube-system"
-      run_once: true
-      connection: local
-      when: "'https' == traefik_mode"
-
+      
     - name: 部署traefik
-      shell: "{{ bin_dir }}/kubectl apply -f {{ traefik_temp_dir }}/manifests/"
+      shell: "{{ bin_dir }}/kubectl apply -f {{ traefik_temp_dir }}/manifests/traefik-ingress-{{ traefik_mode }}.yaml"
       connection: local
       run_once: true
 

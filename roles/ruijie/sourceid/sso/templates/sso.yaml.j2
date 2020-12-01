@@ -1,14 +1,19 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-sso
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-sso
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-sso
   template:
     metadata:
       labels:
-        service: rg-sso
+        k8s-app: rg-sso
     spec:
 {% if "" != SOURCEID_SSO_HOST_ALIAS and "offload" != SOURCEID_HTTPS_MODE %}
       hostAliases:
@@ -68,36 +73,51 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-sso
+    k8s-app: rg-sso
   ports:
   - port: 80
     targetPort: 80
 
 ---
-apiVersion: extensions/v1beta1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
   name: rg-sso-ingress
   namespace: {{ APP_NAMESPACE }}
 spec:
-  rules:
-  - host: {{ SOURCEID_SSO_DOMAIN }}
-    http:
-      paths:
-      - path: /v2/api-docs
-        backend:
-          serviceName: rg-frontend
-          servicePort: 80
-      - path: /public
-        backend:
-          serviceName: rg-gate
-          servicePort: 80
-      - path: /linkid
-        backend:
-          serviceName: rg-gate
-          servicePort: 80
-      - path: /
-        backend:
-          serviceName: rg-sso
-          servicePort: 80
+  entryPoints:
+{% if 'https' == traefik_mode %}
+    - websecure
+{% else %}
+    - web
+{% endif %}
+  routes:
+    - match: Host(`{{ SOURCEID_SSO_DOMAIN }}`) && PathPrefix(`/v2/api-docs`)
+      kind: Rule
+      services:
+        - name: rg-frontend
+          port: 80
 
+    - match: Host(`{{ SOURCEID_SSO_DOMAIN }}`) && PathPrefix(`/public`)
+      kind: Rule
+      services:
+        - name: rg-gate
+          port: 80
+
+    - match: Host(`{{ SOURCEID_SSO_DOMAIN }}`) && PathPrefix(`/linkid`)
+      kind: Rule
+      services:
+        - name: rg-gate
+          port: 80
+
+    - match: Host(`{{ SOURCEID_SSO_DOMAIN }}`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: rg-sso
+          port: 80
+{% if 'https' == traefik_mode %}
+  tls:
+    store:
+      name: default
+      namespace: kube-system
+{% endif %}

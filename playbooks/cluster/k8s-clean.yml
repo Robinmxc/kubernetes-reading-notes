@@ -53,6 +53,11 @@
   - kube_master
   - kube_node
   tasks:
+  - name: 获取docker目录
+    shell: |-
+      docker info|grep 'Docker Root Dir'|awk -F ": " '{print $2}'
+    register: docker_home
+
   - name: clean 'kube-router' stuff
     shell: "{{ bin_dir }}/docker run --privileged --net=host cloudnativelabs/kube-router --cleanup-config"
     ignore_errors: true
@@ -76,13 +81,13 @@
     when: "'kubeasz' not in install_info.stdout"
 
   - name: unmount docker filesystem-2
-    mount: path=/var/lib/docker/overlay state=unmounted
+    mount: path={{ docker_home.stdout }}/overlay state=unmounted
     when: "'kubeasz' not in install_info.stdout"
 
   - name: remove files and dirs
     file: name={{ item }} state=absent
     with_items:
-    - "/var/lib/docker/"
+    - "{{ docker_home.stdout }}"
     - "/var/run/docker/"
     - "/etc/systemd/system/docker.service"
     - "/etc/systemd/system/docker.service.requires/"

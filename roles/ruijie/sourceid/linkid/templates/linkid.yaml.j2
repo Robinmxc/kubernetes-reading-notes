@@ -1,14 +1,19 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-linkid
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-linkid
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-linkid
   template:
     metadata:
       labels:
-        service: rg-linkid
+        k8s-app: rg-linkid
     spec:
       containers:
       - name: rg-linkid
@@ -51,7 +56,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-linkid
+    k8s-app: rg-linkid
   ports:
   - port: 80
     targetPort: 8901
