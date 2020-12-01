@@ -36,10 +36,28 @@
     shell: 'unrar x -o+ {{ mongodb_init_dir }}/smpplus/rg-init-db/SMP_DATA.rar {{ mongodb_init_dir }}/smpplus/rg-init-db/'
     connection: local
 
+  - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
+    register: db_version
+    failed_when: 'db_version.stdout is search(mongo_shell_fail_pattern) and db_version.stdout is not search(mongo_shell_success_pattern)' 
+    connection: local
+
   - name: 执行初始化基础库脚本
     shell: '{{ mongo_pod_shell }} /ruijie/init/smpplus/rg-init-db/init-data.sh 127.0.0.1 27017 {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}'
+    when: '"DB_VERSION" not in db_version.stdout'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+
+  - name: SYSTEM_VERSION表中新增组件数据库版本记录
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").insert({"_id":"DB_VERSION"})'''
+    when: '"DB_VERSION" not in db_version.stdout'
+    connection: local
+
+  - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
+    register: db_version
+    failed_when: 'db_version.stdout is search(mongo_shell_fail_pattern) and db_version.stdout is not search(mongo_shell_success_pattern)' 
     connection: local
 
   - name: 执行基于基础库的升级脚本
@@ -48,6 +66,16 @@
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
+  - name: 保存数据库版本到SYSTEM_VERSION表中
+    vars:
+      comp_name: "{{ item }}"
+      db_name: "{{ DB_VERSION[comp_name].name }}_version"
+      db_cur_version: "{{ DB_VERSION[comp_name].version }}"
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"{{ db_cur_version }}"}},"new":true})'''
+    with_items: "{{ DB_VERSION.keys() }}"
+    when: "DB_VERSION is defined"
+    connection: local
+    
   - name: 准备创建数据库用户的脚本
     template: src="create-users.js.j2" dest="{{ mongodb_init_dir }}/create-users.js"
 

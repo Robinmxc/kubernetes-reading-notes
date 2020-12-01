@@ -17,29 +17,15 @@ spec:
         env:
         - name: JAVA_OPT_EXT
           value: "{{ JAVA_OPT_EXT}}"
-{% if "dict" == (deploy_conf.resources | type_debug) %}
-        resources:
-          limits:
-            cpu: {{ deploy_conf.resources.limits.cpu }}
-            memory: {{ deploy_conf.resources.limits.memory }}
-          requests:
-            cpu: {{ deploy_conf.resources.requests.cpu }}
-            memory: {{ deploy_conf.resources.requests.memory }}
-{% endif %}
         ports:
         - containerPort: 9999
+        - containerPort: 9688
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
         - mountPath: /home/upload
           name: share
           readOnly: false
-      - name: rg-{{ comp_api_name }}
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_api_name].name }}:{{ SMPPLUS_DOCKERS[comp_api_name].version }}
-        imagePullPolicy: IfNotPresent
-        env:
-        - name: JAVA_OPT_EXT
-          value: "{{ JAVA_OPT_EXT}}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
@@ -49,11 +35,27 @@ spec:
             cpu: {{ deploy_conf.resources.requests.cpu }}
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
+      - name: rg-{{ comp_api_name }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_api_name].name }}:{{ SMPPLUS_DOCKERS[comp_api_name].version }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ JAVA_OPT_EXT}}"
         ports:
         - containerPort: 9887
         volumeMounts:
-        - mountPath: /ruijie/{{ comp_api_name }}
-          name: api-conf         
+        - mountPath: /ruijie/{{comp_api_name}}
+          name: api-conf
+
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -65,7 +67,7 @@ spec:
             path: {{ config_base_dir }}/share
         - name: api-conf
           hostPath:
-            path: {{ config_base_dir }}/{{comp_api_name}} 
+            path: {{ config_base_dir }}/{{comp_api_name}}  
 
 ---
 apiVersion: v1
@@ -80,21 +82,27 @@ spec:
   type: NodePort
   ports:
   - port: 9999
+    name: port9999
     targetPort: 9999
     nodePort: 9999
+  - port: 9688
+    name: port9688
+    targetPort: 9688
+    nodePort: 9688
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: rg-{{comp_api_name}}
+  name: rg-{{comp_api_name}} 
   namespace: {{ APP_NAMESPACE }}
 spec:
   externalTrafficPolicy: Local
   selector:
-    service: rg-{{comp_api_name}}
+    service: rg-{{comp_name}}
   type: NodePort
   ports:
   - port: 9887
+    name: port9887
     targetPort: 9887
-    nodePort: 9887  
+    nodePort: 9887   

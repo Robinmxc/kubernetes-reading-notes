@@ -1,3 +1,10 @@
+- name: 复制配置文件
+  tags:
+  - config
+  copy:
+    src: "{{ namespace_dir }}/conf/freeradius/"
+    dest: "{{ config_base_dir }}/freeradius/"
+
 - name: 准备部署文件目录
   tags:
   - config
@@ -6,27 +13,6 @@
   - "{{ yaml_dir }}/freeradius"
   run_once: true
   connection: local
-
-- name: 自动配置rest
-  tags:
-    - config
-
-  replace: path="{{ config_base_dir }}/freeradius/mods-enabled/rest" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
-  with_items:
-    - {regexp: "rg-authentication", replace: "{{groups['kube_node'][0]}}"}
-- name: 自动配置mschap
-  tags:
-    - config
-  replace: path="{{ config_base_dir }}/freeradius/mods-enabled/mschap" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
-  with_items:
-    - {regexp: "rg-authentication", replace: "{{groups['kube_node'][0]}}"}
-
-- name: 自动配置dynamic_clients
-  tags:
-    - config
-  replace: path="{{ config_base_dir }}/freeradius/sites-enabled/dynamic-clients" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
-  with_items:
-    - {regexp: "rg-authentication", replace: "{{groups['kube_node'][0]}}"}
 
 - name: 准备部署文件
   tags:

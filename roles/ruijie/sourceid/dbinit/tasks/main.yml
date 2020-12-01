@@ -5,13 +5,6 @@
   run_once: true
   with_items: "{{ db_pwd_checklist }}"
 
-# - name: 检查数据库密码
-#   fail: msg="数据库密码{{ item.pwd_param_name }}不符合要求，{{ db_pwd_invalid_msg }}"
-#   when: '"" != item.pwd and (item.pwd is not search(db_pwd_pattern1) or item.pwd is not search(db_pwd_pattern2))'
-#   connection: local
-#   run_once: true
-#   with_items: "{{ db_pwd_checklist }}"
-
 - block:
   - name: 压缩数据初始化脚本
     archive:

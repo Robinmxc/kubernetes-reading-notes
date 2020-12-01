@@ -1,0 +1,102 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: rg-mgob
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  serviceName: rg-mgob
+  replicas: 1
+  selector:
+    matchLabels:
+      service: rg-mgob
+  template:
+    metadata:
+      labels:
+        service: rg-mgob
+    spec:
+      nodeName: {{ mgob_node_ip }}
+      containers:
+      - name: rg-mgob
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/mgob:{{ mgob_version }}
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+        ports:
+          - containerPort: 8091
+        volumeMounts:
+          - name: mgob-storage
+            mountPath: /storage
+          - name: mgob-tmp
+            mountPath: /tmp
+          - mountPath: /config/mongobak.yml
+            name: mgob-config
+            subPath: mongobak.yml
+          - name: date-config
+            mountPath: /etc/localtime 
+      volumes:
+        - name: mgob-storage
+          hostPath:
+            path: {{ mgob_data_dir }}/storage
+        - name: date-config
+          hostPath:
+            path: /etc/localtime
+        - name: mgob-tmp
+          hostPath:
+            path: {{ mgob_data_dir }}/mgob/tmp
+        - name: mgob-config
+          configMap:
+            name: mgob-config
+            items:
+              - key: mongobak.yml
+                path: mongobak.yml
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-mgob
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    service: rg-mgob
+  ports:
+  - port: 8091
+    targetPort: 8091
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    service: rg-mgob
+  name: mgob-config
+  namespace: {{ APP_NAMESPACE }}
+data:
+  mongobak.yml: |
+    target:
+      host: {{ mgob_node_ip }}
+      port: 27017
+      database: ""
+      username: {{ MONGODB_ADMIN_USER }}
+      password: {{ MONGODB_ADMIN_PWD }}
+    scheduler:
+      cron: "0 2 */1 * *"
+      retention: {{ MGOB_SFTP_RETENTION }}
+      timeout: 60
+{% if "yes" == (MGOB_SFTP_ENABLED) %}
+    sftp:
+      host: {{ MGOB_SFTP_HOSTS }}
+      port: {{ MGOB_SFTP_PORT }}
+      username: {{ MGOB_SFTP_USER }}
+      password: {{ MGOB_SFTP_PWD }}
+      # you can also specify path to a private key and a passphrase
+      #private_key: /etc/ssh/ssh_host_rsa_key
+      #passphrase: secretpassphrase
+      # dir must exist on the SFTP server
+      dir: upload
+{% endif %}    
