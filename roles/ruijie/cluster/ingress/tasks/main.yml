@@ -67,8 +67,13 @@
       connection: local
       when: "'https' == traefik_mode"
 
+    - name: 部署traefik-rbac
+      shell: "{{ bin_dir }}/kubectl apply -f {{ traefik_temp_dir }}/manifests/ingress-rbac.yaml"
+      connection: local
+      run_once: true
+      
     - name: 部署traefik
-      shell: "{{ bin_dir }}/kubectl apply -f {{ traefik_temp_dir }}/manifests/"
+      shell: "{{ bin_dir }}/kubectl apply -f {{ traefik_temp_dir }}/manifests/traefik-ingress-{{ traefik_mode }}.yaml"
       connection: local
       run_once: true
 
