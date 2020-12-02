@@ -23,7 +23,7 @@ spec:
       - image: traefik:v2.3.0
         name: traefik-ingress
         ports:
-        - name: http
+        - name: web
           containerPort: 80
           hostPort: 80
         - name: admin
@@ -31,7 +31,7 @@ spec:
           hostPort: 8580
         args:
         - --accesslog
-        - --entrypoints.http.Address=:80
+        - --entrypoints.web.Address=:80
         - --entrypoints.traefik.Address=:8580
         - --providers.kubernetescrd
         - --api
