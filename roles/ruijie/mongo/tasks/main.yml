@@ -206,11 +206,8 @@
       connection: local
       run_once: true
 
-    - name: 尝试查询复制集状态
-      shell: "{{ mongo_pod_shell }} mongo --quiet --eval 'rs.status()'"
-      register: rs_status
-      connection: local
-      run_once: true
+    - name: 暂停15秒等待mongo启动完成
+      wait_for: timeout=15
 
     - name: 设置初始化标识
       set_fact:
