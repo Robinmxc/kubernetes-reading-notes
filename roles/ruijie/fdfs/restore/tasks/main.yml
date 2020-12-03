@@ -1,0 +1,20 @@
+- name: 检查restic是否安装
+  shell: restic
+  ignore_errors: true
+  register: has_restic
+
+- name: 安装restic
+  shell: |
+    sudo yum -y install yum-plugin-copr
+    sudo yum -y copr enable copart/restic
+    sudo yum -y install restic
+  when: has_restic.rc != 0
+
+- name: 准备目录
+  file: name={{working_dir}} state=directory
+
+- name: 设置restore.sh参数
+  template: src=restore.sh.j2 dest={{working_dir}}/restore.sh
+
+- name: 进行备份
+  shell: sh {{working_dir}}/restore.sh

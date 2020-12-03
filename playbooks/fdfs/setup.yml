@@ -20,3 +20,4 @@
   roles:
   - ruijie/fdfs/storage
   - ruijie/fdfs/cluster
+  - ruijie/fdfs/backup

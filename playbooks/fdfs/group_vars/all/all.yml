@@ -15,3 +15,30 @@ FDFS_BASE_PATH: "{{ DATA_DIR }}/ruijie/fdfs"
 FDFS_CONF_PATH: "/etc/fdfs"
 
 FDFS_VIP: ""
+
+# the static password for backup operations, if it changed, previous backups can not be restored.
+RESTIC_PASSWORD: "adummypassword"
+# the user to login via ssh
+user: "root"
+# data dir that needs backup
+#/home/ruijie/fdfs/storage/data
+source_data_path: "/home/ruijie/fdfs/storage/data"
+# path to restore the backupped data
+data_restore_path: "/data/restore"
+
+# local backup directory
+local_backup_path: "/home/backups/fastdfs"
+
+# the ip of remote backup server
+backup_server_ip: "172.17.8.129"
+# the absolute path of remote server backup directory
+remote_backup_path: "//home/backups/fastdfs"
+
+remote_backup_url: "sftp://{{user}}@{{backup_server_ip}}:{{remote_backup_path}}"
+
+default_restore_path: "{{remote_backup_url}}"
+
+# number of reversions to keep
+snapshots: 3
+
+remote_password: "shyfzx@163"

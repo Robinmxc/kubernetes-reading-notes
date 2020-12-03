@@ -1,0 +1,45 @@
+#!/bin/bash
+export RESTIC_PASSWORD={{RESTIC_PASSWORD}}
+echo -----------------------starting remote backup-----------------------------
+
+keep_snapshots=`expr {{SNAPSHOTS}} - 1`
+
+echo ${keep_snapshots}
+echo remote url is: {{REMOTE_BACKUP_PATH}}
+
+restic snapshots -r {{REMOTE_BACKUP_PATH}}
+if [ $? -eq 0 ]; then
+    echo remote reposiroty already inited, removing remote reversions three days ago
+    restic -r {{REMOTE_BACKUP_PATH}} forget --keep-last ${keep_snapshots} --prune
+else
+    echo init remote reposiroty...
+    restic init -r {{REMOTE_BACKUP_PATH}}
+fi
+
+
+echo starting backup to remote reposiroty...
+restic backup -r {{REMOTE_BACKUP_PATH}} --verbose {{FDFS_IMG_DATA_PATH}}
+
+echo -----------------------remote backup complete------------------------------
+
+echo -----------------------starting local backup-----------------------------
+
+echo local url is: {{LOCAL_BACKUP_PATH}}
+
+restic snapshots -r {{LOCAL_BACKUP_PATH}}
+if [ $? -eq 0 ]; then
+    echo local reposiroty already inited, removing local reversions three days ago
+    restic -r {{LOCAL_BACKUP_PATH}} forget --keep-last ${keep_snapshots} --prune
+else
+    echo init local reposiroty...
+    restic init -r {{LOCAL_BACKUP_PATH}}
+fi
+
+
+echo starting backup to local reposiroty...
+restic backup -r {{LOCAL_BACKUP_PATH}} --verbose {{FDFS_IMG_DATA_PATH}}
+
+echo -----------------------local backup complete------------------------------
+
+
+#------------------------------------------------------------------------------
