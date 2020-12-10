@@ -1,0 +1,4 @@
+#!/bin/bash
+sed -i '/fdfs_backup.sh/d' /var/spool/cron/root
+
+echo "0 3 * * * sh {{working_dir}}/fdfs_backup.sh" >> /var/spool/cron/root

@@ -1,0 +1,8 @@
+#!/bin/bash
+echo -----------------------starting restore------------------------------------
+
+export RESTIC_PASSWORD={{RESTIC_PASSWORD}}
+
+restic restore latest -r {{REMOTE_BACKUP_PATH}} --target {{DATA_RESTORE_PATH}} --path {{FDFS_IMG_DATA_PATH}}
+#restic restore latest -r sftp://root@172.17.8.129://home/backups/fastdfs --target /data --path "/home/ruijie/fdfs/storage/data"
+echo -----------------------restore complete------------------------------------
