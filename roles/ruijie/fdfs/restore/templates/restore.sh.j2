@@ -3,6 +3,13 @@ echo -----------------------starting restore------------------------------------
 
 export RESTIC_PASSWORD={{RESTIC_PASSWORD}}
 
-restic restore latest -r {{REMOTE_BACKUP_PATH}} --target {{DATA_RESTORE_PATH}} --path {{FDFS_IMG_DATA_PATH}}
+restic restore latest -r sftp://{{BACKUP_USER}}@{{BACKUP_SERVER_IP}}:/{{REMOTE_BACKUP_PATH}} --target {{DATA_RESTORE_PATH}} --path {{FDFS_IMG_DATA_PATH}}
+if [ $? -eq 0 ]; then
+    echo -----------------------restore complete------------------------------------
+    restic unlock -r sftp://{{BACKUP_USER}}@{{BACKUP_SERVER_IP}}:/{{REMOTE_BACKUP_PATH}}
+else
+    echo -----------------------restore failed--------------------------------------
+    restic unlock -r sftp://{{BACKUP_USER}}@{{BACKUP_SERVER_IP}}:/{{REMOTE_BACKUP_PATH}}
+    exit 1
+fi
 #restic restore latest -r sftp://root@172.17.8.129://home/backups/fastdfs --target /data --path "/home/ruijie/fdfs/storage/data"
-echo -----------------------restore complete------------------------------------

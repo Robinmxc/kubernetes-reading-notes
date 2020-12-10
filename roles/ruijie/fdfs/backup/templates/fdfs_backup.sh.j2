@@ -3,20 +3,21 @@ export RESTIC_PASSWORD={{RESTIC_PASSWORD}}
 
 echo -----------------------starting remote backup-----------------------------
 
-echo remote url is: {{REMOTE_BACKUP_PATH}}
+REMOTE_BACKUP_PATH="sftp://{{BACKUP_USER}}@{{BACKUP_SERVER_IP}}:/{{REMOTE_BACKUP_PATH}}"
 
-restic snapshots -r {{REMOTE_BACKUP_PATH}}
+echo remote url is: ${REMOTE_BACKUP_PATH}
+
+restic snapshots -r ${REMOTE_BACKUP_PATH}
 if [ $? -eq 0 ]; then
     echo remote reposiroty already inited, removing remote reversions three days ago
-    restic -r {{REMOTE_BACKUP_PATH}} forget --keep-last 2 --prune
+    restic -r ${REMOTE_BACKUP_PATH} forget --keep-last 2 --prune
 else
     echo init remote reposiroty...
-    restic init -r {{REMOTE_BACKUP_PATH}}
+    restic init -r ${REMOTE_BACKUP_PATH}
 fi
 
-
 echo starting backup to remote reposiroty...
-restic backup -r {{REMOTE_BACKUP_PATH}} --verbose {{FDFS_IMG_DATA_PATH}}
+restic backup -r ${REMOTE_BACKUP_PATH} --verbose {{FDFS_IMG_DATA_PATH}}
 
 echo -----------------------remote backup complete----------------------------
 
