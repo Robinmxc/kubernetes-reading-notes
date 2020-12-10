@@ -1,0 +1,18 @@
+#!/bin/sh
+#chkconfig: 2345 80 90
+#description:auto_run
+
+{% for port in [27017,2379,2380] %}
+iptables -I INPUT -p tcp --dport {{ port }} -j DROP
+{% for masterhost in KUBE_MASTER_HOSTS %}
+{% if masterhost not in KUBE_NODE_HOSTS %}
+iptables -I INPUT -s {{ masterhost }} -p tcp --dport {{ port }} -j ACCEPT
+{% endif %}
+{% endfor %}
+{% for host in KUBE_NODE_HOSTS %}
+iptables -I INPUT -s {{ host }} -p tcp --dport {{ port }} -j ACCEPT
+{% endfor %}
+iptables -I INPUT -s 127.0.0.1 -p tcp --dport {{ port }} -j ACCEPT
+iptables -I INPUT -s {{ CLUSTER_CIDR }} -p tcp --dport {{ port }} -j ACCEPT
+
+{% endfor %}
