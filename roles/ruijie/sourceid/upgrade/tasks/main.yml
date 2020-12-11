@@ -142,4 +142,13 @@
       - "sourceid/component"
     connection: local
     run_once: true
+
+  - name: 复制https证书到新目录
+    vars:
+      src_path: "{{ca_dir}}/{{ item }}"
+      dest_path: "{{ ingress_ca_dir }}/{{ item }}"
+    copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+    with_items: "{{ traefik_ssl_names }}"
+    when: "'https' == traefik_mode"
+
   when: 'inventory_hostname == groups.kube_master[0]'
