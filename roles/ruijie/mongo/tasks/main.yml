@@ -209,6 +209,12 @@
     - name: 暂停15秒等待mongo启动完成
       wait_for: timeout=15
 
+    - name: 尝试查询复制集状态
+      shell: "{{ mongo_pod_shell }} mongo --quiet --eval 'rs.status()'"
+      register: rs_status
+      connection: local
+      run_once: true
+            
     - name: 设置初始化标识
       set_fact:
         init_flag: '{% if "requires authentication" in rs_status.stdout %}1{% else %}0{% endif %}'
