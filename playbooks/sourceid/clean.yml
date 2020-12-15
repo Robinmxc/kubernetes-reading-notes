@@ -103,7 +103,7 @@
     tags:
       - rocketmq
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/rocketmq/"
-    when: 'pod_info.stdout is search("rg-rocket-[a-z0-9]*-[a-z0-9]*\s")'
+    when: '"rg-rocket" in pod_info.stdout'
 
   - name: 等待linkid结束运行
     tags:
