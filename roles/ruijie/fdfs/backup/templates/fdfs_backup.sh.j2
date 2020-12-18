@@ -1,9 +1,9 @@
 #!/bin/bash
-export RESTIC_PASSWORD={{RESTIC_PASSWORD}}
+export RESTIC_PASSWORD={{FAST_DFS.RESTIC_PASSWORD}}
 
 echo -----------------------starting remote backup-----------------------------
 
-REMOTE_BACKUP_PATH="sftp://{{BACKUP_USER}}@{{BACKUP_SERVER_IP}}:/{{REMOTE_BACKUP_PATH}}"
+REMOTE_BACKUP_PATH="sftp://{{FAST_DFS.BACKUP_USER}}@{{FAST_DFS.BACKUP_SERVER_IP}}:/{{FAST_DFS.REMOTE_BACKUP_PATH}}"
 
 echo remote url is: ${REMOTE_BACKUP_PATH}
 
@@ -17,7 +17,7 @@ else
 fi
 
 echo starting backup to remote reposiroty...
-restic backup -r ${REMOTE_BACKUP_PATH} --verbose {{FDFS_IMG_DATA_PATH}}
+restic backup -r ${REMOTE_BACKUP_PATH} --verbose {{FAST_DFS.FDFS_IMG_DATA_PATH}}
 
 echo -----------------------remote backup complete----------------------------
 
@@ -25,19 +25,19 @@ if [ "false" == "true" ];then
 
     echo -----------------------starting local backup-----------------------------
 
-    echo local url is: {{LOCAL_BACKUP_PATH}}
+    echo local url is: {{FAST_DFS.LOCAL_BACKUP_PATH}}
 
-    restic snapshots -r {{LOCAL_BACKUP_PATH}}
+    restic snapshots -r {{FAST_DFS.LOCAL_BACKUP_PATH}}
     if [ $? -eq 0 ]; then
         echo local reposiroty already inited, removing local reversions three days ago
-        restic -r {{LOCAL_BACKUP_PATH}} forget --keep-last 2 --prune
+        restic -r {{FAST_DFS.LOCAL_BACKUP_PATH}} forget --keep-last 2 --prune
     else
         echo init local reposiroty...
-        restic init -r {{LOCAL_BACKUP_PATH}}
+        restic init -r {{FAST_DFS.LOCAL_BACKUP_PATH}}
     fi
 
     echo starting backup to local reposiroty...
-    restic backup -r {{LOCAL_BACKUP_PATH}} --verbose {{FDFS_IMG_DATA_PATH}}
+    restic backup -r {{FAST_DFS.LOCAL_BACKUP_PATH}} --verbose {{FAST_DFS.FDFS_IMG_DATA_PATH}}
 
     echo -----------------------local backup complete------------------------------
 

@@ -15,20 +15,3 @@ FDFS_BASE_PATH: "{{ DATA_DIR }}/ruijie/fdfs"
 FDFS_CONF_PATH: "/etc/fdfs"
 
 FDFS_VIP: ""
-
-
-RESTIC_PASSWORD: "adummypassword"
-
-FDFS_IMG_DATA_PATH: "/test_files"
-
-DATA_RESTORE_PATH: "/"
-
-LOCAL_BACKUP_PATH: "/home/backups/fastdfs"
-
-REMOTE_BACKUP_PATH: "/home/backups/test"
-
-BACKUP_SERVER_IP: "172.17.8.129"
-
-BACKUP_USER: "root"
-
-REMOTE_SSH_PASSWORD: "shyfzx@163"
