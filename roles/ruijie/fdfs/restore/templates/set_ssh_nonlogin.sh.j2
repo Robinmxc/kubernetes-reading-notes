@@ -7,11 +7,11 @@ spawn ssh-copy-id {{BACKUP_USER}}@{{BACKUP_SERVER_IP}}
         "(yes/no)?"
         {
             send "yes\n"
-            expect "*assword:" { send "{{REMOTE_SSH_PASSWORD}}\n"}
+            expect "*assword:" { send "{{FAST_DFS.REMOTE_SSH_PASSWORD}}\n"}
         }
         "*assword:"
         {
-            send "{{REMOTE_SSH_PASSWORD}}\n"
+            send "{{FAST_DFS.REMOTE_SSH_PASSWORD}}\n"
         }
     }
 expect eof

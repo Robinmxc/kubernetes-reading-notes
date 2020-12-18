@@ -52,7 +52,6 @@
     msg: "{{ restore_result.stderr.split('\n') }}"
   when: (restore_result.rc != 0) and (restore_result.stderr.find('connect') != -1)
 
-
 - name: 恢复成功
   debug:
     msg: "{{ restore_result.stdout.split('\n') }}"
