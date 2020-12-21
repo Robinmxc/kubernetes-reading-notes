@@ -1,15 +1,15 @@
 #!/bin/bash
 echo -----------------------starting restore------------------------------------
 
-export RESTIC_PASSWORD={{RESTIC_PASSWORD}}
+export RESTIC_PASSWORD={{FAST_DFS.RESTIC_PASSWORD}}
 
-restic restore latest -r sftp://{{BACKUP_USER}}@{{BACKUP_SERVER_IP}}:/{{REMOTE_BACKUP_PATH}} --target {{DATA_RESTORE_PATH}} --path {{FDFS_IMG_DATA_PATH}}
+restic restore latest -r sftp://{{FAST_DFS.BACKUP_USER}}@{{FAST_DFS.BACKUP_SERVER_IP}}:/{{FAST_DFS.REMOTE_BACKUP_PATH}} --target {{FAST_DFS.DATA_RESTORE_PATH}} --path {{FAST_DFS.FDFS_IMG_DATA_PATH}}
 if [ $? -eq 0 ]; then
     echo -----------------------restore complete------------------------------------
-    restic unlock -r sftp://{{BACKUP_USER}}@{{BACKUP_SERVER_IP}}:/{{REMOTE_BACKUP_PATH}}
+    restic unlock -r sftp://{{FAST_DFS.BACKUP_USER}}@{{FAST_DFS.BACKUP_SERVER_IP}}:/{{FAST_DFS.REMOTE_BACKUP_PATH}}
 else
     echo -----------------------restore failed--------------------------------------
-    restic unlock -r sftp://{{BACKUP_USER}}@{{BACKUP_SERVER_IP}}:/{{REMOTE_BACKUP_PATH}}
+    restic unlock -r sftp://{{FAST_DFS.BACKUP_USER}}@{{FAST_DFS.BACKUP_SERVER_IP}}:/{{FAST_DFS.REMOTE_BACKUP_PATH}}
     exit 1
 fi
 #restic restore latest -r sftp://root@172.17.8.129://home/backups/fastdfs --target /data --path "/home/ruijie/fdfs/storage/data"
