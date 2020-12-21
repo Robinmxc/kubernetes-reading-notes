@@ -124,3 +124,8 @@ dns_replicas: "{% if DEPLOY_MODE == 'allinone' %}1{% else %}2{% endif %}"
 
 # 集群 DNS 域名
 CLUSTER_DNS_DOMAIN: "cluster.local."
+
+#证书目录
+ca_dir: "/etc/kubernetes/ssl"
+
+ingress_ca_dir: "/etc/kad/ssl"
