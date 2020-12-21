@@ -1,0 +1,17 @@
+#!/usr/bin/expect
+
+set timeout 60
+
+spawn ssh-copy-id {{BACKUP_USER}}@{{BACKUP_SERVER_IP}}
+    expect {
+        "(yes/no)?"
+        {
+            send "yes\n"
+            expect "*assword:" { send "{{FAST_DFS.REMOTE_SSH_PASSWORD}}\n"}
+        }
+        "*assword:"
+        {
+            send "{{FAST_DFS.REMOTE_SSH_PASSWORD}}\n"
+        }
+    }
+expect eof

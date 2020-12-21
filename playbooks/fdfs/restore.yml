@@ -1,0 +1,5 @@
+- hosts:
+    - fdfs_storage
+  any_errors_fatal: true
+  roles:
+    - ruijie/fdfs/restore

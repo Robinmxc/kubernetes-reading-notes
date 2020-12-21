@@ -43,3 +43,20 @@ FDFS_MODE: "none"
 #MGOB_SFTP_USER: "root"
 #MGOB_SFTP_PWD: "shyfzx@163"
 
+FAST_DFS:
+  #备份仓库的密码
+  RESTIC_PASSWORD: "adummypassword"
+  #FastDFS照片文件存储目录（本机）
+  FDFS_IMG_DATA_PATH: "/home/ruijie/fdfs/storage/data"
+  #备份恢复的目录（本机）
+  DATA_RESTORE_PATH: "/data/restore"
+  #本地备份仓库路径
+  LOCAL_BACKUP_PATH: "/home/backups/fastdfs"
+  #远程备份仓库路径
+  REMOTE_BACKUP_PATH: "/home/backups/fastdfs"
+  #远程服务器ip
+  BACKUP_SERVER_IP: "172.17.8.129"
+  #远程备份登录用户（SSH登录用户）
+  BACKUP_USER: "root"
+  #SFTP远程密码（SSH登录密码）
+  REMOTE_SSH_PASSWORD: "shyfzx@163"

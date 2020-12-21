@@ -27,6 +27,8 @@ bin_dir: "/opt/kube/bin"
 #证书目录
 ca_dir: "/etc/kubernetes/ssl"
 
+ingress_ca_dir: "/etc/kad/ssl"
+
 PRIVATE_REGISTRY_ENABLED: "no"
 PRIVATE_INSECURE_REGISTRY: "id.ruijie.com.cn:25082"
 PRIVATE_REGISTRY_USER: ""

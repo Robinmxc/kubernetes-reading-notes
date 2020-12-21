@@ -1,0 +1,58 @@
+- name: 检查restic是否安装
+  shell: restic
+  ignore_errors: true
+  register: has_restic
+
+- name: 安装restic
+  shell: |
+    sudo yum -y install yum-plugin-copr
+    sudo yum -y copr enable copart/restic
+    sudo yum -y install restic
+  when: has_restic.rc != 0
+
+- name: 检查expect是否安装
+  shell: yum list installed expect
+  ignore_errors: true
+  register: has_expect
+
+- name: 安装expect
+  shell: sudo yum -y install expect
+  when: has_expect.rc != 0
+
+- name: 准备目录
+  file: name={{working_dir}} state=directory
+
+- name: 设置set_ssh_nonlogin参数
+  template: src=set_ssh_nonlogin.sh.j2 dest={{working_dir}}/set_ssh_nonlogin.sh
+
+- name: 设置ssh免登录
+  shell: expect {{working_dir}}/set_ssh_nonlogin.sh
+  ignore_errors: true
+
+- name: 正在恢复中，请耐心等待...
+  template: src=restore.sh.j2 dest={{working_dir}}/restore.sh
+
+- name: 恢复结束
+  shell: sh {{working_dir}}/restore.sh
+  ignore_errors: true
+  register: restore_result
+
+- name: 恢复失败，请检查sftp用户权限
+  debug:
+    msg: "{{ restore_result.stderr.split('\n') }}"
+  when: (restore_result.rc != 0) and (restore_result.stderr.find('Permission denied, please try again.') != -1)
+
+- name: 恢复失败，请检查sftp目录权限
+  debug:
+    msg: "{{ restore_result.stderr.split('\n') }}"
+  when: (restore_result.rc != 0) and (restore_result.stderr.find('SSH_FX_PERMISSION_DENIED') != -1)
+
+- name: 恢复失败，请检查sftp连接
+  debug:
+    msg: "{{ restore_result.stderr.split('\n') }}"
+  when: (restore_result.rc != 0) and (restore_result.stderr.find('connect') != -1)
+
+- name: 恢复成功
+  debug:
+    msg: "{{ restore_result.stdout.split('\n') }}"
+  when: restore_result.rc == 0
