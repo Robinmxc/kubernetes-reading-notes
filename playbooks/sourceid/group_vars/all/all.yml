@@ -33,6 +33,8 @@ rocketmq_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/data"
 rocketmq_logs_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/log"
 rocketmq_conf_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/conf"
 
+mgob_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mgob/data"
+
 db_user_pattern: "^[a-zA-Z0-9_]{3,16}$"
 db_user_invalid_msg: "账号只能由大/小写字母、数字、下划线组成，长度3~16字符"
 
