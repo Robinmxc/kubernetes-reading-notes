@@ -1,0 +1,26 @@
+
+cqspb_collect_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms2048m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 4
+        memory: 4.5Gi
+      requests:
+        cpu: 2
+        memory: 2Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2.5Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+
+cqspb_collect_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
