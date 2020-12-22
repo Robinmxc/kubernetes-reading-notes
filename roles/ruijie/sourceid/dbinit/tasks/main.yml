@@ -131,11 +131,16 @@
       current_db_version: '{% if db_version.stdout is defined %}{{db_version.stdout_lines|last|from_json}}{% endif%}'
       src_file: update-data.sh.j2
     template: src="{{ src_file }}" dest="{{ mongodb_init_dir }}/update-data.sh"
+  
+  - name: 准备功能开启/关闭脚本
+    template: src="function-switch.sh.j2" dest="{{ mongodb_init_dir }}/function-switch.sh"
+
 
   - name: 设置升级脚本文件执行权限
     file: name="{{ item }}" mode=0700
     with_items:
     - "{{ mongodb_init_dir }}/update-data.sh"
+    - "{{ mongodb_init_dir }}/function-switch.sh"
 
   - name: 查询数据初始化状态
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''
@@ -147,6 +152,11 @@
     shell: '{{ mongo_pod_shell }} /ruijie/init/update-data.sh'
     when: '"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w" in mongo_result.stdout'
     register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+
+  - name: 执行功能开启/关闭脚本
+    shell: '{{ mongo_pod_shell }} /ruijie/init/function-switch.sh'
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 

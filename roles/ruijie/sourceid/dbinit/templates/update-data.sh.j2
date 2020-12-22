@@ -11,9 +11,7 @@ cd /ruijie/init/sourceid/rg-upgrade-db
 cd /ruijie/init/component/rg-init-db
 ./upgrade_data.sh 127.0.0.1 27017 component {{current_db_version['component_version']}}  {{ COMPONENT_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin
 cd /ruijie/init/sourceid/rg-upgrade-db
-{% if "yes" == SOURCEID_FACEID_ENABLED %}
 ./upgrade_data.sh 127.0.0.1 27017 faceid sourceid {{current_db_version['faceid_version']}}  {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin
-{% endif %}
 
 {% else %}
 {% for value in DB_VERSION %}

@@ -1,5 +1,5 @@
 - name: 部署faceid-task
-  when: 'SOURCEID_FACEID_ENABLED == "yes"'
+  when: 'SOURCEID_DOCKERS.faceid-task is defined and (SOURCEID_DOCKERS.faceid-task.enable is not defined or SOURCEID_DOCKERS.faceid-task.enable)'
   block:
   - name: 检查人脸组件版本
     tags:
@@ -52,27 +52,6 @@
     template: src='{{ faceid_templates_path }}faceid-task.yaml.j2' dest={{ yaml_dir }}/faceid-task/faceid-task.yml
     run_once: true
     connection: local
-
-  - name: 查询FACEID数据库用户状态
-    tags:
-      - deploy
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("faceid").runCommand({usersInfo: "{{ SOURCEID_FACEID_DB_USER }}"})'''
-    register: mongo_result
-    when: '"yes" == SOURCEID_FACEID_ENABLED'
-    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
-    run_once: true
-    connection: local
-
-  - name: 初始化FACEID数据库用户
-    tags:
-      - deploy
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("faceid").runCommand({createUser: "{{ SOURCEID_FACEID_DB_USER }}", pwd: "{{ SOURCEID_FACEID_DB_PWD }}", roles: [{role:"dbOwner", db: "faceid"}]})'''
-    when: '"yes" == SOURCEID_FACEID_ENABLED and SOURCEID_FACEID_DB_USER not in mongo_result.stdout'
-    register: mongo_result
-    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
-    run_once: true
-    connection: local
-    no_log: true
 
   - name: 获取所有已经创建的POD信息
     tags:
