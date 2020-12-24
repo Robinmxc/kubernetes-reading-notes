@@ -1,5 +1,5 @@
 - name: 部署
-  when: 'FGM_BACKEND_ENABLED == "yes"'
+  when: 'SOURCEID_DOCKERS.fgm-backend is defined and (SOURCEID_DOCKERS.fgm-backend.enable is not defined or SOURCEID_DOCKERS.fgm-backend.enable)'
   block:
   - name: 复制配置文件
     tags:

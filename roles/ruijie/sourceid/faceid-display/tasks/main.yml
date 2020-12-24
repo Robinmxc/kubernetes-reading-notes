@@ -15,7 +15,6 @@
     with_items:
       - {regexp: "mongodb:.*/faceid.*$", replace: "mongodb://{{ SOURCEID_FACEID_DB_USER }}:{{ SOURCEID_FACEID_DB_PWD }}@{{ mongodb_addr }}/faceid?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
-      - {regexp: "http.*//rg-sso.kube-ruijie.svc.*$", replace: "{{ SOURCEID_SSO_URL }}"}
       - {regexp: "http://.*/group1", replace: "{{ FDFS_ACCESS_URL }}"}
     no_log: true
 

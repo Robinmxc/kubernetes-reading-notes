@@ -1,0 +1,31 @@
+pgsql_offline: "postgresql-11.10.tar"
+
+pgsql_deploy_mode: "{{ groups['kube_node'] | length }}"
+
+pgsql_deploy_conf_defaults:
+  small:
+    resources:
+      limits:
+        cpu: 1
+        memory: 200M
+      requests:
+        cpu: 0.5
+        memory: 100M
+  normal:
+    resources:
+      limits:
+        cpu: 1
+        memory: 200M
+      requests:
+        cpu: 0.5
+        memory: 100M
+  single:
+    resources:
+      limits:
+        cpu: 1
+        memory: 200M
+      requests:
+        cpu: 0.5
+        memory: 100M
+
+pgsql_deploy_conf: '{{ pgsql_deploy_conf_defaults[CLUSTER_SCALE] }}'

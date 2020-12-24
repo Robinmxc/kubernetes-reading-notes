@@ -1,5 +1,5 @@
 - name: 部署数据同步组件
-  when: 'SOURCEID_CONVERT_ENABLED == "yes"'
+  when: 'SOURCEID_DOCKERS.convert is defined and (SOURCEID_DOCKERS.convert.enable is not defined or SOURCEID_DOCKERS.convert.enable)'
   block:
   - name: 复制配置文件
     tags:

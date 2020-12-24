@@ -1,5 +1,5 @@
 
-faceid_display_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
+faceid_display_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms512m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 faceid_display_configs: []
 
@@ -12,19 +12,19 @@ deploy_conf_defaults:
     replicas: 2
     resources:
       limits:
-        cpu: 4
-        memory: 5Gi
-      requests:
-        cpu: 2
+        cpu: 1
         memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
   single:
     replicas: 1
     resources:
       limits:
-        cpu: 2
-        memory: 3Gi
-      requests:
         cpu: 1
-        memory: 2Gi
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
 
 faceid_display_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

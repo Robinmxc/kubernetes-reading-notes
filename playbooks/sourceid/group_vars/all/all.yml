@@ -35,6 +35,9 @@ rocketmq_conf_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/conf"
 
 mgob_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mgob/data"
 
+pgsql_init_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/pgsql/init"
+pgsql_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/pgsql/data"
+
 db_user_pattern: "^[a-zA-Z0-9_]{3,16}$"
 db_user_invalid_msg: "账号只能由大/小写字母、数字、下划线组成，长度3~16字符"
 
@@ -91,18 +94,6 @@ SOURCEID_SSO_HOST_ALIAS: "{% if 'dev' == SOURCEID_DEPLOY_PROFILE %}{{ groups['ku
 SOURCEID_FRONTEND_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}https{% endif %}://{{ SOURCEID_GATE_DOMAIN }}"
 
 SOURCEID_SSO_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}https{% endif %}://{{ SOURCEID_SSO_DOMAIN }}"
-
-SOURCEID_IMPORT_USER_ENABLED: "{% if SOURCEID_DOCKERS['import-user'] is defined %}yes{% else %}no{% endif %}"
-
-SOURCEID_DATA_SYNC_ENABLED: "{% if SOURCEID_DOCKERS['data-sync'] is defined %}yes{% else %}no{% endif %}"
-
-SOURCEID_SECURITY_ENABLED: "{% if SOURCEID_DOCKERS['security'] is defined %}yes{% else %}no{% endif %}"
-
-SOURCEID_CONVERT_ENABLED: "{% if SOURCEID_DOCKERS['convert'] is defined %}yes{% else %}no{% endif %}"
-
-FGM_BACKEND_ENABLED: "{% if SOURCEID_DOCKERS['fgm-backend'] is defined %}yes{% else %}no{% endif %}"
-
-SOURCEID_GROUPVIEW_ENABLED: "{% if SOURCEID_DOCKERS['groupview'] is defined %}yes{% else %}no{% endif %}"
 
 SOURCEID_FGM_VERSION_ENABLED: "yes"
 

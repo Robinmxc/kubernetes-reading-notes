@@ -1,5 +1,5 @@
 - name: 部署数据同步组件
-  when: 'SOURCEID_DATA_SYNC_ENABLED == "yes"'
+  when: 'SOURCEID_DOCKERS.data-sync is defined and (SOURCEID_DOCKERS.data-sync.enable is not defined or SOURCEID_DOCKERS.data-sync.enable)'
   block:
   - name: 复制配置文件
     tags:

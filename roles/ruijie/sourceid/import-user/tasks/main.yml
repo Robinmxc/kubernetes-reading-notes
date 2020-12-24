@@ -1,5 +1,5 @@
 - name: 部署用户导入组件
-  when: 'SOURCEID_IMPORT_USER_ENABLED == "yes"'
+  when: 'SOURCEID_DOCKERS.import-user is defined and (SOURCEID_DOCKERS.import-user.enable is not defined or SOURCEID_DOCKERS.import-user.enable)'
   block:
   - name: 复制配置文件
     tags:
