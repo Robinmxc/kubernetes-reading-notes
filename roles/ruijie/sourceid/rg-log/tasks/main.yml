@@ -1,5 +1,5 @@
 - name: 部署rg-log
-  when: 'SOURCEID_DOCKERS.rg-log is defined and (SOURCEID_DOCKERS.rg-log.enable is not defined or SOURCEID_DOCKERS.rg-log.enable)'
+  when: 'RG_LOG_ENABLE == "yes"'
   block:
   - name: 复制配置文件
     tags:
@@ -24,7 +24,7 @@
       path: '{{ config_base_dir }}/sourceid/rg-log/conf/application-pro.yml'
       regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
       replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
-    with_items: '{{ faceid_configs }}'
+    with_items: '{{ rg_log_configs }}'
     no_log: true
 
   - name: 准备部署文件目录

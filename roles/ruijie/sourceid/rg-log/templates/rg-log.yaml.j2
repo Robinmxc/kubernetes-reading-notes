@@ -7,6 +7,9 @@ metadata:
     k8s-app: rg-log
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-log
   template:
     metadata:
       labels:
@@ -18,7 +21,7 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: JAVA_OPT_EXT
-          value: "{{ rg-log_display_java_opt }}"
+          value: "{{ rg_log_java_opt }}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:

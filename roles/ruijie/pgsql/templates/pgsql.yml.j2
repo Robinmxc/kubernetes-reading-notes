@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ pgsql_node_name }}
+  name: postgresql
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:

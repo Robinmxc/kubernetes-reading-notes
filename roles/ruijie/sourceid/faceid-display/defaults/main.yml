@@ -1,3 +1,4 @@
+FACEID_DISPLAY_ENABLE: "{% if SOURCEID_DOCKERS['faceid-display'] is defined and (SOURCEID_DOCKERS['faceid-display'].enable is not defined or SOURCEID_DOCKERS['faceid-display'].enable) %}yes{% else %}no{% endif %}"
 
 faceid_display_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms512m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
 

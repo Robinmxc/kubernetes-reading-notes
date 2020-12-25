@@ -1,4 +1,6 @@
 
+FACEID_TASK_ENABLE: "{% if SOURCEID_DOCKERS['faceid-task'] is defined and (SOURCEID_DOCKERS['faceid-task'].enable is not defined or SOURCEID_DOCKERS['faceid-task'].enable) %}yes{% else %}no{% endif %}"
+
 faceid_task_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1024m -Xmx3072m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 faceid_task_configs: []

@@ -1,3 +1,4 @@
+RG_LOG_ENABLE: "{% if SOURCEID_DOCKERS['rg-log'] is defined and (SOURCEID_DOCKERS['rg-log'].enable is not defined or SOURCEID_DOCKERS['rg-log'].enable) %}yes{% else %}no{% endif %}"
 
 rg_log_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms512m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
 

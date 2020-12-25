@@ -1,12 +1,12 @@
 - name: 部署faceid-display
-  when: 'SOURCEID_DOCKERS.faceid-display is defined and (SOURCEID_DOCKERS.faceid-display.enable is not defined or SOURCEID_DOCKERS.faceid-display.enable)'
+  when: 'FACEID_DISPLAY_ENABLE == "yes"'
   block:
   - name: 复制配置文件
     tags:
       - config
     copy:
       src: "{{ namespace_dir }}/conf/sourceid/faceid-display/"
-      dest: "{{ config_base_dir }}/sourceid/faceid-display/conf/"
+      dest: "{{ config_base_dir }}/sourceid/faceid-display/"
 
   - name: 自动配置
     tags:

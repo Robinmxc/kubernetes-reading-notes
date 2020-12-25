@@ -1,5 +1,5 @@
 - name: 部署License
-  when: 'SOURCEID_DOCKERS.groupview is defined and (SOURCEID_DOCKERS.groupview.enable is not defined or SOURCEID_DOCKERS.groupview.enable)'
+  when: 'GROUP_VIEW_ENABLE == "yes"'
   block:
   - name: 复制配置文件
     tags:
@@ -16,7 +16,7 @@
       - {regexp: "mongodb:.*/groupview.*$", replace: "mongodb://{{ SOURCEID_GROUPVIEW_DB_USER }}:{{ SOURCEID_GROUPVIEW_DB_PWD }}@{{ mongodb_addr }}/groupview?replicaSet=rs0"}
       - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
-      - {regexp: "password: adminpassword", replace: "{{ PGSQL_ADMIN_PWD }}"}
+      - {regexp: "password: adminpassword", replace: "password: {{ PGSQL_ADMIN_PWD }}"}
     no_log: true
 
   - name: 自动配置application-job.properties

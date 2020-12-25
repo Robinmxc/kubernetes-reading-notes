@@ -1,14 +1,19 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-fgm-backend
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-fgm-backend
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-fgm-backend
   template:
     metadata:
       labels:
-        service: rg-fgm-backend
+        k8s-app: rg-fgm-backend
     spec:
       containers:
       - name: rg-fgm-backend

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: rg-faceid-task
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.faceid-task.name }}:{{ SOURCEID_DOCKERS.faceid-task.version }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["faceid-task"].name }}:{{ SOURCEID_DOCKERS["faceid-task"].version }}
         imagePullPolicy: IfNotPresent
         env:
         - name: JAVA_OPT_EXT

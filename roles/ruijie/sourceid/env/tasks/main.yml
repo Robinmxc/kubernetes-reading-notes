@@ -54,7 +54,7 @@
     - "sourceid/groupview"
     - "sourceid/component"
     - "sourceid/faceid-task"
-    - "sourceid/rg-log"
+    - "sourceid/log"
   connection: local
   run_once: true
 

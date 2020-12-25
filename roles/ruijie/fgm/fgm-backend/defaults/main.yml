@@ -1,3 +1,4 @@
+FGM_BACKEND_ENABLE: "{% if SOURCEID_DOCKERS['fgm-backend'] is defined and (SOURCEID_DOCKERS['fgm-backend'].enable is not defined or SOURCEID_DOCKERS['fgm-backend'].enable) %}yes{% else %}no{% endif %}"
 
 fgm_backend_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms128m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms128m -Xmx512m{% else %}-Xms128m -Xmx512m{% endif %}"
 

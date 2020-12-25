@@ -1,5 +1,5 @@
 - name: 部署faceid-task
-  when: 'SOURCEID_DOCKERS.faceid-task is defined and (SOURCEID_DOCKERS.faceid-task.enable is not defined or SOURCEID_DOCKERS.faceid-task.enable)'
+  when: 'FACEID_TASK_ENABLE == "yes"'
   block:
 
   - name: 复制配置文件
@@ -7,7 +7,7 @@
       - config
     copy:
       src: "{{ namespace_dir }}/conf/sourceid/faceid-task/"
-      dest: "{{ config_base_dir }}/sourceid/faceid-task/conf/"
+      dest: "{{ config_base_dir }}/sourceid/faceid-task/"
 
   - name: 自动配置
     tags:

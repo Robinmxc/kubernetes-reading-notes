@@ -56,6 +56,15 @@
 - name: 部署pgsql
   when: '"postgresql" not in pod_info.stdout'
   block:
+
+    - name: 准备data目录
+      file: path="{{ pgsql_data_dir }}" state=directory
+
+    - name: 设置目录权限
+      file: name="{{ item }}" mode=0777
+      with_items:
+      - "{{ pgsql_data_dir }}"
+
     - name: 分发镜像文件
       copy: src={{ base_dir }}/down/{{ pgsql_offline }} dest=/opt/kube/images/{{ pgsql_offline }}
       when: '"allinone" != DEPLOY_MODE and pgsql_offline in download_info.stdout'
@@ -131,7 +140,7 @@
       connection: local
 
     - name: 初始化quartz数据
-      shell: '{{ pgsql_pod_shell }} -d quartz -f /ruijie/init/sourceid/init.sql'
+      shell: '{{ pgsql_pod_shell }} -d quartz -f /ruijie/init/sourceid/rg-init-db/init.sql'
       when: '"quartz" not in table_result.stdout'
       register: init_result
       failed_when: 'init_result.stdout is search("command terminated")'

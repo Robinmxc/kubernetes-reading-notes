@@ -1,12 +1,12 @@
 - name: 部署Faceid
-  when: 'SOURCEID_DOCKERS.faceid is defined and (SOURCEID_DOCKERS.faceid.enable is not defined or SOURCEID_DOCKERS.faceid.enable)'
+  when: 'FACEID_ENABLE == "yes"'
   block:
   - name: 复制配置文件
     tags:
       - config
     copy:
       src: "{{ namespace_dir }}/conf/sourceid/faceid/"
-      dest: "{{ config_base_dir }}/sourceid/faceid/conf/"
+      dest: "{{ config_base_dir }}/sourceid/faceid/"
 
   - name: 自动配置
     tags:
@@ -26,7 +26,6 @@
       regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
       replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
     with_items: '{{ faceid_configs }}'
-    no_log: true
 
   - name: 准备部署文件目录
     tags:
