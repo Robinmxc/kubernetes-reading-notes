@@ -10,4 +10,4 @@ spec:
       targetPort: {{ mongodb_port }}
       nodePort: {{ MONGODB_NODEPORT }}
   selector:
-    service: mongo1
+    name: mongo1
