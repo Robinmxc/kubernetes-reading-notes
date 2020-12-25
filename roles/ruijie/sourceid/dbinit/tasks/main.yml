@@ -64,6 +64,7 @@
     - "{{ mongodb_init_dir }}/init-data.sh"
     - "{{ mongodb_init_dir }}/sourceid/rg-init-db/init-data.sh"
     - "{{ mongodb_init_dir }}/sourceid/rg-upgrade-db/upgrade_data.sh"
+    - "{{ mongodb_init_dir }}/sourceid/rg-upgrade-db/function_switch.sh"
 
   - name: 查询数据初始化状态
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {clientId: "OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}})'''

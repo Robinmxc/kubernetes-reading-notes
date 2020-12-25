@@ -230,7 +230,7 @@ def parse_host_data(workspace_dir):
     # 设置pgsql节点名称
     idx = 0
     for ip in result["groups"]["pgsql"]["hosts"]:
-        host_vars[ip]["PG_NODE_NAME"] = "postgresql_" + bytes(idx)
+        host_vars[ip]["PG_NODE_NAME"] = "postgresql-" + bytes(idx)
         idx = idx + 1
 
     parse_fdfs_config(result)
