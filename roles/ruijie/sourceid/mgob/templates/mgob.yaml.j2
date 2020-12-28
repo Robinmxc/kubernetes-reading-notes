@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: rg-mgob
@@ -8,11 +8,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      service: rg-mgob
+      k8s-app: rg-mgob
   template:
     metadata:
       labels:
-        service: rg-mgob
+        k8s-app: rg-mgob
     spec:
       nodeName: {{ mgob_node_ip }}
       containers:
@@ -63,7 +63,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-mgob
+    k8s-app: rg-mgob
   ports:
   - port: 8091
     targetPort: 8091
@@ -73,7 +73,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   labels:
-    service: rg-mgob
+    k8s-app: rg-mgob
   name: mgob-config
   namespace: {{ APP_NAMESPACE }}
 data:
