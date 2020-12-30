@@ -13,7 +13,7 @@
       - config
     replace: path="{{ config_base_dir }}/sourceid/rg-log/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-      - {regexp: "mongodb:.*/log.*$", replace: "mongodb://{{ SOURCEID_FACEID_DB_USER }}:{{ SOURCEID_FACEID_DB_PWD }}@{{ mongodb_addr }}/log?replicaSet=rs0"}
+      - {regexp: "mongodb:.*/log.*$", replace: "mongodb://{{ SOURCEID_LOG_DB_USER }}:{{ SOURCEID_LOG_DB_PWD }}@{{ mongodb_addr }}/log?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
     no_log: true
 
