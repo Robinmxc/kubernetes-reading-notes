@@ -41,6 +41,9 @@ LINKID_DB_VERSION: "R1.1"
 #component数据库脚本版本号
 COMPONENT_DB_VERSION: "v1.0"
 
+#eportal数据库脚本版本号
+EPORTAL_DB_VERSION: "R1.1"
+
 MGOB_ENABLED: "no"
 
 SMPPLUS_SMS_MIDDLEWARE_ENABLED: "{% if SMPPLUS_DOCKERS['sms-middleware'] is defined %}yes{% else %}no{% endif %}"
