@@ -1,5 +1,5 @@
 - name: 部署cqspb-collect组件
-  when: 'SOURCEID_DOCKERS.cqspb-collect is defined and (SOURCEID_DOCKERS.cqspb-collect.enable is not defined or SOURCEID_DOCKERS.cqspb-collect.enable)"'
+  when: 'SOURCEID_DOCKERS["cqspb-collect"] is defined and (SOURCEID_DOCKERS["cqspb-collect"].enable is not defined or SOURCEID_DOCKERS["cqspb-collect"].enable)"'
   block:
   - name: 复制配置文件
     tags:
@@ -11,7 +11,7 @@
   - name: 修改配置文件
     tags:
       - config
-    replace: path="{{ config_base_dir }}/sourceid/cqspb-collect/conf/application.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    replace: path="{{ config_base_dir }}/sourceid/cqspb-collect/conf/application-bus.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
     no_log: true

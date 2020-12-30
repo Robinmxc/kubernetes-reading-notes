@@ -21,7 +21,7 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: JAVA_OPT_EXT
-          value: "{{ cqspb-collect_java_opt }}"
+          value: "{{ cqspb_collect_java_opt }}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:

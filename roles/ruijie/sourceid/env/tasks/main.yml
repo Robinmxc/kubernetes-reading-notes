@@ -53,6 +53,7 @@
     - "sourceid/fgm-backend"
     - "sourceid/groupview"
     - "sourceid/component"
+    - "sourceid/cqspb-collect"
   connection: local
   run_once: true
 
