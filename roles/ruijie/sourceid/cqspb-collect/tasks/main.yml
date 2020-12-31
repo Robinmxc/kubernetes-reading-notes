@@ -1,5 +1,5 @@
 - name: 部署cqspb-collect组件
-  when: 'SOURCEID_DOCKERS["cqspb-collect"] is defined and (SOURCEID_DOCKERS["cqspb-collect"].enable is not defined or SOURCEID_DOCKERS["cqspb-collect"].enable)"'
+  when: 'CQSPB_COLLECT_ENABLE == "yes"'
   block:
   - name: 复制配置文件
     tags:
