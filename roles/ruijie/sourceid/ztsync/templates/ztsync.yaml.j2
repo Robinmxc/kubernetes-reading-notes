@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rg-cqspb-collect
+  name: rg-ztsync
   namespace: {{ APP_NAMESPACE }}
   labels:
-    k8s-app: rg-cqspb-collect
+    k8s-app: rg-ztsync
 spec:
   replicas: {{ deploy_conf.replicas }}
   selector:
     matchLabels:
-      k8s-app: rg-cqspb-collect
+      k8s-app: rg-ztsync
   template:
     metadata:
       labels:
-        k8s-app: rg-cqspb-collect
+        k8s-app: rg-ztsync
     spec:
       containers:
-      - name: rg-cqspb-collect
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS['cqspb-collect'].name }}:{{ SOURCEID_DOCKERS['cqspb-collect'].version }}
+      - name: rg-ztsync
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS['ztsync'].name }}:{{ SOURCEID_DOCKERS['ztsync'].version }}
         imagePullPolicy: IfNotPresent
         env:
         - name: JAVA_OPT_EXT
-          value: "{{ cqspb_collect_java_opt }}"
+          value: "{{ ztsync_java_opt }}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
@@ -34,7 +34,7 @@ spec:
         ports:
         - containerPort: 8903
         volumeMounts:
-        - mountPath: /ruijie/sourceid/cqspb-collect/conf
+        - mountPath: /ruijie/sourceid/ztsync/conf
           name: conf
         - mountPath: /logs
           name: logpath
@@ -43,7 +43,7 @@ spec:
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/sourceid/cqspb-collect/conf
+            path: {{ config_base_dir }}/sourceid/ztsync/conf
         - name: logpath
           hostPath:
             path: {{ config_base_dir }}/logs
@@ -52,11 +52,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rg-cqspb-collect
+  name: rg-ztsync
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    k8s-app: rg-cqspb-collect
+    k8s-app: rg-ztsync
   ports:
   - port: 80
     targetPort: 8903

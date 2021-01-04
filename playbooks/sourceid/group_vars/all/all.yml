@@ -80,6 +80,9 @@ SOURCEID_GATEWAY_DB_PWD: ""
 SOURCEID_GROUPVIEW_DB_USER: "groupview"
 SOURCEID_GROUPVIEW_DB_PWD: ""
 
+SOURCEID_ZTSYNC_DB_USER: "ztsync"
+SOURCEID_ZTSYNC_DB_PWD: ""
+
 SOURCEID_LICENSE_ENABLED: "{% if SOURCEID_DOCKERS.license is defined %}yes{% else %}no{% endif %}"
 
 SOURCEID_HTTPS_MODE: "{% if 'https' == traefik_mode %}normal{% else %}none{% endif %}"

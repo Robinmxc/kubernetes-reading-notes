@@ -99,6 +99,12 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/groupview/"
     when: 'pod_info.stdout is search("rg-groupview-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 ztsync
+    tags:
+      - ztsync
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/ztsync/"
+    when: 'pod_info.stdout is search("ztsync-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 rocketmq
     tags:
       - rocketmq
@@ -256,6 +262,16 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-groupview" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待ztsync结束运行
+    tags:
+      - ztsync
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-ztsync" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
