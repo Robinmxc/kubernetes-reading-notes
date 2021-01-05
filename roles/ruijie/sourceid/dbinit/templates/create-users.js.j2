@@ -29,8 +29,8 @@ db.getSiblingDB("groupview").runCommand({
   roles: [{role:"dbOwner", db: "groupview"}]
 });
 
-db.getSiblingDB("groupview").runCommand({
+db.getSiblingDB("ztsync").runCommand({
   createUser: "{{ SOURCEID_ZTSYNC_DB_USER }}",
   pwd: "{{ SOURCEID_ZTSYNC_DB_PWD }}",
-  roles: [{role:"dbOwner", db: "groupview"}]
+  roles: [{role:"dbOwner", db: "ztsync"}]
 });
