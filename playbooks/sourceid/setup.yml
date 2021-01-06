@@ -48,7 +48,7 @@
   - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
-  - { role: ruijie/sourceid/dbinit }
+  - { role: ruijie/sourceid/dbinit, tags: always }
 
 - hosts:
   - kube_node
