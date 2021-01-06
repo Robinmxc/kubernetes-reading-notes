@@ -1,22 +1,24 @@
 - name: 检查restic是否安装
-  shell: restic
-  ignore_errors: true
+  shell: yum list installed | grep "restic" /dev/null 2>&1
   register: has_restic
+  failed_when: false
+  no_log: true
 
 - name: 安装restic
   shell: |
-    sudo yum -y install yum-plugin-copr
-    sudo yum -y copr enable copart/restic
-    sudo yum -y install restic
+    yum -y install yum-plugin-copr
+    yum -y copr enable copart/restic
+    yum -y install restic
   when: has_restic.rc != 0
 
 - name: 检查expect是否安装
-  shell: yum list installed expect
-  ignore_errors: true
+  shell: yum list installed | grep "expect" /dev/null 2>&1
   register: has_expect
+  failed_when: false
+  no_log: true
 
 - name: 安装expect
-  shell: sudo yum -y install expect
+  shell: yum -y install expect
   when: has_expect.rc != 0
 
 - name: 准备目录
