@@ -60,3 +60,23 @@ spec:
   ports:
   - port: 80
     targetPort: 8903
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rg-ztsync-ingress
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  entryPoints:
+{% if 'https' == traefik_mode %}
+    - websecure
+{% else %}
+    - web
+{% endif %}
+  routes:
+    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/sync`)
+      kind: Rule
+      services:
+        - name: rg-ztsync
+          port: 80
