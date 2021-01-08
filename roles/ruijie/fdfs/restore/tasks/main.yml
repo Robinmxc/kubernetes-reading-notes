@@ -30,8 +30,10 @@
 - name: 设置ssh免登录
   shell: expect {{working_dir}}/set_ssh_nonlogin.sh
   ignore_errors: true
+  failed_when: false
+  no_log: true
 
-- name: 正在恢复中，请耐心等待...
+- name: 正在恢复，花费时间可能较长，请耐心等待。。。
   template: src=restore.sh.j2 dest={{working_dir}}/restore.sh
 
 - name: 恢复结束
