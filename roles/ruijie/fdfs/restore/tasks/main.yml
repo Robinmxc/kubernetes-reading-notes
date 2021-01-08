@@ -33,10 +33,10 @@
   failed_when: false
   no_log: true
 
-- name: 正在恢复，花费时间可能较长，请耐心等待。。。
+- name: 设置恢复脚本
   template: src=restore.sh.j2 dest={{working_dir}}/restore.sh
 
-- name: 等待恢复结果。。。
+- name: 正在恢复，花费时间可能较长，请耐心等待。。。
   shell: sh {{working_dir}}/restore.sh
   ignore_errors: true
   register: restore_result
