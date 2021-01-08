@@ -36,25 +36,11 @@
 - name: 正在恢复，花费时间可能较长，请耐心等待。。。
   template: src=restore.sh.j2 dest={{working_dir}}/restore.sh
 
-- name: 恢复结束
+- name: 等待恢复结果。。。
   shell: sh {{working_dir}}/restore.sh
   ignore_errors: true
   register: restore_result
-
-- name: 恢复失败，请检查sftp用户权限
-  debug:
-    msg: "{{ restore_result.stderr.split('\n') }}"
-  when: (restore_result.rc != 0) and (restore_result.stderr.find('Permission denied, please try again.') != -1)
-
-- name: 恢复失败，请检查sftp目录权限
-  debug:
-    msg: "{{ restore_result.stderr.split('\n') }}"
-  when: (restore_result.rc != 0) and (restore_result.stderr.find('SSH_FX_PERMISSION_DENIED') != -1)
-
-- name: 恢复失败，请检查sftp连接
-  debug:
-    msg: "{{ restore_result.stderr.split('\n') }}"
-  when: (restore_result.rc != 0) and (restore_result.stderr.find('connect') != -1)
+  failed_when: restore_result.rc != 0
 
 - name: 恢复成功
   debug:
