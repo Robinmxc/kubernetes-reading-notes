@@ -2,7 +2,7 @@
 
 set timeout 60
 
-spawn ssh-copy-id {{BACKUP_USER}}@{{BACKUP_SERVER_IP}}
+spawn ssh-copy-id {{FAST_DFS.BACKUP_USER}}@{{FAST_DFS.BACKUP_SERVER_IP}}
     expect {
         "(yes/no)?"
         {
