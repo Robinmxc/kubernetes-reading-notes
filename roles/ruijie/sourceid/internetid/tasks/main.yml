@@ -14,7 +14,7 @@
     replace: path="{{ config_base_dir }}/sourceid/internetid/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
-      - {regexp: "^namesrv-addr:.*$", replace: "namesrv-addr: rg-rocket.ruijie-sourceid.svc:9876"}
+      - {regexp: "namesrv-addr:.*$", replace: "namesrv-addr: rg-rocket.ruijie-sourceid.svc:9876"}
     no_log: true  
 
   - name: 准备部署文件目录

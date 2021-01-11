@@ -55,6 +55,7 @@
     - "sourceid/component"
     - "sourceid/faceid-task"
     - "sourceid/log"
+    - "sourceid/internetid"
   connection: local
   run_once: true
 
