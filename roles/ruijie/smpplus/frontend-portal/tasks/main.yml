@@ -2,9 +2,11 @@
   tags:
   - config
   copy:
-    src: "{{ namespace_dir }}/conf/frontend-portal/conf/"
-    dest: "{{ config_base_dir }}/frontend-portal/conf/"
-
+    src: "{{ namespace_dir }}/conf/frontend-portal/{{ item }}/"
+    dest: "{{ config_base_dir }}/frontend-portal/{{ item }}/"
+    with_items:
+      - "conf"
+      - "plugin"
 
 - name: 自动配置
   tags:
