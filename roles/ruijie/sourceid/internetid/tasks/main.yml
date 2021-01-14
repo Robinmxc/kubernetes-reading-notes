@@ -13,6 +13,7 @@
       - config
     replace: path="{{ config_base_dir }}/sourceid/internetid/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
+      - {regexp: "mongodb:.*/internet-id.*$", replace: "mongodb://{{ SOURCEID_INTERNETID_DB_USER }}:{{ SOURCEID_INTERNETID_DB_PWD }}@{{ mongodb_addr }}/internet-id?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
       - {regexp: "namesrv-addr:.*$", replace: "namesrv-addr: rg-rocket.ruijie-sourceid.svc:9876"}
     no_log: true  

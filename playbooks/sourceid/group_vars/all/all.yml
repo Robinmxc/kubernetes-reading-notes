@@ -88,6 +88,9 @@ SOURCEID_GROUPVIEW_DB_PWD: ""
 SOURCEID_LOG_DB_USER: "log"
 SOURCEID_LOG_DB_PWD: ""
 
+SOURCEID_INTERNETID_DB_USER: "internetid"
+SOURCEID_INTERNETID_DB_PWD: ""
+
 SOURCEID_LICENSE_ENABLED: "{% if SOURCEID_DOCKERS.license is defined %}yes{% else %}no{% endif %}"
 
 SOURCEID_HTTPS_MODE: "{% if 'https' == traefik_mode %}normal{% else %}none{% endif %}"

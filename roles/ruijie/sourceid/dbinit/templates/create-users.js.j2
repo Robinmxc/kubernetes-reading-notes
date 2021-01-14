@@ -40,3 +40,9 @@ db.getSiblingDB("log").runCommand({
   pwd: "{{ SOURCEID_LOG_DB_PWD }}",
   roles: [{role:"dbOwner", db: "log"}]
 });
+
+db.getSiblingDB("internet-id").runCommand({
+  createUser: "{{ SOURCEID_INTERNETID_DB_USER }}",
+  pwd: "{{ SOURCEID_INTERNETID_DB_PWD }}",
+  roles: [{role:"dbOwner", db: "internet-id"}]
+});
