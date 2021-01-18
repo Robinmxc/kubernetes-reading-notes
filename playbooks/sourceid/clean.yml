@@ -116,6 +116,7 @@
       - internetid
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/internetid/"
     when: 'pod_info.stdout is search("rg-internetid-[a-z0-9]*-[a-z0-9]*\s")'
+    
   - name: 停止 ztsync
     tags:
       - ztsync
@@ -309,6 +310,7 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-internetid" not in pod_info.stdout'
+
   - name: 等待ztsync结束运行
     tags:
       - ztsync
