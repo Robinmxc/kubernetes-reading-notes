@@ -1,3 +1,2 @@
 - import_playbook: clean.yml
-- import_playbook: prepare.yml
 - import_playbook: upgrade-prepare.yml
