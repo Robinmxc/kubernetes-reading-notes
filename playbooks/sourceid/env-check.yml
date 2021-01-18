@@ -2,6 +2,8 @@
   - kube_master
   - kube_node
   gather_facts: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   any_errors_fatal: true
   roles:
   - ruijie/sourceid/check-cpu
