@@ -46,3 +46,9 @@ db.getSiblingDB("internet-id").runCommand({
   pwd: "{{ SOURCEID_INTERNETID_DB_PWD }}",
   roles: [{role:"dbOwner", db: "internet-id"}]
 });
+
+db.getSiblingDB("ztsync").runCommand({
+  createUser: "{{ SOURCEID_ZTSYNC_DB_USER }}",
+  pwd: "{{ SOURCEID_ZTSYNC_DB_PWD }}",
+  roles: [{role:"dbOwner", db: "ztsync"}]
+});

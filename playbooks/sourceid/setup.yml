@@ -80,6 +80,8 @@
   - { role: ruijie/sourceid/faceid-task, tags: ["faceid-task"] }
   - { role: ruijie/sourceid/rg-log, tags: ["rg-log"] }
   - { role: ruijie/sourceid/internetid, tags: ["internetid"] }
+  - { role: ruijie/sourceid/ztsync, tags: ["ztsync"] }
+
 
 - hosts:
   - gateway

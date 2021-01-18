@@ -56,6 +56,7 @@
     - "sourceid/faceid-task"
     - "sourceid/log"
     - "sourceid/internetid"
+    - "sourceid/ztsync"
   connection: local
   run_once: true
 
