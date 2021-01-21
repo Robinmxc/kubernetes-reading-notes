@@ -39,6 +39,9 @@
     SOURCEID_FACEID_DB_PWD: '{% if SOURCEID_FACEID_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_FACEID_DB_PWD }}{% endif %}'
     SOURCEID_GATEWAY_DB_PWD: '{% if SOURCEID_GATEWAY_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_GATEWAY_DB_PWD }}{% endif %}'
     SOURCEID_GROUPVIEW_DB_PWD: '{% if SOURCEID_GROUPVIEW_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_GROUPVIEW_DB_PWD }}{% endif %}'
+    SOURCEID_LOG_DB_PWD: '{% if SOURCEID_LOG_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_LOG_DB_PWD }}{% endif %}'
+    SOURCEID_INTERNETID_DB_PWD: '{% if SOURCEID_INTERNETID_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_INTERNETID_DB_PWD }}{% endif %}'
+    SOURCEID_ZTSYNC_DB_PWD: '{% if SOURCEID_ZTSYNC_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_ZTSYNC_DB_PWD }}{% endif %}'
   connection: local
   run_once: true
 

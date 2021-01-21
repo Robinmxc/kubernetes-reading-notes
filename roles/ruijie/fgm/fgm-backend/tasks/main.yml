@@ -1,5 +1,5 @@
 - name: 部署
-  when: 'FGM_BACKEND_ENABLED == "yes"'
+  when: 'FGM_BACKEND_ENABLE == "yes"'
   block:
   - name: 复制配置文件
     tags:

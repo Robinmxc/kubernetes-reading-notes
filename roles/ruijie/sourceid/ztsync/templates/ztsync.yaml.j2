@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rg-ztsync
+  namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-ztsync
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-ztsync
+  template:
+    metadata:
+      labels:
+        k8s-app: rg-ztsync
+    spec:
+      containers:
+      - name: rg-ztsync
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS['ztsync'].name }}:{{ SOURCEID_DOCKERS['ztsync'].version }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ ztsync_java_opt }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 8903
+        volumeMounts:
+        - mountPath: /ruijie/sourceid/ztsync/conf
+          name: conf
+        - mountPath: /logs
+          name: logpath
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/ztsync/conf
+        - name: logpath
+          hostPath:
+            path: {{ config_base_dir }}/logs
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-ztsync
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    k8s-app: rg-ztsync
+  ports:
+  - port: 80
+    targetPort: 8903
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rg-ztsync-ingress
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  entryPoints:
+{% if 'https' == traefik_mode %}
+    - websecure
+{% else %}
+    - web
+{% endif %}
+  routes:
+    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/sync`)
+      kind: Rule
+      services:
+        - name: rg-ztsync
+          port: 80

@@ -1,0 +1,1 @@
+FACEID_ENABLE: "{% if SOURCEID_DOCKERS.faceid is defined and (SOURCEID_DOCKERS.faceid.enable is not defined or SOURCEID_DOCKERS.faceid.enable) %}yes{% else %}no{% endif %}"

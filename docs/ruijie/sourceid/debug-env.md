@@ -20,7 +20,7 @@ CLUSTER_SCALE: "small"
 修改`/opt/kad/workspace/k8s/conf/all.yml`，把以下配置参数添加到文件末尾：
 ```
 PRIVATE_REGISTRY_ENABLED: "yes"
-PRIVATE_INSECURE_REGISTRY: "id.ruijie.com.cn:25082"
+PRIVATE_INSECURE_REGISTRY: "172.17.8.20:8082"
 PRIVATE_REGISTRY_USER: ""
 PRIVATE_REGISTRY_PWD: ""
 ```

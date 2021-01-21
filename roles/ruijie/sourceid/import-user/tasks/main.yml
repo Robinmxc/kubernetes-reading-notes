@@ -1,5 +1,5 @@
 - name: 部署用户导入组件
-  when: 'SOURCEID_IMPORT_USER_ENABLED == "yes"'
+  when: 'IMPORT_USER_ENABLE == "yes"'
   block:
   - name: 复制配置文件
     tags:

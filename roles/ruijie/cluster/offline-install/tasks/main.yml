@@ -78,8 +78,10 @@
       when: 'offline_dir_tgz_info.stat.exists'
     - name: Oniguruma must be installed first
       shell: "yum install -y {{ offline_dir }}/down/rpms/oniguruma*rpm"
+      no_log: true
     - name: install offline rpm package
       shell: "yum install -y {{ offline_dir }}/down/rpms/*rpm"
+      no_log: true
     - name: 删除离线安装包
       file:
         path: "{{ offline_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"

@@ -145,11 +145,20 @@
 
   - name: 复制https证书到新目录
     vars:
-      src_path: "{{ca_dir}}/{{ item }}"
-      dest_path: "{{ ingress_ca_dir }}/{{ item }}"
-    copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+      src_path: "{{ca_dir}}/{{ item }}-key.pem"
+      dest_path: "{{ ingress_ca_dir }}/{{ item }}-key.pem"
+    copy: src="{{ src_path }}" dest="{{ dest_path }}"
     with_items: "{{ traefik_ssl_names }}"
     when: "'https' == traefik_mode"
     ignore_errors: true
-    
+
+  - name: 复制https证书到新目录
+    vars:
+      src_path: "{{ca_dir}}/{{ item }}.pem"
+      dest_path: "{{ ingress_ca_dir }}/{{ item }}.pem"
+    copy: src="{{ src_path }}" dest="{{ dest_path }}"
+    with_items: "{{ traefik_ssl_names }}"
+    when: "'https' == traefik_mode"
+    ignore_errors: true
+
   when: 'inventory_hostname == groups.kube_master[0]'

@@ -1,0 +1,31 @@
+INTERNETID_ENABLE: "{% if SOURCEID_DOCKERS['internetid'] is defined and (SOURCEID_DOCKERS['internetid'].enable is not defined or SOURCEID_DOCKERS['internetid'].enable) %}yes{% else %}no{% endif %}"
+
+internetid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
+
+internetid_configs: []
+
+internetid_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 4
+        memory: 6Gi
+      requests:
+        cpu: 4
+        memory: 4Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 4
+        memory: 4Gi
+      requests:
+        cpu: 2
+        memory: 2Gi
+
+internetid_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

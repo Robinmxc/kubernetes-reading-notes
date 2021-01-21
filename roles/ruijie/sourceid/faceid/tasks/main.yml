@@ -1,20 +1,12 @@
-- name: 部署License
-  when: 'SOURCEID_FACEID_ENABLED == "yes"'
+- name: 部署Faceid
+  when: 'FACEID_ENABLE == "yes"'
   block:
-  - name: 检查人脸组件版本
-    tags:
-      - allways
-    fail: msg="人脸组件版本未设置"
-    when: 'SOURCEID_DOCKERS.faceid is not defined'
-    run_once: true
-    connection: local
-
   - name: 复制配置文件
     tags:
       - config
     copy:
       src: "{{ namespace_dir }}/conf/sourceid/faceid/"
-      dest: "{{ config_base_dir }}/sourceid/faceid/conf/"
+      dest: "{{ config_base_dir }}/sourceid/faceid/"
 
   - name: 自动配置
     tags:
@@ -34,7 +26,6 @@
       regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
       replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
     with_items: '{{ faceid_configs }}'
-    no_log: true
 
   - name: 准备部署文件目录
     tags:
@@ -53,27 +44,6 @@
     template: src='{{ faceid_templates_path }}faceid.yaml.j2' dest={{ yaml_dir }}/faceid/faceid.yml
     run_once: true
     connection: local
-
-  - name: 查询FACEID数据库用户状态
-    tags:
-      - deploy
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("faceid").runCommand({usersInfo: "{{ SOURCEID_FACEID_DB_USER }}"})'''
-    register: mongo_result
-    when: '"yes" == SOURCEID_FACEID_ENABLED'
-    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
-    run_once: true
-    connection: local
-
-  - name: 初始化FACEID数据库用户
-    tags:
-      - deploy
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("faceid").runCommand({createUser: "{{ SOURCEID_FACEID_DB_USER }}", pwd: "{{ SOURCEID_FACEID_DB_PWD }}", roles: [{role:"dbOwner", db: "faceid"}]})'''
-    when: '"yes" == SOURCEID_FACEID_ENABLED and SOURCEID_FACEID_DB_USER not in mongo_result.stdout'
-    register: mongo_result
-    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
-    run_once: true
-    connection: local
-    no_log: true
 
   - name: 获取所有已经创建的POD信息
     tags:

@@ -125,6 +125,7 @@ def parse_host_data(workspace_dir):
     result["groups"]["deploy"] = {"hosts": [master_hosts[0]]}
     result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["mgob"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
+    result["groups"]["pgsql"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
 
     # 设置K8S部署模式
     deploy_mode = "single-master"
@@ -224,6 +225,12 @@ def parse_host_data(workspace_dir):
     idx = 1
     for ip in result["groups"]["mongodb"]["hosts"]:
         host_vars[ip]["MONGO_NODE_NAME"] = "mongo" + bytes(idx)
+        idx = idx + 1
+
+    # 设置pgsql节点名称
+    idx = 0
+    for ip in result["groups"]["pgsql"]["hosts"]:
+        host_vars[ip]["PG_NODE_NAME"] = "postgresql-" + bytes(idx)
         idx = idx + 1
 
     parse_fdfs_config(result)

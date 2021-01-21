@@ -28,6 +28,17 @@
   - { role: ruijie/rocketmq}
 
 - hosts:
+  - pgsql
+  tags:
+  - pgsql
+  - midware
+  vars_files:
+  - "/etc/kad/config.yml"
+  any_errors_fatal: true
+  roles:
+  - { role: ruijie/pgsql}
+
+- hosts:
   - kube_node
   tags:
   - initdata
@@ -37,7 +48,7 @@
   - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
-  - { role: ruijie/sourceid/dbinit }
+  - { role: ruijie/sourceid/dbinit, tags: always }
 
 - hosts:
   - kube_node
@@ -66,6 +77,11 @@
   - { role: ruijie/fgm/fgm-backend, tags: ["fgm-backend"] }
   - { role: ruijie/sourceid/groupview, tags: ["groupview"] }
   - { role: ruijie/sourceid/mgob, tags: ["mgob"] }
+  - { role: ruijie/sourceid/faceid-task, tags: ["faceid-task"] }
+  - { role: ruijie/sourceid/rg-log, tags: ["rg-log"] }
+  - { role: ruijie/sourceid/internetid, tags: ["internetid"] }
+  - { role: ruijie/sourceid/ztsync, tags: ["ztsync"] }
+
 
 - hosts:
   - gateway

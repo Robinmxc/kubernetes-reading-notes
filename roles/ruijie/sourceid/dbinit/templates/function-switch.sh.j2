@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd /ruijie/init/sourceid/rg-upgrade-db
+
+{% for value in SOURCEID_DOCKERS %}
+./function_switch.sh 127.0.0.1 27017 {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{value}} {%if SOURCEID_DOCKERS[value]["enable"] is defined and not SOURCEID_DOCKERS[value]["enable"]  %}disable{% else %}enable{% endif %}
+
+{% endfor %}

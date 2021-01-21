@@ -13,6 +13,9 @@ MONGODB_ADMIN_USER: "admin"
 # 数据库管理员密码，只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符。
 MONGODB_ADMIN_PWD: ""
 
+# PGSQL数据库密码，只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符。
+PGSQL_ADMIN_PWD: ""
+
 #SSO域名
 SOURCEID_SSO_DOMAIN: "id.example.com"
 

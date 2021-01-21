@@ -44,6 +44,18 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/license/"
     when: '"rg-license" in pod_info.stdout'
 
+  - name: 停止 rg-log
+    tags:
+    - rg-log
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/rg-log/"
+    when: 'pod_info.stdout is search("rg-log-[a-z0-9]*-[a-z0-9]*\s")'
+
+  - name: 停止 faceid-task
+    tags:
+    - faceid-task
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/faceid-task/"
+    when: 'pod_info.stdout is search("rg-faceid-task-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 faceid-display
     tags:
     - faceid-display
@@ -98,6 +110,18 @@
       - groupview
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/groupview/"
     when: 'pod_info.stdout is search("rg-groupview-[a-z0-9]*-[a-z0-9]*\s")'
+
+  - name: 停止 internetid
+    tags:
+      - internetid
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/internetid/"
+    when: 'pod_info.stdout is search("rg-internetid-[a-z0-9]*-[a-z0-9]*\s")'
+    
+  - name: 停止 ztsync
+    tags:
+      - ztsync
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/ztsync/"
+    when: 'pod_info.stdout is search("ztsync-[a-z0-9]*-[a-z0-9]*\s")'
 
   - name: 停止 rocketmq
     tags:
@@ -163,6 +187,26 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-license" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待rg-log结束运行
+    tags:
+    - rg-log
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-log" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待faceid-task结束运行
+    tags:
+    - faceid-task
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-faceid-task" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
@@ -256,6 +300,23 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-groupview" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待internetid结束运行
+    tags:
+      - internetid
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-internetid" not in pod_info.stdout'
+
+  - name: 等待ztsync结束运行
+    tags:
+      - ztsync
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-ztsync" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
