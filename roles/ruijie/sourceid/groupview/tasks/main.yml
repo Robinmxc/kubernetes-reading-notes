@@ -1,4 +1,4 @@
-- name: 部署License
+- name: 部署groupview
   when: 'GROUP_VIEW_ENABLE == "yes"'
   block:
   - name: 复制配置文件

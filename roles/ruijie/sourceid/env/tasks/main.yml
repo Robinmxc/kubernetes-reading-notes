@@ -57,6 +57,7 @@
     - "sourceid/log"
     - "sourceid/internetid"
     - "sourceid/ztsync"
+    - "sourceid/collect"
   connection: local
   run_once: true
 

@@ -123,6 +123,12 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/ztsync/"
     when: 'pod_info.stdout is search("ztsync-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 collect
+    tags:
+      - collect
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/collect/"
+    when: 'pod_info.stdout is search("rg-collect-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 rocketmq
     tags:
       - rocketmq
@@ -321,6 +327,16 @@
     delay: 3
     ignore_errors: true
 
+  - name: 等待collect结束运行
+    tags:
+      - collect
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-collect" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+    
   - name: 等待rocketmq结束运行
     tags:
       - rocketmq
