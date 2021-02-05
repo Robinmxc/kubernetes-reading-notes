@@ -1,7 +1,6 @@
 [Unit]
 Description=Docker Application Container Engine
 Documentation=http://docs.docker.io
-StartLimitInterval=0
 
 [Service]
 EnvironmentFile=-/run/flannel/docker
@@ -17,6 +16,7 @@ LimitNPROC=65535
 LimitCORE=infinity
 Delegate=yes
 KillMode=process
+StartLimitInterval=0
 
 [Install]
 WantedBy=multi-user.target

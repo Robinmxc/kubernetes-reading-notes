@@ -1,7 +1,6 @@
 [Unit]
 Description=the fastdfs tracker server
 After=network.target
-StartLimitInterval=0
 
 [Service]
 Type=forking
@@ -11,6 +10,7 @@ ExecStop=/usr/bin/fdfs_trackerd {{ FDFS_CONF_PATH }}/tracker.conf stop
 ExecReload=/usr/bin/fdfs_trackerd {{ FDFS_CONF_PATH }}/tracker.conf restart
 Restart=always
 RestartSec=5
+StartLimitInterval=0
 
 [Install]
 WantedBy=multi-user.target

@@ -4,7 +4,6 @@ After=network.target
 After=network-online.target
 Wants=network-online.target
 Documentation=https://github.com/coreos
-StartLimitInterval=0
 
 [Service]
 Type=notify
@@ -29,6 +28,7 @@ ExecStart={{ bin_dir }}/etcd \
 Restart=always
 RestartSec=5
 LimitNOFILE=65536
+StartLimitInterval=0
 
 [Install]
 WantedBy=multi-user.target
