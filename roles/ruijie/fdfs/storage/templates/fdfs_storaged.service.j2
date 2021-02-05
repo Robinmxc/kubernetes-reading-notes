@@ -1,7 +1,6 @@
 [Unit]
 Description=The fastdfs storage server
 After=network.target
-StartLimitInterval=0
 
 [Service]
 Type=forking
@@ -11,6 +10,7 @@ ExecStop=/usr/bin/fdfs_storaged {{ FDFS_CONF_PATH }}/storage.conf stop
 ExecReload=/usr/bin/fdfs_storaged {{ FDFS_CONF_PATH }}/storage.conf restart
 Restart=always
 RestartSec=5
+StartLimitInterval=0
 
 [Install]
 WantedBy=multi-user.target

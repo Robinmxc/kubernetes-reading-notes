@@ -2,7 +2,6 @@
 Description=Kubernetes API Server
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 After=network.target
-StartLimitInterval=0
 
 [Service]
 ExecStart={{ bin_dir }}/kube-apiserver \
@@ -46,6 +45,7 @@ ExecStart={{ bin_dir }}/kube-apiserver \
   --v=2
 Restart=always
 RestartSec=5
+StartLimitInterval=0
 Type=notify
 LimitNOFILE=65536
 

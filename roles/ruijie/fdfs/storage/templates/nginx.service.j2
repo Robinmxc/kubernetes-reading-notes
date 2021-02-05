@@ -2,7 +2,6 @@
 Description=nginx - high performance web server
 Documentation=http://nginx.org/en/docs/
 After=network.target
-StartLimitInterval=0
 
 [Service]
 Type=forking
@@ -13,6 +12,7 @@ ExecStop=/usr/local/nginx/sbin/nginx -s  stop
 PrivateTmp=true
 Restart=always
 RestartSec=5
+StartLimitInterval=0
 
 [Install]
 WantedBy=multi-user.target

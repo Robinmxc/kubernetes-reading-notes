@@ -1,7 +1,6 @@
 [Unit]
 Description=Kubernetes Controller Manager
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-StartLimitInterval=0
 
 [Service]
 ExecStart={{ bin_dir }}/kube-controller-manager \
@@ -21,6 +20,7 @@ ExecStart={{ bin_dir }}/kube-controller-manager \
   --v=2
 Restart=always
 RestartSec=5
+StartLimitInterval=0
 
 [Install]
 WantedBy=multi-user.target
