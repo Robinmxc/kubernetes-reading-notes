@@ -81,7 +81,7 @@ data:
     target:
       host: {{ groups['mongodb'][0] }}
       port: 27017
-      database: "admin"
+      database: ""
       username: {{ MONGODB_ADMIN_USER }}
       password: {{ MONGODB_ADMIN_PWD }}
     scheduler:
