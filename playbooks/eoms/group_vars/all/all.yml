@@ -1,0 +1,25 @@
+max_space_dir: "{{
+    hostvars[groups['fdfs_storage'][0]].ansible_mounts
+    | selectattr('mount', 'match', '^(?!/var/lib/).*')
+    | sort('size_available' | int)
+    | map(attribute='mount')
+    | list
+    | last }}"
+
+DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}"
+
+EOMS_DOWN_PATH: "/opt/kad/down/eoms"
+
+prometheus_default_dir: "/opt/kube/monitoring"
+
+DEST_FILE_PATH: "{{ DATA_DIR }}/file"
+
+influxdb_file: "influxdb-1.8.4.x86_64.rpm"
+
+grafana_file: "grafana-6.4.3-1.x86_64.rpm"
+
+grafana_plugin_file: "grafana-plugin.tar.gz"
+
+grafana_prometheus_file: "prometheus-2.22.0-rc.0.linux-amd64.tar.gz"
+
+prometheus_file: ""

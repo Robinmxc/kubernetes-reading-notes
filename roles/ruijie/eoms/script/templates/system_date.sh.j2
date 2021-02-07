@@ -1,0 +1,13 @@
+#!/bin/bash
+timestamp=`date +%s%3N`
+#echo "timestamp:${timestamp}"
+timestamp_sec=$((timestamp/1000))
+timestamp_mins=$((timestamp_sec/60))
+timestamp_hr=$((timestamp_mins/60))
+#echo "timestamp_sec:${timestamp_sec}"
+#echo "timestamp_mins:${timestamp_mins}"
+#echo "timestamp_hr:${timestamp_hr}"
+cat <<EOF | curl --data-binary @- http://{{ KUBE_MASTER_HOSTS['0'] }}:39091/metrics/job/chrony/instance/{{ nodeip }}
+# TYPE chrony_metric counter
+chrony_metric{Dvalue="hour"} ${timestamp_mins}
+EOF

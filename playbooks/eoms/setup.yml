@@ -1,0 +1,35 @@
+- hosts:
+  - eoms
+  any_errors_fatal: true
+  vars:
+    local_ntp_server: '{{ groups["eoms"][0] }}'
+  roles:
+  - ruijie/cluster/chrony
+
+- hosts:
+  - eoms
+  tags:
+  - eoms
+  any_errors_fatal: true
+  roles:
+  - ruijie/eoms/common
+  - ruijie/eoms/influxdb
+  - ruijie/eoms/prometheus
+  - ruijie/eoms/grafana
+
+- hosts:
+  - kube_master
+  tags:
+  - eoms
+  any_errors_fatal: true
+  roles:
+  - ruijie/eoms/prometheus
+
+- hosts:
+  - kube_master
+  - kube_node
+  tags:
+  - eoms
+  any_errors_fatal: true
+  roles:
+  - ruijie/eoms/script

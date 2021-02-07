@@ -1,0 +1,4 @@
+PROMETHEUS_ENABLE: "{% if EOMS is defined and EOMS.enable is defined and EOMS.enable %}yes{% else %}no{% endif %}"
+
+
+prometheus_yml_file: "prometheus.tar.gz"
