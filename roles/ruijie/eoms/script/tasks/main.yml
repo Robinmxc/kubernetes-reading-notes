@@ -1,3 +1,8 @@
+- name: 准备目录
+  file: name={{ item }} state=directory
+  with_items:
+  - "{{ prometheus_default_dir }}/prometheus/pushgateway/script/"
+
 - name: 准备时间监控脚本
   tags:
     - config
@@ -9,8 +14,6 @@
     dest: "{{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ file_name }}"
   with_items:
   - "system_date.sh"
-  run_once: true
-  connection: local
 
 - name: 准备自定义监控脚本
   tags:
@@ -24,9 +27,7 @@
   with_items:
   - "componentVersion.sh"
   - "kubectlCmd.sh"
-  run_once: true
-  connection: local
-  
+
 - name: 设置文件执行权限
   tags:
     - config
@@ -39,14 +40,14 @@
 - name: 配置自动执行
   tags:
     - config
-  shell: "sed -i '/{{ ietm }}/d' /var/spool/cron/root && echo '*/1 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ ietm }}' >> /var/spool/cron/root"
+  shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/1 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}' >> /var/spool/cron/root"
   with_items:
   - "system_date.sh"
 
 - name: 配置自动执行
   tags:
     - config
-  shell: "sed -i '/{{ ietm }}/d' /var/spool/cron/root && echo '*/1 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ ietm }}' >> /var/spool/cron/root"
+  shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/1 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}' >> /var/spool/cron/root"
   with_items:
   - "kubectlCmd.sh"
   run_once: true
@@ -55,7 +56,7 @@
 - name: 配置自动执行
   tags:
     - config
-  shell: "sed -i '/{{ ietm }}/d' /var/spool/cron/root && echo '*/5 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ ietm }}' >> /var/spool/cron/root"
+  shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/5 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}' >> /var/spool/cron/root"
   with_items:
   - "componentVersion.sh"
   run_once: true

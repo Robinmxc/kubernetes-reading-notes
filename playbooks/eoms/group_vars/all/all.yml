@@ -1,5 +1,5 @@
 max_space_dir: "{{
-    hostvars[groups['fdfs_storage'][0]].ansible_mounts
+    hostvars[groups['eoms'][0]].ansible_mounts
     | selectattr('mount', 'match', '^(?!/var/lib/).*')
     | sort('size_available' | int)
     | map(attribute='mount')
@@ -23,3 +23,6 @@ grafana_plugin_file: "grafana-plugin.tar.gz"
 grafana_prometheus_file: "prometheus.tar.gz"
 
 prometheus_file: ""
+
+#默认二进制文件目录
+bin_dir: "/opt/kube/bin"

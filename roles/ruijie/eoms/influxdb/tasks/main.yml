@@ -7,9 +7,8 @@
   when: 'not stat_result.stat.exists'
   block:
   - name: 安装influxdb
-    shell: "yum install -y {{ DEST_FILE_PATH }}/{{ influxdb_file }}"
-    no_log: true
-
+    yum: name={{ DEST_FILE_PATH }}/{{ influxdb_file }} disable_gpg_check=Yes state=present
+  
   - name: 自动配置
     tags:
       - config

@@ -16,7 +16,7 @@
     - "{{ prometheus_yml_file }}"
 
   - name: 解压 prometheus 文件
-    shell: "tar -zxvf {{ prometheus_default_dir }}/{{ file_name }} -o {{ prometheus_default_dir }} >/dev/null"
+    shell: "tar -zxvf {{ prometheus_default_dir }}/{{ prometheus_yml_file }} -C {{ prometheus_default_dir }} >/dev/null"
     no_log: true
 
   - name: 自动配置
@@ -37,17 +37,17 @@
 
   - name: 启动 prometheus 配置
     shell: "{{ bin_dir }}/kubectl create -f {{ prometheus_default_dir }}/prometheus/manifests/setup/"
-    when: 'prometheus not in pod_info.stdout'
+    when: '"prometheus" not in pod_info.stdout'
     run_once: true
 
   - name: 创建 prometheus secret
     shell: "{{ bin_dir }}/kubectl create secret generic additional-configs --from-file={{ prometheus_default_dir }}/prometheus/prometheus-additional.yaml -n monitoring"
-    when: 'prometheus not in pod_info.stdout'
+    when: '"prometheus" not in pod_info.stdout'
     run_once: true
 
   - name: 启动 prometheus 
     shell: "{{ bin_dir }}/kubectl create -f {{ prometheus_default_dir }}/prometheus/manifests/"
-    when: 'prometheus not in pod_info.stdout'
+    when: '"prometheus" not in pod_info.stdout'
     run_once: true
 
   - name: 准备controller监控文件
@@ -65,11 +65,11 @@
 
   - name: 启动服务监控 
     shell: "{{ bin_dir }}/kubectl create -f {{ prometheus_default_dir }}/prometheus/k8score-metrics/"
-    when: 'prometheus not in pod_info.stdout'
+    when: '"prometheus" not in pod_info.stdout'
     run_once: true
 
   - name: 启动prometheus pushgateway
     shell: "{{ bin_dir }}/kubectl create -f {{ prometheus_default_dir }}/prometheus/pushgateway/"
-    when: 'prometheus not in pod_info.stdout'
+    when: '"prometheus" not in pod_info.stdout'
     run_once: true
 

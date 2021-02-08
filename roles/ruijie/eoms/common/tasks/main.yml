@@ -32,7 +32,7 @@
 - name: 准备目录
   file: name={{ item }} state=directory
   with_items:
-  - "{{ EOMS_DOWN_PATH }}"
+  - "{{ DEST_FILE_PATH }}"
 
 - name: 获取已复制的安装文件信息
   command: "ls {{ EOMS_DOWN_PATH}}"
@@ -44,7 +44,7 @@
   copy: 
     src: "{{ EOMS_DOWN_PATH }}/{{ file_name }}"
     dest: "{{ DEST_FILE_PATH }}/{{ file_name }}"
-  when: '{{ item }} not in rpm_copy_info.stdout'
+  when: 'file_name not in rpm_copy_info.stdout'
   with_items: 
   - "{{ influxdb_file }}"
   - "{{ grafana_file }}"

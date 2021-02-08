@@ -14,7 +14,6 @@
   roles:
   - ruijie/eoms/common
   - ruijie/eoms/influxdb
-  - ruijie/eoms/prometheus
   - ruijie/eoms/grafana
 
 - hosts:

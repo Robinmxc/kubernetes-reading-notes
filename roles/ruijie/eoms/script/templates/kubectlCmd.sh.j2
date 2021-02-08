@@ -12,7 +12,7 @@ else
 fi
 #echo "kubectlCmd:${kubectlCmd}"   1表示kubectl命令行正常  0表示异常
 
-cat <<EOF | curl --data-binary @- http://{{ KUBE_MASTER_HOSTS['0'] }}:39091/metrics/job/kubectlCmd/instance/{{ KUBE_MASTER_HOSTS['0'] }}
+cat <<EOF | curl --data-binary @- http://{{ KUBE_MASTER_HOSTS[0] }}:39091/metrics/job/kubectlCmd/instance/{{ KUBE_MASTER_HOSTS[0] }}
 # TYPE chrony_metric counter
 kubectlCmd_metric{kubectlCmd="1"} ${kubectlCmd}
 EOF

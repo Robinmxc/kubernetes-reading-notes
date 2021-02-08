@@ -12,8 +12,7 @@
     - "{{ DATA_DIR }}/prometheus"
 
   - name: 解压 prometheus 安装包
-    shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ grafana_prometheus_file }} -o {{ DATA_DIR }}/prometheus >/dev/null"
-    no_log: true
+    shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ grafana_prometheus_file }} -C {{ DATA_DIR }}/prometheus >/dev/null"
 
   - name: 准备配置文件
     tags:
@@ -21,8 +20,6 @@
     vars:
       influxdb_host: '{{ groups.influxdb[0] }}'
     template: src='prometheus.yml.j2' dest={{ DATA_DIR }}/prometheus/prometheus.yml
-    run_once: true
-    connection: local
 
   - name: 准备 prometheus service 配置文件
     tags:
@@ -30,8 +27,6 @@
     vars:
       influxdb_host: '{{ groups.influxdb[0] }}'
     template: src='prometheus.service.j2' dest=/usr/lib/systemd/system/prometheus.service
-    run_once: true
-    connection: local
 
   - name: 开机启用 prometheus 服务
     tags:
@@ -65,8 +60,7 @@
     - "{{ DATA_DIR }}/grafana"
 
   - name: 安装grafana
-    shell: "yum install -y {{ DEST_FILE_PATH }}/{{ grafana_file }}"
-    no_log: true
+    yum: name={{ DEST_FILE_PATH }}/{{ grafana_file }} disable_gpg_check=Yes state=present
 
   - name: 开机启用grafana 服务
     tags:
@@ -80,8 +74,7 @@
     shell: systemctl daemon-reload && systemctl restart grafana-server
 
   - name: 解压 prometheus 安装包
-    shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ grafana_plugin_file }} -o /var/lib/grafana/plugins >/dev/null"
-    no_log: true
+    shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ grafana_plugin_file }} -C /var/lib/grafana/plugins >/dev/null"
 
   - name: 重启 grafana 服务
     tags:

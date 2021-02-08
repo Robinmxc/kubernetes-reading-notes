@@ -26,7 +26,7 @@
       - config
     file: path={{ item }} state=directory
     with_items:
-    - "{{ yaml_dir }}/gate"
+    - "{{ yaml_dir }}/collect"
     run_once: true
     connection: local
 
@@ -51,6 +51,6 @@
     tags:
       - deploy
     shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/collect/"
-    when: '"rg-gate" not in pod_info.stdout'
+    when: '"rg-collect" not in pod_info.stdout'
     run_once: true
     connection: local
