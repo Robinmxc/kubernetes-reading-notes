@@ -1,0 +1,4 @@
+- name: 检查运维平台配置参数
+  fail: msg="安装运维平台需要先设置EOMS参数"
+  when: 'EOMS_ENABLE == "no"'
+ 

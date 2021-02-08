@@ -1,4 +1,10 @@
 - hosts:
+  - localhost
+  any_errors_fatal: true
+  roles:
+  - ruijie/eoms/envcheck
+
+- hosts:
   - eoms
   any_errors_fatal: true
   vars:
