@@ -35,7 +35,7 @@
   - "{{ DEST_FILE_PATH }}"
 
 - name: 获取已复制的安装文件信息
-  command: "ls {{ EOMS_DOWN_PATH}}"
+  command: "ls {{ DEST_FILE_PATH}}"
   register: rpm_copy_info
 
 - name: 复制安装文件
