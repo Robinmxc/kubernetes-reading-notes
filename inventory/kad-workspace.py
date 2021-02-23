@@ -247,12 +247,13 @@ def parse_host_data(workspace_dir):
 def parse_eoms_config(host_data):
     group_all_vars = host_data["groups"]["all"]["vars"]
 
-    eoms_hosts =  group_all_vars["EOMS"]["EOMS_STORAGE_HOST"] if "EOMS" in group_all_vars else []
-    for ip in eoms_hosts:
-        if not is_IP(ip):
-            raise Exception(ip + u"不是有效的IP地址")
-    host_data["groups"]["influxdb"] = eoms_hosts
-    host_data["groups"]["eoms"] = eoms_hosts
+    eoms_hosts =  group_all_vars["EOMS"]["EOMS_STORAGE_HOST"] if "EOMS" in group_all_vars and "EOMS_STORAGE_HOST" in group_all_vars["EOMS"] else []
+    if "EOMS" in group_all_vars and "enable" in group_all_vars["EOMS"] and group_all_vars["EOMS"]["enable"]:
+        for ip in eoms_hosts:
+            if not is_IP(ip):
+                raise Exception(ip + u"不是有效的IP地址")
+        host_data["groups"]["influxdb"] = eoms_hosts
+        host_data["groups"]["eoms"] = eoms_hosts
 
 
 # 处理SourceData配置参数
