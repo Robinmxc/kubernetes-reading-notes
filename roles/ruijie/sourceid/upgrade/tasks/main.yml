@@ -145,7 +145,7 @@
 
   - name: 准备https证书新目录
     file: path={{ item }} state=directory
-    with_items: "{{ traefik_ssl_names }}"
+    with_items: "{{ ingress_ca_dir }}"
     when: "'https' == traefik_mode"
     ignore_errors: true
 
