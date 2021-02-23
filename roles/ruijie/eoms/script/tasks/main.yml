@@ -37,6 +37,11 @@
   - "kubectlCmd.sh"
   - "system_date.sh"
 
+- name: 准备文件
+  file: name={{ item }} state=touch
+  with_items:
+  - "/var/spool/cron/root"
+
 - name: 配置自动执行
   tags:
     - config
