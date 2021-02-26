@@ -79,7 +79,7 @@ metadata:
 data:
   mongobak.yml: |
     target:
-      host: {{ mgob_node_ip }}
+      host: {{ groups['mongodb'][0] }}
       port: 27017
       database: ""
       username: {{ MONGODB_ADMIN_USER }}
