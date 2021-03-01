@@ -38,6 +38,8 @@ spec:
           name: conf
         - mountPath: /logs
           name: logpath
+        - mountPath: /ruijie/sourceid/ztsync/excel
+          name: excel
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -47,7 +49,9 @@ spec:
         - name: logpath
           hostPath:
             path: {{ config_base_dir }}/logs
-
+        - name: excel
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/ztsync/excel
 ---
 apiVersion: v1
 kind: Service
