@@ -1,0 +1,1 @@
+BAK_DIR: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/upgrade_temp"
