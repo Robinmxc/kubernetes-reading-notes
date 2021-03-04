@@ -68,7 +68,6 @@
       - "nodes"
       - "node-identify"
       - "component"
-      - "faceid"
       - "license"
     connection: local
 

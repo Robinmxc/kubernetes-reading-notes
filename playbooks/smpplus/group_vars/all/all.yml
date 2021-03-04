@@ -46,6 +46,10 @@ EPORTAL_DB_VERSION: "3.3.1"
 
 MGOB_ENABLED: "no"
 
+# dns 自动安装，可选"coredns"和“kubedns”
+dns_install: "yes"
+dns_backend: "coredns"
+
 SMPPLUS_SMS_MIDDLEWARE_ENABLED: "{% if SMPPLUS_DOCKERS['sms-middleware'] is defined %}yes{% else %}no{% endif %}"
 
 PRIVATE_REGISTRY_ENABLED: "no"
