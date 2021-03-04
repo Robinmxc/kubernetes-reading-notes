@@ -1,6 +1,8 @@
 #!/bin/bash
 
 cd /ruijie/init/smpplus/rg-upgrade-db
-./upgrade_data.sh 127.0.0.1 27017 linkid-dev smpplus 3.3.0 {{ LINKID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
-./upgrade_data.sh 127.0.0.1 27017 eportal smpplus 3.3.0 {{ EPORTAL_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
+./upgrade_data.sh 127.0.0.1 27017 linkid-dev smpplus {{current_db_version['linkid-dev_version']}} {{ DB_VERSION[linkid-dev].name }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
+./upgrade_data.sh 127.0.0.1 27017 eportal smpplus {{current_db_version['eportal_version']}} {{ DB_VERSION[eportal].name }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
+./upgrade_data.sh 127.0.0.1 27017 nodes smpplus {{current_db_version['nodes_version']}} {{ DB_VERSION[nodes].name }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
+./upgrade_data.sh 127.0.0.1 27017 node-identify smpplus {{current_db_version['node-identify_version']}} {{ DB_VERSION[node-identify].name }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
 
