@@ -58,10 +58,6 @@
     register: shell_result
     connection: local
     run_once: true
-
-  - name: 替换kad
-    shell: "cp -rpf {{UPGRADE_DIR}}/kad/* {{base_dir}}"
-    connection: local
     
   - name: 拷贝smpplus配置文件
     vars:
