@@ -36,15 +36,6 @@
       state: absent
     connection: local
 
-  - name: 备份component配置(为了兼容老的component位置)
-    vars:
-      src_path: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/conf/component"
-      dest_path: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/conf/sourceid/component"
-    copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
-    when: 'src_path is exists and dest_path is not exists'
-    connection: local
-    run_once: true
-
   - name: 备份kadworkspace
     copy:
       src: "{{ base_dir }}/workspace/"
