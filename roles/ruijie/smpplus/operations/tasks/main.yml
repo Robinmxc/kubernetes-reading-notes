@@ -11,6 +11,7 @@
   replace: path="{{ config_base_dir }}/operations/conf/application-prd.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
   - {regexp: "mongodb:.*/database.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/database-ops-history?replicaSet=rs0"}
+  - {regexp: "whiteHost:.*$", replace: "whiteHost: {{ KUBE_MASTER_HOSTS }}"}
   no_log: true
 
 - name: 自定义配置
