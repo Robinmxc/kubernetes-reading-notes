@@ -2,9 +2,8 @@
   tags:
   - config
   copy:
-    src: "{{ namespace_dir }}/conf/frontend-portal/conf/"
-    dest: "{{ config_base_dir }}/frontend-portal/conf/"
-
+    src: "{{ namespace_dir }}/conf/frontend-portal/"
+    dest: "{{ config_base_dir }}/frontend-portal/"
 
 - name: 自动配置
   tags:

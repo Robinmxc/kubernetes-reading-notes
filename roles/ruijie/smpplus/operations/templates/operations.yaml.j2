@@ -10,6 +10,7 @@ spec:
       labels:
         service: rg-{{ comp_name }}
     spec:
+      hostNetwork: true
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
@@ -47,8 +48,6 @@ metadata:
 spec:
   selector:
     service: rg-{{comp_name}}
-  type: NodePort
   ports:
   - port: 10000
     targetPort: 10000
-    nodePort: 10000
