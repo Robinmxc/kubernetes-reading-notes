@@ -34,6 +34,7 @@ spec:
         ports:
         - containerPort: 9888
         - containerPort: 9788
+        - containerPort: 52580
         - containerPort: 67
           protocol: UDP
 
@@ -73,6 +74,10 @@ spec:
     name: port9888
     targetPort: 9888
     nodePort: 9888
+  - port: 52580
+    name: port52580
+    targetPort: 52580
+    nodePort: 52580
   - protocol: UDP
     port: 67
     name: port67
