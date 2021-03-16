@@ -25,8 +25,8 @@
   - name: 设置文件执行权限
     file: name="{{ item }}" mode=0700
     with_items:
-    - "{{ mongodb_init_dir }}/update-data.sh"
     - "{{ mongodb_init_dir }}/smpplus/rg-init-db/init-data.sh"
+    - "{{ mongodb_init_dir }}/smpplus/rg-upgrade-db/upgrade_data.sh"
 
   - name: 执行初始化数据库解压
     shell: 'unrar x -o+ {{ mongodb_init_dir }}/smpplus/rg-init-db/SMP_DATA.rar {{ mongodb_init_dir }}/smpplus/rg-init-db/'
