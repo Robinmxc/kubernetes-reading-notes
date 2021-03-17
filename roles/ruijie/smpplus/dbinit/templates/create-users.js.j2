@@ -44,4 +44,9 @@ db.getSiblingDB("database-ops-history").runCommand({
   pwd: "{{ MONGODB_ADMIN_PWD }}",
   roles: [{role:"dbOwner", db: "database-ops-history"}]
 });
+db.getSiblingDB("operations").runCommand({
+  createUser: "{{ MONGODB_ADMIN_USER }}",
+  pwd: "{{ MONGODB_ADMIN_PWD }}",
+  roles: [{role:"dbOwner", db: "operations"}]
+});
 
