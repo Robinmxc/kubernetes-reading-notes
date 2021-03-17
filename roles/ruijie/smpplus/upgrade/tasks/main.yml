@@ -80,7 +80,7 @@
       - "sms-middleware"
       - "gate"
       - "share"
-      #   - "operations"
+      - "operations"
       - "authentication-api"
     connection: local
     run_once: true

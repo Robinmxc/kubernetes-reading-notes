@@ -42,6 +42,6 @@
     - "sms-middleware"
     - "gate"
     - "share"
-#   - "operations"
+   - "operations"
     - "authentication-api"
 
