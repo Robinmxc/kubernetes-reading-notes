@@ -83,7 +83,7 @@ metadata:
 spec:
   externalTrafficPolicy: Local
   selector:
-    service: rg-{{comp_name}}
+    k8s-app: rg-{{comp_name}}
   type: NodePort
   ports:
   - port: 9999
