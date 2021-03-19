@@ -31,8 +31,8 @@
   with_items:
   - {regexp: "mongodb:.*/database.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/database-ops-history?replicaSet=rs0"}
   - {regexp: "mongodb:.*/operations.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/operations?replicaSet=rs0"}
-  - {regexp: "whiteHost:.*$", replace: "whiteHost: {{ KUBE_MASTER_HOSTS }}"}
-  - {regexp: "grabIp:.*$", replace: "grabIp: {{ KUBE_MASTER_HOSTS }}"}
+  - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
+  - {regexp: "grabIp:.*$", replace: "grabIp: {{groups['kube_node'][0]}}"}
   no_log: true
 
 - name: 自定义配置
