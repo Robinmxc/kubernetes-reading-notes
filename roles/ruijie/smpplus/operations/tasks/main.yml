@@ -31,6 +31,17 @@
   - config
   file: path={{ item }} state=directory
   with_items:
+  - "{{ yaml_dir }}/operations/dbBackup"
+  - "{{ yaml_dir }}/dbBackup/"
+  - "{{ yaml_dir }}/operations/dbRestore"
+  - "{{ yaml_dir }}/operations/dbRestore/uploadFiles"
+  - "{{ yaml_dir }}/operations/dbRestore/uploadFiles/dbRestoreFiles"
+  - "{{ yaml_dir }}/operations/dbOperation"
+  - "{{ yaml_dir }}/operations/dbOperation/dbBackupBeforeRestore"
+  - "{{ yaml_dir }}/operations/logOperation"
+  - "{{ yaml_dir }}/operations/tars"
+  - "{{ yaml_dir }}/operations/dumpPackage"
+  - "{{ yaml_dir }}/operations/dumpPackage/tars"
   - "{{ yaml_dir }}/operations"
   run_once: true
   connection: local

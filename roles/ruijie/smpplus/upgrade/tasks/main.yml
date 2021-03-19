@@ -76,7 +76,7 @@
       - "component"
       - "license"
       - "nodeidentify"
-      - "adminui"
+#      - "adminui"
       - "sms-middleware"
       - "gate"
       - "share"
