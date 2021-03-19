@@ -35,14 +35,14 @@ spec:
         ports:
         - containerPort: 10000
         volumeMounts:
-        - mountPath: /ruijie/{{comp_name}}
+        - mountPath: /ruijie
           name: conf
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}
+            path: {{ config_base_dir }}
 
 ---
 apiVersion: v1

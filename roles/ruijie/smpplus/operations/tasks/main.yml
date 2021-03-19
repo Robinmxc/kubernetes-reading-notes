@@ -5,6 +5,25 @@
     src: "{{ namespace_dir }}/conf/operations/conf/"
     dest: "{{ config_base_dir }}/operations/conf/"
 
+- name: 准备运维组件目录
+  tags:
+    - config
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ config_base_dir }}/operations/dbBackup"
+    - "{{ config_base_dir }}/dbBackup/"
+    - "{{ config_base_dir }}/operations/dbRestore"
+    - "{{ config_base_dir }}/operations/dbRestore/uploadFiles"
+    - "{{ config_base_dir }}/operations/dbRestore/uploadFiles/dbRestoreFiles"
+    - "{{ config_base_dir }}/operations/dbOperation"
+    - "{{ config_base_dir }}/operations/dbOperation/dbBackupBeforeRestore"
+    - "{{ config_base_dir }}/operations/logOperation"
+    - "{{ config_base_dir }}/operations/logOperation/tars"
+    - "{{ config_base_dir }}/operations/dumpPackage"
+    - "{{ config_base_dir }}/operations/dumpPackage/tars"
+  run_once: true
+  connection: local
+
 - name: 自动配置
   tags:
   - config
@@ -31,17 +50,6 @@
   - config
   file: path={{ item }} state=directory
   with_items:
-  - "{{ yaml_dir }}/operations/dbBackup"
-  - "{{ yaml_dir }}/dbBackup/"
-  - "{{ yaml_dir }}/operations/dbRestore"
-  - "{{ yaml_dir }}/operations/dbRestore/uploadFiles"
-  - "{{ yaml_dir }}/operations/dbRestore/uploadFiles/dbRestoreFiles"
-  - "{{ yaml_dir }}/operations/dbOperation"
-  - "{{ yaml_dir }}/operations/dbOperation/dbBackupBeforeRestore"
-  - "{{ yaml_dir }}/operations/logOperation"
-  - "{{ yaml_dir }}/operations/tars"
-  - "{{ yaml_dir }}/operations/dumpPackage"
-  - "{{ yaml_dir }}/operations/dumpPackage/tars"
   - "{{ yaml_dir }}/operations"
   run_once: true
   connection: local
