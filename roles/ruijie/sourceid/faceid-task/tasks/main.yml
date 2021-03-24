@@ -1,7 +1,6 @@
 - name: 部署faceid-task
   when: 'FACEID_TASK_ENABLE == "yes"'
   block:
-
   - name: 复制配置文件
     tags:
       - config

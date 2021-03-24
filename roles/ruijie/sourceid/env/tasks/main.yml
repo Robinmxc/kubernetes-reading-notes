@@ -41,7 +41,7 @@
     - "sourceid/sso"
     - "sourceid/gate"
     - "sourceid/linkid"
-    - "sourceid/frontend"
+    - "sourceid/frontend/ruijie/deploy/domain"
     - "sourceid/license"
     - "sourceid/faceid"
     - "sourceid/faceid-display"
