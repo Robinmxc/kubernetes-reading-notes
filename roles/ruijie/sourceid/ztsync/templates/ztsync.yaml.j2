@@ -84,3 +84,12 @@ spec:
       services:
         - name: rg-ztsync
           port: 80
+{% if 'https' == traefik_mode %}
+  tls:
+    store:
+      name: default
+      namespace: kube-system
+    options:
+      name: mytls
+      namespace: kube-system
+{% endif %}
