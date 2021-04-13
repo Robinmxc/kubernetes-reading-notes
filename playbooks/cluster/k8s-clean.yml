@@ -75,6 +75,10 @@
     ignore_errors: true
     when: "'kubeasz' not in install_info.stdout"
 
+  - name: stop and disable autostart service
+    shell: "systemctl disable autostart.sh && systemctl stop autostart"
+    ignore_errors: true
+
   # as k8s-network-plugins use host-network, '/var/run/docker/netns/default' must be umounted
   - name: unmount docker filesystem-1
     mount: path=/var/run/docker/netns/default state=unmounted
@@ -111,6 +115,7 @@
     - "/var/lib/cni/"
     - "/var/lib/kube-router/"
     - "/opt/kube/kube-system/"
+    - "/etc/init.d/autostart.sh"
 
   - name: cleanup iptables
     shell: "iptables -F && iptables -X \

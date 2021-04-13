@@ -38,9 +38,10 @@
     - "component"
     - "license"
     - "nodeidentify"
-    - "adminui"
+#    - "adminui"
     - "sms-middleware"
     - "gate"
-#   - "operations"
+    - "share"
+    - "operations"
     - "authentication-api"
 

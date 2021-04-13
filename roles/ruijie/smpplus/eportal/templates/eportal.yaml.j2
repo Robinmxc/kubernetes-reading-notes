@@ -1,14 +1,19 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-{{ comp_name }}
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-{{ comp_name }}
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-{{ comp_name }}
   template:
     metadata:
       labels:
-        service: rg-{{ comp_name }}
+        k8s-app: rg-{{ comp_name }}
     spec:
       containers:
       - name: rg-{{ comp_name }}
@@ -55,7 +60,7 @@ metadata:
 spec:
   externalTrafficPolicy: Local
   selector:
-    service: rg-{{comp_name}}
+    k8s-app: rg-{{comp_name}}
   type: NodePort
   ports:
   - port: 8090

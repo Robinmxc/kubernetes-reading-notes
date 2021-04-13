@@ -8,6 +8,15 @@
     - "aggregation"
     - "authentication-api"
 
+- name: 复制share软件目录
+  tags:
+    - config
+  copy:
+    src: "{{ namespace_dir }}/conf/{{ item }}/"
+    dest: "{{ config_base_dir }}/{{ item }}/"
+  with_items:
+    - "share"
+
 - name: 自动配置
   tags:
   - config

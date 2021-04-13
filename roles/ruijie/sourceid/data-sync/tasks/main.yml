@@ -1,5 +1,5 @@
 - name: 部署数据同步组件
-  when: 'SOURCEID_DATA_SYNC_ENABLED == "yes"'
+  when: 'DATA_SYNC_ENABLE == "yes"'
   block:
   - name: 复制配置文件
     tags:

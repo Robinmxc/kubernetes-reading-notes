@@ -30,6 +30,10 @@
 - name: 将数据目录写入/etc/kad/config.yml
   template: src=config.yml.j2 dest=/etc/kad/config.yml
 
+- name: 将数据目录写入/etc/kad/config.yml
+  template: src=config.yml.j2 dest=/etc/kad/config.yml
+  connection: local
+
 - name: 准备init目录
   tags:
   - config

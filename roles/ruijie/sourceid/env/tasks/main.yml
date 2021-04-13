@@ -41,7 +41,7 @@
     - "sourceid/sso"
     - "sourceid/gate"
     - "sourceid/linkid"
-    - "sourceid/frontend"
+    - "sourceid/frontend/ruijie/deploy/domain"
     - "sourceid/license"
     - "sourceid/faceid"
     - "sourceid/faceid-display"
@@ -53,7 +53,11 @@
     - "sourceid/fgm-backend"
     - "sourceid/groupview"
     - "sourceid/component"
+    - "sourceid/faceid-task"
+    - "sourceid/log"
+    - "sourceid/internetid"
     - "sourceid/ztsync"
+    - "sourceid/collect"
   connection: local
   run_once: true
 

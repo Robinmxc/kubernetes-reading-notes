@@ -1,15 +1,21 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rg-{{ comp_name }}
   namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-{{ comp_name }}
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-{{ comp_name }}
   template:
     metadata:
       labels:
-        service: rg-{{ comp_name }}
+        k8s-app: rg-{{ comp_name }}
     spec:
+      hostNetwork: true
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
@@ -29,14 +35,14 @@ spec:
         ports:
         - containerPort: 10000
         volumeMounts:
-        - mountPath: /ruijie/{{comp_name}}
+        - mountPath: /ruijie
           name: conf
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}
+            path: {{ config_base_dir }}
 
 ---
 apiVersion: v1
@@ -46,9 +52,7 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    service: rg-{{comp_name}}
-  type: NodePort
+    k8s-app: rg-{{comp_name}}
   ports:
   - port: 10000
     targetPort: 10000
-    nodePort: 10000

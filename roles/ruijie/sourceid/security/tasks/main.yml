@@ -1,5 +1,5 @@
 - name: 部署数据同步组件
-  when: 'SOURCEID_SECURITY_ENABLED == "yes"'
+  when: 'SOURCEID_DOCKERS.security is defined and (SOURCEID_DOCKERS.security.enable is not defined or SOURCEID_DOCKERS.security.enable)'
   block:
   - name: 复制配置文件
     tags:

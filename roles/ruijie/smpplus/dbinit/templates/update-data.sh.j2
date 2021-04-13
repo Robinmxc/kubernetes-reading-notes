@@ -1,5 +1,9 @@
 #!/bin/bash
 
 cd /ruijie/init/smpplus/rg-upgrade-db
-./upgrade_data.sh 127.0.0.1 27017 linkid-dev smpplus R1.0 {{ LINKID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
-
+./upgrade_data.sh 127.0.0.1 27017 linkid-dev smpplus {{current_db_version['linkid-dev_version']}} {{ DB_VERSION['linkid-dev'].version }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
+./upgrade_data.sh 127.0.0.1 27017 eportal smpplus {{current_db_version['eportal_version']}} {{ DB_VERSION['eportal'].version }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
+./upgrade_data.sh 127.0.0.1 27017 nodes smpplus {{current_db_version['nodes_version']}} {{ DB_VERSION['nodes'].version }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
+./upgrade_data.sh 127.0.0.1 27017 node-identify smpplus {{current_db_version['node-identify_version']}} {{ DB_VERSION['node-identify'].version }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
+./upgrade_data.sh 127.0.0.1 27017 database-ops-history smpplus {{current_db_version['database-ops-history_version']}} {{ DB_VERSION['database-ops-history'].version }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
+./upgrade_data.sh 127.0.0.1 27017 operations smpplus {{current_db_version['operations_version']}} {{ DB_VERSION['operations'].version }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}

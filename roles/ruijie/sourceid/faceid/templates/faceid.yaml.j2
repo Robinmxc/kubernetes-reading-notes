@@ -7,6 +7,9 @@ metadata:
     k8s-app: rg-faceid
 spec:
   replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-faceid
   template:
     metadata:
       labels:

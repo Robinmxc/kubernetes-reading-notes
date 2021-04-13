@@ -1,0 +1,18 @@
+#!/bin/bash
+k8s_info=$(kubectl cluster-info)
+#echo "k8s_info:${k8s_info}"
+str_cut=$(kubectl cluster-info | cut -d' ' -f1 |head -n 1)
+#echo "${str_cut}"
+r=Kubernetes
+if [[ ${str_cut} == *${r}*  ]]
+then
+   kubectlCmd=1
+else
+   kubectlCmd=0
+fi
+#echo "kubectlCmd:${kubectlCmd}"   1表示kubectl命令行正常  0表示异常
+
+cat <<EOF | curl --data-binary @- http://{{ KUBE_MASTER_HOSTS[0] }}:39091/metrics/job/kubectlCmd/instance/{{ KUBE_MASTER_HOSTS[0] }}
+# TYPE chrony_metric counter
+kubectlCmd_metric{kubectlCmd="1"} ${kubectlCmd}
+EOF

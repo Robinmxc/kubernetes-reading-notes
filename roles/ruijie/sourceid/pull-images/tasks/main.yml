@@ -25,6 +25,18 @@
   command: "ls {{ img_download_dir }}"
   register: download_info
 
+- name: 获取镜像合集信息
+  command: "ls {{ img_download_dir }}/dockerImages/"
+  register: dockerImages_info
+
+- name: 加载镜像合集
+  command: "docker load -i {{ img_download_dir }}/dockerImages/docker_images_all.tar"
+  when: '"docker_images_all.tar" in dockerImages_info.stdout'
+
+- name: 删除镜像合集
+  file: path="{{ img_download_dir }}/dockerImages/docker_images_all.tar" state=absent
+  when: '"docker_images_all.tar" in dockerImages_info.stdout'
+
 - name: 获取docker已加载的镜像信息
   command: "docker images --format ''{{ '{{' }}.Repository{{ '}}' }}:{{ '{{' }}.Tag{{ '}}' }}''"
   register: imgages_info

@@ -20,7 +20,7 @@ spec:
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/sourceid/frontend/deploy
+            path: {{ config_base_dir }}/sourceid/frontend/deploy/domain
       containers:
       - name: rg-frontend
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.frontend.name }}:{{ SOURCEID_DOCKERS.frontend.version }}
@@ -37,7 +37,7 @@ spec:
         ports:
         - containerPort: 8081
         volumeMounts:
-        - mountPath: /usr/share/nginx/html/public/deploy
+        - mountPath: /usr/share/nginx/html/public/deploy/domain
           name: conf
 
 ---

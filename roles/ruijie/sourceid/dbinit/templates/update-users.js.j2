@@ -8,4 +8,10 @@ db.getSiblingDB("component").changeUserPassword("{{ COMPONENT_DB_USER }}","{{ CO
 
 db.getSiblingDB("groupview").changeUserPassword("{{ SOURCEID_GROUPVIEW_DB_USER }}","{{ SOURCEID_GROUPVIEW_DB_PWD }}");
 
+db.getSiblingDB("faceid").changeUserPassword("{{ SOURCEID_FACEID_DB_USER }}","{{ SOURCEID_FACEID_DB_PWD }}");
+
+db.getSiblingDB("log").changeUserPassword("{{ SOURCEID_LOG_DB_USER }}","{{ SOURCEID_LOG_DB_PWD }}");
+
+db.getSiblingDB("internet-id").changeUserPassword("{{ SOURCEID_INTERNETID_DB_USER }}","{{ SOURCEID_INTERNETID_DB_PWD }}");
+
 db.getSiblingDB("ztsync").changeUserPassword("{{ SOURCEID_ZTSYNC_DB_USER }}","{{ SOURCEID_ZTSYNC_DB_PWD }}");

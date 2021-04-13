@@ -54,10 +54,10 @@
   - { role: ruijie/smpplus/frontend-portal, tags: ["frontend-portal"] }
   - { role: ruijie/smpplus/freeradius, tags: ["freeradius"] }
   - { role: ruijie/smpplus/license, tags: ["license"] }
-  - { role: ruijie/smpplus/adminui, tags: ["adminui"] }
+#  - { role: ruijie/smpplus/adminui, tags: ["adminui"] }
 ##  - { role: ruijie/smpplus/nodemanager-scan, tags: ["nodemanager-scan"] }
   - { role: ruijie/smpplus/nodeidentify, tags: ["nodeidentify"] }
   - { role: ruijie/smpplus/sms-middleware, tags: ["sms-middleware"] }
-#  - { role: ruijie/smpplus/operations, tags: ["operations"] }
+  - { role: ruijie/smpplus/operations, tags: ["operations"] }
 #  - { role: ruijie/smpplus/cron-mongo-backup, tags: ["cron-mongo-backup"] }
   - { role: ruijie/smpplus/mgob, tags: ["mgob"] }

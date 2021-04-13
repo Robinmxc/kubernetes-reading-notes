@@ -1,0 +1,62 @@
+- name: 获取influxdb安装状态
+  stat: 
+    path: /etc/systemd/system/influxd.service
+  register: stat_result
+
+- name: 部署influxdb
+  when: 'not stat_result.stat.exists'
+  block:
+  - name: 安装influxdb
+    yum: name={{ DEST_FILE_PATH }}/{{ influxdb_file }} disable_gpg_check=Yes state=present
+  
+  - name: 自动配置
+    tags:
+      - config
+    replace: path="/etc/influxdb/influxdb.conf" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "^.*https-enabled.*$", replace: "https-enabled = true"}
+      - {regexp: "^.*https-certificate.*$", replace: "https-certificate = \"/etc/ssl/influxdb-selfsigned.crt\""}
+      - {regexp: "^.*https-private-key.*$", replace: "https-private-key = \"/etc/ssl/influxdb-selfsigned.key\""}
+      - {regexp: "/var/lib/influxdb", replace: "{{ DATA_DIR }}/influxdb"}
+    no_log: true
+  
+  - name: 准备目录
+    file: name={{ item }} state=directory
+    with_items:
+    - "{{ DATA_DIR }}/influxdb"
+
+  - name: 复制 influxdb 证书文件
+    copy: src={{ item }} dest=/etc/ssl/{{ item }}
+    with_items:
+      - influxdb-selfsigned.crt
+      - influxdb-selfsigned.key
+    run_once: true
+
+  - name: 设置目录权限
+    shell: "chmod -R 777 {{ DATA_DIR }}/influxdb"
+
+  - name: 开机启用influxdb 服务
+    tags:
+      - config
+    shell: systemctl enable influxdb
+    ignore_errors: true
+  
+  - name: 开启 influxdb 服务
+    tags:
+      - config
+    shell: systemctl daemon-reload && systemctl restart influxdb
+
+  - name: 等待influxdb启动完成
+    shell: "systemctl status influxdb.service|grep Active"
+    register: influxdb_status
+    until: '"running" in influxdb_status.stdout'
+    retries: 8
+    delay: 2
+  
+  - name: 查看已有数据库
+    shell: "influx -ssl -unsafeSsl -host 127.0.0.1 -execute 'show databases'"
+    register: databases_info
+
+  - name: 创建数据库
+    shell: "influx -ssl -unsafeSsl -host 127.0.0.1 -execute 'create database prometheus with duration 30d'"
+    when: '"prometheus" not in databases_info.stdout'

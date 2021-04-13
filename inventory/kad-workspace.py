@@ -125,6 +125,7 @@ def parse_host_data(workspace_dir):
     result["groups"]["deploy"] = {"hosts": [master_hosts[0]]}
     result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["mgob"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
+    result["groups"]["pgsql"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
 
     # 设置K8S部署模式
     deploy_mode = "single-master"
@@ -226,13 +227,34 @@ def parse_host_data(workspace_dir):
         host_vars[ip]["MONGO_NODE_NAME"] = "mongo" + bytes(idx)
         idx = idx + 1
 
+    # 设置pgsql节点名称
+    idx = 0
+    for ip in result["groups"]["pgsql"]["hosts"]:
+        host_vars[ip]["PG_NODE_NAME"] = "postgresql-" + bytes(idx)
+        idx = idx + 1
+
     parse_fdfs_config(result)
 
     parse_sourceid_gateway_config(result)
 
     parse_sourcedata_config(result)
 
+    parse_eoms_config(result)
+
     return result
+
+# 处理SourceData配置参数
+def parse_eoms_config(host_data):
+    group_all_vars = host_data["groups"]["all"]["vars"]
+
+    eoms_hosts =  group_all_vars["EOMS"]["EOMS_STORAGE_HOST"] if "EOMS" in group_all_vars and "EOMS_STORAGE_HOST" in group_all_vars["EOMS"] else []
+    if "EOMS" in group_all_vars and "enable" in group_all_vars["EOMS"] and group_all_vars["EOMS"]["enable"]:
+        for ip in eoms_hosts:
+            if not is_IP(ip):
+                raise Exception(ip + u"不是有效的IP地址")
+        host_data["groups"]["influxdb"] = eoms_hosts
+        host_data["groups"]["eoms"] = eoms_hosts
+
 
 # 处理SourceData配置参数
 def parse_sourcedata_config(host_data):

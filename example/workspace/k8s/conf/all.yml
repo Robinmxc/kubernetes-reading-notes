@@ -60,3 +60,11 @@ FAST_DFS:
   BACKUP_USER: "root"
   #SFTP远程密码（SSH登录密码）
   REMOTE_SSH_PASSWORD: "shyfzx@163"
+
+#监控系统相关配置
+EOMS: {
+  #只有enable设置为true时，才会部署
+  enable: false,
+  #外部存储服务器ip，安装influxdb和grafana
+  EOMS_STORAGE_HOST: ["192.168.1.61"],
+}

@@ -1,0 +1,93 @@
+- block:
+  - name: 轮询等待mongodb运行
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} | grep 'mongo1' | awk '{print $3}'"
+    register: pod_status
+    until: pod_status.stdout == "Running"
+    connection: local
+    run_once: true
+    retries: 12
+    delay: 5
+    ignore_errors: true
+
+  - name: 删除历史备份
+    file:
+      path: "{{BAK_DIR}}_history"
+      state: absent
+    connection: local
+
+
+  - name: 准备备份目录
+    file: path={{ item }} state=directory
+    with_items:
+      - "{{BAK_DIR}}"
+      - "{{BAK_DIR}}/workspace"
+      - "{{BAK_DIR}}/mongodbbak"
+    connection: local
+
+  - name: 备份备份
+    copy:
+      src: "{{BAK_DIR}}"
+      dest: "{{BAK_DIR}}_history"
+    connection: local
+
+  - name: 删除备份
+    file:
+      path: "{{BAK_DIR}}"
+      state: absent
+    connection: local
+
+  - name: 备份kadworkspace
+    copy:
+      src: "{{ base_dir }}/workspace/"
+      dest: "{{BAK_DIR}}/workspace/"
+    connection: local
+
+  - name: 替换产品版本号
+    shell: 'sed -i "s!KAD_APP_VERSION:.*!KAD_APP_VERSION: \"{{ UPGRADE_VERSION }}\"!g" /opt/kad/workspace/ruijie-smpplus/conf/all.yml'
+    register: shell_result
+    connection: local
+    run_once: true
+
+  - name: 准备backup目录
+    file: path="{{ mongodb_backup_dir }}" state=directory
+    connection: local 
+    
+  - name: 安装mongodb工具 rpms
+    yum: 
+      name: "{{UPGRADE_DIR}}/kad/down/rpms/mongodb-org-tools-4.0.13-1.el7.x86_64.rpm"
+      disable_gpg_check: Yes 
+      state: present
+    connection: local
+
+  - name: bak mongodb
+    shell: "mongodump -h {{ groups.mongodb[0] }} -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase 'admin' -o {{BAK_DIR}}/mongodbbak"
+    register: shell_result
+    connection: local
+    run_once: true
+    
+  - name: 拷贝smpplus配置文件
+    vars:
+      src_path: "{{UPGRADE_DIR}}/kad/down/{{KAD_UPGRADE_PACKAGE_NAME}}/conf/{{ item }}"
+      dest_path: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/conf/{{ item }}"
+    copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+    when: 'src_path is exists'
+    with_items:
+      - "aggregation"
+      - "authentication"
+      - "freeradius"
+      - "frontend-smp"
+      - "frontend-portal"
+      - "eportal"
+      - "linkid"
+      - "component"
+      - "license"
+      - "nodeidentify"
+#      - "adminui"
+      - "sms-middleware"
+      - "gate"
+      - "share"
+      - "operations"
+      - "authentication-api"
+    connection: local
+    run_once: true
+  when: 'inventory_hostname == groups.kube_master[0]'

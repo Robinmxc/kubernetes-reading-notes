@@ -1,22 +1,24 @@
 - name: 检查restic是否安装
-  shell: yum list installed restic
-  ignore_errors: true
+  shell: yum list installed | grep "restic" /dev/null 2>&1
   register: has_restic
+  failed_when: false
+  no_log: true
 
 - name: 安装restic
   shell: |
-    sudo yum -y install yum-plugin-copr
-    sudo yum -y copr enable copart/restic
-    sudo yum -y install restic
+    yum -y install yum-plugin-copr
+    yum -y copr enable copart/restic
+    yum -y install restic
   when: has_restic.rc != 0
 
 - name: 检查expect是否安装
-  shell: yum list installed expect
-  ignore_errors: true
+  shell: yum list installed | grep "expect" /dev/null 2>&1
   register: has_expect
+  failed_when: false
+  no_log: true
 
 - name: 安装expect
-  shell: sudo yum -y install expect
+  shell: yum -y install expect
   when: has_expect.rc != 0
 
 - name: 准备目录
@@ -31,9 +33,14 @@
 - name: 设置set_ssh_nonlogin参数
   template: src=set_ssh_nonlogin.sh.j2 dest={{working_dir}}/set_ssh_nonlogin.sh
 
+- name: 生成ssh密钥
+  shell: ssh-keygen -q -t rsa -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
+  ignore_errors: true
+
 - name: 设置ssh免登录
   shell: expect {{working_dir}}/set_ssh_nonlogin.sh
   ignore_errors: true
 
 - name: 设置定时备份任务
   shell: sh {{working_dir}}/set_cron.sh
+

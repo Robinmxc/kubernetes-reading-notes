@@ -29,6 +29,24 @@ db.getSiblingDB("groupview").runCommand({
   roles: [{role:"dbOwner", db: "groupview"}]
 });
 
+db.getSiblingDB("faceid").runCommand({
+  createUser: "{{ SOURCEID_FACEID_DB_USER }}",
+  pwd: "{{ SOURCEID_FACEID_DB_PWD }}",
+  roles: [{role:"dbOwner", db: "faceid"}]
+});
+
+db.getSiblingDB("log").runCommand({
+  createUser: "{{ SOURCEID_LOG_DB_USER }}",
+  pwd: "{{ SOURCEID_LOG_DB_PWD }}",
+  roles: [{role:"dbOwner", db: "log"}]
+});
+
+db.getSiblingDB("internet-id").runCommand({
+  createUser: "{{ SOURCEID_INTERNETID_DB_USER }}",
+  pwd: "{{ SOURCEID_INTERNETID_DB_PWD }}",
+  roles: [{role:"dbOwner", db: "internet-id"}]
+});
+
 db.getSiblingDB("ztsync").runCommand({
   createUser: "{{ SOURCEID_ZTSYNC_DB_USER }}",
   pwd: "{{ SOURCEID_ZTSYNC_DB_PWD }}",

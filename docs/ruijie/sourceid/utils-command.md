@@ -37,14 +37,6 @@ SourceID常用命令如下：
       kad-play playbooks/sourceid/reconfig.yml --tags linkid
       ```
 
-1. 替换frontend资源文件
-    - 资源文件目录（如：`zstu`）复制到`workspace/ruijie-sourceid/conf/sourceid/frontend/`目录下
-    - 修改`workspace/ruijie-sourceid/conf/all.yml`文件中的`SOURCEID_FRONTEND_RES`变量为`zstu`
-    - 执行命令：
-      ```
-      kad-play playbooks/sourceid/reconfig.yml --tags frontend
-      ```
-
 1. 更新组件版本：见[内部测试环境配置和使用方法](debug-env.md)
 
 1. 重新初始化数据库
