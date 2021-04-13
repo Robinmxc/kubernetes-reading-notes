@@ -2,26 +2,16 @@
   tags:
     - config
   copy:
-    src: "{{ namespace_dir }}/conf/sourceid/frontend/{{ SOURCEID_FRONTEND_RES }}/deploy/"
-    dest: "{{ config_base_dir }}/sourceid/frontend/deploy/"
+    src: "{{ namespace_dir }}/conf/sourceid/frontend/ruijie/deploy/domain/"
+    dest: "{{ config_base_dir }}/sourceid/frontend/deploy/domain/"
 
 - name: 修改配置文件
   tags:
     - config
-  replace: path="{{ config_base_dir }}/sourceid/frontend/deploy/deploy.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  replace: path="{{ config_base_dir }}/sourceid/frontend/deploy/domain/domain.json" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
     - {regexp: "http[s]{0,1}://gate.test.com", replace: "{{ SOURCEID_FRONTEND_URL }}"}
     - {regexp: "http[s]{0,1}://service.test.com", replace: "{{ SOURCEID_SSO_URL }}"}
-  no_log: true
-
-- name: 自定义配置
-  tags:
-    - config
-  replace:
-    path: '{{ config_base_dir }}/sourceid/frontend/deploy/deploy.js'
-    regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}"{{ item.name }}"\s*\:.*${% endif %}'
-    replace: '{% if item.regexp is defined %}{{item.value}}{% else %}"{{ item.name }}": {{item.value}}{% endif %}'
-  with_items: '{{ frontend_configs }}'
   no_log: true
 
 - name: 准备部署文件目录

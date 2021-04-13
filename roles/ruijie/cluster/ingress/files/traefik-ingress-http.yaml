@@ -33,6 +33,7 @@ spec:
         - --accesslog
         - --entrypoints.web.Address=:80
         - --entrypoints.traefik.Address=:8580
+        - --entryPoints.web.forwardedHeaders.insecure=true
         - --providers.kubernetescrd
         - --api
         - --api.dashboard=true
