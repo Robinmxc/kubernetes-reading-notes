@@ -8,6 +8,14 @@
       src: "{{ namespace_dir }}/conf/sourceid/ztsync/conf/"
       dest: "{{ config_base_dir }}/sourceid/ztsync/conf/"
 
+  - name: 准备excel文件目录
+    tags:
+      - config
+    file: path={{ item }} state=directory
+    with_items:
+      - "{{ config_base_dir }}/sourceid/ztsync/excel/"
+
+
   - name: 修改配置文件
     tags:
       - config

@@ -1,16 +1,16 @@
 ZTSYNC_ENABLE: "{% if SOURCEID_DOCKERS['ztsync'] is defined and (SOURCEID_DOCKERS['ztsync'].enable is not defined or SOURCEID_DOCKERS['ztsync'].enable) %}yes{% else %}no{% endif %}"
 
-ztsync_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms2048m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
+ztsync_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 deploy_conf_defaults:
   small:
     replicas: 1
   normal:
-    replicas: 1
+    replicas: 2
     resources:
       limits:
         cpu: 4
-        memory: 4.5Gi
+        memory: 5Gi
       requests:
         cpu: 2
         memory: 2Gi
@@ -19,7 +19,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 2
-        memory: 2.5Gi
+        memory: 3Gi
       requests:
         cpu: 1
         memory: 1Gi
