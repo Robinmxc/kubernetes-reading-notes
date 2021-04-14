@@ -4,8 +4,8 @@
 #
 
 Name:     kad
-Version:  2.1.0
-Release:  1
+Version:  2.3.0
+Release:  2021.04.14
 Summary:  KAD RPM package
 License:  GPLv2
 Requires: ansible
