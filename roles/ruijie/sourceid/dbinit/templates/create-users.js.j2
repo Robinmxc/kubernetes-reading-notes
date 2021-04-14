@@ -52,3 +52,9 @@ db.getSiblingDB("ztsync").runCommand({
   pwd: "{{ SOURCEID_ZTSYNC_DB_PWD }}",
   roles: [{role:"dbOwner", db: "ztsync"}]
 });
+
+db.getSiblingDB("mdm").runCommand({
+  createUser: "{{ SOURCEID_MDM_DB_USER }}",
+  pwd: "{{ SOURCEID_MDM_DB_PWD }}",
+  roles: [{role:"dbOwner", db: "mdm"}]
+});

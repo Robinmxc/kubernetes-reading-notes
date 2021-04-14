@@ -22,6 +22,9 @@ SOURCEID_SSO_DOMAIN: "id.example.com"
 #自助和管理端域名
 SOURCEID_GATE_DOMAIN: "id-self.example.com"
 
+#adapter组件域名
+SOURCEID_ADAPTER_DOMAIN: "adapter.example.com"
+
 #登录成功后的跳转地址
 SOURCEID_REDIRECT_URL: "http://www.baidu.com"
 

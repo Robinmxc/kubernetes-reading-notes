@@ -129,6 +129,18 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/collect/"
     when: 'pod_info.stdout is search("rg-collect-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 adapter
+    tags:
+      - adapter
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/adapter/"
+    when: 'pod_info.stdout is search("rg-adapter-[a-z0-9]*-[a-z0-9]*\s")'
+
+  - name: 停止 mdm
+    tags:
+      - mdm
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/mdm/"
+    when: 'pod_info.stdout is search("rg-mdm-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 rocketmq
     tags:
       - rocketmq
@@ -336,7 +348,27 @@
     retries: 30
     delay: 3
     ignore_errors: true
-    
+
+  - name: 等待adapter结束运行
+    tags:
+      - adapter
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-adapter" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待mdm结束运行
+    tags:
+      - mdm
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-mdm" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
   - name: 等待rocketmq结束运行
     tags:
       - rocketmq

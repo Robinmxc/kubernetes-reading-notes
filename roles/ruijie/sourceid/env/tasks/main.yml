@@ -58,6 +58,8 @@
     - "sourceid/internetid"
     - "sourceid/ztsync"
     - "sourceid/collect"
+    - "sourceid/adapter"
+    - "sourceid/mdm"
   connection: local
   run_once: true
 
