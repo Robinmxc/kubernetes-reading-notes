@@ -83,8 +83,8 @@
   - { role: ruijie/sourceid/internetid, tags: ["internetid"] }
   - { role: ruijie/sourceid/ztsync, tags: ["ztsync"] }
   - { role: ruijie/sourceid/collect, tags: ["collect"] }
-  - { role: ruijie/sourceid/collect, tags: ["adapter"] }
-  - { role: ruijie/sourceid/collect, tags: ["mdm"] }
+  - { role: ruijie/sourceid/adapter, tags: ["adapter"] }
+  - { role: ruijie/sourceid/mdm, tags: ["mdm"] }
 
 
 - hosts:
