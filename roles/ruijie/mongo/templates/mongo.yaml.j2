@@ -49,6 +49,8 @@ spec:
           - '--noprealloc'
           - '--enableMajorityReadConcern'
           - 'false'
+          - '--failIndexKeyTooLong'
+          - 'false'
           - '--wiredTigerCacheSizeGB'
           - '{{ wiredTigerCacheSizeGB }}'
 {% if mongodb_auth_mode == 'yes' %}
