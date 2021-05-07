@@ -1,0 +1,32 @@
+
+CAREER_EVENT_ENABLE: "{% if SOURCEID_DOCKERS['career-event'] is defined and (SOURCEID_DOCKERS['career-event'].enable is not defined or SOURCEID_DOCKERS['career-event'].enable) %}yes{% else %}no{% endif %}"
+
+career_event_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1024m -Xmx1024m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx1024m{% else %}-Xms1024m -Xmx1024m{% endif %}"
+
+career_event_configs: []
+
+career_event_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+
+career_event_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
