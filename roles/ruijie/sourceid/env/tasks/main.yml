@@ -60,6 +60,7 @@
     - "sourceid/collect"
     - "sourceid/adapter"
     - "sourceid/mdm"
+    - "sourceid/career-event"
   connection: local
   run_once: true
 

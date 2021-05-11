@@ -141,6 +141,12 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/mdm/"
     when: 'pod_info.stdout is search("rg-mdm-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 career-event
+    tags:
+      - career-event
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/career-event/"
+    when: 'pod_info.stdout is search("rg-career-event-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 rocketmq
     tags:
       - rocketmq
@@ -365,6 +371,16 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-mdm" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待career-event结束运行
+    tags:
+      - career-event
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-career-event" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
