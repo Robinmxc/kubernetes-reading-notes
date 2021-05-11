@@ -48,7 +48,7 @@ spec:
           - '--smallfiles'
           - '--noprealloc'
           - '--enableMajorityReadConcern'
-          - 'false'
+          - 'true'
           - '--wiredTigerCacheSizeGB'
           - '{{ wiredTigerCacheSizeGB }}'
 {% if mongodb_auth_mode == 'yes' %}
