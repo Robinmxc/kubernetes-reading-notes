@@ -13,7 +13,8 @@
       - config
     replace: path="{{ config_base_dir }}/sourceid/career-event/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-      - {regexp: "mongodb:.*/faceid.*$", replace: "mongodb://{{ SOURCEID_CAREER_DB_USER }}:{{ SOURCEID_CAREER_DB_PWD }}@{{ mongodb_addr }}/faceid?replicaSet=rs0"}
+      - {regexp: "mongodb:.*/career-event.*$", replace: "mongodb://{{ SOURCEID_CAREER_DB_USER }}:{{ SOURCEID_CAREER_DB_PWD }}@{{ mongodb_addr }}/career-event?replicaSet=rs0"}
+      - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
     no_log: true
 
