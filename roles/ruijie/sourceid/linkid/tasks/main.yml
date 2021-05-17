@@ -5,6 +5,17 @@
     src: "{{ namespace_dir }}/conf/sourceid/linkid/conf/"
     dest: "{{ config_base_dir }}/sourceid/linkid/conf/"
 
+- name: 设置参数
+  tags:
+    - config
+  set_fact:
+    etcd_address: |-
+       [
+         {% for host in groups['etcd'] -%}          
+           "https://{{ host }}:2379",
+         {% endfor -%}
+       ]
+
 - name: 自动配置
   tags:
     - config
@@ -14,6 +25,8 @@
     - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
     - {regexp: "^lincese.check=.*$", replace: "lincese.check={{ linkid_license_check }}"}
     - {regexp: "^lincese.url=.*$", replace: "lincese.url=http://rg-license.{{ APP_NAMESPACE }}.svc/license/check/"}
+    - {regexp: "/ruijie/sourceid/linkid/conf", replace: "{{ config_base_dir }}/sourceid/linkid/etcdtls"}
+    - {regexp: "sid.lock.etcd.endpoints.*$", replace: "sid.lock.etcd.endpoints = {{ etcd_address | join(',') }}"}    
   no_log: true
 
 - name: 自定义配置

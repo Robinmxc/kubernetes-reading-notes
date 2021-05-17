@@ -85,3 +85,28 @@
 - name: 初次执行autostart.sh脚本
   shell: sh /etc/init.d/autostart.sh
   when: 'not data_dir_stat.stat.exists'
+
+- name: 准备etcd证书
+  fetch:
+    src: /etc/etcd/ssl/{{ item }}
+    dest: /etc/etcd/ssl/
+    flat: yes
+  with_items:
+  - "etcd.csr"
+  - "etcd-csr.json"
+  - "etcd-key.pem"
+  - "etcd.pem"
+  run_once: true
+
+
+- name: 获取configmap数据
+  command: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} get configmap"
+  register: etcd_tls
+  connection: local
+  run_once: true
+
+- name: 创建 etcd 证书configmap
+  shell: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} create configmap  tls-for-etcd --from-file=/etc/etcd/ssl"
+  when: '"tls-for-etcd" not in etcd_tls.stdout'
+  connection: local
+  run_once: true
