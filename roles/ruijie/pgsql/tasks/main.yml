@@ -127,13 +127,13 @@
       run_once: true
       
     - name: 查询pgsql 是否已初始化
-      shell: '{{ pgsql_pod_shell }} --c "\l"'
+      shell: '{{ pgsql_pod_shell }} -c "\l"'
       register: table_result
       connection: local
       run_once: true
 
     - name: 创建quartz数据库
-      shell: '{{ pgsql_pod_shell }} --c "CREATE DATABASE quartz"'
+      shell: '{{ pgsql_pod_shell }} -c "CREATE DATABASE quartz"'
       when: '"quartz" not in table_result.stdout'
       register: create_result
       failed_when: 'create_result.stdout is not search("CREATE DATABASE")'

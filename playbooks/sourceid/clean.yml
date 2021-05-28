@@ -334,6 +334,9 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-internetid" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
 
   - name: 等待ztsync结束运行
     tags:
