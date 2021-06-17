@@ -29,9 +29,9 @@
     run_once: true
 
 - name: 清理k8s
-  when: '"v1.18.8" not in k8s_result.stdout'
+  when: '"{{ kubernetes_version }}" not in k8s_result.stdout'
   import_playbook: ../cluster/k8s-clean.yml
 
 - name: 安装k8s
-  when: '"v1.18.8" not in k8s_result.stdout'
+  when: '"{{ kubernetes_version }}" not in k8s_result.stdout'
   import_playbook: ../cluster/k8s-setup.yml

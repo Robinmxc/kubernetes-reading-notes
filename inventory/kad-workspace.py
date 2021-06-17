@@ -182,8 +182,8 @@ def parse_host_data(workspace_dir):
     if "CLUSTER_DNS_SVC_IP" not in k8s_config:
         group_all_vars["CLUSTER_DNS_SVC_IP"] = str(service_cidr.network_address + 2)
 
-    if "traefik_mode" not in k8s_config:
-        group_all_vars["traefik_mode"] = "http"
+    if "ingress_mode" not in k8s_config:
+        group_all_vars["ingress_mode"] = "http"
 
     if "CLUSTER_SCALE" not in k8s_config:
         if deploy_mode == "allinone":
