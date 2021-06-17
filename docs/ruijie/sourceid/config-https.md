@@ -25,7 +25,7 @@
 - 修改`/opt/kad/workspace/k8s/conf/all.yml`文件，设置以下参数：
 
     ```
-    traefik_mode: "https"
+    ingress_mode: "https"
     traefik_ssl_names: ["example.com"]
     ```
 
@@ -59,7 +59,7 @@ kad-play playbooks/sourceid/reconfig.yml
 操作步骤如下 ：
 1. 修改`/opt/kad/workspace/k8s/conf/all.yml`文件，设置以下参数：
     ```
-    traefik_mode: "http"
+    ingress_mode: "http"
     ```
 1. 修改`/opt/kad/workspace/ruijie-sourceid/conf/all.yml`文件，设置以下参数：
     ```
@@ -77,7 +77,7 @@ kad-play playbooks/sourceid/reconfig.yml
 操作步骤如下：
 1. 修改`/opt/kad/workspace/k8s/conf/all.yml`文件，设置以下参数：
     ```
-    traefik_mode: "http"
+    ingress_mode: "http"
     ```
 1. 修改`/opt/kad/workspace/ruijie-sourceid/conf/all.yml`文件，设置以下参数：
     ```

@@ -67,68 +67,49 @@ spec:
     targetPort: 80
 
 ---
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
 metadata:
   name: rg-gate-ingress
   namespace: {{ APP_NAMESPACE }}
 spec:
-  entryPoints:
-{% if 'https' == traefik_mode %}
-    - websecure
-{% else %}
-    - web
-{% endif %}
-  routes:
-    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/`)
-      kind: Rule
-      services:
-        - name: rg-gate
-          port: 80
-    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/data-sync/v2/api-docs`)
-      kind: Rule
-      services:
-        - name: rg-frontend
-          port: 80
-
-    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/component/v2/api-docs`)
-      kind: Rule
-      services:
-        - name: rg-frontend
-          port: 80
-
-    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/faceid/v2/api-docs`)
-      kind: Rule
-      services:
-        - name: rg-frontend
-          port: 80
-
-    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/import/v2/api-docs`)
-      kind: Rule
-      services:
-        - name: rg-frontend
-          port: 80
-
-    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/linkid/v2/api-docs`)
-      kind: Rule
-      services:
-        - name: rg-frontend
-          port: 80
-
-{% if "yes" == SOURCEID_FGM_VERSION_ENABLED %}
-    - match: Host(`{{ SOURCEID_GATE_DOMAIN }}`) && PathPrefix(`/linkid/api/ztfgm`)
-      kind: Rule
-      services:
-        - name: rg-linkid
-          port: 80
-{% endif %}
-
-{% if 'https' == traefik_mode %}
+{% if 'https' == ingress_mode %}
   tls:
-    store:
-      name: default
-      namespace: kube-system
-    options:
-      name: mytls
-      namespace: kube-system
+    - hosts:
+      - {{ SOURCEID_GATE_DOMAIN }}
+      secretName: traefik-cert
+{% endif %}
+  rules:
+    - host: {{ SOURCEID_GATE_DOMAIN }}
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: rg-gate
+            servicePort: 80
+        - path: /data-sync/v2/api-docs
+          backend:
+            serviceName: rg-frontend
+            servicePort: 80
+        - path: /component/v2/api-docs
+          backend:
+            serviceName: rg-frontend
+            servicePort: 80
+        - path: /faceid/v2/api-docs
+          backend:
+            serviceName: rg-frontend
+            servicePort: 80
+        - path: /import/v2/api-docs
+          backend:
+            serviceName: rg-frontend
+            servicePort: 80
+        - path: /linkid/v2/api-docs
+          backend:
+            serviceName: rg-frontend
+            servicePort: 80
+{% if "yes" == SOURCEID_FGM_VERSION_ENABLED %}
+        - path: /linkid/api/ztfgm
+          backend:
+            serviceName: rg-frontend
+            servicePort: 80
 {% endif %}

@@ -1,14 +1,15 @@
 # ingress 自动安装
-traefik_offline: "traefik_v2.3.0.tar"
-
-ingress_ui_enabled: "no"
-ingress_ui_host: "traefik-ui.local"
+nginx_offline: "nginx-0.46.0.tar"
 
 # http or https
-traefik_mode: "http"
+ingress_mode: "http"
 
 #证书文件名，如：["com.ruijie", "com.ruijie.cn"]
 #同时/etc/kubernetes/ssl目录下要有：com.ruijie.pem, com.ruijie-key.pem, com.ruijie.com.cn.pem, com.ruijie.com.cn-key.pem
-traefik_ssl_names: []
+ingress_ssl_names: []
 
-traefik_temp_dir: "/opt/kube/kube-system/traefik-{{ traefik_mode }}"
+nginx_temp_dir: "/opt/kube/kube-system/nginx-ingress"
+
+nginx_port:
+  TCP: []
+  UDP: []
