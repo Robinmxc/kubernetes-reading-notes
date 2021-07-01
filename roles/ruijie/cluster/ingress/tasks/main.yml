@@ -45,14 +45,14 @@
       delegate_to: "{{ groups.deploy[0] }}"
 
     - name: 获取secret数据
-      command: "{{ bin_dir }}/kubectl get secret -n kube-system"
+      command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
       register: secret_info
       connection: local
       run_once: true
       when: "'https' == ingress_mode"
 
     - name: 删除旧的证书
-      command: "{{ bin_dir }}/kubectl delete secret nginx-cert -n kube-system"
+      command: "{{ bin_dir }}/kubectl delete secret nginx-cert -n {{ APP_NAMESPACE }}"
       connection: local
       run_once: true
       when: "'https' == ingress_mode and 'nginx-cert' in secret_info.stdout"
@@ -60,7 +60,7 @@
     - name: 保存证书到k8s
       vars:
         - ssl_files: "{% for f in ingress_ssl_names %} --cert={{ ingress_ca_dir }}/{{ f }}.pem --key={{ ingress_ca_dir }}/{{ f }}-key.pem {% endfor %}"
-      shell: "{{ bin_dir }}/kubectl create secret tls nginx-cert {{ ssl_files }} -n kube-system"
+      shell: "{{ bin_dir }}/kubectl create secret tls nginx-cert {{ ssl_files }} -n {{ APP_NAMESPACE }}"
       run_once: true
       connection: local
       when: "'https' == ingress_mode"

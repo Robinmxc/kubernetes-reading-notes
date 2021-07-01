@@ -76,7 +76,7 @@ spec:
   tls:
     - hosts:
       - {{ SOURCEID_GATE_DOMAIN }}
-      secretName: traefik-cert
+      secretName: nginx-cert
 {% endif %}
   rules:
     - host: {{ SOURCEID_GATE_DOMAIN }}
