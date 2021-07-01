@@ -89,7 +89,7 @@ spec:
   tls:
     - hosts:
       - {{ SOURCEID_SSO_DOMAIN }}
-      secretName: traefik-cert
+      secretName: nginx-cert
 {% endif %}
   rules:
   - host: {{ SOURCEID_SSO_DOMAIN }}
