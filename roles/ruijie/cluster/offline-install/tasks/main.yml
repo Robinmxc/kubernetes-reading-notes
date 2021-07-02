@@ -76,12 +76,7 @@
         src: "{{ offline_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"
         dest: "{{ offline_dir }}/"
       when: 'offline_dir_tgz_info.stat.exists'
-    - name: Oniguruma must be installed first
-      shell: "yum install -y {{ offline_dir }}/down/rpms/oniguruma*rpm"
-      no_log: true
-    - name: install offline rpm package
-      shell: "yum install -y {{ offline_dir }}/down/rpms/*rpm"
-      no_log: true
+
     - name: 删除离线安装包
       file:
         path: "{{ offline_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"
@@ -98,8 +93,46 @@
     - name: 删除离线down目录
       shell: "rm -rf {{ offline_dir }}/down"
       when: 'offline_dir_down.stat.exists'
+
+- name: 读取目录状态
+  stat: 
+    path: "{{ offline_dir }}/down/rpms.tgz"
+  register: rpms_dir_stat
+  connection: local
+
+- name: 准备离线k8s基础安装文件
+  when: '"allinone" != DEPLOY_MODE and not rpms_dir_stat.stat.exists'
+  ignore_errors: true
+  block:  
+  - name: 压缩rpm包
+    archive:
+      path: "{{ offline_dir }}/down/rpms/"
+      dest: "{{ offline_dir }}/down/rpms.tgz"
+    connection: local
+    run_once: true
+
+  - name: 复制数据初始化脚本
+    copy: 
+      src: "{{ offline_dir }}/down/rpms.tgz" 
+      dest: "{{ offline_dir }}/down/rpms.tgz"
+
+  - name: 解压数据初始化脚本
+    unarchive:
+      src: "{{ offline_dir }}/down/rpms.tgz"
+      dest: "{{ offline_dir }}/down/rpms/"
+      remote_src: yes
+
+- name: Oniguruma must be installed first
+  shell: "yum install -y {{ offline_dir }}/down/rpms/oniguruma*rpm"
+  no_log: true
+
+- name: install offline rpm package
+  shell: "yum install -y {{ offline_dir }}/down/rpms/*rpm"
+  no_log: true
+
 - name: 读取基础工具压缩包状态
-  stat: path="{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
+  stat: 
+    path: "{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
   register: tgz_tools_info
   connection: local
   run_once: true
