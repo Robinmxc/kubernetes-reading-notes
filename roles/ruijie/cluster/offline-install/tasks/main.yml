@@ -8,6 +8,7 @@
   file: path={{ item }} state=directory
   with_items:
     - "{{base_dir}}/down"
+    - "{{base_dir}}/down/rpms"
 
 - name: 准备临时文件目录
   file: path={{ item }} state=directory
@@ -96,7 +97,7 @@
 
 - name: 读取目录状态
   stat: 
-    path: "{{ offline_dir }}/down/rpms.tgz"
+    path: "{{ base_dir }}/down/rpms.tgz"
   register: rpms_dir_stat
   connection: local
 
@@ -106,29 +107,31 @@
   block:  
   - name: 压缩rpm包
     archive:
-      path: "{{ offline_dir }}/down/rpms/"
-      dest: "{{ offline_dir }}/down/rpms.tgz"
+      path: "{{ base_dir }}/down/rpms/"
+      dest: "{{ base_dir }}/down/rpms.tgz"
     connection: local
     run_once: true
 
-  - name: 复制数据初始化脚本
+  - name: 复制rpm包
     copy: 
-      src: "{{ offline_dir }}/down/rpms.tgz" 
-      dest: "{{ offline_dir }}/down/rpms.tgz"
+      src: "{{ base_dir }}/down/rpms.tgz" 
+      dest: "{{ base_dir }}/down/rpms.tgz"
 
-  - name: 解压数据初始化脚本
+  - name: 解压rpm包
     unarchive:
-      src: "{{ offline_dir }}/down/rpms.tgz"
-      dest: "{{ offline_dir }}/down/rpms/"
+      src: "{{ base_dir }}/down/rpms.tgz"
+      dest: "{{ base_dir }}/down/rpms/"
       remote_src: yes
 
 - name: Oniguruma must be installed first
-  shell: "yum install -y {{ offline_dir }}/down/rpms/oniguruma*rpm"
+  shell: "yum install -y {{ base_dir }}/down/rpms/oniguruma*rpm"
   no_log: true
+  ignore_errors: true
 
 - name: install offline rpm package
-  shell: "yum install -y {{ offline_dir }}/down/rpms/*rpm"
+  shell: "yum install -y {{ base_dir }}/down/rpms/*rpm"
   no_log: true
+  ignore_errors: true
 
 - name: 读取基础工具压缩包状态
   stat: 
