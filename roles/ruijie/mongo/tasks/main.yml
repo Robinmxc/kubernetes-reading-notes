@@ -134,7 +134,7 @@
     mongodb_node_name: "{{ hostvars[groups.mongodb[2]]['MONGO_NODE_NAME'] }}"
     mongodb_node_ip: "{{ groups.mongodb[2] }}"
     liveness_probe_sh_config_key: "liveness-probe-sh-noauth"
-    deploy_conf: '{{ mongodb_deploy_conf }}'
+    deploy_conf: '{{ deploy_conf_defaults[small] }}'
   template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo3.yml
   run_once: true
   connection: local
