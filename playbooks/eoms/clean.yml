@@ -3,11 +3,12 @@
   - kube_master
   tasks:
   - name: 删除自动执行脚本
-    shell: "sed -i '/{{ ietm }}/d' /var/spool/cron/root"
+    shell: "sed -i '/{{ item }}/d' /var/spool/cron/root"
     with_items:
-    - "componentVersion.sh"
-    - "kubectlCmd.sh"
-    - "system_date.sh"
+      - "componentVersion.sh"
+      - "kubectlCmd.sh"
+      - "system_date.sh"
+    ignore_errors: true
 
 - hosts:
   - localhost
