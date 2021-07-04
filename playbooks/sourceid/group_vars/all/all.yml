@@ -102,7 +102,7 @@ SOURCEID_CAREER_DB_PWD: ""
 
 SOURCEID_LICENSE_ENABLED: "{% if SOURCEID_DOCKERS.license is defined %}yes{% else %}no{% endif %}"
 
-SOURCEID_HTTPS_MODE: "{% if 'https' == traefik_mode %}normal{% else %}none{% endif %}"
+SOURCEID_HTTPS_MODE: "{% if 'https' == ingress_mode %}normal{% else %}none{% endif %}"
 
 SOURCEID_SSO_HOST_ALIAS: "{% if 'dev' == SOURCEID_DEPLOY_PROFILE %}{{ groups['kube_node'][0] }}{% else %}{% endif %}"
 
@@ -137,3 +137,5 @@ MGOB_ENABLED: "no"
 ca_dir: "/etc/kubernetes/ssl"
 
 ingress_ca_dir: "/etc/kad/ssl"
+
+kubernetes_version: "v1.18.8"

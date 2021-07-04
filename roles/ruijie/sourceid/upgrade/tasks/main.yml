@@ -150,7 +150,7 @@
   - name: 准备https证书新目录
     file: path={{ item }} state=directory
     with_items: "{{ ingress_ca_dir }}"
-    when: "'https' == traefik_mode"
+    when: "'https' == ingress_mode"
     ignore_errors: true
 
   - name: 复制https证书到新目录
@@ -159,7 +159,7 @@
       dest_path: "{{ ingress_ca_dir }}/{{ item }}-key.pem"
     copy: src="{{ src_path }}" dest="{{ dest_path }}"
     with_items: "{{ traefik_ssl_names }}"
-    when: "'https' == traefik_mode"
+    when: "'https' == ingress_mode"
     connection: local
     ignore_errors: true
 
@@ -169,8 +169,28 @@
       dest_path: "{{ ingress_ca_dir }}/{{ item }}.pem"
     copy: src="{{ src_path }}" dest="{{ dest_path }}"
     with_items: "{{ traefik_ssl_names }}"
-    when: "'https' == traefik_mode"
+    when: "'https' == ingress_mode"
     connection: local
     ignore_errors: true
+
+  - name: 获取所有已经创建的POD信息
+    command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    connection: local
+
+  - name: 停止mongo1
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/mongo/mongo1.yml"
+    when: '"mongo1" in pod_info.stdout'
+    connection: local
+  
+  - name: 停止mongo2
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/mongo/mongo2.yml"
+    when: '"mongo2" in pod_info.stdout'
+    connection: local
+
+  - name: 停止mongo3
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/mongo/mongo3.yml"
+    when: '"mongo3" in pod_info.stdout'
+    connection: local
 
   when: 'inventory_hostname == groups.kube_master[0]'
