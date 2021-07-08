@@ -1,4 +1,23 @@
 apiVersion: v1
+kind: Endpoints
+metadata:
+  name: kube-scheduler-k8s
+  namespace: kube-system
+  labels:
+    k8s-app: kube-scheduler
+subsets:
+- addresses:
+{% for host in KUBE_MASTER_HOSTS %}
+  - ip: {{ host }}     #kube-scheduler节点IP(只用写master节点的IP)
+{% endfor %}
+  ports:
+  - name: port
+    port: 10251
+    protocol: TCP
+
+---
+
+apiVersion: v1
 kind: Service
 metadata:
   name: kube-scheduler-k8s
@@ -16,20 +35,3 @@ spec:
     port: 10251
     protocol: TCP
 
----
-apiVersion: v1
-kind: Endpoints
-metadata:
-  name: kube-scheduler-k8s
-  namespace: kube-system
-  labels:
-    k8s-app: kube-scheduler
-subsets:
-- addresses:
-{% for host in KUBE_MASTER_HOSTS %}
-  - ip: {{ host }}     #kube-scheduler节点IP(只用写master节点的IP)
-{% endfor %}
-  ports:
-  - name: port
-    port: 10251
-    protocol: TCP

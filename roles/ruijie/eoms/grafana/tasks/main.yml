@@ -28,23 +28,23 @@
       influxdb_host: '{{ groups.influxdb[0] }}'
     template: src='prometheus.service.j2' dest=/usr/lib/systemd/system/prometheus.service
 
-  - name: 开机启用 prometheus 服务
-    tags:
-      - config
-    shell: systemctl enable prometheus.service
-    ignore_errors: true
-  
-  - name: 开启 prometheus 服务
-    tags:
-      - config
-    shell: systemctl daemon-reload && systemctl restart prometheus.service
+- name: 开机启用 prometheus 服务
+  tags:
+    - config
+  shell: systemctl enable prometheus.service
+  ignore_errors: true
 
-  - name: 等待 prometheus 启动完成
-    shell: "systemctl status prometheus.service|grep Active"
-    register: prometheus_status
-    until: '"running" in prometheus_status.stdout'
-    retries: 8
-    delay: 2
+- name: 开启 prometheus 服务
+  tags:
+    - config
+  shell: systemctl daemon-reload && systemctl restart prometheus.service
+
+- name: 等待 prometheus 启动完成
+  shell: "systemctl status prometheus.service|grep Active"
+  register: prometheus_status
+  until: '"running" in prometheus_status.stdout'
+  retries: 8
+  delay: 2
   
 - name: 获取grafana安装状态
   stat: 
@@ -62,28 +62,28 @@
   - name: 安装grafana
     yum: name={{ DEST_FILE_PATH }}/{{ grafana_file }} disable_gpg_check=Yes state=present
 
-  - name: 开机启用grafana 服务
-    tags:
-      - config
-    shell: systemctl enable grafana-server
-    ignore_errors: true
-  
-  - name: 开启 grafana 服务
-    tags:
-      - config
-    shell: systemctl daemon-reload && systemctl restart grafana-server
-
-  - name: 解压 prometheus 安装包
+  - name: 解压 grafana 插件
     shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ grafana_plugin_file }} -C /var/lib/grafana/plugins >/dev/null"
 
-  - name: 重启 grafana 服务
-    tags:
-      - config
-    shell: systemctl daemon-reload && systemctl restart grafana-server
+- name: 开机启用grafana 服务
+  tags:
+    - config
+  shell: systemctl enable grafana-server
+  ignore_errors: true
 
-  - name: 等待grafana启动完成
-    shell: "systemctl status grafana-server.service|grep Active"
-    register: grafana_status
-    until: '"running" in grafana_status.stdout'
-    retries: 8
-    delay: 2
+- name: 开启 grafana 服务
+  tags:
+    - config
+  shell: systemctl daemon-reload && systemctl restart grafana-server
+
+- name: 重启 grafana 服务
+  tags:
+    - config
+  shell: systemctl daemon-reload && systemctl restart grafana-server
+
+- name: 等待grafana启动完成
+  shell: "systemctl status grafana-server.service|grep Active"
+  register: grafana_status
+  until: '"running" in grafana_status.stdout'
+  retries: 8
+  delay: 2
