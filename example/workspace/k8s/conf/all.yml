@@ -79,5 +79,7 @@ LDAP: {
 
   #LDAP虚IP，双主模式必须配置
   LDAP_VIP: ["192.168.1.63"],
+
+  LDAP_ADMIN_PWD: "",
   
 }

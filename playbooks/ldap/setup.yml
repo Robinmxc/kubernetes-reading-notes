@@ -1,0 +1,24 @@
+- hosts:
+  - localhost
+  any_errors_fatal: true
+  roles:
+  - ruijie/ldap/envcheck
+
+- hosts:
+  - ldap
+  any_errors_fatal: true
+  vars:
+    local_ntp_server: '{{ groups["ldap"][0] }}'
+  roles:
+  - ruijie/cluster/chrony
+
+- hosts:
+  - ldap
+  tags:
+  - ldap
+  any_errors_fatal: true
+  roles:
+  - ruijie/ldap/common
+  - ruijie/ldap/openldap
+  - ruijie/ldap/nginx
+  - ruijie/ldap/keepalived

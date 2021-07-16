@@ -1,0 +1,52 @@
+- name: 删除centos/redhat默认安装
+  yum:
+    name:
+      - firewalld
+      - python-firewall
+      - firewalld-filesystem
+    state: absent
+
+- name: 查询防火墙状态
+  shell: "systemctl list-units *.service"
+  register: firewall_info
+
+- name: 关闭防火墙
+  shell: "systemctl stop firewalld && systemctl disable firewalld"
+  when: '"firewalld" in firewall_info.stdout'
+  ignore_errors: true
+
+- name: 清理防火墙规则
+  shell: "iptables -F && iptables -X && iptables -F -t nat && iptables -X -t nat"
+  ignore_errors: true
+
+- name: 临时关闭 selinux
+  shell: "setenforce 0"
+  failed_when: false
+
+- name: 永久关闭 selinux
+  lineinfile:
+    dest: /etc/selinux/config
+    regexp: "^SELINUX="
+    line: "SELINUX=disabled"
+
+- name: 准备目录
+  file: name={{ item }} state=directory
+  with_items:
+  - "{{ DEST_FILE_PATH }}"
+
+- name: 获取已复制的安装文件信息
+  command: "ls {{ DEST_FILE_PATH}}"
+  register: rpm_copy_info
+
+- name: 复制安装文件
+  vars:
+    file_name: "{{ item }}"
+  copy: 
+    src: "{{ LDAP_DOWN_PATH }}/{{ file_name }}"
+    dest: "{{ DEST_FILE_PATH }}/{{ file_name }}"
+  when: 'file_name not in rpm_copy_info.stdout'
+  with_items: 
+  - "{{ ldap_file }}"
+  - "{{ nginx_file }}"
+  - "{{ keepalived_file }}"
+

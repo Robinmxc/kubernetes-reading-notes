@@ -1,0 +1,59 @@
+- name: 检查ldap的服务状态
+  stat: 
+    path: /usr/lib/systemd/system/slapd.service    #这个服务状态不能用shell命令吗system status slapd
+  register: slapd_stat
+
+- name: 部署slapd
+  when: 'not slapd_stat.stat.exists'
+  block:
+  - name: 准备目录
+    file: name={{ item }} state=directory
+    with_items:
+    - "{{ DATA_DIR }}/slapd"
+
+  - name: 解压 slapd 安装包
+    shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ ldap_file }} -C {{ DATA_DIR }}/slapd >/dev/null"
+
+  - name: 安装slapd
+    shell: "yum install -y {{ DATA_DIR }}/slapd/*rpm"
+    no_log: true
+    ignore_errors: true
+
+  - name: 准备配置文件
+    tags:
+      - config
+    template: src='DB_CONFIG.j2' dest=/var/lib/ldap/DB_CONFIG
+
+  - name: 安装slapd
+    shell: "chown ldap. /var/lib/ldap/DB_CONFIG"
+
+
+- name: 开机启用 slapd 服务
+  tags:
+    - config
+  shell: systemctl enable slapd.service
+  ignore_errors: true
+
+- name: 开启 slapd 服务
+  tags:
+    - config
+  shell: systemctl daemon-reload && systemctl restart slapd.service
+
+- name: 等待 slapd 启动完成
+  shell: "systemctl status slapd.service|grep Active"
+  register: slapd_status
+  until: '"running" in slapd_status.stdout'
+  retries: 8
+  delay: 2
+
+
+- name: 生成 slapd 密码
+  shell: "slappasswd -s {{ LDAP.LDAP_ADMIN_PWD }}"
+  register: slapd_pwd_status
+
+- name: 准备配置文件
+  tags:
+    - config
+  vars:
+    ldappasswd: '{{ slapd_pwd_status.stdout }}'
+  template: src='chrootpw.ldif.j2' dest=/etc/openldap/chrootpw.ldif

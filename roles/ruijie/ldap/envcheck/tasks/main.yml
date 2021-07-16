@@ -1,0 +1,4 @@
+- name: 检查LDAP配置参数
+  fail: msg="安装LDAP需要先设置LDAP参数"
+  when: 'LDAP_ENABLE == "no"'
+ 
