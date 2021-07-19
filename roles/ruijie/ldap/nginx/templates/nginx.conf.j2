@@ -33,12 +33,12 @@ http {
     #gzip  on;
 
 upstream slapd {
-    server 172.17.9.59:388; #TODO 取配置的ip。。。
-    server 172.17.9.58:389; #TODO 取配置的ip。。。
+    server {{ LDAP.LDAP_HOST[0] }}:{{ LDAP_ACCESS_PORT }}; #TODO 取配置的ip。。。
+    server {{ LDAP.LDAP_HOST[1] }}:{{ LDAP_ACCESS_PORT }}; #TODO 取配置的ip。。。
 }
 
 server {
-        listen       {{ LDAP_ACCESS_PORT }};
+        listen       {{ LDAP_ACCESS_PORT }}; #TODO 388端口
         server_name  {{ LDAP.LDAP_VIP[0] }}; #TODO 访问ldap的vip
 
         #charset koi8-r;
