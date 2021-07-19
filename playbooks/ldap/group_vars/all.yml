@@ -14,8 +14,12 @@ LDAP_DOWN_PATH: "/opt/kad/down/ldap"
 
 DEST_FILE_PATH: "{{ DATA_DIR }}/file"
 
+ldap_deploy_mode: "{{ groups['ldap'] | length }}"
+
+ldap_port: 388
+
 #将ldap改成388端口
-ldap_port: "ldapi:/// ldap://0.0.0.0:388/ ldaps:///"
+ldap_port_conf: " {% if ldap_deploy_mode == 2  %}ldapi:/// ldap://0.0.0.0:{{ ldap_port }}/ ldaps:///{% else %}ldapi:/// ldap:///{% endif %} "
 
 #nginx安装目录
 NGINX_SRC_PATH: "/usr/local/src"

@@ -1,13 +1,21 @@
 dn: cn=config
 changetype: modify
 replace: olcServerID
-olcServerID: {{olcServerID}}
+{% if inventory_hostname == ldap_1_hostname %}
+olcServerID: 0
+{% elif inventory_hostname == ldap_2_hostname %}
+olcServerID: 1
+{% endif %}
 
 dn: olcDatabase={2}hdb,cn=config
 changetype: modify
 add: olcSyncRepl
 olcSyncRepl: rid=001
-  provider={{provider}}
+{% if inventory_hostname == ldap_1_hostname %}
+  provider=ldap://{{ ldap_2_hostname }}:{{ port }}/
+{% elif inventory_hostname == ldap_2_hostname %}
+  provider=ldap://{{ ldap_1_hostname }}:{{ port }}/
+{% endif %}
   bindmethod=simple
   binddn="cn=admin,dc=gongchang,dc=com"
   credentials=123456

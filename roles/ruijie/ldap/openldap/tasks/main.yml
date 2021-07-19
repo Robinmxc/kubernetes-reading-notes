@@ -24,7 +24,7 @@
       - config
     template: src='DB_CONFIG.j2' dest=/var/lib/ldap/DB_CONFIG
 
-  - name: 安装slapd
+  - name: 赋予文件权限
     shell: "chown ldap. /var/lib/ldap/DB_CONFIG"
 
 
@@ -35,8 +35,11 @@
   ignore_errors: true
 
 - name: 修改slapd端口
-  shell: mv slapd slapd.bak # 先将原有的slapd配置文件改一下名字。
-  template: src='slapd.j2' dest=/etc/sysconfig/slapd
+  vars:
+    SLAPD_URLS: "{{ ldap_port_conf }}"
+  template: 
+    src: 'slapd.j2' 
+    dest: /etc/sysconfig/slapd
 
 - name: 开启 slapd 服务
   tags:
@@ -55,80 +58,122 @@
   shell: "slappasswd -s {{ LDAP.LDAP_ADMIN_PWD }}"
   register: slapd_pwd_status
 
-- name: 准备配置文件
+- name: 准备基本配置文件
   tags:
     - config
   vars:
     ldappasswd: '{{ slapd_pwd_status.stdout }}'
-  template: src='chrootpw.ldif.j2' dest=/etc/openldap/chrootpw.ldif
-  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f chrootpw.ldif # 执行生效命令
+    filename: '{{ item }}'
+  template: 
+    src: '{{ filename }}.j2'
+    dest: /etc/openldap/{{ filename }}
+  with_items: 
+  - "chrootpw.ldif"
+  - "chdomain.ldif"
+  - "add_ppolicy.ldif"
+  - "modify_ppolicy.ldif"
+  - "ppolicy_overlay.ldif"
+  - "disable_anon.ldif"
 
-- name: 导入基本的Schema模式 # TODO 执行多条shell
-  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/cosine.ldif && ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/nis.ldif && ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/inetorgperson.ldif
-
-- name: 导入基础域名
+- name: 准备基本的Schema文件
+  tags:
+    - config
   vars:
     ldappasswd: '{{ slapd_pwd_status.stdout }}'
-  template: src='chdomain.ldif.j2' dest=/etc/openldap/chdomain.ldif
-  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f chdomain.ldif
+    filename: '{{ item }}'
+  template: 
+    src: '{{ filename }}.j2' 
+    dest: /etc/openldap/schema/{{ filename }}.ldif
+  with_items: 
+  - "cosine.ldif"
+  - "nis.ldif"
+  - "inetorgperson.ldif"
+
+- name: 执行生效命令
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/chrootpw.ldif
+
+- name: 导入基本的Schema模式 # 执行多条shell
+  vars:
+    file_name: '{{ item }}'
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/{{ file_name }}
+  with_items: 
+  - "cosine.ldif"
+  - "nis.ldif"
+  - "inetorgperson.ldif"
+
+- name: 导入基础域名
+  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/openldap/chdomain.ldif
 
 - name: name.ldif文件
-  template: src='name.ldif.j2' dest=/etc/openldap/name.ldif
-  shell: ldapadd -x -D "cn=admin,dc=gongchang,dc=com" -W -f name.ldif
+  template: 
+    src: 'name.ldif.j2' 
+    dest: /etc/openldap/name.ldif
+  
+- name: 导入name.ldif文件
+  shell: ldapadd -x -D "cn=admin,dc=gongchang,dc=com" -W -f /etc/openldap/name.ldif
 
 - name: 密码策略配置
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f /etc/openldap/schema/ppolicy.ldif'
-  register: ppolicy_status
-  until: '"ppolicy" in ppolicy_status.stdout'
 
 - name: 加载ppolicy模块
   shell: 'ldapsearch -Y EXTERNAL -H ldapi:/// -b "cn=module{0},cn=config"'
   register: ppolicy_add_status
 
-- name: 判断执行步骤一
-  template: src='add_ppolicy.ldif.j2' dest=/etc/openldap/add_ppolicy.ldif
-  when: '"no such objec" in ppolicy_add_status.stdout'
-  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f add_ppolicy.ldif
+- name: 不存在ppolicy时执行添加
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/add_ppolicy.ldif
+  when: '"no such object" in ppolicy_add_status.stdout'
 
-- name: 判断执行步骤二  判断不在返回结果里面是否用 not in？
-  template: src='modify_ppolicy.ldif.j2' dest=/etc/openldap/modify_ppolicy.ldif
-  when: '"no such objec" not in ppolicy_add_status.stdout'
-  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f modify_ppolicy.ldif
+- name: 存在ppolicy时执行修改
+  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/openldap/modify_ppolicy.ldif
+  when: '"no such object" not in ppolicy_add_status.stdout'
 
 - name: 指定默认策略dn名
-  template: src='ppolicy_overlay.ldif.j2' dest=/etc/openldap/ppolicy_overlay.ldif
-  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f defaultppolicy.ldif
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/ppolicy_overlay.ldif
 
 - name: 禁止匿名访问
-  template: src='disable_anon.ldif.j2' dest=/root/disable_anon.ldif
-  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f disable_anon.ldif
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/disable_anon.ldif
 
-- name: 添加只读账号
-  template: src='olcAccess.ldif.j2' dest=/etc/openldap/olcAccess.ldif
-  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f olcAccess.ldif
+
+#- name: 添加只读账号
+#  template: src='olcAccess.ldif.j2' dest=/etc/openldap/olcAccess.ldif
+#  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f olcAccess.ldif
 
 - name: 设置定时清理Berkeley DB Logs # TODO  这个地方执行多行shell命令
-  shell: touch /var/spool/cron/root
+  shell: |-
+    | touch /var/spool/cron/root
     | sed -i '/db_checkpoint/d' /var/spool/cron/root
     | echo '0 0 3 * * db_checkpoint -1 -h /var/lib/ldap' >> /var/spool/cron/root
     | sed -i '/db_archive/d' /var/spool/cron/root
-    | echo '0 0 3 * * db_archive -d -h /var/lib/ldap' >> /var/spool/cron/root
+    | echo '0 0 4 * * db_archive -d -h /var/lib/ldap' >> /var/spool/cron/root
 
-- name: 配置双主，两台服务第一个相同的配置文件
-  template: src='mod_syncprov.ldif.j2' dest=/etc/openldap/mod_syncprov.ldif
-  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f mod_syncprov.ldif
 
-- name: 两台服务器第二个相同的配置文件
-  template: src='syncprov.ldif.j2' dest=/etc/openldap/syncprov.ldif
-  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f syncprov.ldif
-  # TODO
-- name: 两个机器都要执行，但是有两个参数不一样
-  #如何判断不同的服务器设置不同的参数
-  #olcServerID：配置文件中的服务id不能相同
-  #provider：配置文件中指向对方的服务器ip地址
-  vars:
-    olcServerID:
-    provider:
-  template: src='master_node.ldif.j2' dest=/etc/openldap/master_node.ldif
-  #两台服务器都要执行生效命令。
+- name: 生成双主配置文件
+  when: 'ldap_deploy_mode == 2'
+  block:
+  - name: 准备双主配置文件
+    vars:
+      file_name: '{{ item }}'
+    template:
+      src: '{{ file_name }}.j2'
+      dest: /etc/openldap/{{ file_name }}
+    with_items: 
+    - "mod_syncprov.ldif"
+    - "syncprov.ldif"
 
+  - name: 生成双主特殊配置文件
+    vars:
+      ldap_1_hostname: "{{ groups.ldap[0] }}"
+      ldap_2_hostname: "{{ groups.ldap[1] }}"
+      port: "{{ ldap_port }}"
+    template: 
+      src: 'master_node.ldif.j2' 
+      dest: /etc/openldap/master_node.ldif
+
+  - name: 导入双主配置文件
+    vars:
+      file_name: '{{ item }}'
+    shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/{{ file_name }}
+    with_items: 
+    - "mod_syncprov.ldif"
+    - "syncprov.ldif"
+    - "master_node.ldif"
