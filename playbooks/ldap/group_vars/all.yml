@@ -14,6 +14,12 @@ LDAP_DOWN_PATH: "/opt/kad/down/ldap"
 
 DEST_FILE_PATH: "{{ DATA_DIR }}/file"
 
+#将ldap改成388端口
+ldap_port: "ldapi:/// ldap://0.0.0.0:388/ ldaps:///"
+
+#nginx安装目录
+NGINX_SRC_PATH: "/usr/local/src"
+
 ldap_file: "ldap.tar.gz"
 nginx_file: "nginx-1.16.0.tar.gz"
 keepalived_file: "keepalived.rpm"

@@ -1,0 +1,29 @@
+dn: cn=config
+changetype: modify
+replace: olcServerID
+olcServerID: {{olcServerID}}
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+add: olcSyncRepl
+olcSyncRepl: rid=001
+  provider={{provider}}
+  bindmethod=simple
+  binddn="cn=admin,dc=gongchang,dc=com"
+  credentials=123456
+  searchbase="dc=gongchang,dc=com"
+  scope=sub
+  schemachecking=on
+  type=refreshAndPersist
+  retry="30 5 300 3"
+  interval=00:00:05:00
+-
+add: olcMirrorMode
+olcMirrorMode: TRUE
+
+dn: olcOverlay=syncprov,olcDatabase={2}hdb,cn=config
+changetype: add
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov
+

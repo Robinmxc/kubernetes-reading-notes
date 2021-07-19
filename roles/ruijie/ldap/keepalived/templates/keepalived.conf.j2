@@ -1,0 +1,72 @@
+global_defs {
+    router_id fdfs-storage-{{ hostvars[inventory_hostname]["FDFS_HOST_ID"] }}
+}
+
+vrrp_script chk_traefik {
+    script "/etc/keepalived/traefik_check.sh"
+    interval 2
+    weight -20
+}
+
+vrrp_instance VI-Sourceid {
+    state hostvars[inventory_hostname]["NODE_LB_ROLE"]
+    priority {% if "MASTER" == hostvars[inventory_hostname]["NODE_LB_ROLE"] %}100{% else %}{{ 99 | random(61, 1) }}{% endif %}
+    nopreempt
+    unicast_src_ip {{ inventory_hostname }}
+    unicast_peer {
+{% for h in groups['kube_node'] %}{% if h != inventory_hostname %}
+        {{ h }}
+{% endif %}{% endfor %}
+    }
+    interface {{ SOURCEID_ACCESS_IF }}
+    virtual_router_id {{ SOURCEID_ROUTER_ID }}
+    advert_int 1
+    track_script {
+        chk_traefik
+    }
+    virtual_ipaddress {
+        {{ SOURCEID_VIP }}
+    }
+}
+
+virtual_server {{ SOURCEID_VIP }} {{ SOURCEID_HTTP_PORT }} {
+    delay_loop 6
+    lb_algo rr
+    lb_kind DR
+    persistence_timeout 50
+    protocol TCP
+
+{% for h in groups['kube_node'] %}
+    real_server {{ h }} {{ SOURCEID_HTTP_PORT }} {
+        weight 1
+        TCP_CHECK {
+            connect_port {{ SOURCEID_HTTP_PORT }}
+            connect_timeout 3
+            nb_get_retry 3
+            delay_before_retry 3
+        }
+    }
+{% endfor %}
+}
+
+{% if 'https' == {{ ingress_mode }} %}
+virtual_server {{ SOURCEID_VIP }} {{ SOURCEID_HTTPS_PORT }} {
+    delay_loop 6
+    lb_algo rr
+    lb_kind DR
+    persistence_timeout 50
+    protocol TCP
+
+{% for h in groups['kube_node'] %}
+    real_server {{ h }} {{ SOURCEID_HTTPS_PORT }} {
+        weight 1
+        TCP_CHECK {
+            connect_port {{ SOURCEID_HTTPS_PORT }}
+            connect_timeout 3
+            nb_get_retry 3
+            delay_before_retry 3
+        }
+    }
+{% endfor %}
+}
+{% endif %}
