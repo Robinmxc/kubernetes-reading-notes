@@ -25,5 +25,5 @@ ldap_port_conf: " {% if ldap_deploy_mode == 2  %}ldapi:/// ldap://0.0.0.0:{{ lda
 NGINX_SRC_PATH: "/usr/local/src"
 
 ldap_file: "ldap.tar.gz"
-nginx_file: "nginx-1.16.0.tar.gz"
+nginx_file: "nginx-1.20.1.tar.gz"
 keepalived_file: "keepalived.rpm"

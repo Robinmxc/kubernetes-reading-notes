@@ -49,6 +49,11 @@
     chdir: "{{ NGINX_SRC_PATH }}/nginx-{{ ldap_nginx_version }}"
   when: '"/usr/local/nginx/sbin/nginx" is not exists'
 
+- name: 进入到conf目录
+  shell: "cd {{ NGINX_SRC_PATH }}/nginx-{{ ldap_nginx_version }}/conf"
+- name: 安装stream模块
+  shell: "./configure --with-stream && make && make install"
+
 - name: 检查nginx服务状态
   stat: path="/etc/systemd/system/multi-user.target.wants/nginx.service"
   register: service_stat
@@ -57,7 +62,13 @@
   when: 'not service_stat.stat.exists'
   block:
   - name: 设置nginx参数
-    template: src=nginx.conf.j2 dest=/usr/local/nginx/conf/nginx.conf
+    vars:
+      ldap_1_hostname: "{{ groups.ldap[0] }}"
+      ldap_2_hostname: "{{ groups.ldap[1] }}"
+      port: "{{ ldap_port }}"
+    template:
+      src: 'nginx.conf.j2'
+      dest: /usr/local/nginx/conf/nginx.conf
 
   - name: 创建nginx服务
     template: src=nginx.service.j2 dest=/etc/systemd/system/nginx.service

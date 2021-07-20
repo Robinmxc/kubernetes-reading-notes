@@ -1,5 +1,5 @@
 global_defs {
-    router_id fdfs-storage-{{ hostvars[inventory_hostname]["FDFS_HOST_ID"] }}
+    router_id fdfs-storage-{{ hostvars[inventory_hostname]["LDAP_HOST_ID"] }} #运行keepalived机器的一个标识
 }
 
 vrrp_script chk_traefik {
@@ -9,7 +9,7 @@ vrrp_script chk_traefik {
 }
 
 vrrp_instance VI-Sourceid {
-    state hostvars[inventory_hostname]["NODE_LB_ROLE"]
+    state hostvars[inventory_hostname]["NODE_LB_ROLE"] #master
     priority {% if "MASTER" == hostvars[inventory_hostname]["NODE_LB_ROLE"] %}100{% else %}{{ 99 | random(61, 1) }}{% endif %}
     nopreempt
     unicast_src_ip {{ inventory_hostname }}
@@ -19,12 +19,12 @@ vrrp_instance VI-Sourceid {
 {% endif %}{% endfor %}
     }
     interface {{ SOURCEID_ACCESS_IF }}
-    virtual_router_id {{ SOURCEID_ROUTER_ID }}
-    advert_int 1
+    virtual_router_id {{ SOURCEID_ROUTER_ID }} # 同一实例下sourceid_router_id必须相同
+    advert_int 1 # master和backup负载均衡器之间同步检查的时间，单位 秒。
     track_script {
         chk_traefik
     }
-    virtual_ipaddress {
+    virtual_ipaddress { #设置VIP
         {{ SOURCEID_VIP }}
     }
 }
