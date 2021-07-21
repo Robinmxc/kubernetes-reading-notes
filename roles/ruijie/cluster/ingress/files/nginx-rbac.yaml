@@ -227,3 +227,5 @@ metadata:
   namespace: kube-system
 data:
   use-http2: "false"
+  compute-full-forwarded-for: "true"
+  use-forwarded-headers: "true"

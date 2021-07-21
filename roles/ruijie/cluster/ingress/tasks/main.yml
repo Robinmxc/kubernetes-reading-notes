@@ -42,6 +42,7 @@
       copy: src={{ item }} dest={{ nginx_temp_dir }}/{{ item }}
       with_items:
         - nginx-rbac.yaml
+        - nginx.tmpl
       run_once: true
       delegate_to: "{{ groups.deploy[0] }}"
 
@@ -50,6 +51,18 @@
       run_once: true
       delegate_to: "{{ groups.deploy[0] }}"
 
+    - name: 获取configmap数据
+      command: "{{ bin_dir }}/kubectl -n kube-system get configmap"
+      register: nginx_config
+      connection: local
+      run_once: true
+
+    - name: 创建 nginx 模板文件的 configmap
+      shell: "{{ bin_dir }}/kubectl -n kube-system create configmap nginx-template --from-file={{ nginx_temp_dir }}/nginx.tmpl"
+      when: '"nginx-template" not in nginx_config.stdout'
+      connection: local
+      run_once: true
+  
     - name: 获取secret数据
       command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
       register: secret_info
