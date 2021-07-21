@@ -1,7 +1,7 @@
 LDAP_ENABLE: "{% if LDAP is defined and LDAP['enable'] %}yes{% else %}no{% endif %}"
 
 max_space_dir: "{{
-    hostvars[groups['eoms'][0]].ansible_mounts
+    hostvars[groups['ldap'][0]].ansible_mounts
     | selectattr('mount', 'match', '^(?!/var/lib/).*')
     | sort('size_available' | int)
     | map(attribute='mount')
@@ -19,11 +19,11 @@ ldap_deploy_mode: "{{ groups['ldap'] | length }}"
 ldap_port: 388
 
 #将ldap改成388端口
-ldap_port_conf: " {% if ldap_deploy_mode == 2  %}ldapi:/// ldap://0.0.0.0:{{ ldap_port }}/ ldaps:///{% else %}ldapi:/// ldap:///{% endif %} "
+ldap_port_conf: " {% if ldap_deploy_mode  == '2' %}ldapi:/// ldap://0.0.0.0:{{ ldap_port }}/ ldaps:///{% else %}ldapi:/// ldap:/// ldaps:///{% endif %} "
 
 #nginx安装目录
 NGINX_SRC_PATH: "/usr/local/src"
 
 ldap_file: "ldap.tar.gz"
 nginx_file: "nginx-1.20.1.tar.gz"
-keepalived_file: "keepalived.rpm"
+keepalived_file: "keepalived.tar.gz"

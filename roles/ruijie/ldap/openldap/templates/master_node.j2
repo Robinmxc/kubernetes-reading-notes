@@ -18,7 +18,7 @@ olcSyncRepl: rid=001
 {% endif %}
   bindmethod=simple
   binddn="cn=admin,dc=gongchang,dc=com"
-  credentials=123456
+  credentials={{ LDAP.LDAP_ADMIN_PWD }}
   searchbase="dc=gongchang,dc=com"
   scope=sub
   schemachecking=on
