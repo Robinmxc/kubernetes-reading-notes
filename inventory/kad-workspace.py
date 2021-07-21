@@ -266,6 +266,18 @@ def parse_ldap_config(host_data):
         group_all_vars["LDAP_VIP"] = ldap_vip
         group_all_vars["LDAP_MODEL"] = "dual" if len(ldap_hosts) == 2 else "single"
 
+        host_vars = host_data["host_vars"]
+        idx = 1
+        for ip in ldap_hosts:
+            if ip not in host_vars:
+                host_vars[ip] = {}
+            host_vars[ip]["LDAP_HOST_ID"] = str(100000 + idx)
+            if idx == 1:
+                host_vars[ip]["LDAP_ROLE"] = "MASTER"
+            else:
+                host_vars[ip]["LDAP_ROLE"] = "BACKUP"
+            idx = idx + 1
+
 # 处理监控系统配置参数
 def parse_eoms_config(host_data):
     group_all_vars = host_data["groups"]["all"]["vars"]
