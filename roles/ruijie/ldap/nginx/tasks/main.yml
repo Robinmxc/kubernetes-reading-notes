@@ -42,10 +42,11 @@
     chdir: "{{ NGINX_SRC_PATH }}/nginx-{{ ldap_nginx_version }}"
   when: '"/usr/local/nginx/sbin/nginx" is not exists'
 
-- name: 进入到conf目录
-  shell: "cd {{ NGINX_SRC_PATH }}/nginx-{{ ldap_nginx_version }}/conf"
 - name: 安装stream模块
   shell: "./configure --with-stream && make && make install"
+  args:
+    chdir: "{{ NGINX_SRC_PATH }}/nginx-{{ ldap_nginx_version }}"
+  when: '"/usr/local/nginx/sbin/nginx" is not exists'
 
 - name: 检查nginx服务状态
   stat: path="/etc/systemd/system/multi-user.target.wants/nginx.service"

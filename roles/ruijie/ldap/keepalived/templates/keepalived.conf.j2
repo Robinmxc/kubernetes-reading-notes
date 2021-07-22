@@ -36,7 +36,7 @@ virtual_server {{ LDAP_VIP }} {{ LDAP_STORAGE_PORT }} {
     persistence_timeout 50
     protocol TCP
 
-{% for h in groups['ldap_storage'] %}
+{% for h in groups['ldap'] %}
     real_server {{ h }} {{ LDAP_STORAGE_PORT }} {
         weight 1
         TCP_CHECK {
