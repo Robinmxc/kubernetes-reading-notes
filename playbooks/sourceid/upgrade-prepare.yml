@@ -19,20 +19,22 @@
   - { role: ruijie/sourceid/upgrade, tags: always }
 
 - hosts:
-  - localhost
+  - all
   tasks:
   - name: 获取当前ingress实现
     shell: "{{ bin_dir }}/kubectl -n kube-system get pod"
     register: ingress_result
+    connection: local
     ignore_errors: true
+    run_once: true
 
   - name: 停止traefik
     shell: "{{ bin_dir }}/kubectl delete daemonset -n kube-system traefik "
     when: '"traefik" in ingress_result.stdout'
 
-  - name: 启动ingress
-    when: '"traefik" in ingress_result.stdout'
-    import_playbook: ../cluster/ingress.yml
+- name: 启动ingress
+  when: '"traefik" in ingress_result.stdout'
+  import_playbook: ../cluster/ingress.yml
 
 - hosts: all
   tasks:
