@@ -2,3 +2,11 @@
   fail: msg="安装LDAP需要先设置LDAP参数"
   when: 'LDAP_ENABLE == "no"'
  
+- name: 检查ldap的服务状态
+  stat: 
+    path: /usr/lib/systemd/system/slapd.service    #这个服务状态不能用shell命令吗system status slapd
+  register: slapd_stat
+
+- name: 检查是否已部署ldap
+  fail: msg="已部署ldap"
+  when: 'slapd_stat.stat.exists'

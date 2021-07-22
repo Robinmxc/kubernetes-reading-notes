@@ -13,7 +13,11 @@
     - "/var/lib/ldap"
 
   - name: 解压 slapd 安装包
-    shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ ldap_file }} -C {{ DATA_DIR }}/slapd >/dev/null"
+    vars:
+      tgz_file: '{{ DEST_FILE_PATH }}/{{ ldap_file }}'
+    unarchive:
+      src: "{{ tgz_file }}"
+      dest: "{{ DATA_DIR }}/slapd"
 
   - name: 安装slapd
     shell: "yum install -y {{ DATA_DIR }}/slapd/lys/*rpm"
