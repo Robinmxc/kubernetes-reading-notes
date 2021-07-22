@@ -14,7 +14,7 @@ vrrp_instance VI-ldap-storage {
     nopreempt
     unicast_src_ip {{ inventory_hostname }}
     unicast_peer {
-{% for h in groups['ldap_storage'] %}{% if h != inventory_hostname %}
+{% for h in groups['ldap'] %}{% if h != inventory_hostname %}
         {{ h }}
 {% endif %}{% endfor %}
     }

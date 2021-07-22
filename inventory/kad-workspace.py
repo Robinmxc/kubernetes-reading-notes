@@ -256,9 +256,8 @@ def parse_ldap_config(host_data):
         for ip in ldap_hosts:
             if not is_IP(ip):
                 raise Exception(ip + u"不是有效的IP地址")
-        for ip in ldap_vip:
-            if not is_IP(ip):
-                raise Exception(ip + u"不是有效的IP地址")
+        if not is_IP(ldap_vip):
+            raise Exception(ldap_vip + u"不是有效的IP地址")
         if len(ldap_hosts) == 2 and len(ldap_vip) == 0:
           raise Exception("双主模式必须配置LDAP_VIP")
 

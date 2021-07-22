@@ -15,13 +15,6 @@
     - openssl-devel
     - wget
 
-- name: 准备目录
-  file: name={{ item }} state=directory
-  with_items:
-  - "{{ FDFS_BASE_PATH }}"
-  - "{{ FDFS_CONF_PATH }}"
-  - "{{ FDFS_SRC_PATH }}"
-
 - name: 下载nginx源码
   vars:
     tgz_file: '{{ base_dir }}/down/nginx-{{ ldap_nginx_version }}.tar.gz'

@@ -178,6 +178,7 @@
     src: 'slapd.j2'
     dest: /etc/sysconfig/slapd
 
+#延时重启ldap服务
 - name: 重启 slapd 服务
   tags:
     - config
