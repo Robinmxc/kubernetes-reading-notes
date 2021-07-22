@@ -69,7 +69,7 @@
   register: data_dir_stat  
 
 - name: 设置自动配置iptables脚本
-  var: 
+  vars: 
     portlist: "{{ iptables_port | join(',') }}"
   template: src="autostart.sh.j2" dest="/etc/init.d/autostart.sh"
  

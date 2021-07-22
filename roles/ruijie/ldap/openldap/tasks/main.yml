@@ -13,16 +13,22 @@
     - "/var/lib/ldap"
 
   - name: 解压 slapd 安装包
-    vars:
-      tgz_file: '{{ DEST_FILE_PATH }}/{{ ldap_file }}'
-    unarchive:
-      src: "{{ tgz_file }}"
-      dest: "{{ DATA_DIR }}/slapd"
+    shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ ldap_file }} -C {{ DATA_DIR }}/slapd >/dev/null"
 
   - name: 安装slapd
-    shell: "yum install -y {{ DATA_DIR }}/slapd/lys/*rpm"
+    shell: "yum install -y {{ DATA_DIR }}/slapd/*rpm"
     no_log: false
     ignore_errors: false
+
+  - name: 准备目录
+    file: name={{ item }} state=directory
+    with_items:
+    - "/etc/openldap/certs"
+
+###为了在卸载后可以再次部署
+  - name: 准备证书文件
+    shell: "sh /usr/libexec/openldap/create-certdb.sh && sh /usr/libexec/openldap/generate-server-cert.sh"
+    ignore_errors: true
 
   - name: 准备配置文件
     tags:
