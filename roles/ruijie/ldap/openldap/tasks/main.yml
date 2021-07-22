@@ -128,13 +128,11 @@
 - name: 禁止匿名访问
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/disable_anon.ldif
 
+- name: 设置定时清理Berkeley DB Logs 
+  file: 
+    name: "/var/spool/cron/root"
+    state: touch
 
-#- name: 添加只读账号
-#  template: src='olcAccess.ldif.j2' dest=/etc/openldap/olcAccess.ldif
-#  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f olcAccess.ldif
-
-- name: 设置定时清理Berkeley DB Logs # TODO  这个地方执行多行shell命令
-  shell: touch /var/spool/cron/root
 - name: sed -i
   shell: sed -i '/db_checkpoint/d' /var/spool/cron/root
 - name: echo '003'
@@ -175,15 +173,23 @@
     - "syncprov.ldif"
     - "master_node.ldif"
 
-- name: 修改slapd端口
-  vars:
-    SLAPD_URLS: "{{ ldap_port_conf }}"
-  template:
-    src: 'slapd.j2'
-    dest: /etc/sysconfig/slapd
+  - name: 修改slapd端口
+    vars:
+      SLAPD_URLS: "{{ ldap_port_conf }}"
+    template:
+      src: 'slapd.j2'
+      dest: /etc/sysconfig/slapd
 
-#延时重启ldap服务
-- name: 重启 slapd 服务
-  tags:
-    - config
-  shell: systemctl daemon-reload && systemctl restart slapd.service
+  - name: 重启 slapd-1 服务
+    tags:
+      - config
+    shell: systemctl daemon-reload && systemctl restart slapd.service
+    run_once: true
+    delegate_to: "{{ groups.ldap[0] }}"
+
+  - name: 重启 slapd-2 服务
+    tags:
+      - config
+    shell: systemctl daemon-reload && systemctl restart slapd.service
+    run_once: true
+    delegate_to: "{{ groups.ldap[1] }}"

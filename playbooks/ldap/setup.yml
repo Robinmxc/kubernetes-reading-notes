@@ -20,5 +20,7 @@
   roles:
   - ruijie/ldap/common
   - ruijie/ldap/openldap
-  - ruijie/ldap/nginx
-  - ruijie/ldap/keepalived
+
+- name: 配置双主模式
+  when: "ldap_deploy_mode  == '2'"
+  import_playbook: dual.yml

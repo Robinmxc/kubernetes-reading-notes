@@ -1,0 +1,8 @@
+- hosts:
+  - ldap
+  tags:
+  - ldap
+  any_errors_fatal: true
+  roles:
+  - ruijie/ldap/nginx
+  - ruijie/ldap/keepalived
