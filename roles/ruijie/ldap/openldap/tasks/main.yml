@@ -170,14 +170,10 @@
       src: 'master_node.j2'
       dest: /etc/openldap/master_node.ldif
 
-  - name: 导入双主配置文件
-    vars:
-      file_name: '{{ item }}'
-    shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/{{ file_name }}
-    with_items:
-    - "mod_syncprov.ldif"
-    - "syncprov.ldif"
-    - "master_node.ldif"
+  - name: 暂停 slapd 服务
+    tags:
+      - config
+    shell: systemctl stop slapd.service
 
   - name: 修改slapd端口
     vars:
@@ -186,16 +182,16 @@
       src: 'slapd.j2'
       dest: /etc/sysconfig/slapd
 
-  - name: 重启 slapd-1 服务
+  - name: 重启 slapd 服务
     tags:
       - config
-    shell: systemctl daemon-reload && systemctl restart slapd.service
-    run_once: true
-    delegate_to: "{{ groups.ldap[0] }}"
+    shell: systemctl restart slapd.service
 
-  - name: 重启 slapd-2 服务
-    tags:
-      - config
-    shell: systemctl daemon-reload && systemctl restart slapd.service
-    run_once: true
-    delegate_to: "{{ groups.ldap[1] }}"
+  - name: 导入双主配置文件
+    vars:
+      file_name: '{{ item }}'
+    shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/{{ file_name }}
+    with_items:
+    - "mod_syncprov.ldif"
+    - "syncprov.ldif"
+    - "master_node.ldif"
