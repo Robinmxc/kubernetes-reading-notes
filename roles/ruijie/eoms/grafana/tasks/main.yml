@@ -58,6 +58,7 @@
     file: name={{ item }} state=directory
     with_items:
     - "{{ DATA_DIR }}/grafana"
+    - "/var/lib/grafana/plugins"
 
   - name: 安装grafana
     yum: name={{ DEST_FILE_PATH }}/{{ grafana_file }} disable_gpg_check=Yes state=present

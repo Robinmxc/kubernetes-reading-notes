@@ -52,7 +52,10 @@
     until: '"running" in influxdb_status.stdout'
     retries: 8
     delay: 2
-  
+
+  - name: 暂停15秒等待influxdb启动完成
+    wait_for: timeout=15
+
   - name: 查看已有数据库
     shell: "influx -ssl -unsafeSsl -host 127.0.0.1 -execute 'show databases'"
     register: databases_info
