@@ -28,8 +28,13 @@
     ignore_errors: true
     run_once: true
 
+  - name: 获取traefik名称
+    shell: "{{ bin_dir }}/kubectl -n kube-system get daemonsets.apps -o custom-columns=NAME:.metadata.name|grep traefik"
+    register: traefik_result
+    when: '"traefik" in ingress_result.stdout'
+
   - name: 停止traefik
-    shell: "{{ bin_dir }}/kubectl delete daemonset -n kube-system traefik "
+    shell: "{{ bin_dir }}/kubectl delete daemonset -n kube-system {{ traefik_result.stdout }} "
     when: '"traefik" in ingress_result.stdout'
 
 - name: 启动ingress
