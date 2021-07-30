@@ -29,7 +29,7 @@ vrrp_instance VI-ldap-storage {
     }
 }
 
-virtual_server {{ LDAP_VIP }} {{ LDAP_STORAGE_PORT }} {
+virtual_server {{ LDAP_VIP }} 1{{ LDAP_STORAGE_PORT }} {
     delay_loop 6
     lb_algo rr
     lb_kind DR

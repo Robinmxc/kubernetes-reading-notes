@@ -6,11 +6,14 @@ events {
 # 配置tcp
 stream {
     upstream slapd {
-        server {{ ldap_1_hostname }}:{{ port }};
-        server {{ ldap_2_hostname }}:{{ port }};
+        hash $remote_addr consistent;
+        server {{ ldap_1_hostname }}:{{ port }} max_fails=3 fail_timeout=30s;
+        server {{ ldap_2_hostname }}:{{ port }} max_fails=3 fail_timeout=30s;
     }
     server {
         listen 389;
+        proxy_connect_timeout 6s;
+        proxy_timeout 30s;
         proxy_pass slapd;
     }
 }
