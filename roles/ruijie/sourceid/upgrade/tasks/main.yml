@@ -150,7 +150,6 @@
   - name: 准备https证书新目录
     file: path={{ item }} state=directory
     with_items: "{{ ingress_ca_dir }}"
-    when: "'https' == ingress_mode"
     ignore_errors: true
 
   - name: 复制https证书到新目录
@@ -159,7 +158,6 @@
       dest_path: "{{ ingress_ca_dir }}/{{ item }}-key.pem"
     copy: src="{{ src_path }}" dest="{{ dest_path }}"
     with_items: "{{ traefik_ssl_names }}"
-    when: "'https' == ingress_mode"
     connection: local
     ignore_errors: true
 
@@ -169,7 +167,6 @@
       dest_path: "{{ ingress_ca_dir }}/{{ item }}.pem"
     copy: src="{{ src_path }}" dest="{{ dest_path }}"
     with_items: "{{ traefik_ssl_names }}"
-    when: "'https' == ingress_mode"
     connection: local
     ignore_errors: true
 
