@@ -157,7 +157,7 @@
       src_path: "{{ca_dir}}/{{ item }}-key.pem"
       dest_path: "{{ ingress_ca_dir }}/{{ item }}-key.pem"
     copy: src="{{ src_path }}" dest="{{ dest_path }}"
-    with_items: "{{ traefik_ssl_names }}"
+    with_items: "{{ ingress_ssl_names }}"
     connection: local
     ignore_errors: true
 
@@ -166,7 +166,7 @@
       src_path: "{{ca_dir}}/{{ item }}.pem"
       dest_path: "{{ ingress_ca_dir }}/{{ item }}.pem"
     copy: src="{{ src_path }}" dest="{{ dest_path }}"
-    with_items: "{{ traefik_ssl_names }}"
+    with_items: "{{ ingress_ssl_names }}"
     connection: local
     ignore_errors: true
 
