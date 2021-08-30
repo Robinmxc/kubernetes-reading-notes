@@ -68,3 +68,18 @@ EOMS: {
   #外部存储服务器ip，安装influxdb和grafana
   EOMS_STORAGE_HOST: ["192.168.1.61"],
 }
+
+#LDAP相关配置
+LDAP: {
+  #只有enable设置为true时，才会部署
+  enable: false,
+
+  #LDAP服务器IP，双主模式就写两个IP，单节点就一个IP
+  LDAP_HOST: ["172.17.9.59","172.17.9.58"],
+
+  #LDAP虚IP，双主模式必须配置
+  LDAP_VIP: "172.17.9.57",
+
+  LDAP_ADMIN_PWD: "234567",
+  
+}

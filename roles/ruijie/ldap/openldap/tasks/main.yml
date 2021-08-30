@@ -1,0 +1,197 @@
+- name: 检查ldap的服务状态
+  stat: 
+    path: /usr/lib/systemd/system/slapd.service    #这个服务状态不能用shell命令吗system status slapd
+  register: slapd_stat
+
+- name: 部署slapd
+  when: 'not slapd_stat.stat.exists'
+  block:
+  - name: 准备目录
+    file: name={{ item }} state=directory
+    with_items:
+    - "{{ DATA_DIR }}/slapd"
+    - "/var/lib/ldap"
+
+  - name: 解压 slapd 安装包
+    shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ ldap_file }} -C {{ DATA_DIR }}/slapd >/dev/null"
+
+  - name: 安装slapd
+    shell: "yum install -y {{ DATA_DIR }}/slapd/*rpm"
+    no_log: false
+    ignore_errors: false
+
+  - name: 准备目录
+    file: name={{ item }} state=directory
+    with_items:
+    - "/etc/openldap/certs"
+
+###为了在卸载后可以再次部署
+  - name: 准备证书文件
+    shell: "sh /usr/libexec/openldap/create-certdb.sh && sh /usr/libexec/openldap/generate-server-cert.sh"
+    ignore_errors: true
+
+  - name: 准备配置文件
+    tags:
+      - config
+    template: src='DB_CONFIG.j2' dest=/var/lib/ldap/DB_CONFIG
+
+  - name: 赋予文件权限
+    shell: "chown ldap. /var/lib/ldap/DB_CONFIG"
+
+
+- name: 开机启用 slapd 服务
+  tags:
+    - config
+  shell: systemctl enable slapd.service
+  ignore_errors: true
+
+- name: 开启 slapd 服务
+  tags:
+    - config
+  shell: systemctl daemon-reload && systemctl restart slapd.service
+
+- name: 等待 slapd 启动完成
+  shell: "systemctl status slapd.service|grep Active"
+  register: slapd_status
+  until: '"running" in slapd_status.stdout'
+  retries: 8
+  delay: 2
+
+
+- name: 生成 slapd 密码
+  shell: "slappasswd -s {{ LDAP.LDAP_ADMIN_PWD }}"
+  register: slapd_pwd_status
+
+- name: 准备基本配置文件
+  tags:
+    - config
+  vars:
+    ldappasswd: '{{ slapd_pwd_status.stdout }}'
+    filename: '{{ item }}'
+  template: 
+    src: '{{ filename }}.j2'
+    dest: /etc/openldap/{{ filename }}
+  with_items: 
+  - "chrootpw.ldif"
+  - "chdomain.ldif"
+  - "add_ppolicy.ldif"
+  - "modify_ppolicy.ldif"
+  - "ppolicy_overlay.ldif"
+  - "disable_anon.ldif"
+
+- name: 执行生效命令
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/chrootpw.ldif
+
+- name: 导入基本的Schema模式 # 执行多条shell
+  vars:
+    file_name: '{{ item }}'
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/{{ file_name }}
+  with_items: 
+  - "cosine.ldif"
+  - "nis.ldif"
+  - "inetorgperson.ldif"
+  ignore_errors: true
+
+- name: 导入基础域名
+  tags:
+  - config
+  vars:
+    ldappasswd: '{{ slapd_pwd_status.stdout }}'
+    schema_item: '{{ item }}'
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/{{ schema_item }}
+  with_items:
+  - "chdomain.ldif"
+
+- name: name.ldif文件
+  template: 
+    src: 'name.ldif.j2' 
+    dest: /etc/openldap/name.ldif
+
+- name: 导入name.ldif文件
+  shell: ldapadd -x -D "cn=admin,dc=gongchang,dc=com" -w {{ LDAP.LDAP_ADMIN_PWD }} -f /etc/openldap/name.ldif
+
+- name: 密码策略配置
+  shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f /etc/openldap/schema/ppolicy.ldif'
+  ignore_errors: true
+
+- name: 加载ppolicy模块
+  shell: ldapsearch -Y EXTERNAL -H ldapi:/// -b 'cn=module{0},cn=config'
+  register: ppolicy_add_status
+  no_log: true
+  ignore_errors: true
+
+- name: 存在No such object时执行添加
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/add_ppolicy.ldif
+  when: '"No such object" in ppolicy_add_status.stdout'
+
+- name: 不存在ppolicy时执行修改
+  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/openldap/modify_ppolicy.ldif
+  when: '"No such object" not in ppolicy_add_status.stdout'
+
+- name: 指定默认策略dn名
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/ppolicy_overlay.ldif
+
+- name: 禁止匿名访问
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/disable_anon.ldif
+
+- name: 设置定时清理Berkeley DB Logs 
+  file: 
+    name: "/var/spool/cron/root"
+    state: touch
+
+- name: sed -i
+  shell: sed -i '/db_checkpoint/d' /var/spool/cron/root
+- name: echo '003'
+  shell: echo '0 0 3 * * db_checkpoint -1 -h /var/lib/ldap' >> /var/spool/cron/root
+- name: sed -i
+  shell: sed -i '/db_archive/d' /var/spool/cron/root
+- name: echo 004
+  shell: echo '0 0 4 * * db_archive -d -h /var/lib/ldap' >> /var/spool/cron/root
+
+- name: 生成双主配置文件
+  when: ' ldap_deploy_mode == "2"'
+  block:
+  - name: 准备双主配置文件
+    vars:
+      file_name: '{{ item }}'
+    template:
+      src: '{{ file_name }}.j2'
+      dest: /etc/openldap/{{ file_name }}
+    with_items:
+    - "mod_syncprov.ldif"
+    - "syncprov.ldif"
+
+  - name: 生成双主特殊配置文件
+    vars:
+      ldap_1_hostname: "{{ groups.ldap[0] }}"
+      ldap_2_hostname: "{{ groups.ldap[1] }}"
+      port: "{{ ldap_port }}"
+    template:
+      src: 'master_node.j2'
+      dest: /etc/openldap/master_node.ldif
+
+  - name: 暂停 slapd 服务
+    tags:
+      - config
+    shell: systemctl stop slapd.service
+
+  - name: 修改slapd端口
+    vars:
+      SLAPD_URLS: "{{ ldap_port_conf }}"
+    template:
+      src: 'slapd.j2'
+      dest: /etc/sysconfig/slapd
+
+  - name: 重启 slapd 服务
+    tags:
+      - config
+    shell: systemctl restart slapd.service
+
+  - name: 导入双主配置文件
+    vars:
+      file_name: '{{ item }}'
+    shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/{{ file_name }}
+    with_items:
+    - "mod_syncprov.ldif"
+    - "syncprov.ldif"
+    - "master_node.ldif"

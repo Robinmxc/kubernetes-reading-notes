@@ -39,4 +39,11 @@ deploy_conf_defaults:
 
 mongodb_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
 
-
+mongodb_3_deploy_conf: 
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 1
+      memory: 1Gi

@@ -69,18 +69,23 @@
   register: data_dir_stat  
 
 - name: 设置自动配置iptables脚本
+  vars: 
+    portlist: "{{ iptables_port | join(',') }}"
   template: src="autostart.sh.j2" dest="/etc/init.d/autostart.sh"
-  when: 'not data_dir_stat.stat.exists'
+ 
+- name: 获取autostart.sh状态
+  stat: path="/etc/init.d/autostart.sh"
+  register: data_dir_stat_new  
 
 - name: 设置脚本执行权限
   file: name="{{ item }}" mode=0700
   with_items:
   - "/etc/init.d/autostart.sh"
-  when: 'not data_dir_stat.stat.exists'
+  when: 'data_dir_stat_new.stat.exists'
 
 - name: 设置脚本开机执行
   shell: systemctl enable autostart.sh
-  when: 'not data_dir_stat.stat.exists'
+  when: 'data_dir_stat_new.stat.exists'
 
 - name: 初次执行autostart.sh脚本
   shell: sh /etc/init.d/autostart.sh

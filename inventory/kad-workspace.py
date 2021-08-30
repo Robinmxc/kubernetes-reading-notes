@@ -241,9 +241,43 @@ def parse_host_data(workspace_dir):
 
     parse_eoms_config(result)
 
+    parse_ldap_config(result)
+    
     return result
 
-# 处理SourceData配置参数
+# 处理Ldap配置参数
+def parse_ldap_config(host_data):
+    group_all_vars = host_data["groups"]["all"]["vars"]
+    ldap_hosts =  group_all_vars["LDAP"]["LDAP_HOST"] if "LDAP" in group_all_vars and "LDAP_HOST" in group_all_vars["LDAP"] else []
+    ldap_vip = group_all_vars["LDAP"]["LDAP_VIP"] if "LDAP" in group_all_vars and "LDAP_VIP" in group_all_vars["LDAP"] else []
+    if "LDAP" in group_all_vars and "enable" in group_all_vars["LDAP"] and group_all_vars["LDAP"]["enable"]:
+        if len(ldap_hosts) !=1 and len(ldap_hosts) !=2:
+          raise Exception(ldap_hosts + u"必须配置一个或者两个IP")
+        for ip in ldap_hosts:
+            if not is_IP(ip):
+                raise Exception(ip + u"不是有效的IP地址")
+        if not is_IP(ldap_vip):
+            raise Exception(ldap_vip + u"不是有效的IP地址")
+        if len(ldap_hosts) == 2 and len(ldap_vip) == 0:
+          raise Exception("双主模式必须配置LDAP_VIP")
+
+        host_data["groups"]["ldap"] = ldap_hosts
+        group_all_vars["LDAP_VIP"] = ldap_vip
+        group_all_vars["LDAP_MODEL"] = "dual" if len(ldap_hosts) == 2 else "single"
+
+        host_vars = host_data["host_vars"]
+        idx = 1
+        for ip in ldap_hosts:
+            if ip not in host_vars:
+                host_vars[ip] = {}
+            host_vars[ip]["LDAP_HOST_ID"] = str(100000 + idx)
+            if idx == 1:
+                host_vars[ip]["LDAP_ROLE"] = "MASTER"
+            else:
+                host_vars[ip]["LDAP_ROLE"] = "BACKUP"
+            idx = idx + 1
+
+# 处理监控系统配置参数
 def parse_eoms_config(host_data):
     group_all_vars = host_data["groups"]["all"]["vars"]
 

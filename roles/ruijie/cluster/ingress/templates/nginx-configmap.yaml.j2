@@ -1,0 +1,20 @@
+# Source: ingress-nginx/templates/controller-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    helm.sh/chart: ingress-nginx-3.30.0
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/version: 0.46.0
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: ingress-nginx-controller
+  namespace: kube-system
+data:
+  use-http2: "false"
+  proxy-body-size: "1024M"
+{% if 'http' == ingress_mode %}
+  compute-full-forwarded-for: "true"
+  use-forwarded-headers: "true"
+{% endif %}

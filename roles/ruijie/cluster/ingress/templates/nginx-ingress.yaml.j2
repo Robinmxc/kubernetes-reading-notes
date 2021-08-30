@@ -103,6 +103,15 @@ spec:
             requests:
               cpu: 100m
               memory: 90Mi
+          volumeMounts:
+          - mountPath: /etc/nginx/template
+            name: nginx-template-volume
+            readOnly: true
+      volumes:
+        - name: nginx-template-volume
+          configMap:
+            name: nginx-template
+
       nodeSelector:
         kubernetes.io/os: linux
       serviceAccountName: ingress-nginx

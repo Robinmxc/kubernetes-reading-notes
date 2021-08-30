@@ -18,6 +18,34 @@
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
   - { role: ruijie/sourceid/upgrade, tags: always }
 
+- hosts:
+  - all
+  tasks:
+  - name: 获取当前ingress实现
+    shell: "{{ bin_dir }}/kubectl -n kube-system get pod"
+    register: ingress_result
+    connection: local
+    ignore_errors: true
+    run_once: true
+
+  - name: 获取traefik名称
+    shell: "{{ bin_dir }}/kubectl -n kube-system get daemonsets.apps -o custom-columns=NAME:.metadata.name|grep traefik"
+    register: traefik_result
+    connection: local
+    ignore_errors: true
+    run_once: true
+    when: '"traefik" in ingress_result.stdout'
+
+  - name: 停止traefik
+    shell: "{{ bin_dir }}/kubectl delete daemonset -n kube-system {{ traefik_result.stdout }} "
+    connection: local
+    ignore_errors: true
+    run_once: true
+    when: '"traefik" in ingress_result.stdout'
+
+- name: 启动ingress
+  when: '"traefik" in ingress_result.stdout'
+  import_playbook: ../cluster/ingress.yml
 
 - hosts: all
   tasks:
@@ -29,9 +57,9 @@
     run_once: true
 
 - name: 清理k8s
-  when: '"{{ kubernetes_version }}" not in k8s_result.stdout'
+  when: '"v1.18.8" not in k8s_result.stdout'
   import_playbook: ../cluster/k8s-clean.yml
 
 - name: 安装k8s
-  when: '"{{ kubernetes_version }}" not in k8s_result.stdout'
+  when: '"v1.18.8" not in k8s_result.stdout'
   import_playbook: ../cluster/k8s-setup.yml

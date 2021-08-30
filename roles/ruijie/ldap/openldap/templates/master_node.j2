@@ -1,0 +1,37 @@
+dn: cn=config
+changetype: modify
+replace: olcServerID
+{% if inventory_hostname == ldap_1_hostname %}
+olcServerID: 0
+{% elif inventory_hostname == ldap_2_hostname %}
+olcServerID: 1
+{% endif %}
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+add: olcSyncRepl
+olcSyncRepl: rid=001
+{% if inventory_hostname == ldap_1_hostname %}
+  provider=ldap://{{ ldap_2_hostname }}:{{ port }}/
+{% elif inventory_hostname == ldap_2_hostname %}
+  provider=ldap://{{ ldap_1_hostname }}:{{ port }}/
+{% endif %}
+  bindmethod=simple
+  binddn="cn=admin,dc=gongchang,dc=com"
+  credentials={{ LDAP.LDAP_ADMIN_PWD }}
+  searchbase="dc=gongchang,dc=com"
+  scope=sub
+  schemachecking=on
+  type=refreshAndPersist
+  retry="30 5 300 3"
+  interval=00:00:05:00
+-
+add: olcMirrorMode
+olcMirrorMode: TRUE
+
+dn: olcOverlay=syncprov,olcDatabase={2}hdb,cn=config
+changetype: add
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov
+

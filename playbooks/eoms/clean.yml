@@ -3,11 +3,12 @@
   - kube_master
   tasks:
   - name: 删除自动执行脚本
-    shell: "sed -i '/{{ ietm }}/d' /var/spool/cron/root"
+    shell: "sed -i '/{{ item }}/d' /var/spool/cron/root"
     with_items:
-    - "componentVersion.sh"
-    - "kubectlCmd.sh"
-    - "system_date.sh"
+      - "componentVersion.sh"
+      - "kubectlCmd.sh"
+      - "system_date.sh"
+    ignore_errors: true
 
 - hosts:
   - localhost
@@ -35,3 +36,27 @@
 
 - hosts:
   - eoms
+  tasks:
+  - name: 禁用grafana
+    shell: systemctl disable grafana-server
+    ignore_errors: true
+  
+  - name: 停止 grafana 服务
+    shell: systemctl daemon-reload && systemctl stop grafana-server
+    ignore_errors: true
+
+  - name: 禁用prometheus
+    shell: systemctl disable prometheus.service
+    ignore_errors: true
+  
+  - name: 停止 prometheus 服务
+    shell: systemctl daemon-reload && systemctl stop prometheus.service
+    ignore_errors: true
+
+  - name: 禁用influxdb
+    shell: systemctl disable influxdb
+    ignore_errors: true
+  
+  - name: 停止 influxdb 服务
+    shell: systemctl daemon-reload && systemctl stop influxdb
+    ignore_errors: true

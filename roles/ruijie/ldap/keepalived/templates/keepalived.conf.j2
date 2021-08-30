@@ -1,0 +1,50 @@
+global_defs {
+    router_id ldap-storage-{{ hostvars[inventory_hostname]["LDAP_HOST_ID"] }}
+}
+
+vrrp_script chk_nginx {
+    script "/etc/keepalived/nginx_check.sh"
+    interval 2
+    weight -20
+}
+
+vrrp_instance VI-ldap-storage {
+    state hostvars[inventory_hostname]["LDAP_ROLE"]
+    priority {% if "MASTER" == hostvars[inventory_hostname]["LDAP_ROLE"] %}100{% else %}{{ 99 | random(61, 1) }}{% endif %}
+    nopreempt
+    unicast_src_ip {{ inventory_hostname }}
+    unicast_peer {
+{% for h in groups['ldap'] %}{% if h != inventory_hostname %}
+        {{ h }}
+{% endif %}{% endfor %}
+    }
+    interface {{ LDAP_ACCESS_IF }}
+    virtual_router_id {{ LDAP_ROUTER_ID }}
+    advert_int 1
+    track_script {
+        chk_nginx
+    }
+    virtual_ipaddress {
+        {{ LDAP_VIP }}
+    }
+}
+
+virtual_server {{ LDAP_VIP }} 1{{ LDAP_STORAGE_PORT }} {
+    delay_loop 6
+    lb_algo rr
+    lb_kind DR
+    persistence_timeout 50
+    protocol TCP
+
+{% for h in groups['ldap'] %}
+    real_server {{ h }} {{ LDAP_STORAGE_PORT }} {
+        weight 1
+        TCP_CHECK {
+            connect_port {{ LDAP_STORAGE_PORT }}
+            connect_timeout 3
+            nb_get_retry 3
+            delay_before_retry 3
+        }
+    }
+{% endfor %}
+}
