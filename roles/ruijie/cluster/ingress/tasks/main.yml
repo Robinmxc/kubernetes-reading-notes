@@ -54,7 +54,13 @@
       copy: src={{ item }} dest={{ nginx_temp_dir }}/{{ item }}
       with_items:
         - nginx-rbac.yaml
-        - nginx.tmpl
+      run_once: true
+      delegate_to: "{{ groups.deploy[0] }}"
+
+    - name: 复制nginx.tmpl文件
+      copy:
+        src: "nginx-{{ ingress_mode }}.tmpl"
+        dest: "{{ nginx_temp_dir }}/nginx.tmpl"
       run_once: true
       delegate_to: "{{ groups.deploy[0] }}"
 
