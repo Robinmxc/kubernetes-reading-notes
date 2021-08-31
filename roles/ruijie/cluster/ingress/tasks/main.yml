@@ -80,9 +80,14 @@
       connection: local
       run_once: true
 
+    - name: 删除 nginx 模板文件的 configmap
+      command: "{{ bin_dir }}/kubectl -n kube-system delete configmap nginx-template"
+      when: '"nginx-template" in nginx_config.stdout'
+      connection: local
+      run_once: true
+
     - name: 创建 nginx 模板文件的 configmap
       shell: "{{ bin_dir }}/kubectl -n kube-system create configmap nginx-template --from-file={{ nginx_temp_dir }}/nginx.tmpl"
-      when: '"nginx-template" not in nginx_config.stdout'
       connection: local
       run_once: true
   
