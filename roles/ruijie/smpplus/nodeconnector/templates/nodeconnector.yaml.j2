@@ -19,6 +19,9 @@ spec:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
         imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ JAVA_OPT_EXT}}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
@@ -29,35 +32,16 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
-        - containerPort: 80
+        - containerPort: 9887
         volumeMounts:
-        - mountPath: /usr/share/nginx/html/portal/assets/config.js
+        - mountPath: /ruijie/{{comp_name}}
           name: conf
-          subPath: config.js
-        - mountPath: /usr/share/nginx/html/portal/assets/plugin
-          name: plugin
-        - mountPath: /usr/share/nginx/html/portal/assets/img/visitor/pc/logo.png
-          name: logo
-          subPath: logo.png
-        - mountPath: /usr/share/nginx/html/portal/assets/img/visitor/pc/logo-pc.png
-          name: logo-pc
-          subPath: logo-pc.png
-
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}/conf
-        - name: plugin
-          hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}/plugin
-        - name: logo
-          hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}/img/visitor/pc/
-        - name: logo-pc
-          hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}/img/visitor/pc/
+            path: {{ config_base_dir }}/{{comp_name}}
 
 ---
 apiVersion: v1
@@ -66,12 +50,11 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-  externalTrafficPolicy: Local
   selector:
     k8s-app: rg-{{comp_name}}
   type: NodePort
   ports:
-  - name: n80
-    port: 80
-    targetPort: 80
-    nodePort: 80
+  - port: 9887
+    targetPort: 9887
+    nodePort: 10021
+

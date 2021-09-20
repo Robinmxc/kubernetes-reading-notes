@@ -7,4 +7,4 @@ KAD_APP_VERSION: "r1.0.0-test"
 
 #MongoDB管理员密码
 MONGODB_ADMIN_USER: "admin"
-MONGODB_ADMIN_PWD: ""
+MONGODB_ADMIN_PWD: "123Admin"

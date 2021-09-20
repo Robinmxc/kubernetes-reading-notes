@@ -1,4 +1,4 @@
-sms_middleware_java_opt:  "-Xms{{ (ansible_memtotal_mb/32/2/2)|int }}m -Xmx{{ (ansible_memtotal_mb/32/2/2)|int }}m"
+sms_middleware_java_opt:  "-Xms256m -Xmx256m"
 
 sms_middleware_configs: []
 
@@ -8,22 +8,22 @@ deploy_conf_defaults:
   small:
     replicas: 1
   normal:
-    replicas: 2
+    replicas: 1
     resources:
       limits:
-        cpu: 1
-        memory: 3Gi
+        cpu: 0.5
+        memory: 512Mi
       requests:
-        cpu: 1
-        memory: 1Gi
+        cpu: 0.5
+        memory: 256Mi
   single:
     replicas: 1
     resources:
       limits:
-        cpu: "{{ (ansible_processor_vcpus/16/2*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32/2)|int }}Mi"
+        cpu: 0.5
+        memory: 512Mi
       requests:
-        cpu: "{{ (ansible_processor_vcpus/16/2*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32/2/2)|int }}Mi"
-
+        cpu: 0.5
+        memory: 256Mi
+        
 sms_middleware_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

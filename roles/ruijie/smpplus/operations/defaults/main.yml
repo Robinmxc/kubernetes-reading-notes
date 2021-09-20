@@ -1,4 +1,4 @@
-operations_java_opt: "-Xms{{ (ansible_memtotal_mb/32/2/2)|int }}m -Xmx{{ (ansible_memtotal_mb/32/2)|int }}m"
+operations_java_opt: "--Xms256m -Xmx512m"
 
 operations_configs: []
 
@@ -7,14 +7,23 @@ operations_templates_path: ""
 deploy_conf_defaults:
   small:
     replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 500Mi
   single:
     replicas: 1
     resources:
       limits:
-        cpu: "{{ (ansible_processor_vcpus/16*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32)|int }}Mi"
+        cpu: 1
+        memory: 1Gi
       requests:
-        cpu: "{{ (ansible_processor_vcpus/16/2*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32/2)|int }}Mi"
+        cpu: 0.5
+        memory: 500Mi
 
 operations_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
