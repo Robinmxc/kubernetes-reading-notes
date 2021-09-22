@@ -1,9 +1,8 @@
+pcapscan_java_opt:  "--Xms256m -Xmx512m"
 
-nodeidentify_java_opt: "--Xms1024m -Xmx2048m"
+pcap-scan_configs: []
 
-nodeidentify_configs: []
-
-nodeidentify_templates_path: ""
+pcap-scan_templates_path: ""
 
 deploy_conf_defaults:
   small:
@@ -13,7 +12,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 2
-        memory: 3Gi
+        memory: 4Gi
       requests:
         cpu: 1
         memory: 1Gi
@@ -22,9 +21,9 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 2
-        memory: 3Gi
+        memory: 4Gi
       requests:
         cpu: 1
         memory: 1Gi
-
-nodeidentify_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+        
+pcapscan_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

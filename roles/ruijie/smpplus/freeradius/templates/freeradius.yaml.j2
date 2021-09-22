@@ -38,6 +38,9 @@ spec:
            name: log
          - mountPath: /ruijie/{{comp_name}}
            name: conf
+         - mountPath: /usr/local/etc/raddb/certs/server.pem
+           name: certs
+           subPath: server.pem
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -47,6 +50,9 @@ spec:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}
+        - name: certs
+          hostPath:
+            path: {{ config_base_dir }}/{{comp_name}}/certs/
 
 ---
 apiVersion: v1

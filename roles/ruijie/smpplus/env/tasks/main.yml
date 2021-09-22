@@ -44,4 +44,6 @@
     - "share"
     - "operations"
     - "authentication-api"
+    - "nodeconnector"
+    - "pcap-scan"
 

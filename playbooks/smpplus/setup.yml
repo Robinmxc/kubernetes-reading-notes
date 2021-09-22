@@ -61,3 +61,6 @@
   - { role: ruijie/smpplus/operations, tags: ["operations"] }
 #  - { role: ruijie/smpplus/cron-mongo-backup, tags: ["cron-mongo-backup"] }
   - { role: ruijie/smpplus/mgob, tags: ["mgob"] }
+  - { role: ruijie/smpplus/nodeconnector, tags: ["nodeconnector"]}
+  - { role: ruijie/smpplus/pcapscan, tags: ["pcapscan"]}
+#  - { role: ruijie/smpplus/linkagedevices, tags: ["linkagedevices"]}

@@ -7,7 +7,7 @@ deploy_conf_defaults:
   small:
     replicas: 1
   normal:
-    replicas: 2
+    replicas: 1
     resources:
       limits:
         cpu: 1
@@ -19,10 +19,10 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: "{{ (ansible_processor_vcpus/16*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32/2)|int }}Mi"
+        cpu: 1
+        memory: 512Mi
       requests:
-        cpu: "{{ (ansible_processor_vcpus/16/2*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32/2/2)|int }}Mi"
+        cpu: 1
+        memory: 256Mi
 
 frontend_portal_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

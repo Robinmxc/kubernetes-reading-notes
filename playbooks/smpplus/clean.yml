@@ -92,6 +92,24 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/mgob/"
     when: '"rg-mgob" in pod_info.stdout'
 
+  - name: delete nodeconnector # 删除nodeconnector服务
+    tags:
+      - nodeconnector
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodeconnector/"
+    when: '"nodeconnector" in pod_info.stdout'
+
+  - name: delete pcapscan # 删除pcapscan服务
+    tags:
+      - pcapscan
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/pcapscan/"
+    when: '"pcapscan" in pod_info.stdout'
+  
+  - name: delete linkagedevices # 删除linkagedevices服务
+  tags:
+    - linkagedevices
+  command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/linkagedevices/"
+  when: '"linkagedevices" in pod_info.stdout'
+
   - name: 等待frontend-smp结束运行
     tags:
       - frontend-smp
@@ -228,6 +246,36 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-mgob" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待nodeconnector结束运行
+    tags:
+      - nodeconnector
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"nodeconnector" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待pcapscan结束运行
+    tags:
+      - pcap-scan
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"pcapscan" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待linkagedevices结束运行
+    tags:
+      - linkagedevices
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"linkagedevices" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true

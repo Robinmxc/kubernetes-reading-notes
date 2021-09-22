@@ -6,6 +6,11 @@
   with_items: "{{ db_pwd_checklist }}"
 
 - block:
+  - name: 修改hostIp为当前服务Ip
+    replace: path="{{ KAD_PACKAGE_DIR }}/db/smpplus/nodes_upgrade_db/smpplus/3.3.4/psscript/00-constant.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+    - {regexp: "const hostIp.*$", replace: "const hostIp = {{groups['kube_node'][0]}}"}
+  
   - name: 压缩数据初始化脚本
     archive:
       path: "{{ KAD_PACKAGE_DIR }}/db/"
