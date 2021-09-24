@@ -1,8 +1,4 @@
-pcapscan_java_opt:  "--Xms256m -Xmx512m"
-
-pcap-scan_configs: []
-
-pcap-scan_templates_path: ""
+pcap_scan_java_opt:  "--Xms256m -Xmx3072m"
 
 deploy_conf_defaults:
   small:
@@ -26,4 +22,4 @@ deploy_conf_defaults:
         cpu: 1
         memory: 1Gi
         
-pcapscan_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+pcap_scan_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

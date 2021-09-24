@@ -1,5 +1,5 @@
 aggregation_java_opt:  "-Xms1024m -Xmx2048m"
-authentication_api_java_opt:  "-Xms{{ (ansible_memtotal_mb/32/3/2)|int }}m -Xmx{{ (ansible_memtotal_mb/32*2/3/2)|int }}m"
+authentication_api_java_opt:  "-Xms1024m -Xmx2048m"
 
 aggregation_configs: []
 

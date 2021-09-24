@@ -10,9 +10,12 @@ import time
 import yaml
 from IPy import IP
 from flask import Flask, jsonify, request
+import pymongo
+from threading import Thread
 
 server = flask.Flask(__name__)  # 把app.python文件当做一个server
-
+api_config=read_yml('/etc/kad/api/kadapi.yaml')
+kad_config=read_yml('/opt/kad/workspace/ruijie-smpplus/conf/all.yml')
 
 # 获取token
 @server.route('/kadapi/systemConfig/networkConfig/ipAddrCheck', methods=['get', 'post'])
@@ -53,12 +56,53 @@ def save_ip():
     result = {
         "code" : 200,
         "message" : "ok",
+        "result": True,
         "date" : {}
         }
+    data = json.loads(request.get_data(as_text=True))
+    keys=['ipAddress','subnetMask','defaultGateway','firstDnsServer','spareDnsServer','ipParagraphPrompt',]
+    if all(t not in data.keys() for t in keys):
+        result["result"]=False
+        result["code"]=204
+        result["message"]='Parameter illegal'
+        return result
+    if not is_ip(data['ipAddress']) and not is_ip(data['firstDnsServer']):
+        result["result"]=False
+        result["code"]=204
+        result["message"]='Parameter illegal'
+        return result
+
+    t=Thread(target=changeip_thread,args=(data,))
+    t.start()
+    return result
+
+
+def changeip_thread(data):
+    old_ip=prase_netfile()["date"]["ipAddress"]
+    new_ip=data["ipAddress"]
+
+    
+    file_list=api_config['filelist']
+    for filepath in file_list:
+        os.system('sed -i "s/'+old_ip+'/' + new_ip + '/g" '+ filepath)
+    os.system('sh /etc/kad/api/changeip.sh '+old_ip+' ' +new_ip )
+    change_mongoip=False
+    while change_mongoip:
+        try:
+            myclient = pymongo.MongoClient('mongodb://{}:{}@{}:{}/?authSource={}'.format("admin",kad_config["MONGODB_ADMIN_PWD"],new_ip,27017,"admin"))
+            myclient.get_database('').command('rs.conf()')
+            change_mongoip=True
+        except Exception as e:
+            change_mongoip=False
+            time.sleep(5)
+            print(e)
+
 
 @server.route('/kadapi/systemConfig/networkConfig/get', methods=['get', 'post'])  
-def get_network_config():
-    
+def get_network_config(): 
+    return prase_netfile()
+
+def prase_netfile():
     result = {
         "code": 200,
         "message": "ok",
@@ -71,7 +115,6 @@ def get_network_config():
             "ipParagraphPrompt": ""
         }
     }
-
     try:
         #k8s_conf=read_yml('/opt/kad/workspace/k8s/conf/all.yml')
         k8s_conf=read_yml('./tools/all.yml')
@@ -90,8 +133,7 @@ def get_network_config():
     except Exception as e:
         result["code"]=204
         result["message"]='get network message error: ' + str(e)
-        return  result 
-
+        return  result
 
 def exchange_maskint(mask_int):
   bin_arr = ['0' for i in range(32)]
@@ -122,6 +164,7 @@ def main():
     context.load_cert_chain(certfile=CERT_FILE,keyfile=KEY_FILE)
     context.load_verify_locations(CA_FILE)
     context.verify_mode=ssl.CERT_REQUIRED
+
     server.run(host="0.0.0.0", port=11938, debug=True,ssl_context=context)
 
 if __name__ == '__main__':

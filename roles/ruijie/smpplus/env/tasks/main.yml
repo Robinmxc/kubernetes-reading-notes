@@ -46,4 +46,5 @@
     - "authentication-api"
     - "nodeconnector"
     - "pcap-scan"
+    - "linkage-device"
 

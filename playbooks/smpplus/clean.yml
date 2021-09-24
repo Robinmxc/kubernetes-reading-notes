@@ -98,17 +98,17 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodeconnector/"
     when: '"nodeconnector" in pod_info.stdout'
 
-  - name: delete pcapscan # 删除pcapscan服务
+  - name: delete pcap-scan # 删除pcapscan服务
     tags:
-      - pcapscan
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/pcapscan/"
-    when: '"pcapscan" in pod_info.stdout'
+      - pcap-scan
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/pcap-scan/"
+    when: '"pcap-scan" in pod_info.stdout'
   
   - name: delete linkagedevices # 删除linkagedevices服务
-  tags:
-    - linkagedevices
-  command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/linkagedevices/"
-  when: '"linkagedevices" in pod_info.stdout'
+    tags:
+      - linkage-devices
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/linkage-devices/"
+    when: '"linkage-devices" in pod_info.stdout'
 
   - name: 等待frontend-smp结束运行
     tags:
@@ -265,7 +265,7 @@
       - pcap-scan
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
-    until: '"pcapscan" not in pod_info.stdout'
+    until: '"pcap-scan" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
@@ -275,7 +275,7 @@
       - linkagedevices
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
-    until: '"linkagedevices" not in pod_info.stdout'
+    until: '"linkage-devices" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
