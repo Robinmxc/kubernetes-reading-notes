@@ -1,4 +1,4 @@
-linkage_devices_java_opt: "--Xms256m -Xmx1024m"
+linkage_devices_java_opt: "-Xms256m -Xmx1024m"
 
 deploy_conf_defaults:
   small:

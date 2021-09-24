@@ -1,4 +1,4 @@
-operations_java_opt: "--Xms256m -Xmx512m"
+operations_java_opt: "-Xms256m -Xmx512m"
 
 operations_configs: []
 

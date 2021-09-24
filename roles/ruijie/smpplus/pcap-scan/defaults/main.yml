@@ -1,4 +1,4 @@
-pcap_scan_java_opt:  "--Xms256m -Xmx3072m"
+pcap_scan_java_opt:  "-Xms256m -Xmx3072m"
 
 deploy_conf_defaults:
   small:

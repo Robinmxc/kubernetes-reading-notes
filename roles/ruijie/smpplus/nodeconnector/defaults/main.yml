@@ -1,4 +1,4 @@
-nodeconnector_java_opt:  "--Xms512m -Xmx1024m"
+nodeconnector_java_opt:  "-Xms512m -Xmx1024m"
 #authentication_api_java_opt:  "-Xms{{ (ansible_memtotal_mb/32/3/2)|int }}m -Xmx{{ (ansible_memtotal_mb/32*2/3/2)|int }}m"
 
 nodeconnector_configs: []

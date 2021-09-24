@@ -1,4 +1,4 @@
-license_java_opt: "--Xms256m -Xmx512m"
+license_java_opt: "-Xms256m -Xmx512m"
 
 license_configs: []
 
