@@ -272,7 +272,7 @@
 
   - name: 等待linkagedevices结束运行
     tags:
-      - linkagedevices
+      - linkage-devices
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"linkage-devices" not in pod_info.stdout'

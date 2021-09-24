@@ -1,4 +1,4 @@
-linkage_device_java_opt: "--Xms256m -Xmx1024m"
+linkage_devices_java_opt: "--Xms256m -Xmx1024m"
 
 deploy_conf_defaults:
   small:
@@ -22,4 +22,4 @@ deploy_conf_defaults:
         cpu: 0.5
         memory: 512Mi
 
-linkage_device_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+linkage_devices_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
