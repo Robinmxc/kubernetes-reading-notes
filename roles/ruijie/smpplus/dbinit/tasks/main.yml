@@ -9,7 +9,7 @@
   - name: 修改hostIp为当前服务Ip
     replace: path="{{ KAD_PACKAGE_DIR }}/{{ constant_file_path }}" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-    - {regexp: "const hostIp.*$", replace: "const hostIp = {{groups['kube_node'][0]}}"}
+    - {regexp: "const hostIp.*$", replace: "const hostIp = '{{groups['kube_node'][0]}}'"}
   
   - name: 压缩数据初始化脚本
     archive:
