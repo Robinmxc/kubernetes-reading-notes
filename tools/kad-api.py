@@ -14,9 +14,15 @@ import pymongo
 from threading import Thread
 
 server = flask.Flask(__name__)  # 把app.python文件当做一个server
+
+def read_yml(file_path):
+    file = open(file_path)
+    config = yaml.load(file, Loader=yaml.SafeLoader)
+    file.close()
+    return config
+
 api_config=read_yml('/etc/kad/api/kadapi.yaml')
 kad_config=read_yml('/opt/kad/workspace/ruijie-smpplus/conf/all.yml')
-
 # 获取token
 @server.route('/kadapi/systemConfig/networkConfig/ipAddrCheck', methods=['get', 'post'])
 def idaddr_check():
@@ -115,12 +121,9 @@ def prase_netfile():
             "ipParagraphPrompt": ""
         }
     }
-    try:
-        #k8s_conf=read_yml('/opt/kad/workspace/k8s/conf/all.yml')
-        k8s_conf=read_yml('./tools/all.yml')
-        eth0_data = {}
-        #file=open('/etc/sysconfig/network-scripts/ifcfg-ens160')
-        file=open('./tools/ifcfg-ens160')
+    try:     
+        eth0_data = {}      
+        file=open(api_config['networkfile'])
         for line in file:
             eth0_data[str(line.split('=')[0])]= str(line.split('=')[1]).strip()
         result["date"]["ipAddress"] = eth0_data.get('IPADDR', "")
@@ -128,7 +131,7 @@ def prase_netfile():
         result["date"]["defaultGateway"] = eth0_data.get('GATEWAY', "")
         result["date"]["firstDnsServer"] = eth0_data.get('DNS1', "")
         result["date"]["spareDnsServer"] = eth0_data.get('DNS2', "")
-        result["date"]["ipParagraphPrompt"] = k8s_conf.get('CLUSTER_CIDR', "")
+        result["date"]["ipParagraphPrompt"] = kad_config.get('CLUSTER_CIDR', "")
         return  result
     except Exception as e:
         result["code"]=204
@@ -145,27 +148,22 @@ def exchange_maskint(mask_int):
 
 def is_ip(str):
     try: 
-        IP(str) 
+        IP(str)
         return True
     except Exception as e: 
         return False
-
-def read_yml(file_path):
-    file = open(file_path)
-    config = yaml.load(file, Loader=yaml.SafeLoader)
-    file.close()
-    return config
     
 def main():
-    CA_FILE='E:/temp/kadapi/ca.pem'
-    KEY_FILE='E:/temp/kadapi/kadapi-key.pem'
-    CERT_FILE='E:/temp/kadapi/kadapi.pem'
+
+    CA_FILE=api_config['CA_FILE']
+    KEY_FILE=api_config['KEY_FILE']
+    CERT_FILE=api_config['CERT_FILE']
     context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
     context.load_cert_chain(certfile=CERT_FILE,keyfile=KEY_FILE)
     context.load_verify_locations(CA_FILE)
     context.verify_mode=ssl.CERT_REQUIRED
 
-    server.run(host="0.0.0.0", port=11938, debug=True,ssl_context=context)
+    server.run(host="0.0.0.0", port=api_config['port'], debug=True,ssl_context=context)
 
 if __name__ == '__main__':
     main()
