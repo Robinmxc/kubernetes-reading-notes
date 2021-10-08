@@ -8,19 +8,6 @@
       src: "{{ namespace_dir }}/conf/sourceid/collect/conf/"
       dest: "{{ config_base_dir }}/sourceid/collect/conf/"
 
-  - name: 查询采集任务初始化状态
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("linkid-dev").getCollection("DICT_CONFIG").find({"_id":ObjectId("5d9ea792e0f39a75feea719f")})'''
-    register: mongo_result
-    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
-    connection: local
-
-  - name: 执行初始化脚本
-    shell: '{{ mongo_pod_shell }} /ruijie/init/init-data.sh'
-    when: '"5d9ea792e0f39a75feea719f" not in mongo_result.stdout'
-    register: mongo_result
-    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
-    connection: local
-
   - name: 准备部署文件目录
     tags:
       - config
