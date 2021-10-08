@@ -85,7 +85,6 @@
 
 - name: 添加uid为索引字段
   shell: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /etc/openldap/hdb-index.ldif
-  ignore_errors: true
 
 - name: 导入基本的Schema模式 # 执行多条shell
   vars:
