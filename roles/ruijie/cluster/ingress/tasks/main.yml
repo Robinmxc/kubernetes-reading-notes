@@ -23,7 +23,7 @@
   run_once: true
   
 - name: 部署ingress
-  when: '"nginx-ingress" not in pod_info.stdout'
+  when: '"nginx-ingress" not in pod_info.stdout and "sourceid" == {{ KAD_APP_NAME }}'
   block:
     - name: 尝试推送离线 nginx镜像（若执行失败，可忽略）
       copy: src={{ base_dir }}/down/{{ nginx_offline }} dest=/opt/kube/images/{{ nginx_offline }}
