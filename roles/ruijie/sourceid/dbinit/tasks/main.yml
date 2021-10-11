@@ -116,7 +116,6 @@
       - "linkid-dev"
       - "gate"
       - "gateway"
-      - "component"
       - "faceid"
       - "groupview"
       - "log"
@@ -187,16 +186,6 @@
       - "gate"
       - "gateway"
       - "faceid"
-    connection: local
-
-  - name: 保存组件数据库版本到SYSTEM_VERSION表中
-    vars:
-      comp_name: "{{ item }}"
-      db_name: "{{ comp_name }}_version"
-    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"{{ COMPONENT_DB_VERSION }}"}},"new":true})'''
-    when: 'DB_VERSION is not defined '
-    with_items:
-      - "component"
     connection: local
 
   - name: 初始化数据库用户

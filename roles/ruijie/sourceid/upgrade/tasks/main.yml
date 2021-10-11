@@ -11,13 +11,6 @@
     when: '"SOURCEID_DB_VERSION" in kad_content.stdout'
     connection: local
 
-  - name: 查找需要升级的component版本号
-    shell: |-
-      grep "COMPONENT_DB_VERSION:*" {{KAD_PACKAGE_DIR}}/kad.yml | awk -F ":" '{print $2}' | awk '{gsub(/^\s+|\s+$/, "");print}' | awk -F "\"" '{print $2}'
-    register: component_version
-    when: '"COMPONENT_DB_VERSION" in kad_content.stdout'
-    connection: local
-
   - name: 轮询等待mongodb运行
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} | grep 'mongo1' | awk '{print $3}'"
     register: pod_status
@@ -50,11 +43,6 @@
       - "faceid"
     connection: local
 
-  - name: 保存当前component版本到SYSTEM_VERSION表中
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"component_version":"{{ component_version.stdout }}"}},"new":true})'''
-    when: '"COMPONENT_DB_VERSION" in kad_content.stdout'
-    connection: local
-
   - name: 删除历史备份
     file:
       path: "{{BAK_DIR}}_history"
@@ -81,15 +69,6 @@
       path: "{{BAK_DIR}}"
       state: absent
     connection: local
-
-  - name: 备份component配置(为了兼容老的component位置)
-    vars:
-      src_path: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/conf/component"
-      dest_path: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/conf/sourceid/component"
-    copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
-    when: 'src_path is exists and dest_path is not exists'
-    connection: local
-    run_once: true
 
   - name: 备份kadworkspace
     copy:
@@ -139,7 +118,6 @@
       - "sourceid/convert"
       - "sourceid/fgm-backend"
       - "sourceid/groupview"
-      - "sourceid/component"
       - "sourceid/faceid-task"
       - "sourceid/log"
       - "sourceid/internetid"
