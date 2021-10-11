@@ -14,6 +14,10 @@ metadata:
 data:
   use-http2: "false"
   proxy-body-size: "1024M"
+  proxy-buffer-size: "256K"
+  proxy-buffers-number: "8"
+  ssl-ciphers: {{ ssl_ciphers }}
+  ssl-protocols: {{ ssl_protocols }}
 {% if 'http' == ingress_mode %}
   compute-full-forwarded-for: "true"
   use-forwarded-headers: "true"
