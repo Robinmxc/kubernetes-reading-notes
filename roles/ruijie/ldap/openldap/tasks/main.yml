@@ -146,11 +146,11 @@
 - name: sed -i
   shell: sed -i '/db_checkpoint/d' /var/spool/cron/root
 - name: echo '003'
-  shell: echo '0 0 3 * * db_checkpoint -1 -h /var/lib/ldap' >> /var/spool/cron/root
+  shell: echo '0 3 * * * db_checkpoint -1 -h /var/lib/ldap' >> /var/spool/cron/root
 - name: sed -i
   shell: sed -i '/db_archive/d' /var/spool/cron/root
 - name: echo 004
-  shell: echo '0 0 4 * * db_archive -d -h /var/lib/ldap' >> /var/spool/cron/root
+  shell: echo '0 4 * * * db_archive -d -h /var/lib/ldap' >> /var/spool/cron/root
 
 - name: 生成双主配置文件
   when: ' ldap_deploy_mode == "2"'
