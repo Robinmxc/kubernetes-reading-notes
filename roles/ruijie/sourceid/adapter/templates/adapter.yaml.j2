@@ -78,7 +78,7 @@ spec:
     - host: {{ SOURCEID_ADAPTER_DOMAIN }}
       http:
         paths:
-        - path: /sync
+        - path: /
           backend:
             serviceName: rg-adapter
             servicePort: 80
