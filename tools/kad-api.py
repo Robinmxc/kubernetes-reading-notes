@@ -10,8 +10,8 @@ import time
 import yaml
 from IPy import IP
 from flask import Flask, jsonify, request
-import pymongo
 from threading import Thread
+import logging
 
 server = flask.Flask(__name__)  # 把app.python文件当做一个server
 
@@ -22,7 +22,8 @@ def read_yml(file_path):
     return config
 
 api_config=read_yml('/etc/kad/api/kadapi.yaml')
-kad_config=read_yml('/opt/kad/workspace/ruijie-smpplus/conf/all.yml')
+kad_config=read_yml('/opt/kad/workspace/k8s/conf/all.yml')
+smp_config=read_yml('/opt/kad/workspace/ruijie-smpplus/conf/all.yml')
 # 获取token
 @server.route('/kadapi/systemConfig/networkConfig/ipAddrCheck', methods=['get', 'post'])
 def idaddr_check():
@@ -90,19 +91,39 @@ def changeip_thread(data):
     
     file_list=api_config['filelist']
     for filepath in file_list:
+        logging.error("change file"+filepath)
         os.system('sed -i "s/'+old_ip+'/' + new_ip + '/g" '+ filepath)
+    
+    logging.info("start changeip.sh")
     os.system('sh /etc/kad/api/changeip.sh '+old_ip+' ' +new_ip )
-    change_mongoip=False
+    logging.info("end changeip.sh")
+    change_mongoip=True
     while change_mongoip:
         try:
-            myclient = pymongo.MongoClient('mongodb://{}:{}@{}:{}/?authSource={}'.format("admin",kad_config["MONGODB_ADMIN_PWD"],new_ip,27017,"admin"))
-            myclient.get_database('').command('rs.conf()')
-            change_mongoip=True
+            output = os.popen('kubectl get pod -A')
+            for line in output.readlines():
+                if ('mongo1-0' in line and 'Running' in line):
+                    change_mongoip=False
+                    break
         except Exception as e:
-            change_mongoip=False
             time.sleep(5)
-            print(e)
-
+            logging.error(e)
+            
+    change_mongoip=True
+    while change_mongoip:
+        try:
+            change_mongoip=False
+            output = os.popen('kubectl exec -n ruijie-smpplus mongo1-0 -- mongo -u admin -p 123Admin  --authenticationDatabase admin  /ruijie/init/update-replset.js')
+            for line in output.readlines():
+                if ('fail' in line):
+                    change_mongoip=True
+                    logging.error("update mongo fail: "+ line)
+                    break
+        except Exception as e:
+            change_mongoip=True
+            time.sleep(5)
+            logging.error(e)
+    logging.info("success update mongo")
 
 @server.route('/kadapi/systemConfig/networkConfig/get', methods=['get', 'post'])  
 def get_network_config(): 
