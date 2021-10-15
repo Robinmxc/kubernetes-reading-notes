@@ -16,10 +16,15 @@ import logging
 server = flask.Flask(__name__)  # 把app.python文件当做一个server
 
 def read_yml(file_path):
-    file = open(file_path)
-    config = yaml.load(file, Loader=yaml.SafeLoader)
-    file.close()
-    return config
+    try:
+        file = open(file_path)
+        config = yaml.load(file, Loader=yaml.SafeLoader)
+        file.close()
+        return config
+    except Exception as e:
+        logging.error(e)
+    return {}
+           
 
 api_config=read_yml('/etc/kad/api/kadapi.yaml')
 kad_config=read_yml('/opt/kad/workspace/k8s/conf/all.yml')
@@ -88,6 +93,10 @@ def changeip_thread(data):
     old_ip=prase_netfile()["date"]["ipAddress"]
     new_ip=data["ipAddress"]
 
+    edit_netfile(data)
+    if(old_ip == new_ip):
+        os.system('systemctl restart network')
+        return
     
     file_list=api_config['filelist']
     for filepath in file_list:
@@ -159,13 +168,45 @@ def prase_netfile():
         result["message"]='get network message error: ' + str(e)
         return  result
 
+def edit_netfile(conf):
+    try:
+        file_data = ""
+        cover_map = {'IPADDR':'ipAddress','GATEWAY':'defaultGateway','DNS1':'firstDnsServer','DNS2':'spareDnsServer','PREFIX':'subnetMask'}
+        eth0_data = {}
+        conf['subnetMask']=exchange_intmask(conf['subnetMask'])
+        with open(api_config['networkfile'],"r") as file:
+            for line in file:
+                if('=' not in line):
+                    continue
+                key=str(line.split('=')[0])
+                value=str(line.split('=')[1]).strip()
+                if( key in cover_map.keys()):
+                    line = key +'=' +str(conf[cover_map[key]])+'\n'
+                    del cover_map[key]
+                file_data+=line
+            for key in cover_map.keys():
+                file_data = file_data + key +'='+str(conf[cover_map[key]])+'\n'
+        with open(api_config['networkfile'],"w") as f:
+            f.write(file_data)
+
+    except Exception as e:
+        logging.error(e)
+    return
+
 def exchange_maskint(mask_int):
-  bin_arr = ['0' for i in range(32)]
-  for i in range(mask_int):
-    bin_arr[i] = '1'
-  tmpmask = [''.join(bin_arr[i * 8:i * 8 + 8]) for i in range(4)]
-  tmpmask = [str(int(tmpstr, 2)) for tmpstr in tmpmask]
-  return '.'.join(tmpmask)
+    bin_arr = ['0' for i in range(32)]
+    for i in range(mask_int):
+        bin_arr[i] = '1'
+    tmpmask = [''.join(bin_arr[i * 8:i * 8 + 8]) for i in range(4)]
+    tmpmask = [str(int(tmpstr, 2)) for tmpstr in tmpmask]
+    return '.'.join(tmpmask)
+
+def exchange_intmask(netmask):
+    result = ''
+    for num in netmask.split('.'):
+        temp = str(bin(int(num)))[2:]
+        result = result + temp
+    return len("".join(str(result).split('0')[0:1]))
 
 def is_ip(str):
     try: 
