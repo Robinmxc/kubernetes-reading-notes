@@ -168,6 +168,10 @@ def parse_host_data(workspace_dir):
         prefix_length_conf = [22, 23, 23, 23, 24, 24, 24, 24]
         calc_masks = [0x0000fc00, 0x00007e00, 0x00003e00, 0x00001e00, 0x00000f00, 0x00000700, 0x00000300, 0x00000100]
         idx = cluster_cidr.prefixlen - 16
+
+        if(deploy_mode != "allinone" and idx > 5):
+            raise Exception("CLUSTER_CIDR 网络位数不能大于21")
+
         if (idx < 0):
             idx = 0
         service_cidr_addr = (int(cluster_cidr.network_address) & 0xffffff00) | calc_masks[idx]
