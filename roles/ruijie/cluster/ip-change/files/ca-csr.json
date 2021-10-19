@@ -1,0 +1,20 @@
+{
+    "CN": "kadapi",
+    "key": {
+      "algo": "rsa",
+      "size": 2048
+    },
+    "names": [
+      {
+        "C": "CN",
+        "ST": "ShangHai",
+        "L": "ShangHai",
+        "O": "kadapi",
+        "OU": "System"
+      }
+    ],
+    "ca": {
+      "expiry": "876000h"
+    }
+  }
+  

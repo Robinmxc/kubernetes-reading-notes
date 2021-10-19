@@ -1,0 +1,18 @@
+[Unit]
+Description=kadapi service
+
+[Service]
+Type=simple
+User=root
+PIDFile=/etc/kad/api/pid.pid
+WorkingDirectory=/etc/kad/api
+ExecStart=/etc/kad/api/kad-api
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s QUIT $MAINPID
+Restart=always
+RestartSec=5
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target
+~                          
