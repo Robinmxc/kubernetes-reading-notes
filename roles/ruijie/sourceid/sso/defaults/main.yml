@@ -1,5 +1,5 @@
 
-sso_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx8192m{% elif CLUSTER_SCALE == 'single' %}-Xms2048m -Xmx4096m{% else %}-Xms256m -Xmx512m{% endif %}"
+sso_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms6144m -Xmx6144m{% elif CLUSTER_SCALE == 'single' %}-Xms2048m -Xmx4096m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 sso_configs: []
 
