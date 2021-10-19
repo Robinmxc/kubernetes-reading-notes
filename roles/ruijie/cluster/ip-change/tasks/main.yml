@@ -1,0 +1,5 @@
+- name: 复制kadapi文件
+  command: "ls {{ base_dir }}/down"
+  register: download_info
+  connection: local
+  run_once: true
