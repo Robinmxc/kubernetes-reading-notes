@@ -123,6 +123,9 @@
       - "sourceid/internetid"
       - "sourceid/ztsync"
       - "sourceid/collect"
+      - "sourceid/adapter"
+      - "sourceid/mdm"
+      - "sourceid/career-event"
     connection: local
 
   - name: 准备https证书新目录
