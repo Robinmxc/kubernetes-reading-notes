@@ -88,7 +88,7 @@
   when: 'data_dir_stat_new.stat.exists'
 
 - name: 初次执行autostart.sh脚本
-  shell: sh /etc/init.d/autostart.sh
+  shell: iptables -F && sh /etc/init.d/autostart.sh
   when: 'not data_dir_stat.stat.exists'
 
 - name: 准备etcd证书
