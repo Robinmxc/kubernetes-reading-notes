@@ -44,6 +44,9 @@ spec:
         - mountPath: /ruijie/{{comp_name}}/complianceSoftware
           name: share
           readOnly: true
+        - mountPath: /ruijie/{{comp_name}}/kadapitls
+          name: kadapi-tls
+
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -53,7 +56,9 @@ spec:
         - name: share
           hostPath:
             path: {{ config_base_dir }}/share
-
+        - name: kadapi-tls
+          configMap:
+            name: kadapi-cert
 ---
 apiVersion: v1
 kind: Service

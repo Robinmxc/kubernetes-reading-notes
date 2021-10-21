@@ -1,9 +1,9 @@
 - name: 获取docker安装状态
   stat: 
-    path: /etc/systemd/system/kad-api.service
+    path: /etc/systemd/system/kadapi.service
   register: stat_result
 
-- name: 安装docker
+- name: 安装kadapi
   when: "not stat_result.stat.exists"
   block:
     - name: 准备kadapi相关目录
@@ -14,7 +14,14 @@
     - name: 下载kadapi二进制文件
       copy: src={{ KADAPI_DOWN_PATH }}/{{ item }} dest=/etc/kad/api/{{ item }} mode=0755
       with_items:
-      - kad-api
+      - kadapi
+      - changeip.sh
+
+    - name: 获取网卡配置文件名
+      shell: 'grep -rnl "{{ inventory_hostname }}" ifcfg-*'
+      args:
+        chdir: "/etc/sysconfig/network-scripts"
+      register: find_ifcfg
 
     - name: 准备创建证书所需文件
       copy: src={{ item }} dest=/etc/kad/ssl/{{ item }}
@@ -22,6 +29,13 @@
       - ca-config.json
       - ca-csr.json
       - kadapi-csr.json
+
+    - name: 准备配置文件
+      tags:
+      - config
+      vars:
+        ifcfg: '{{ find_ifcfg.stdout }}'
+      template: src='kadapi.yaml.j2' dest=/etc/kad/api/kadapi.yaml
 
     - name: 创建kadapi公钥
       shell: "cd /etc/kadapi/ssl && {{ bin_dir }}/cfssl gencert -initca ca-csr.json | {{ bin_dir }}/cfssljson -bare ca" 
@@ -49,7 +63,7 @@
       run_once: true
 
     - name: 创建 kadapi 模板文件的 configmap
-      shell: "{{ bin_dir }}/kubectl -n kube-system create configmap kadapi-cert --from-file=/etc/kadapi/ssl/kadapi-smp-key.pem"
+      shell: "{{ bin_dir }}/kubectl -n kube-system create configmap kadapi-cert --from-file=/etc/kadapi/ssl/"
       connection: local
       run_once: true
 

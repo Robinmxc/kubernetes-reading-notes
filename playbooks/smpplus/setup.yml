@@ -35,6 +35,7 @@
   roles:
   - { role: ruijie/smpplus/prepare-db-pwd, tags: always }
   - { role: ruijie/smpplus/dbinit }
+  - { role: ruijie/cluster/ip-change }
 
 - hosts:
   - kube_node

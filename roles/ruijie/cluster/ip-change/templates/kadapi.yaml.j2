@@ -1,0 +1,32 @@
+port: 11938
+
+filelist:
+-  {{ ifcfg }}
+-  /etc/systemd/system/etcd.service
+-  /etc/systemd/system/kube-apiserver.service
+-  /etc/systemd/system/kube-controller-manager.service
+-  /etc/systemd/system/kubelet.service
+-  /etc/systemd/system/kube-proxy.service
+-  /etc/systemd/system/kube-scheduler.service
+-  /etc/etcd/ssl/etcd-csr.json
+-  /etc/kubernetes/ssl/kubelet-csr.json
+-  /etc/kubernetes/ssl/kubernetes-csr.json
+-  /home/ruijie/ruijie-smpplus/frontend-smp/conf/Environment.js
+-  /opt/kube/kube-system/flannel/kube-flannel.yaml
+-  /opt/kad/workspace/ruijie-smpplus/yaml/mongo/mongo1.yml
+-  /opt/kad/workspace/ruijie-smpplus/yaml/rocketmq/rocketmq.yml
+-  /home/ruijie/ruijie-smpplus/mongodb/init/updatip.js
+-  /home/ruijie/ruijie-smpplus/rocketmq/conf/broker.conf
+-  /opt/kad/workspace/k8s/conf/all.yml
+-  /home/ruijie/ruijie-smpplus/authentication/conf/application-prd.yml
+-  /home/ruijie/ruijie-smpplus/eportal/conf/application-prd.properties
+-  /home/ruijie/ruijie-smpplus/nodeidentify/conf/application-prd.yml
+-  /home/ruijie/ruijie-smpplus/mongodb/init/update-replset.js
+-  /home/ruijie/ruijie-smpplus/linkage-devices/conf/application-prd.yml
+-  /home/ruijie/ruijie-smpplus/nodeconnector/conf/application-prd.yml
+
+CA_FILE: /etc/kad/api/ssl/ca.pem 
+KEY_FILE: /etc/kad/api/ssl/kadapi-key.pem
+CERT_FILE: /etc/kad/api/ssl/kadapi.pem
+
+networkfile: {{ ifcfg }}
