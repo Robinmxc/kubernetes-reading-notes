@@ -10,6 +10,7 @@
       file: name={{ item }} state=directory
       with_items:
       - /etc/kad/api
+      - /etc/kad/api/ssl
     
     - name: 下载kadapi二进制文件
       copy: src={{ KADAPI_DOWN_PATH }}/{{ item }} dest=/etc/kad/api/{{ item }} mode=0755
@@ -24,7 +25,7 @@
       register: find_ifcfg
 
     - name: 准备创建证书所需文件
-      copy: src={{ item }} dest=/etc/kad/ssl/{{ item }}
+      copy: src={{ item }} dest=/etc/kad/api/ssl/{{ item }}
       with_items:
       - ca-config.json
       - ca-csr.json
@@ -38,17 +39,17 @@
       template: src='kadapi.yaml.j2' dest=/etc/kad/api/kadapi.yaml
 
     - name: 创建kadapi公钥
-      shell: "cd /etc/kadapi/ssl && {{ bin_dir }}/cfssl gencert -initca ca-csr.json | {{ bin_dir }}/cfssljson -bare ca" 
+      shell: "cd /etc/kad/api/ssl && {{ bin_dir }}/cfssl gencert -initca ca-csr.json | {{ bin_dir }}/cfssljson -bare ca" 
 
     - name: 创建 kadapi证书和私钥
-      shell: "cd /etc/kadapi/ssl && {{ bin_dir }}/cfssl gencert \
-            -ca={{ ca_dir }}/ca.pem \
-            -ca-key={{ ca_dir }}/ca-key.pem \
-            -config={{ ca_dir }}/ca-config.json \
-            -profile=kadapi kadapi-csr.json | {{ bin_dir }}/cfssljson -bare etcd"
+      shell: "cd /etc/kad/api/ssl && {{ bin_dir }}/cfssl gencert \
+            -ca={{ kadapi_ca_dir }}/ca.pem \
+            -ca-key={{ kadapi_ca_dir }}/ca-key.pem \
+            -config={{ kadapi_ca_dir }}/ca-config.json \
+            -profile=kadapi kadapi-csr.json | {{ bin_dir }}/cfssljson -bare kadapi"
 
     - name: 转换kadapi证书格式
-      shell: "cd /etc/kadapi/ssl && openssl pkcs8 -topk8 -inform PEM -in /etc/kadapi/ssl/kadapi-key.pem -outform PEM -nocrypt > /etc/kadapi/ssl/kadapi-smp-key.pem"
+      shell: "cd /etc/kad/api/ssl && openssl pkcs8 -topk8 -inform PEM -in /etc/kad/api/ssl/kadapi-key.pem -outform PEM -nocrypt > /etc/kad/api/ssl/kadapi-smp-key.pem"
 
     - name: 获取configmap数据
       command: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} get configmap"
@@ -63,7 +64,7 @@
       run_once: true
 
     - name: 创建 kadapi 模板文件的 configmap
-      shell: "{{ bin_dir }}/kubectl -n kube-system create configmap kadapi-cert --from-file=/etc/kadapi/ssl/"
+      shell: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} create configmap kadapi-cert --from-file=/etc/kad/api/ssl/"
       connection: local
       run_once: true
 
