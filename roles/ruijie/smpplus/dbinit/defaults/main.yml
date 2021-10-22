@@ -2,7 +2,7 @@
 db_pwd_checklist: [
 ]
 
-constant_file_path: "db/smpplus/rg-upgrade-db/nodes_upgrade_db/smpplus/3.3.4/00-constant.js"
+constant_file_path: "db/smpplus/rg-upgrade-db/nodes_upgrade_db/smpplus/3.3.4-rc1/00-constant.js"
 updatereplset_file_path: "db/smpplus/rg-init-db/update-replset.js"
 
 mongo_shell_fail_pattern: '"ok" : 0'

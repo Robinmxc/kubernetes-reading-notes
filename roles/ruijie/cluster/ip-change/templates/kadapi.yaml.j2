@@ -1,7 +1,7 @@
 port: 11938
 
 filelist:
--  {{ ifcfg }}
+-  /etc/sysconfig/network-scripts/{{ ifcfg }}
 -  /etc/systemd/system/etcd.service
 -  /etc/systemd/system/kube-apiserver.service
 -  /etc/systemd/system/kube-controller-manager.service
@@ -29,4 +29,4 @@ CA_FILE: /etc/kad/api/ssl/ca.pem
 KEY_FILE: /etc/kad/api/ssl/kadapi-key.pem
 CERT_FILE: /etc/kad/api/ssl/kadapi.pem
 
-networkfile: {{ ifcfg }}
+networkfile: /etc/sysconfig/network-scripts/{{ ifcfg }}
