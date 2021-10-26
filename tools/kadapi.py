@@ -122,7 +122,7 @@ def changeip_thread(data):
     while change_mongoip:
         try:
             change_mongoip=False
-            output = os.popen('kubectl exec -n ruijie-smpplus mongo1-0 -- mongo -u admin -p 123Admin  --authenticationDatabase admin  /ruijie/init/update-replset.js')
+            output = os.popen('kubectl exec -n ruijie-smpplus mongo1-0 -- mongo -u admin -p 123Admin  --authenticationDatabase admin  /ruijie/init/smpplus/rg-init-db/update-replset.js')
             for line in output.readlines():
                 if ('fail' in line):
                     change_mongoip=True
