@@ -31,7 +31,7 @@
     deploy_conf: '{{pcap_scan_deploy_conf}}'
     JAVA_OPT_EXT: '{{pcap_scan_java_opt}}'
     comp_name: 'pcap-scan'
-  template: src='pcap-scan.yaml.j2' dest={{ yaml_dir }}/pcap-scan/pcap-scan.yml
+  template: src='pcap-scan.yaml.j2' dest={{ yaml_dir }}/pcap-scan/pcap-scan.yaml
   run_once: true
   connection: local
 
