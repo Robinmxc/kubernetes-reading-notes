@@ -2,11 +2,11 @@
 nginx_offline: "nginx-0.46.0.tar"
 
 # http or https
-ingress_mode: "https"
+ingress_mode: "http"
 
 #证书文件名，如：["com.ruijie", "com.ruijie.cn"]
 #同时/etc/kubernetes/ssl目录下要有：com.ruijie.pem, com.ruijie-key.pem, com.ruijie.com.cn.pem, com.ruijie.com.cn-key.pem
-ingress_ssl_names: ["6098073__rghall.com.cn.pem","6098073__rghall.com.cn.key"]
+ingress_ssl_names: []
 
 nginx_temp_dir: "/opt/kube/kube-system/nginx-ingress"
 
@@ -16,6 +16,3 @@ ssl_protocols: "TLSv1 TLSv1.1 TLSv1.2 TLSv1.3"
 nginx_port:
   TCP: []
   UDP: []
-
-# host可以是a.rghall.com.cn或b.rghall.com.cn，但不能是rghall.com.cn
-ingress_realmname: "a.rghall.com.cn"
