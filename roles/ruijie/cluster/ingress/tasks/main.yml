@@ -121,7 +121,7 @@
       template: src=ingress-smpplus-https.yaml.j2 dest={{ nginx_temp_dir }}/ingress-smpplus-https.yaml
       connection: local
       run_once: true
-    
+
     - name: 部署ingress-smpplus-https
       shell:  "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/ingress-smpplus-https.yaml"
       connection: local
@@ -146,7 +146,7 @@
       shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/nginx-ingress.yaml"
       connection: local
       run_once: true
-    
+
     - name: 重启ingress-controller
       shell: "{{ bin_dir }}/kubectl -n kube-system delete pod $(kubectl -n kube-system get pods | grep nginx-ingress | awk '{print $1}')"
       connection: local

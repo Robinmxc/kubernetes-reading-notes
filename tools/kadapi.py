@@ -10,13 +10,25 @@ import time
 import yaml
 from IPy import IP
 from flask import Flask, jsonify, request
-import pymongo
 from threading import Thread
+import logging
 
 server = flask.Flask(__name__)  # 把app.python文件当做一个server
-api_config=read_yml('/etc/kad/api/kadapi.yaml')
-kad_config=read_yml('/opt/kad/workspace/ruijie-smpplus/conf/all.yml')
 
+def read_yml(file_path):
+    try:
+        file = open(file_path)
+        config = yaml.load(file, Loader=yaml.SafeLoader)
+        file.close()
+        return config
+    except Exception as e:
+        logging.error(e)
+    return {}
+           
+
+api_config=read_yml('/etc/kad/api/kadapi.yaml')
+kad_config=read_yml('/opt/kad/workspace/k8s/conf/all.yml')
+smp_config=read_yml('/opt/kad/workspace/ruijie-smpplus/conf/all.yml')
 # 获取token
 @server.route('/kadapi/systemConfig/networkConfig/ipAddrCheck', methods=['get', 'post'])
 def idaddr_check():
@@ -81,22 +93,46 @@ def changeip_thread(data):
     old_ip=prase_netfile()["date"]["ipAddress"]
     new_ip=data["ipAddress"]
 
+    edit_netfile(data)
+    if(old_ip == new_ip):
+        os.system('systemctl restart network')
+        return
     
     file_list=api_config['filelist']
     for filepath in file_list:
+        logging.error("change file"+filepath)
         os.system('sed -i "s/'+old_ip+'/' + new_ip + '/g" '+ filepath)
+    
+    logging.info("start changeip.sh")
     os.system('sh /etc/kad/api/changeip.sh '+old_ip+' ' +new_ip )
-    change_mongoip=False
+    logging.info("end changeip.sh")
+    change_mongoip=True
     while change_mongoip:
         try:
-            myclient = pymongo.MongoClient('mongodb://{}:{}@{}:{}/?authSource={}'.format("admin",kad_config["MONGODB_ADMIN_PWD"],new_ip,27017,"admin"))
-            myclient.get_database('').command('rs.conf()')
-            change_mongoip=True
+            output = os.popen('kubectl get pod -A')
+            for line in output.readlines():
+                if ('mongo1-0' in line and 'Running' in line):
+                    change_mongoip=False
+                    break
         except Exception as e:
-            change_mongoip=False
             time.sleep(5)
-            print(e)
-
+            logging.error(e)
+            
+    change_mongoip=True
+    while change_mongoip:
+        try:
+            change_mongoip=False
+            output = os.popen('kubectl exec -n ruijie-smpplus mongo1-0 -- mongo -u admin -p 123Admin  --authenticationDatabase admin  /ruijie/init/smpplus/rg-init-db/update-replset.js')
+            for line in output.readlines():
+                if ('fail' in line):
+                    change_mongoip=True
+                    logging.error("update mongo fail: "+ line)
+                    break
+        except Exception as e:
+            change_mongoip=True
+            time.sleep(5)
+            logging.error(e)
+    logging.info("success update mongo")
 
 @server.route('/kadapi/systemConfig/networkConfig/get', methods=['get', 'post'])  
 def get_network_config(): 
@@ -115,12 +151,9 @@ def prase_netfile():
             "ipParagraphPrompt": ""
         }
     }
-    try:
-        #k8s_conf=read_yml('/opt/kad/workspace/k8s/conf/all.yml')
-        k8s_conf=read_yml('./tools/all.yml')
-        eth0_data = {}
-        #file=open('/etc/sysconfig/network-scripts/ifcfg-ens160')
-        file=open('./tools/ifcfg-ens160')
+    try:     
+        eth0_data = {}      
+        file=open(api_config['networkfile'])
         for line in file:
             eth0_data[str(line.split('=')[0])]= str(line.split('=')[1]).strip()
         result["date"]["ipAddress"] = eth0_data.get('IPADDR', "")
@@ -128,44 +161,71 @@ def prase_netfile():
         result["date"]["defaultGateway"] = eth0_data.get('GATEWAY', "")
         result["date"]["firstDnsServer"] = eth0_data.get('DNS1', "")
         result["date"]["spareDnsServer"] = eth0_data.get('DNS2', "")
-        result["date"]["ipParagraphPrompt"] = k8s_conf.get('CLUSTER_CIDR', "")
+        result["date"]["ipParagraphPrompt"] = kad_config.get('CLUSTER_CIDR', "")
         return  result
     except Exception as e:
         result["code"]=204
         result["message"]='get network message error: ' + str(e)
         return  result
 
+def edit_netfile(conf):
+    try:
+        file_data = ""
+        cover_map = {'IPADDR':'ipAddress','GATEWAY':'defaultGateway','DNS1':'firstDnsServer','DNS2':'spareDnsServer','PREFIX':'subnetMask'}
+        eth0_data = {}
+        conf['subnetMask']=exchange_intmask(conf['subnetMask'])
+        with open(api_config['networkfile'],"r") as file:
+            for line in file:
+                if('=' not in line):
+                    continue
+                key=str(line.split('=')[0])
+                value=str(line.split('=')[1]).strip()
+                if( key in cover_map.keys()):
+                    line = key +'=' +str(conf[cover_map[key]])+'\n'
+                    del cover_map[key]
+                file_data+=line
+            for key in cover_map.keys():
+                file_data = file_data + key +'='+str(conf[cover_map[key]])+'\n'
+        with open(api_config['networkfile'],"w") as f:
+            f.write(file_data)
+
+    except Exception as e:
+        logging.error(e)
+    return
+
 def exchange_maskint(mask_int):
-  bin_arr = ['0' for i in range(32)]
-  for i in range(mask_int):
-    bin_arr[i] = '1'
-  tmpmask = [''.join(bin_arr[i * 8:i * 8 + 8]) for i in range(4)]
-  tmpmask = [str(int(tmpstr, 2)) for tmpstr in tmpmask]
-  return '.'.join(tmpmask)
+    bin_arr = ['0' for i in range(32)]
+    for i in range(mask_int):
+        bin_arr[i] = '1'
+    tmpmask = [''.join(bin_arr[i * 8:i * 8 + 8]) for i in range(4)]
+    tmpmask = [str(int(tmpstr, 2)) for tmpstr in tmpmask]
+    return '.'.join(tmpmask)
+
+def exchange_intmask(netmask):
+    result = ''
+    for num in netmask.split('.'):
+        temp = str(bin(int(num)))[2:]
+        result = result + temp
+    return len("".join(str(result).split('0')[0:1]))
 
 def is_ip(str):
     try: 
-        IP(str) 
+        IP(str)
         return True
     except Exception as e: 
         return False
-
-def read_yml(file_path):
-    file = open(file_path)
-    config = yaml.load(file, Loader=yaml.SafeLoader)
-    file.close()
-    return config
     
 def main():
-    CA_FILE='E:/temp/kadapi/ca.pem'
-    KEY_FILE='E:/temp/kadapi/kadapi-key.pem'
-    CERT_FILE='E:/temp/kadapi/kadapi.pem'
+
+    CA_FILE=api_config['CA_FILE']
+    KEY_FILE=api_config['KEY_FILE']
+    CERT_FILE=api_config['CERT_FILE']
     context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
     context.load_cert_chain(certfile=CERT_FILE,keyfile=KEY_FILE)
     context.load_verify_locations(CA_FILE)
     context.verify_mode=ssl.CERT_REQUIRED
 
-    server.run(host="0.0.0.0", port=11938, debug=True,ssl_context=context)
+    server.run(host="0.0.0.0", port=api_config['port'], debug=True,ssl_context=context)
 
 if __name__ == '__main__':
     main()

@@ -72,3 +72,12 @@ PRIVATE_REGISTRY_PWD: ""
 nginx_port:
   TCP: ["9888","9788"]
   UDP: ["52580","1812","1813"]
+
+KADAPI_DOWN_PATH: "/opt/kad/down/api"
+
+#证书目录
+ca_dir: "/etc/kubernetes/ssl"
+
+ingress_ca_dir: "/etc/kad/ssl"
+
+kadapi_ca_dir: "/etc/kad/api/ssl"
