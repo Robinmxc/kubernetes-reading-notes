@@ -1,0 +1,12 @@
+# udp-service.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: udp-services
+  # 和ingress controller处于同一namespace
+  namespace: kube-system
+data:
+  # port: "namespace/service:port"
+  67: "ruijie-smpplus/rg-authentication:67"
+  161: "ruijie-smpplus/rg-eportal:161"
+  162: "ruijie-smpplus/rg-eportal:162"
