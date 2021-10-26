@@ -30,7 +30,7 @@ spec:
     secretName: nginx-cert
   rules:
   # host可以是a.rghall.com.cn或b.rghall.com.cn，但不能是rghall.com.cn
-  - host: {{ ingress_realmname }}
+  - host: {{ SMPPLUS_ADMIN_MODE }}
     http:
       paths:
       # 3
