@@ -44,6 +44,9 @@ spec:
         - mountPath: /ruijie/{{comp_name}}/complianceSoftware
           name: share
           readOnly: true
+        - mountPath: /ruijie/{{comp_name}}/kadapitls
+          name: kadapi-tls
+
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -53,7 +56,9 @@ spec:
         - name: share
           hostPath:
             path: {{ config_base_dir }}/share
-
+        - name: kadapi-tls
+          configMap:
+            name: kadapi-cert
 ---
 apiVersion: v1
 kind: Service
@@ -61,25 +66,19 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-  externalTrafficPolicy: Local
   selector:
     k8s-app: rg-{{comp_name}}
-  type: NodePort
   ports:
   - port: 9788
     name: port9788
     targetPort: 9788
-    nodePort: 9788
   - port: 9888
     name: port9888
     targetPort: 9888
-    nodePort: 9888
   - port: 52580
     name: port52580
     targetPort: 52580
-    nodePort: 52580
   - protocol: UDP
     port: 67
     name: port67
     targetPort: 67
-    nodePort: 67
