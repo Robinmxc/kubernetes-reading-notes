@@ -42,6 +42,7 @@ spec:
             - --election-id=ingress-controller-leader
             - --ingress-class=nginx
             - --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
+            - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
 
           securityContext:
             capabilities:

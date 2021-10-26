@@ -83,3 +83,5 @@ LDAP: {
   LDAP_ADMIN_PWD: "234567",
   
 }
+ingress_mode: "https"
+ingress_ssl_names: ["example.com"]

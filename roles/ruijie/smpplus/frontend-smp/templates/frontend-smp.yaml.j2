@@ -50,9 +50,7 @@ metadata:
 spec:
   selector:
     k8s-app: rg-{{comp_name}}
-  type: NodePort
   ports:
   - name: n8088
     port: 8088
     targetPort: 8088
-    nodePort: 8088
