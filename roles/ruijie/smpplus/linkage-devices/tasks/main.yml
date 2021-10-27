@@ -10,7 +10,7 @@
   - config
   replace: path="{{ config_base_dir }}/linkage-devices/conf/application-prd.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "namesrv:", replace: "{{groups['kube_node'][0]}}:"}
+  - {regexp: "namesrv:", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc:"}
   no_log: true
 
 - name: 准备部署文件目录

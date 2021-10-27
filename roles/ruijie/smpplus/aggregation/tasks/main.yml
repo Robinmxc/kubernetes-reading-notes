@@ -30,6 +30,7 @@
   - {regexp: "softwarePackageDownLoadAddress:.*$", replace: "softwarePackageDownLoadAddress: http://{{ groups.kube_node[0] }}:9888"}
   - {regexp: "protectEnable.*$", replace: "protectEnable: true"}
   - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
+  - {regexp: "namesrv", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc"}
   no_log: true
 
 - name: 自定义配置
