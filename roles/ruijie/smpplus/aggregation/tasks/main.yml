@@ -28,7 +28,7 @@
   - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
   - {regexp: "softwarePackageDownLoadAddress:.*$", replace: "softwarePackageDownLoadAddress: http://{{ groups.kube_node[0] }}:9888"}
-  - {regexp: "protectEnable.*$", replace: "protectEnable: true"}
+  - {regexp: "protectEnable.*$", replace: "protectEnable: false"}
   - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
   - {regexp: "namesrv", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc"}
   no_log: true
