@@ -26,7 +26,7 @@ spec:
   tls:
   - hosts:
    # 此处host应该和证书中的域名写法完全一致，否则仍然会报不安全的连接。如果包含通配符星号，则需要使用单引号
-    - '*.rghall.com.cn'
+    - '*.{{ ingress_ssl_names[0] }}'
     secretName: nginx-cert
   rules:
   # host可以是a.rghall.com.cn或b.rghall.com.cn，但不能是rghall.com.cn

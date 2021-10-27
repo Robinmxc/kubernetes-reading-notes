@@ -18,7 +18,7 @@
   - {regexp: "namesrv:", replace: "{{ APP_NAMESPACE }}.svc:"}
   - {regexp: "protectEnable.*$", replace: "protectEnable: false"}
   - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
-  - {regexp: "namesrv", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc"}
+  - {regexp: "namesrv:", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc:"}
   no_log: true
 
 - name: 自定义配置
