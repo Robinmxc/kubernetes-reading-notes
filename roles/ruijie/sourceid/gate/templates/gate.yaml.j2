@@ -21,11 +21,39 @@ spec:
         hostnames:
         - "{{ SOURCEID_SSO_DOMAIN }}"
 {% endif %}
+{%if SKYWALKING["enable"] %}
+      initContainers:
+      - name: init-agent
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/skywalking:{{ SKYWALKING.IMAGE_VERSION }}
+        command:
+        - 'sh'
+        - '-c'
+        - 'set -ex;mkdir -p /skywalking/agent;cp -r /opt/skywalking/agent/* /skywalking/agent;'
+        volumeMounts:
+        - name: agent
+          mountPath: /skywalking/agent
+{% endif %}
       containers:
       - name: rg-gate
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.gate.name }}:{{ SOURCEID_DOCKERS.gate.version }}
+{%if SKYWALKING["enable"] %}
+        command:
+        - 'sh'
+        - '-c'
+        - 'java -javaagent:/skywalking/agent/skywalking-agent.jar -jar -Dspring.config.location=/ruijie/sourceid/gate/conf/ -Dlogging.config=/ruijie/sourceid/gate/conf/logback.xml -Xmx4096m -Xms4096m $JAVA_OPT_EXT /app/rg-gate-0.0.1-SNAPSHOT.jar'
+{% endif %}
         imagePullPolicy: IfNotPresent
         env:
+{%if SKYWALKING["enable"] %}
+        - name: SW_AGENT_NAME
+          value: SourceID-gate
+        - name: SW_AGENT_NAMESPACE
+          value: {{ SKYWALKING.NAMESPACE }}
+        - name: SW_GRPC_LOG_SERVER_HOST
+          value: {{ SKYWALKING.SERVER_HOST }}
+        - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
+          value: {{ SKYWALKING.SERVER_HOST }}:11800          
+{% endif %}
         - name: JAVA_OPT_EXT
           value: "{{ gate_java_opt }}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
@@ -44,6 +72,8 @@ spec:
           name: conf
         - mountPath: /logs
           name: logpath
+        - mountPath: /skywalking/agent
+          name: agent
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -53,6 +83,9 @@ spec:
         - name: logpath
           hostPath:
             path: {{ config_base_dir }}/logs
+        - name: agent
+          emptyDir: {}
+          
 ---
 apiVersion: v1
 kind: Service
