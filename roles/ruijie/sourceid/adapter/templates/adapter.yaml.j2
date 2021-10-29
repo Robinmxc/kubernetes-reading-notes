@@ -15,7 +15,7 @@ spec:
       labels:
         k8s-app: rg-adapter
     spec:
-{%if SKYWALKING["enable"] }
+{%if SKYWALKING["enable"] %}
       initContainers:
       - name: init-agent
         image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/skywalking:{{ SKYWALKING.IMAGE_VERSION }}
@@ -30,7 +30,7 @@ spec:
       containers:
       - name: rg-adapter
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.adapter.name }}:{{ SOURCEID_DOCKERS.adapter.version }}
-{%if SKYWALKING["enable"] }
+{%if SKYWALKING["enable"] %}
         command:
         - 'sh'
         - '-c'
@@ -38,7 +38,7 @@ spec:
 {% endif %}
         imagePullPolicy: IfNotPresent
         env:
-{%if SKYWALKING["enable"] }
+{%if SKYWALKING["enable"] %}
         - name: SW_AGENT_NAME
           value: {{ SKYWALKING.AGENT_PREFIX }}-adapter
         - name: SW_AGENT_NAMESPACE
