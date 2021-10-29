@@ -40,7 +40,7 @@ spec:
         env:
 {%if SKYWALKING["enable"] %}
         - name: SW_AGENT_NAME
-          value: SourceID-log
+          value: {{ AGENT_PREFIX }}-log
         - name: SW_AGENT_NAMESPACE
           value: {{ SKYWALKING.NAMESPACE }}
         - name: SW_GRPC_LOG_SERVER_HOST
@@ -79,7 +79,7 @@ spec:
             path: {{ config_base_dir }}/logs
         - name: agent
           emptyDir: {}
-          
+
 ---
 apiVersion: v1
 kind: Service

@@ -46,7 +46,7 @@ spec:
         env:
 {%if SKYWALKING["enable"] %}
         - name: SW_AGENT_NAME
-          value: SourceID-sso
+          value: {{ AGENT_PREFIX }}-sso
         - name: SW_AGENT_NAMESPACE
           value: {{ SKYWALKING.NAMESPACE }}
         - name: SW_GRPC_LOG_SERVER_HOST

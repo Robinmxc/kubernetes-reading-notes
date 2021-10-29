@@ -40,7 +40,7 @@ spec:
         env:
 {%if SKYWALKING["enable"] %}
         - name: SW_AGENT_NAME
-          value: SourceID-career-event
+          value: {{ AGENT_PREFIX }}-career-event
         - name: SW_AGENT_NAMESPACE
           value: {{ SKYWALKING.NAMESPACE }}
         - name: SW_GRPC_LOG_SERVER_HOST
