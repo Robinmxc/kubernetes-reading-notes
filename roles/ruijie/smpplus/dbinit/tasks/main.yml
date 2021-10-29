@@ -115,7 +115,24 @@
     with_items: "{{ DB_VERSION.keys() }}"
     when: "DB_VERSION is defined"
     connection: local
-    
+
+  - name: 查询数据库nodes product表中保存的软件版本
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("nodes").getCollection("product").find({"name":"smpplus"})'''
+    register: product_version
+    failed_when: 'product_version.stdout is search(mongo_shell_fail_pattern) and product_version.stdout is not search(mongo_shell_success_pattern)' 
+    connection: local
+
+  - name: 数据库nodes product表中新增软件版本记录
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("nodes").getCollection("product").insert({"name":"smpplus"})'''
+    when: '"version" not in product_version.stdout'
+    connection: local
+
+  - name: 保存SMP+版本到product表中
+    vars:
+      smpplus_version: "RG-SMP+{{ PRODUCT_VERSION }}" 
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("nodes").runCommand({"findAndModify":"product","query":{"name":"smpplus"},"update":{"$set":{"version":"{{ smpplus_version }}","lastModifiedTime":new Date()}},"new":true})'''
+    connection: local  
+
   - name: 准备创建数据库用户的脚本
     template: src="create-users.js.j2" dest="{{ mongodb_init_dir }}/create-users.js"
 
