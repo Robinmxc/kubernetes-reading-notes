@@ -8,7 +8,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/use-regex: "true"
     # 浏览器(1) --> 前端应用(2) --> ingress(3) --> (4)service
-    # 1，浏览器传给本地前端应用的所有域名/path，均补充为域名/admin/path, 
+    # 1，浏览器传给本地前端应用的所有域名/path，均补充为域名/admin/path,
     nginx.ingress.kubernetes.io/app-root: /admin/
     # 2，如果浏览器将应用的如下url传给ingress，则按指定规则进行替换，但浏览器中仍然显示替换前的path
     #nginx配置http>server>location，location优先级最高
@@ -27,7 +27,7 @@ spec:
   tls:
   - hosts:
    # 此处host应该和证书中的域名写法完全一致，否则仍然会报不安全的连接。如果包含通配符星号，则需要使用单引号
-    - '*.{{ ingress_ssl_names[0] }}'
+    - '*.{{ ingress_ssl_names }}'
     secretName: nginx-cert
   rules:
   # host可以是a.rghall.com.cn或b.rghall.com.cn，但不能是rghall.com.cn
@@ -36,13 +36,20 @@ spec:
       paths:
       # 3
       - path: /admin
+        # smpplus管理端
         backend:
           serviceName: rg-frontend-smp
           servicePort: 8088
       - path: /portal
+        # 现访客认证页面
         backend:
           serviceName: rg-frontend-portal
           servicePort: 81
+      - path: /eportal
+        # 添加设备使用
+        backend:
+          serviceName: rg-eportal
+          servicePort: 8090
       - path: /component
         # 对应界面菜单项用户管理>用户管理
         backend:
@@ -72,10 +79,6 @@ spec:
         backend:
           serviceName: rg-linkid
           servicePort: 8901
-      - path: /api/eportal
-        backend:
-          serviceName: rg-eportal
-          servicePort: 8090
       - path: /nodeManager/file/download
         backend:
           serviceName: rg-authentication
@@ -111,7 +114,7 @@ spec:
   tls:
   - hosts:
     - '*.{{ ingress_ssl_names[0] }}'
-    secretName: secret-s
+    secretName: nginx-cert
   rules:
   - host: {{ SMPPLUS_ADMIN_MODE }}
     http:
