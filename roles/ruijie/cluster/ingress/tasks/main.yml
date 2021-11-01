@@ -74,10 +74,10 @@
       run_once: true
       delegate_to: "{{ groups.deploy[0] }}"
 
-    - name: 创建udp-service文件
-      template: src=udp-service.yaml.j2 dest={{ nginx_temp_dir }}/udp-service.yaml
-      run_once: true
-      delegate_to: "{{ groups.deploy[0] }}"
+    # - name: 创建udp-service文件
+    #   template: src=udp-service.yaml.j2 dest={{ nginx_temp_dir }}/udp-service.yaml
+    #   run_once: true
+    #   delegate_to: "{{ groups.deploy[0] }}"
 
     - name: 获取configmap数据
       command: "{{ bin_dir }}/kubectl -n kube-system get configmap"
@@ -132,10 +132,10 @@
       connection: local
       run_once: true
       
-    - name: 部署udp-service
-      shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/udp-service.yaml"
-      connection: local
-      run_once: true
+    # - name: 部署udp-service
+    #   shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/udp-service.yaml"
+    #   connection: local
+    #   run_once: true
 
     - name: 部署nginx-configmap
       shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/nginx-configmap.yaml"
