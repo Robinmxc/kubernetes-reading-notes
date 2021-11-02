@@ -117,15 +117,29 @@
       connection: local
       when: "'https' == ingress_mode"
 
-    - name: 创建ingress资源
+    - name: 创建ingress-https资源
       template: src=ingress-smpplus-https.yaml.j2 dest={{ nginx_temp_dir }}/ingress-smpplus-https.yaml
       connection: local
       run_once: true
+      when: "'https' == ingress_mode"
 
     - name: 部署ingress-smpplus-https
       shell:  "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/ingress-smpplus-https.yaml"
       connection: local
       run_once: true
+      when: "'https' == ingress_mode"
+
+    - name: 创建ingress-http资源
+      template: src=ingress-smpplus-http.yaml.j2 dest={{ nginx_temp_dir }}/ingress-smpplus-http.yaml
+      connection: local
+      run_once: true
+      when: "'http' == ingress_mode"
+
+    - name: 部署ingress-smpplus-http
+      shell:  "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/ingress-smpplus-http.yaml"
+      connection: local
+      run_once: true
+      when: "'http' == ingress_mode"
 
     - name: 部署nginx-rbac
       shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/nginx-rbac.yaml"
