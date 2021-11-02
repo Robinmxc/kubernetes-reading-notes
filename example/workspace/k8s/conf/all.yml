@@ -83,5 +83,9 @@ LDAP: {
   LDAP_ADMIN_PWD: "234567",
   
 }
+#smp+支持https配置
 ingress_mode: "https"
+#证书文件名，如：["com.ruijie", "com.ruijie.cn"]
+#同时/etc/kubernetes/ssl目录下要有：com.ruijie.pem, com.ruijie-key.pem, com.ruijie.com.cn.pem, com.ruijie.com.cn-key.pem
+#该配置名和域名相同
 ingress_ssl_names: ["example.com"]
