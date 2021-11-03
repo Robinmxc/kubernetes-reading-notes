@@ -30,15 +30,11 @@ spec:
       containers:
       - name: rg-faceid-task
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["faceid-task"].name }}:{{ SOURCEID_DOCKERS["faceid-task"].version }}
-{%if SKYWALKING["enable"] %}
-        command:
-        - 'sh'
-        - '-c'
-        - 'java -javaagent:/skywalking/agent/skywalking-agent.jar -jar -Dspring.config.location=/ruijie/sourceid/faceid-task/conf/ -Dlogging.config=/ruijie/sourceid/faceid-task/conf/logback.xml -Xmx4096m -Xms4096m $JAVA_OPT_EXT /app/rg-faceid-task-1.0-SNAPSHOT.jar'
-{% endif %}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
         - name: SW_AGENT_NAME
           value: {{ SKYWALKING.AGENT_PREFIX }}-faceid-task
         - name: SW_AGENT_NAMESPACE

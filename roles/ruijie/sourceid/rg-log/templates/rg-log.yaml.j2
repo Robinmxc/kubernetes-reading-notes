@@ -30,15 +30,11 @@ spec:
       containers:
       - name: rg-log
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["rg-log"].name }}:{{ SOURCEID_DOCKERS["rg-log"].version }}
-{%if SKYWALKING["enable"] %}
-        command:
-        - 'sh'
-        - '-c'
-        - 'java -javaagent:/skywalking/agent/skywalking-agent.jar -jar -Dspring.config.location=/ruijie/sourceid/rg-log/conf/ -Dlogging.config=/ruijie/sourceid/rg-log/conf/logback.xml -Xmx512m -Xms512m $JAVA_OPT_EXT /app/rg-log-server-1.0.0-RELEASE.jar'
-{% endif %}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
         - name: SW_AGENT_NAME
           value: {{ SKYWALKING.AGENT_PREFIX }}-log
         - name: SW_AGENT_NAMESPACE

@@ -30,15 +30,11 @@ spec:
       containers:
       - name: rg-career-event
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["career-event"].name }}:{{ SOURCEID_DOCKERS["career-event"].version }}
-{%if SKYWALKING["enable"] %}
-        command:
-        - 'sh'
-        - '-c'
-        - 'java -javaagent:/skywalking/agent/skywalking-agent.jar -jar -Dspring.config.location=/ruijie/sourceid/career-event/conf/ -Dlogging.config=/ruijie/sourceid/career-event/conf/logback.xml $JAVA_OPT_EXT /app/career-event-0.0.1-SNAPSHOT.jar'
-{% endif %}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
         - name: SW_AGENT_NAME
           value: {{ SKYWALKING.AGENT_PREFIX }}-career-event
         - name: SW_AGENT_NAMESPACE

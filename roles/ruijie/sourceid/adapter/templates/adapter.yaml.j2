@@ -30,15 +30,11 @@ spec:
       containers:
       - name: rg-adapter
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.adapter.name }}:{{ SOURCEID_DOCKERS.adapter.version }}
-{%if SKYWALKING["enable"] %}
-        command:
-        - 'sh'
-        - '-c'
-        - 'java -javaagent:/skywalking/agent/skywalking-agent.jar -jar -Dspring.config.location=/ruijie/sourceid/adapter/conf/ -Dlogging.config=/ruijie/sourceid/adapter/conf/logback.xml -Xmx512m -Xms256m $JAVA_OPT_EXT /app/cas-client-adapter-1.0.0.jar'
-{% endif %}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
         - name: SW_AGENT_NAME
           value: {{ SKYWALKING.AGENT_PREFIX }}-adapter
         - name: SW_AGENT_NAMESPACE

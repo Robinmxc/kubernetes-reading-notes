@@ -30,15 +30,11 @@ spec:
       containers:
       - name: rg-import-user
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS['import-user'].name }}:{{ SOURCEID_DOCKERS['import-user'].version }}
-{%if SKYWALKING["enable"] %}
-        command:
-        - 'sh'
-        - '-c'
-        - 'java -javaagent:/skywalking/agent/skywalking-agent.jar -jar -Dspring.config.location=/ruijie/sourceid/import-user/conf/ -Dlogging.config=/ruijie/sourceid/import-user/conf/logback.xml -Xmx512m -Xms512m $JAVA_OPT_EXT /app/rg-importUser-0.0.1-SNAPSHOT.jar'
-{% endif %}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
         - name: SW_AGENT_NAME
           value: {{ SKYWALKING.AGENT_PREFIX }}-import-user
         - name: SW_AGENT_NAMESPACE

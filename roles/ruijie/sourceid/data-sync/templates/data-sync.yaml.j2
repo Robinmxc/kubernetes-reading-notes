@@ -30,15 +30,11 @@ spec:
       containers:
       - name: rg-data-sync
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS['data-sync'].name }}:{{ SOURCEID_DOCKERS['data-sync'].version }}
-{%if SKYWALKING["enable"] %}
-        command:
-        - 'sh'
-        - '-c'
-        - 'java -javaagent:/skywalking/agent/skywalking-agent.jar -jar -Drocketmq.client.logFileMaxIndex=2 -Drocketmq.client.logFileMaxSize=52428800 -Drocketmq.client.logLevel=WARN -Dspring.config.location=/ruijie/sourceid/data-sync/conf/ -Dlogging.config=/ruijie/sourceid/data-sync/conf/logback.xml -Xmx512m -Xms512m $JAVA_OPT_EXT /app/rg-data-sync-0.0.1-SNAPSHOT.jar'
-{% endif %}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
         - name: SW_AGENT_NAME
           value: {{ SKYWALKING.AGENT_PREFIX }}-data-sync
         - name: SW_AGENT_NAMESPACE

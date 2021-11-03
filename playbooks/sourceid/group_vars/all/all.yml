@@ -153,4 +153,6 @@ SKYWALKING: {
   NAMESPACE: "SourceID",
 
   AGENT_PREFIX: "SourceID",
+
+  JAVA_AGENT_EXT: "-javaagent:/skywalking/agent/skywalking-agent.jar",
 }

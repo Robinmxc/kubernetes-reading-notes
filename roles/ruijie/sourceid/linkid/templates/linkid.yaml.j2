@@ -30,15 +30,11 @@ spec:
       containers:
       - name: rg-linkid
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.linkid.name }}:{{ SOURCEID_DOCKERS.linkid.version }}
-{%if SKYWALKING["enable"] %}
-        command:
-        - 'sh'
-        - '-c'
-        - 'java -javaagent:/skywalking/agent/skywalking-agent.jar -jar -Drocketmq.client.logFileMaxIndex=2 -Drocketmq.client.logFileMaxSize=52428800 -Drocketmq.client.logLevel=WARN -Dspring.config.location=/ruijie/sourceid/linkid/conf/ -Dlogging.config=/ruijie/sourceid/linkid/conf/logback.xml -Xmx4096m -Xms4096m $JAVA_OPT_EXT /app/rg-linkid-universities-start-1.0.0.jar'
-{% endif %}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
         - name: SW_AGENT_NAME
           value: {{ SKYWALKING.AGENT_PREFIX }}-linkid
         - name: SW_AGENT_NAMESPACE

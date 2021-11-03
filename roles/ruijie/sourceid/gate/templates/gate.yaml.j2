@@ -36,15 +36,11 @@ spec:
       containers:
       - name: rg-gate
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.gate.name }}:{{ SOURCEID_DOCKERS.gate.version }}
-{%if SKYWALKING["enable"] %}
-        command:
-        - 'sh'
-        - '-c'
-        - 'java -javaagent:/skywalking/agent/skywalking-agent.jar -jar -Dspring.config.location=/ruijie/sourceid/gate/conf/ -Dlogging.config=/ruijie/sourceid/gate/conf/logback.xml -Xmx4096m -Xms4096m $JAVA_OPT_EXT /app/rg-gate-0.0.1-SNAPSHOT.jar'
-{% endif %}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
         - name: SW_AGENT_NAME
           value: {{ SKYWALKING.AGENT_PREFIX }}-gate
         - name: SW_AGENT_NAMESPACE

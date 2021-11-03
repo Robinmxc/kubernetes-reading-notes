@@ -75,15 +75,11 @@ spec:
       containers:
       - name: rg-license
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.license.name }}:{{ SOURCEID_DOCKERS.license.version }}
-{%if SKYWALKING["enable"] %}
-        command:
-        - 'sh'
-        - '-c'
-        - 'java -javaagent:/skywalking/agent/skywalking-agent.jar -jar -Dspring.config.location=/ruijie/sourceid/license/conf/ -Dlogging.config=/ruijie/sourceid/license/conf/logback.xml -Xmx512m -Xms512m $JAVA_OPT_EXT /app/rg-license-1.0.0.jar'
-{% endif %}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
         - name: SW_AGENT_NAME
           value: {{ SKYWALKING.AGENT_PREFIX }}-license
         - name: SW_AGENT_NAMESPACE
