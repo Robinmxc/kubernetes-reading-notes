@@ -52,9 +52,7 @@ metadata:
 spec:
   selector:
     k8s-app: rg-{{comp_name}}
-  type: NodePort
   ports:
   - port: 9887
     targetPort: 9887
-    nodePort: 10021
 

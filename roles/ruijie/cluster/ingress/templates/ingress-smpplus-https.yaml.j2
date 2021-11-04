@@ -1,0 +1,148 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-https
+  namespace: ruijie-smpplus
+  annotations:
+    #ingress.kubernetes.io/ssl-redirect: "false"
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # 浏览器(1) --> 前端应用(2) --> ingress(3) --> (4)service
+    # 1，浏览器传给本地前端应用的所有域名/path，均补充为域名/admin/path,
+    nginx.ingress.kubernetes.io/app-root: /admin/
+    # 2，如果浏览器将应用的如下url传给ingress，则按指定规则进行替换，但浏览器中仍然显示替换前的path
+    #nginx配置http>server>location，location优先级最高
+    #server层可实现域名或host redirect，也可实现path redirect。location层仅能实现path redirect
+    #server-snippet为server层配置，configuration-snippet为location层配置，但两者在这里效果相同
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      #nginx.ingress.kubernetes.io/server-snippet: |
+      #rewrite ^/entry/(.*)$ /portal/entry/$1;
+      #rewrite ^/access/(.*)$ /portal/access/$1;
+      #rewrite ^/accounting/(.*)$ /portal/accounting/$1;
+      #rewrite ^/mn/(.*)$ /portal/mn/$1;
+      #rewrite ^/api/operations/(.*)$ /api/$1;
+      rewrite ^/api/linkid/(.*)$ /linkid/$1;
+      rewrite ^/admin/passport/login /admin/;
+spec:
+  tls:
+  - hosts:
+   # 此处host应该和证书中的域名写法完全一致，否则仍然会报不安全的连接。如果包含通配符星号，则需要使用单引号
+    - '*.{{ ingress_ssl_names[0] }}'
+    secretName: nginx-cert
+  rules:
+  # host可以是a.rghall.com.cn或b.rghall.com.cn，但不能是rghall.com.cn
+  - host: {{ SMPPLUS_SSO_DOMAIN }}
+    http:
+      paths:
+      # 3
+      - path: /admin
+        # smpplus管理端
+        backend:
+          serviceName: rg-frontend-smp
+          servicePort: 8088
+      - path: /portal
+        # 现访客认证页面
+        backend:
+          serviceName: rg-frontend-portal
+          servicePort: 81
+      - path: /eportal
+        # 添加设备使用
+        backend:
+          serviceName: rg-eportal
+          servicePort: 8090
+      - path: /component
+        # 对应界面菜单项用户管理>用户管理
+        backend:
+          serviceName: rg-component
+          servicePort: 8086
+      #- path: /self
+      #  backend:
+      #    serviceName: rg-self
+      #    servicePort: 8087
+      - path: /api/aggregation
+        backend:
+          serviceName: rg-aggregation
+          servicePort: 9999
+      - path: /maintenance
+        backend:
+          serviceName: rg-operations
+          servicePort: 10000
+      - path: /api
+        backend:
+          serviceName: rg-operations
+          servicePort: 10000
+      - path: /api/pcapscan
+        backend:
+          serviceName: rg-pcap-scan
+          servicePort: 10002
+      - path: /linkid
+        backend:
+          serviceName: rg-linkid
+          servicePort: 8901
+      - path: /nodeManager/file/download
+        backend:
+          serviceName: rg-authentication
+          servicePort: 9888
+      - path: /nodeManager/nodeInfoCommit/fromAD
+        backend:
+          serviceName: rg-authentication
+          servicePort: 9888
+      - path: /radiusSession/onlineUser/getExportLinkedOnlineUsers
+        backend:
+          serviceName: rg-authentication
+          servicePort: 9888
+      - path: /nodeManager/etlUserInfoSync
+        backend:
+          serviceName: rg-authentication
+          servicePort: 9888
+      - path: /nodeManager/nodeidentify
+        backend:
+          serviceName: rg-authentication
+          servicePort: 9888
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-mstsc
+  namespace: ruijie-smpplus
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # 4
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  tls:
+  - hosts:
+    - '*.{{ ingress_ssl_names[0] }}'
+    secretName: nginx-cert
+  rules:
+  - host: {{ SMPPLUS_SSO_DOMAIN }}
+    http:
+      paths:
+      - path: /api/mstsc(/|$)(.*)
+        backend:
+          serviceName: rg-aggregation
+          servicePort: 9999
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-license
+  namespace: ruijie-smpplus
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  tls:
+  - hosts:
+    - '*.{{ ingress_ssl_names[0] }}'
+    secretName: nginx-cert
+  rules:
+  - host: {{ SMPPLUS_SSO_DOMAIN }}
+    http:
+      paths:
+      - path: /api/license(/|$)(.*)
+        backend:
+          serviceName: rg-license
+          servicePort: 8089
