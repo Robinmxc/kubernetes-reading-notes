@@ -23,7 +23,7 @@
   run_once: true
   
 - name: 部署ingress
-  when: '"nginx-ingress" not in pod_info.stdout and "sourceid" == KAD_APP_NAME'
+  when: '"nginx-ingress" not in pod_info.stdout'
   block:
     - name: 尝试推送离线 nginx镜像（若执行失败，可忽略）
       copy: src={{ base_dir }}/down/{{ nginx_offline }} dest=/opt/kube/images/{{ nginx_offline }}
@@ -74,6 +74,11 @@
       run_once: true
       delegate_to: "{{ groups.deploy[0] }}"
 
+    # - name: 创建udp-service文件
+    #   template: src=udp-service.yaml.j2 dest={{ nginx_temp_dir }}/udp-service.yaml
+    #   run_once: true
+    #   delegate_to: "{{ groups.deploy[0] }}"
+
     - name: 获取configmap数据
       command: "{{ bin_dir }}/kubectl -n kube-system get configmap"
       register: nginx_config
@@ -112,11 +117,40 @@
       connection: local
       when: "'https' == ingress_mode"
 
+    - name: 创建ingress-https资源
+      template: src=ingress-smpplus-https.yaml.j2 dest={{ nginx_temp_dir }}/ingress-smpplus-https.yaml
+      connection: local
+      run_once: true
+      when: "'https' == ingress_mode"
+
+    - name: 部署ingress-smpplus-https
+      shell:  "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/ingress-smpplus-https.yaml"
+      connection: local
+      run_once: true
+      when: "'https' == ingress_mode"
+
+    - name: 创建ingress-http资源
+      template: src=ingress-smpplus-http.yaml.j2 dest={{ nginx_temp_dir }}/ingress-smpplus-http.yaml
+      connection: local
+      run_once: true
+      when: "'http' == ingress_mode"
+
+    - name: 部署ingress-smpplus-http
+      shell:  "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/ingress-smpplus-http.yaml"
+      connection: local
+      run_once: true
+      when: "'http' == ingress_mode"
+
     - name: 部署nginx-rbac
       shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/nginx-rbac.yaml"
       connection: local
       run_once: true
       
+    # - name: 部署udp-service
+    #   shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/udp-service.yaml"
+    #   connection: local
+    #   run_once: true
+
     - name: 部署nginx-configmap
       shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/nginx-configmap.yaml"
       connection: local
@@ -124,5 +158,10 @@
       
     - name: 部署nginx
       shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/nginx-ingress.yaml"
+      connection: local
+      run_once: true
+
+    - name: 重启ingress-controller
+      shell: "{{ bin_dir }}/kubectl -n kube-system delete pod $(kubectl -n kube-system get pods | grep nginx-ingress | awk '{print $1}')"
       connection: local
       run_once: true

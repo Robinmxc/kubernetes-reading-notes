@@ -29,13 +29,15 @@
   - config
   replace: path="{{ config_base_dir }}/frontend-smp/conf/Environment.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "var smpdomain.*", replace: "var smpdomain = \'http://{{groups['kube_node'][0]}}:9999/api/aggregation\';"}
-  - {regexp: "var linkiddomain.*", replace: "var linkiddomain = \'http://{{groups['kube_node'][0]}}:8901/linkid\';"}
-  - {regexp: "var licenseDomain.*", replace: "var licenseDomain = \'http://{{groups['kube_node'][0]}}:8089\';"}
-  - {regexp: "var commonDomain.*", replace: "var commonDomain = \'http://{{groups['kube_node'][0]}}:8086/component\';"}
-  - {regexp: "var mstscHttp.*", replace: "var mstscHttp = \'http://{{groups['kube_node'][0]}}:9999\';"}
-  - {regexp: "var mstscWS.*", replace: "var mstscWS = \'ws://{{groups['kube_node'][0]}}:9999\';"}
-  - {regexp: "var smpOperdomain.*", replace: "var smpOperdomain = \'http://{{groups['kube_node'][0]}}:10000/api\';"}
+  - {regexp: "var smpdomain.*", replace: "var smpdomain = \'/api/aggregation\';"}
+  - {regexp: "var linkiddomain.*", replace: "var linkiddomain = \'/linkid\';"}
+  - {regexp: "var licenseDomain.*", replace: "var licenseDomain = \'/api/license\';"}
+  - {regexp: "var commonDomain.*", replace: "var commonDomain = \'/component\';"}
+  - {regexp: "var mstscHttp.*", replace: "var mstscHttp = \'/api/mstsc\';"}
+  - {regexp: "var mstscWS.*", replace: "//var mstscWS = \'ws://{{groups['kube_node'][0]}}:9999\';"}
+  - {regexp: "var smpOperdomain.*", replace: "var smpOperdomain = \'/api\';"}
+  - {regexp: "crypto : true,", replace: "crypto : false,"}
+  - {regexp: "cryptoLog : true,", replace: "crypto : false,"}
 
 - name: 准备部署文件目录
   tags:

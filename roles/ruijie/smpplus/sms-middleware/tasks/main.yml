@@ -18,7 +18,7 @@
     - {regexp: "mongodb:.*/component.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/component?replicaSet=rs0"}
     - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
     - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
-    - {regexp: "protectEnable.*$", replace: "protectEnable: true"}
+    - {regexp: "protectEnable.*$", replace: "protectEnable: false"}
     - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
     no_log: true
 

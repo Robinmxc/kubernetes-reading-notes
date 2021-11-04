@@ -16,8 +16,8 @@
   - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
   - {regexp: "host-address-ip.*$", replace: "host-address-ip: {{groups['kube_node'][0]}}"}
-  - {regexp: "namesrv:", replace: "{{groups['kube_node'][0]}}:"}
-  - {regexp: "protectEnable.*$", replace: "protectEnable: true"}
+  - {regexp: "namesrv:", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc:"}
+  - {regexp: "protectEnable.*$", replace: "protectEnable: false"}
   - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
   - {regexp: "softwarePackageDownLoadAddress.*$", replace: "softwarePackageDownLoadAddress: http://{{groups['kube_node'][0]}}:9888"}
   - {regexp: "certificatePath.*$", replace: "certificatePath: /ruijie/authentication/kadapitls/kadapi.pem"}
