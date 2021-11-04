@@ -23,7 +23,7 @@ deploy_conf_defaults:
   normal:
     resources:
       limits:
-        cpu: 4
+        cpu: 8
         memory: 8Gi
       requests:
         cpu: 1
@@ -31,7 +31,7 @@ deploy_conf_defaults:
   single:
     resources:
       limits:
-        cpu: 4
+        cpu: 8
         memory: 8Gi
       requests:
         cpu: 1
