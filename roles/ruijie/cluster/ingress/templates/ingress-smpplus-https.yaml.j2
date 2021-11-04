@@ -31,7 +31,7 @@ spec:
     secretName: nginx-cert
   rules:
   # host可以是a.rghall.com.cn或b.rghall.com.cn，但不能是rghall.com.cn
-  - host: {{ SMPPLUS_ADMIN_MODE }}
+  - host: {{ SMPPLUS_SSO_DOMAIN }}
     http:
       paths:
       # 3
@@ -116,7 +116,7 @@ spec:
     - '*.{{ ingress_ssl_names[0] }}'
     secretName: nginx-cert
   rules:
-  - host: {{ SMPPLUS_ADMIN_MODE }}
+  - host: {{ SMPPLUS_SSO_DOMAIN }}
     http:
       paths:
       - path: /api/mstsc(/|$)(.*)
@@ -139,7 +139,7 @@ spec:
     - '*.{{ ingress_ssl_names[0] }}'
     secretName: nginx-cert
   rules:
-  - host: {{ SMPPLUS_ADMIN_MODE }}
+  - host: {{ SMPPLUS_SSO_DOMAIN }}
     http:
       paths:
       - path: /api/license(/|$)(.*)
