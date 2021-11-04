@@ -9,4 +9,4 @@ KAD_APP_VERSION: "r1.0.0-test"
 MONGODB_ADMIN_USER: "admin"
 MONGODB_ADMIN_PWD: "123Admin"
 #smp+支持https，填写域名即可
-SMPPLUS_ADMIN_MODE: "a.rghall.com.cn"
+SMPPLUS_SSO_DOMAIN: "a.rghall.com.cn"
