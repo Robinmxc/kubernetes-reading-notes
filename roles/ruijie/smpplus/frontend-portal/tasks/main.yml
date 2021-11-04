@@ -28,21 +28,13 @@
 - name: 自动配置
   tags:
   - config
-  replace: path="{{ config_base_dir }}/frontend-smp/conf/Environment.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  replace: path="{{ config_base_dir }}/frontend-portal/conf/config.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
   - {regexp: "smpdomain:.*", replace: "smpdomain: '/api/aggregation',"}
   - {regexp: "src:.*", replace: "src: '/eportal/qrcode',"}
   - {regexp: "var ip.*", replace: "var ip = ''"}
   - {regexp: "crypto.*", replace: "crypto : false,"}
   - {regexp: "cryptoLog.*", replace: "crypto : false,"}
-
-- name: 自动配置
-  tags:
-  - config
-  replace: path="{{ config_base_dir }}/frontend-smp/conf/Environment.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
-  with_items:
-  - {regexp: "smpdomain:.*", replace: "smpdomain: '/api/aggregation',"}
-  - {regexp: "src:.*", replace: "src: '/eportal/qrcode',"}
 
 - name: 准备部署文件目录
   tags:
