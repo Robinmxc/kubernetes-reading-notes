@@ -83,7 +83,15 @@ def save_ip():
         result["code"]=204
         result["message"]='Parameter illegal'
         return result
-
+    
+    old_ip=prase_netfile()["date"]["ipAddress"]
+    if not is_ip(old_ip):
+        result["result"]=False
+        result["code"]=204
+        result["message"]='未获取到原IP'
+        logging.error("can not get old IP from " + api_config['networkfile'])
+        return result
+    
     t=Thread(target=changeip_thread,args=(data,))
     t.start()
     return result
@@ -100,7 +108,7 @@ def changeip_thread(data):
     
     file_list=api_config['filelist']
     for filepath in file_list:
-        logging.error("change file"+filepath)
+        logging.info("change file"+filepath)
         os.system('sed -i "s/'+old_ip+'/' + new_ip + '/g" '+ filepath)
     
     logging.info("start changeip.sh")
@@ -166,6 +174,7 @@ def prase_netfile():
     except Exception as e:
         result["code"]=204
         result["message"]='get network message error: ' + str(e)
+        logging.error('get network message error: ' + str(e))
         return  result
 
 def edit_netfile(conf):
