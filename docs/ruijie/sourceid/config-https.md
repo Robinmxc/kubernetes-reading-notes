@@ -67,7 +67,7 @@ kad-play playbooks/sourceid/reconfig.yml
     ```
 1. 执行以下命令完成部署：
     ```
-    kubectl delete daemonset -n kube-system traefik-ingress
+    kubectl delete daemonset -n kube-system nginx-ingress
     kad-play playbooks/cluster/ingress.yml
     kad-play playbooks/sourceid/reconfig.yml
     ```
