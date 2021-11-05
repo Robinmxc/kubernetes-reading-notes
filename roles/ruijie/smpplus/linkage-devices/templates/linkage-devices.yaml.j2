@@ -53,11 +53,14 @@ metadata:
 spec:
   selector:
     k8s-app: rg-{{comp_name}}
+  type: NodePort
   ports:
   - port: 8802
     name: n8802
     targetPort: 8802
+    nodePort: 8802
   - port: 10001
     name: n10001
     targetPort: 10001
+    nodePort: 10001
 

@@ -88,20 +88,25 @@ spec:
   selector:
     name: rg-rocket
 {% if "yes" == (rocketmq_public) %}
+  type: NodePort
   ports:
   - name: n9876
     port: 9876
     targetPort: 9876
+    nodePort: 9876
   - name: n10909
     port: 10909
     targetPort: 10909
+    nodePort: 10909
   - name: n10911
     port: 10911
     targetPort: 10911
+    nodePort: 10911
 {% endif %}
 {% if "yes" != (rocketmq_public) %}
+  type: NodePort
   ports:
   - port: 9876
     targetPort: 9876
+    nodePort: 9876
 {% endif %}
-
