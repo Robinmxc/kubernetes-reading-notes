@@ -81,9 +81,3 @@ ca_dir: "/etc/kubernetes/ssl"
 ingress_ca_dir: "/etc/kad/ssl"
 
 kadapi_ca_dir: "/etc/kad/api/ssl"
-
-host_ip_value: "{%- if ingress_mode == 'https' -%} \
-                {{ SMPPLUS_SSO_DOMAIN }} \
-              {%- else -%} \
-                {{ groups['kube_node'][0] }} \
-              {%- endif -%}"
