@@ -3,9 +3,9 @@ authentication_java_opt: "-Xms4096m -Xmx4096m"
 authentication_configs: []
 
 host_ip_value: "{%- if ingress_mode == 'https' -%} \
-                {{ groups['kube_node'][0] }} \
-              {%- else -%} \
                 {{ SMPPLUS_SSO_DOMAIN }} \
+              {%- else -%} \
+                {{ groups['kube_node'][0] }} \
               {%- endif -%}"
 
 authentication_templates_path: ""
