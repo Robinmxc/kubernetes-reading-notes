@@ -102,6 +102,10 @@ spec:
     port: 10911
     targetPort: 10911
     nodePort: 10911
+  - name: n8133
+    port: 8133
+    targetPort: 8133
+    nodePort: 8133
 {% endif %}
 {% if "yes" != (rocketmq_public) %}
   type: NodePort
