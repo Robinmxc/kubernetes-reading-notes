@@ -164,7 +164,13 @@ def prase_netfile():
         eth0_data = {}      
         file=open(api_config['networkfile'])
         for line in file:
-            eth0_data[str(line.split('=')[0])]= str(line.split('=')[1]).strip()
+            key=str(line.split('=')[0]).strip()
+            value=str(line.split('=')[1]).strip()
+            value=eval(value)
+            eth0_data[key]= value
+        if 'NETMASK' in eth0_data.keys and 'PREFIX' not in eth0_data.keys:
+            eth0_data['PREFIX']=exchange_intmask(eth0_data.get('NETMASK', ""))
+
         result["date"]["ipAddress"] = eth0_data.get('IPADDR', "")
         result["date"]["subnetMask"] = exchange_maskint(int(eth0_data.get('PREFIX', "")))
         result["date"]["defaultGateway"] = eth0_data.get('GATEWAY', "")
