@@ -130,15 +130,16 @@ def changeip_thread(data):
     while change_mongoip:
         try:
             change_mongoip=False
-            output = os.popen('kubectl exec -n ruijie-smpplus mongo1-0 -- mongo -u admin -p 123Admin  --authenticationDatabase admin  /ruijie/init/smpplus/rg-init-db/update-replset.js')
+            output = os.popen('kubectl exec -n ruijie-smpplus mongo1-0 -- mongo -u admin -p ' + smp_config['MONGODB_ADMIN_PWD'] + '  --authenticationDatabase admin  /ruijie/init/smpplus/rg-init-db/update-replset.js')
             for line in output.readlines():
                 if ('fail' in line):
                     change_mongoip=True
                     logging.error("update mongo fail: "+ line)
+                    time.sleep(500)
                     break
         except Exception as e:
             change_mongoip=True
-            time.sleep(5)
+            time.sleep(500)
             logging.error(e)
     logging.info("success update mongo")
 
@@ -163,7 +164,13 @@ def prase_netfile():
         eth0_data = {}      
         file=open(api_config['networkfile'])
         for line in file:
-            eth0_data[str(line.split('=')[0])]= str(line.split('=')[1]).strip()
+            key=str(line.split('=')[0]).strip()
+            value=str(line.split('=')[1]).strip()
+            value=eval(value)
+            eth0_data[key]= value
+        if 'NETMASK' in eth0_data.keys and 'PREFIX' not in eth0_data.keys:
+            eth0_data['PREFIX']=exchange_intmask(eth0_data.get('NETMASK', ""))
+
         result["date"]["ipAddress"] = eth0_data.get('IPADDR', "")
         result["date"]["subnetMask"] = exchange_maskint(int(eth0_data.get('PREFIX', "")))
         result["date"]["defaultGateway"] = eth0_data.get('GATEWAY', "")
