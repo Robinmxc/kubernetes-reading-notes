@@ -83,6 +83,7 @@ metadata:
 spec:
   selector:
     k8s-app: rg-{{comp_name}}
+  type: NodePort
   ports:
   - port: 9999
     name: port9999
@@ -90,6 +91,7 @@ spec:
   - port: 9688
     name: port9688
     targetPort: 9688
+    nodePort: 9688
 
 ---
 apiVersion: v1
