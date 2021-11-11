@@ -166,9 +166,9 @@ def prase_netfile():
         for line in file:
             key=str(line.split('=')[0]).strip()
             value=str(line.split('=')[1]).strip()
-            value=eval(value)
+            value=value.replace('\"','')
             eth0_data[key]= value
-        if 'NETMASK' in eth0_data.keys and 'PREFIX' not in eth0_data.keys:
+        if 'NETMASK' in eth0_data.keys() and 'PREFIX' not in eth0_data.keys():
             eth0_data['PREFIX']=exchange_intmask(eth0_data.get('NETMASK', ""))
 
         result["date"]["ipAddress"] = eth0_data.get('IPADDR', "")
