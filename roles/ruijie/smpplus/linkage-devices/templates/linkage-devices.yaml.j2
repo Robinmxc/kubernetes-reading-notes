@@ -51,6 +51,7 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
+  externalTrafficPolicy: Local
   selector:
     k8s-app: rg-{{comp_name}}
   type: NodePort
