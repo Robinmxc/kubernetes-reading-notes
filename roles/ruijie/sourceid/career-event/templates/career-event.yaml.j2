@@ -29,7 +29,7 @@ spec:
 {% endif %}
       containers:
       - name: rg-career-event
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["career-event"].name }}:{{ SOURCEID_DOCKERS["career-event"].version }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["career"].name }}:{{ SOURCEID_DOCKERS["career"].version }}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
