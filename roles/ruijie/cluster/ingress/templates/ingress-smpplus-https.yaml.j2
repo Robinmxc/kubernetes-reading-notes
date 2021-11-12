@@ -21,6 +21,8 @@ metadata:
       #rewrite ^/accounting/(.*)$ /portal/accounting/$1;
       #rewrite ^/mn/(.*)$ /portal/mn/$1;
       #rewrite ^/api/operations/(.*)$ /api/$1;
+      rewrite ^/entry/(.*)$ /portal/entry/$1;
+      rewrite ^/access/(.*)$ /portal/access/$1;
       rewrite ^/api/linkid/(.*)$ /linkid/$1;
       rewrite ^/admin/passport/login /admin/;
 spec:
@@ -45,6 +47,16 @@ spec:
         backend:
           serviceName: rg-frontend-portal
           servicePort: 81
+      - path: /entry
+        # 现访客认证页面
+        backend:
+          serviceName: rg-frontend-portal
+          servicePort: 81
+      - path: /access
+        # 现访客认证页面
+        backend:
+          serviceName: rg-frontend-portal
+          servicePort: 81
       - path: /eportal
         # 添加设备使用
         backend:
