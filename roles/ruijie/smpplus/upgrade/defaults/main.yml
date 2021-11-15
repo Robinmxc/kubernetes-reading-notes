@@ -4,4 +4,4 @@ KAD_UPGRADE_PACKAGE_NAME: "smpplus-kad-1.2.1"
 
 UPGRADE_DIR: "{{base_dir}}/down/smpplus-kad-1.2.1-upgrade"
 
-UPGRADE_VERSION: "3.3.1"
+# UPGRADE_VERSION: "3.3.1"
