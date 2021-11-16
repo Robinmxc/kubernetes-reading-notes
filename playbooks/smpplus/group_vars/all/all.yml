@@ -81,3 +81,10 @@ ca_dir: "/etc/kubernetes/ssl"
 ingress_ca_dir: "/etc/kad/ssl"
 
 kadapi_ca_dir: "/etc/kad/api/ssl"
+
+
+protectEnable_value: "{%- if ingress_mode == 'https' -%} \
+                 false \
+               {%- else -%} \
+                 true \
+               {%- endif -%}"

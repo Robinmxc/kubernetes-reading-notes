@@ -36,8 +36,8 @@
   - {regexp: "var mstscHttp.*", replace: "var mstscHttp = \'/api/mstsc\';"}
   - {regexp: "var mstscWS.*", replace: "//var mstscWS = \'ws://{{groups['kube_node'][0]}}:9999\';"}
   - {regexp: "var smpOperdomain.*", replace: "var smpOperdomain = \'/api\';"}
-  - {regexp: "crypto : true,", replace: "crypto : false,"}
-  - {regexp: "cryptoLog : true,", replace: "crypto : false,"}
+  - {regexp: "crypto : true,", replace: "crypto : {{ protectEnable_value }},"}
+  - {regexp: "cryptoLog : true,", replace: "cryptoLog : {{ protectEnable_value }},"}
 
 - name: 准备部署文件目录
   tags:
