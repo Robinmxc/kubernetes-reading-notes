@@ -135,11 +135,11 @@ def changeip_thread(data):
                 if ('fail' in line):
                     change_mongoip=True
                     logging.error("update mongo fail: "+ line)
-                    time.sleep(500)
+                    time.sleep(0.5)
                     break
         except Exception as e:
             change_mongoip=True
-            time.sleep(500)
+            time.sleep(0.5)
             logging.error(e)
     logging.info("success update mongo")
 
