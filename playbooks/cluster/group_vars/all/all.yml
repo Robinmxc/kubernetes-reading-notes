@@ -46,9 +46,4 @@ DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}
 
 DOCKER_STORAGE_DIR: "{{ DATA_DIR }}/docker"
 
-protectEnable_value: "{%- if ingress_mode == 'https' -%} \
-                 false \
-               {%- else -%} \
-                 true \
-               {%- endif -%}"
 
