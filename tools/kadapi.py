@@ -78,7 +78,7 @@ def save_ip():
         result["code"]=204
         result["message"]='Parameter illegal'
         return result
-    if not is_ip(data['ipAddress']) and not is_ip(data['firstDnsServer']):
+    if not is_ip(data['ipAddress']) or not is_ip(data['firstDnsServer']) or not is_ip(data['subnetMask']):
         result["result"]=False
         result["code"]=204
         result["message"]='Parameter illegal'
@@ -195,7 +195,6 @@ def edit_netfile(conf):
                 if('=' not in line):
                     continue
                 key=str(line.split('=')[0])
-                value=str(line.split('=')[1]).strip()
                 if( key in cover_map.keys()):
                     line = key +'=' +str(conf[cover_map[key]])+'\n'
                     del cover_map[key]
