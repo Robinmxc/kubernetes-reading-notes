@@ -135,11 +135,11 @@ def changeip_thread(data):
                 if ('fail' in line):
                     change_mongoip=True
                     logging.error("update mongo fail: "+ line)
-                    time.sleep(500)
+                    time.sleep(0.5)
                     break
         except Exception as e:
             change_mongoip=True
-            time.sleep(500)
+            time.sleep(0.5)
             logging.error(e)
     logging.info("success update mongo")
 
@@ -170,7 +170,9 @@ def prase_netfile():
             eth0_data[key]= value
         if 'NETMASK' in eth0_data.keys() and 'PREFIX' not in eth0_data.keys():
             eth0_data['PREFIX']=exchange_intmask(eth0_data.get('NETMASK', ""))
-
+        #不配置子网，默认24位
+        if 'PREFIX' not in eth0_data.keys():
+            eth0_data['PREFIX']=24
         result["date"]["ipAddress"] = eth0_data.get('IPADDR', "")
         result["date"]["subnetMask"] = exchange_maskint(int(eth0_data.get('PREFIX', "")))
         result["date"]["defaultGateway"] = eth0_data.get('GATEWAY', "")
