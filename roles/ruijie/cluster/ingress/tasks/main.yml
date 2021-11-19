@@ -64,6 +64,13 @@
       run_once: true
       delegate_to: "{{ groups.deploy[0] }}"
 
+    - name: 自动添加server_name为ip
+      replace: path="{{ nginx_temp_dir }}/nginx.tmpl" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+      with_items:
+      - {regexp: "server_ip_copy", replace: '{{ groups.kube_node[0] }}' }
+      - {regexp: "server_domain_copy", replace: '{{ SMPPLUS_SSO_DOMAIN }}' }
+      no_log: true
+
     - name: 创建nginx部署文件
       template: src=nginx-ingress.yaml.j2 dest={{ nginx_temp_dir }}/nginx-ingress.yaml
       run_once: true
@@ -118,29 +125,16 @@
       when: "'https' == ingress_mode"
 
     - name: 创建ingress-https资源
-      template: src=ingress-smpplus-https.yaml.j2 dest={{ nginx_temp_dir }}/ingress-smpplus-https.yaml
+      template: src=ingress-smpplus.yaml.j2 dest={{ nginx_temp_dir }}/ingress-smpplus.yaml
       connection: local
       run_once: true
-      when: "'https' == ingress_mode"
 
-    - name: 部署ingress-smpplus-https
-      shell:  "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/ingress-smpplus-https.yaml"
+    - name: 部署ingress-smpplus
+      shell:  "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/ingress-smpplus.yaml"
       connection: local
       run_once: true
-      when: "'https' == ingress_mode"
 
-    - name: 创建ingress-http资源
-      template: src=ingress-smpplus-http.yaml.j2 dest={{ nginx_temp_dir }}/ingress-smpplus-http.yaml
-      connection: local
-      run_once: true
-      when: "'http' == ingress_mode"
-
-    - name: 部署ingress-smpplus-http
-      shell:  "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/ingress-smpplus-http.yaml"
-      connection: local
-      run_once: true
-      when: "'http' == ingress_mode"
-
+  
     - name: 部署nginx-rbac
       shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/nginx-rbac.yaml"
       connection: local
