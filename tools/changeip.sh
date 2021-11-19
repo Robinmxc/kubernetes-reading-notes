@@ -14,7 +14,7 @@ kubectl -n kube-system delete configmaps nginx-template
 
 podname=$(kubectl get pod -A -o custom-columns=NAME:.metadata.name)
 
-while [[ ${podname} =~ "mongo1" || ${podname} =~ "rocketmq" || ${podname} =~ "flannel" || ${podname} =~ "nginx"]]
+while [[ ${podname} =~ "mongo1" || ${podname} =~ "rocketmq" || ${podname} =~ "flannel" || ${podname} =~ "nginx" ]]
 do
   sleep 1;
   podname=$(kubectl get pod -A -o custom-columns=NAME:.metadata.name) 
