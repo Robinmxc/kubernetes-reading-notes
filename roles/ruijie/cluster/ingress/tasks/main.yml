@@ -155,7 +155,3 @@
       connection: local
       run_once: true
 
-    - name: 重启ingress-controller
-      shell: "{{ bin_dir }}/kubectl -n kube-system delete pod $(kubectl -n kube-system get pods | grep nginx-ingress | awk '{print $1}')"
-      connection: local
-      run_once: true
