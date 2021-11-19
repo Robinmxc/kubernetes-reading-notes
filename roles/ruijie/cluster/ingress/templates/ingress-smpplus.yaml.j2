@@ -1,0 +1,169 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-https
+  namespace: ruijie-smpplus
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/app-root: /admin/
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^/entry/(.*)$ /portal/entry/$1;
+      rewrite ^/access/(.*)$ /portal/access/$1;
+      rewrite ^/api/linkid/(.*)$ /linkid/$1;
+      rewrite ^/admin/passport/login /admin/;
+spec:
+{% if 'https' == ingress_mode %}
+  tls:
+  - hosts:
+    - '*.{{ ingress_ssl_names[0] }}'
+    secretName: nginx-cert
+{% endif %}
+  rules:
+{% if '' != SMPPLUS_SSO_DOMAIN %}
+  - host: {{ SMPPLUS_SSO_DOMAIN }}
+    http:
+{% else %}
+  - http:
+{% endif %}
+      paths:
+      - path: /admin
+        backend:
+          serviceName: rg-frontend-smp
+          servicePort: 8088
+      - path: /portal
+        # 访客认证页面
+        backend:
+          serviceName: rg-frontend-portal
+          servicePort: 81
+      - path: /entry
+        # 现访客认证页面
+        backend:
+          serviceName: rg-frontend-portal
+          servicePort: 81
+      - path: /access
+        # 现访客认证页面
+        backend:
+          serviceName: rg-frontend-portal
+          servicePort: 81
+      - path: /eportal
+        # 添加设备使用
+        backend:
+          serviceName: rg-eportal
+          servicePort: 8090
+      - path: /component
+        # 对应界面菜单项用户管理>用户管理
+        backend:
+          serviceName: rg-component
+          servicePort: 8086
+      #- path: /self
+      #  backend:
+      #    serviceName: rg-self
+      #    servicePort: 8087
+      - path: /api/aggregation
+        backend:
+          serviceName: rg-aggregation
+          servicePort: 9999
+      - path: /maintenance
+        backend:
+          serviceName: rg-operations
+          servicePort: 10000
+      - path: /api
+        backend:
+          serviceName: rg-operations
+          servicePort: 10000
+      - path: /api/pcapscan
+        backend:
+          serviceName: rg-pcap-scan
+          servicePort: 10002
+      - path: /linkid
+        backend:
+          serviceName: rg-linkid
+          servicePort: 8901
+      - path: /nodeManager/file/download
+        backend:
+          serviceName: rg-authentication
+          servicePort: 9888
+      - path: /nodeManager/nodeInfoCommit/fromAD
+        backend:
+          serviceName: rg-authentication
+          servicePort: 9888
+      - path: /radiusSession/onlineUser/getExportLinkedOnlineUsers
+        backend:
+          serviceName: rg-authentication
+          servicePort: 9888
+      - path: /nodeManager/etlUserInfoSync
+        backend:
+          serviceName: rg-authentication
+          servicePort: 9888
+      - path: /nodeManager/nodeidentify
+        backend:
+          serviceName: rg-authentication
+          servicePort: 9888
+      - path: /nodeidentify
+        backend:
+          serviceName: rg-nodeidentify
+          servicePort: 8001
+      - path: /manualbank
+        backend:
+          serviceName: rg-nodeidentify
+          servicePort: 8001
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-mstsc
+  namespace: ruijie-smpplus
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # 4
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+{% if 'https' == ingress_mode %}
+  tls:
+  - hosts:
+    - '*.{{ ingress_ssl_names[0] }}'
+    secretName: nginx-cert
+{% endif %}
+  rules:
+{% if '' != SMPPLUS_SSO_DOMAIN %}
+  - host: {{ SMPPLUS_SSO_DOMAIN }}
+    http:
+{% else %}
+  - http:
+{% endif %}
+      paths:
+      - path: /api/mstsc(/|$)(.*)
+        backend:
+          serviceName: rg-aggregation
+          servicePort: 9999
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-license
+  namespace: ruijie-smpplus
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+{% if 'https' == ingress_mode %}
+  tls:
+  - hosts:
+    - '*.{{ ingress_ssl_names[0] }}'
+    secretName: nginx-cert
+{% endif %}
+  rules:
+{% if '' != SMPPLUS_SSO_DOMAIN %}
+  - host: {{ SMPPLUS_SSO_DOMAIN }}
+    http:
+{% else %}
+  - http:
+{% endif %}
+      paths:
+      - path: /api/license(/|$)(.*)
+        backend:
+          serviceName: rg-license
+          servicePort: 8089
