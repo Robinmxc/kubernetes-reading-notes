@@ -8,11 +8,13 @@ newIp=$2
 kubectl delete -f /opt/kube/kube-system/coredns/coredns.yaml
 kubectl delete -f /opt/kad/workspace/ruijie-smpplus/yaml/mongo/mongo1.yml
 kubectl delete -f /opt/kad/workspace/ruijie-smpplus/yaml/rocketmq/rocketmq.yml
+kubectl delete -f /opt/kube/kube-system/nginx-ingress/nginx-ingress.yaml
 kubectl delete -f /opt/kube/kube-system/flannel/kube-flannel.yaml
+kubectl -n kube-system delete configmaps nginx-template
 
 podname=$(kubectl get pod -A -o custom-columns=NAME:.metadata.name)
 
-while [[ ${podname} =~ "mongo1" || ${podname} =~ "rocketmq" || ${podname} =~ "flannel" ]]
+while [[ ${podname} =~ "mongo1" || ${podname} =~ "rocketmq" || ${podname} =~ "flannel" || ${podname} =~ "nginx"]]
 do
   sleep 1;
   podname=$(kubectl get pod -A -o custom-columns=NAME:.metadata.name) 
@@ -65,7 +67,9 @@ ip link delete cni0
 
 kubectl delete nodes ${oldIp}
 
+kubectl -n kube-system create configmap nginx-template --from-file=/opt/kube/kube-system/nginx-ingress/nginx.tmpl
 kubectl apply -f /opt/kube/kube-system/flannel/kube-flannel.yaml
+kubectl apply -f /opt/kube/kube-system/nginx-ingress/nginx-ingress.yaml
 kubectl apply -f /opt/kube/kube-system/coredns/coredns.yaml
 kubectl apply -f /opt/kad/workspace/ruijie-smpplus/yaml/mongo/mongo1.yml
 kubectl apply -f /opt/kad/workspace/ruijie-smpplus/yaml/rocketmq/rocketmq.yml
