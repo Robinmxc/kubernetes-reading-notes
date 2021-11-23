@@ -112,36 +112,6 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ingress-mstsc
-  namespace: ruijie-smpplus
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    # 4
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-spec:
-{% if 'https' == ingress_mode %}
-  tls:
-  - hosts:
-    - '*.{{ ingress_ssl_names[0] }}'
-    secretName: nginx-cert
-{% endif %}
-  rules:
-{% if '' != SMPPLUS_SSO_DOMAIN %}
-  - host: {{ SMPPLUS_SSO_DOMAIN }}
-    http:
-{% else %}
-  - http:
-{% endif %}
-      paths:
-      - path: /api/mstsc(/|$)(.*)
-        backend:
-          serviceName: rg-aggregation
-          servicePort: 9999
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
   name: ingress-license
   namespace: ruijie-smpplus
   annotations:
