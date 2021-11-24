@@ -1,4 +1,4 @@
-authentication_java_opt: "-Xms4096m -Xmx4096m"
+authentication_java_opt: "-Xms3072m -Xmx4096m"
 
 authentication_configs: []
 
@@ -19,7 +19,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 8
-        memory: 5Gi
+        memory: 5.3Gi
       requests:
         cpu: 1
         memory: 3Gi
@@ -28,7 +28,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 8
-        memory: 5Gi
+        memory: 5.3Gi
       requests:
         cpu: 1
         memory: 3Gi
