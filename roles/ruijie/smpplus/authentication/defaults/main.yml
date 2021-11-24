@@ -19,7 +19,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 8
-        memory: 5.3Gi
+        memory: 5.5Gi
       requests:
         cpu: 1
         memory: 3Gi
@@ -28,7 +28,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 8
-        memory: 5.3Gi
+        memory: 5.5Gi
       requests:
         cpu: 1
         memory: 3Gi
