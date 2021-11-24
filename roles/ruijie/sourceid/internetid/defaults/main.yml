@@ -1,6 +1,6 @@
 INTERNETID_ENABLE: "{% if SOURCEID_DOCKERS['internetid'] is defined and (SOURCEID_DOCKERS['internetid'].enable is not defined or SOURCEID_DOCKERS['internetid'].enable) %}yes{% else %}no{% endif %}"
 
-GROUP_VIEW_ENABLE: "{% if SOURCEID_DOCKERS['groupview'] is defined and (SOURCEID_DOCKERS['groupview'].enable is not defined or SOURCEID_DOCKERS['groupview'].enable) %}yes{% else %}no{% endif %}"
+GROUP_VIEW_ENABLE: "{% if SOURCEID_DOCKERS['groupview'] is defined and (SOURCEID_DOCKERS['groupview'].enable is not defined or SOURCEID_DOCKERS['groupview'].enable) %}true{% else %}false{% endif %}"
 
 internetid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
 
