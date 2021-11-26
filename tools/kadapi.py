@@ -169,6 +169,9 @@ def prase_netfile():
         eth0_data = {}      
         file=open(api_config['networkfile'])
         for line in file:
+            a=line.strip()
+            if len(a)==0:
+                continue
             key=str(line.split('=')[0]).strip()
             value=str(line.split('=')[1]).strip()
             value=value.replace('\"','')
