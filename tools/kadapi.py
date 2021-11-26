@@ -111,6 +111,11 @@ def changeip_thread(data):
         logging.info("change file"+filepath)
         os.system('sed -i "s/'+old_ip+'/' + new_ip + '/g" '+ filepath)
     
+    filepath=api_config['mongofile']
+    os.system('sed -i "s/'+old_ip+'/' + new_ip + '/g" '+ filepath)
+    os.system('sed -i "s/oldIp/' + old_ip + '/g" '+ filepath)
+    os.system('sed -i "s/newIp/' + new_ip + '/g" '+ filepath)
+    
     logging.info("start changeip.sh")
     os.system('sh /etc/kad/api/changeip.sh '+old_ip+' ' +new_ip )
     logging.info("end changeip.sh")
