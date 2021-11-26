@@ -33,8 +33,7 @@ filelist:
 -  {{ config_base_dir }}/component/conf/application-prd.properties
 -  /opt/kube/kube-system/nginx-ingress/nginx.tmpl
 
-mongofile:
--  {{ config_base_dir }}/mongodb/init/smpplus/rg-init-db/update-replset.js
+mongofile: {{ config_base_dir }}/mongodb/init/smpplus/rg-init-db/update-replset.js
 
 CA_FILE: /etc/kad/api/ssl/ca.pem 
 KEY_FILE: /etc/kad/api/ssl/kadapi-key.pem

@@ -112,7 +112,8 @@ def changeip_thread(data):
         os.system('sed -i "s/'+old_ip+'/' + new_ip + '/g" '+ filepath)
     
     filepath=api_config['mongofile']
-    os.system('sed -i "s/'+old_ip+'/' + new_ip + '/g" '+ filepath)
+
+    os.system('cp '+filepath + ' ' +filepath + 'temp')
     os.system('sed -i "s/oldIp/' + old_ip + '/g" '+ filepath)
     os.system('sed -i "s/newIp/' + new_ip + '/g" '+ filepath)
     
@@ -146,6 +147,8 @@ def changeip_thread(data):
             change_mongoip=True
             time.sleep(0.5)
             logging.error(e)
+
+    os.system('mv -f '+ filepath + 'temp ' +filepath)      
     logging.info("success update mongo")
 
 @server.route('/kadapi/systemConfig/networkConfig/get', methods=['get', 'post'])  
