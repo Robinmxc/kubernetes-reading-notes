@@ -12,10 +12,10 @@ metadata:
       rewrite ^/access/(.*)$ /portal/access/$1;
       rewrite ^/api/linkid/(.*)$ /linkid/$1;
       rewrite ^/admin/passport/login /admin/;
-    {% if 'https' == ingress_mode %}
+{% if 'https' == ingress_mode %}
     nginx.ingress.kubernetes.io/server-snippet: |
       rewrite ^/portal/leap(/|$)(.*)$ http://123.123.123.123$1$2;
-    {% endif %}
+{% endif %}
 spec:
 {% if 'https' == ingress_mode %}
   tls:
