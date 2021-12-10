@@ -84,7 +84,7 @@ kadapi_ca_dir: "/etc/kad/api/ssl"
 
 
 protectEnable_value: "{%- if ingress_mode == 'https' -%} \
-                 false \
+                 true \
                {%- else -%} \
                  true \
                {%- endif -%}"
