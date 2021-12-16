@@ -56,11 +56,15 @@ cd /
 cp -rpf kube-proxy.kubeconfig /etc/kubernetes/
 cp -rpf kubelet.kubeconfig /etc/kubernetes/
 
+iptables -F
+
 systemctl daemon-reload
 
 systemctl restart network
 
 systemctl restart etcd.service kube-scheduler.service kube-proxy.service kubelet.service kube-controller-manager.service kube-apiserver.service
+
+sh /etc/init.d/autostart.sh
 
 ifconfig cni0 down
 ip link delete cni0
