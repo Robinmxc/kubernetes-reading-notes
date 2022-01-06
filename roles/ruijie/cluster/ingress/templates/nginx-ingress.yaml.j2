@@ -42,6 +42,7 @@ spec:
             - --election-id=ingress-controller-leader
             - --ingress-class=nginx
             - --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
+            - --default-backend-service=ruijie-smpplus/rg-frontend-smp
 
           securityContext:
             capabilities:
