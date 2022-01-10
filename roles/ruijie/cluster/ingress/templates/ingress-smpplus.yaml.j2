@@ -24,12 +24,8 @@ spec:
     secretName: nginx-cert
 {% endif %}
   rules:
-{% if '' != SMPPLUS_SSO_DOMAIN %}
-  - host: {{ SMPPLUS_SSO_DOMAIN }}
-    http:
-{% else %}
-  - http:
-{% endif %}
+  - host: {{ groups['kube_node'][0] }}.nip.io
+    http: &http_rules
       paths:
       - path: /admin
         backend:
@@ -112,6 +108,10 @@ spec:
         backend:
           serviceName: rg-nodeidentify
           servicePort: 8001
+{% if '' != SMPPLUS_SSO_DOMAIN %}
+  - host: {{ SMPPLUS_SSO_DOMAIN }}
+    http: *http_rules
+{% endif %}
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -130,14 +130,14 @@ spec:
     secretName: nginx-cert
 {% endif %}
   rules:
-{% if '' != SMPPLUS_SSO_DOMAIN %}
-  - host: {{ SMPPLUS_SSO_DOMAIN }}
-    http:
-{% else %}
-  - http:
-{% endif %}
+  - host: {{ groups['kube_node'][0] }}.nip.io
+    http: &http_rules
       paths:
       - path: /api/license(/|$)(.*)
         backend:
           serviceName: rg-license
           servicePort: 8089
+{% if '' != SMPPLUS_SSO_DOMAIN %}
+  - host: {{ SMPPLUS_SSO_DOMAIN }}
+    http: *http_rules
+{% endif %}

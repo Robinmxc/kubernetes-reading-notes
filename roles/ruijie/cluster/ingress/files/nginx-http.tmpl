@@ -593,32 +593,18 @@ http {
     }
     ## end server {{ $redirect.From }}
     {{ end }}
-    {{ if eq "server_domain_copy" ""}}
-    server {
-        listen 80 default_server;
-        server_name _;
-
-        location / {
-          return 404;
-        }
-    }
-    {{ end }}
-    
 
     {{ range $server := $servers }}
 
     ## start server {{ $server.Hostname }}
     server {
-        {{ if ne "server_domain_copy" ""}}
-
-        server_name {{ buildServerName $server.Hostname }} {{range $server.Aliases }}{{ . }} {{ end }} {{ if ne $server.Hostname "_" }}server_ip_copy{{ end }};
-
+        {{ if (hasSuffix $server.Hostname "nip.io") }}
+        {{ $serverHostnameArray := (split $server.Hostname ".nip") }}
+        {{ $serverHostname := (index $serverHostnameArray 0) }}
+        server_name {{ $serverHostname }};
         {{ else }}
-        
-        server_name server_ip_copy;
-            
+        server_name {{ buildServerName $server.Hostname }} {{range $server.Aliases }}{{ . }} {{ end }};
         {{ end }}
-        
 
         {{ if gt (len $cfg.BlockUserAgents) 0 }}
         if ($block_ua) {
@@ -906,11 +892,8 @@ stream {
 {{ define "SERVER" }}
         {{ $all := .First }}
         {{ $server := .Second }}
-        {{ if eq "server_domain_copy" ""}}
-        listen 80;
-        {{ else }}
+
         {{ buildHTTPListener  $all $server.Hostname }}
-        {{ end }}
        # {{ buildHTTPSListener $all $server.Hostname }}
 
         set $proxy_upstream_name "-";
