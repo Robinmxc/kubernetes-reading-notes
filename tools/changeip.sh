@@ -77,3 +77,4 @@ kubectl apply -f /opt/kube/kube-system/nginx-ingress/nginx-ingress.yaml
 kubectl apply -f /opt/kube/kube-system/coredns/coredns.yaml
 kubectl apply -f /opt/kad/workspace/ruijie-smpplus/yaml/mongo/mongo1.yml
 kubectl apply -f /opt/kad/workspace/ruijie-smpplus/yaml/rocketmq/rocketmq.yml
+kubectl apply -f /opt/kube/kube-system/nginx-ingress/nginx-smpplus.yaml
