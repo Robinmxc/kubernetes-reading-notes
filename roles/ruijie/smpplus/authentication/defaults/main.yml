@@ -1,6 +1,13 @@
-authentication_java_opt: "-Xms{{ (ansible_memtotal_mb/32*4)|int }}m -Xmx{{ (ansible_memtotal_mb/32*4)|int }}m"
+authentication_java_opt: "-Xms3072m -Xmx4096m"
 
 authentication_configs: []
+
+#http-ip，https-域名，测试打包最新代码没有打进去的问题
+host_ip_value: "{%- if ingress_mode == 'https' -%} \
+                 {{ ingress_mode }}://{{ SMPPLUS_SSO_DOMAIN }} \
+               {%- else -%} \
+                 {{ ingress_mode }}://{{ groups['kube_node'][0] }} \
+               {%- endif -%}"
 
 authentication_templates_path: ""
 
@@ -8,22 +15,22 @@ deploy_conf_defaults:
   small:
     replicas: 1
   normal:
-    replicas: 2
+    replicas: 1
     resources:
       limits:
-        cpu: 2
-        memory: 1Gi
+        cpu: 8
+        memory: 5.5Gi
       requests:
         cpu: 1
-        memory: 1Gi
+        memory: 3Gi
   single:
     replicas: 1
     resources:
       limits:
-        cpu: "{{ (ansible_processor_vcpus/16*2*2*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32*5)|int }}Mi"
+        cpu: 8
+        memory: 5.5Gi
       requests:
-        cpu: "{{ (ansible_processor_vcpus/16*1000)|int }}m"
-        memory: "{{ (ansible_memtotal_mb/32*3)|int }}Mi"
+        cpu: 1
+        memory: 3Gi
 
 authentication_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

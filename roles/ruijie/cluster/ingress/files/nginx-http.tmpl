@@ -598,7 +598,13 @@ http {
 
     ## start server {{ $server.Hostname }}
     server {
+        {{ if (hasSuffix $server.Hostname "nip.io") }}
+        {{ $serverHostnameArray := (split $server.Hostname ".nip") }}
+        {{ $serverHostname := (index $serverHostnameArray 0) }}
+        server_name {{ $serverHostname }};
+        {{ else }}
         server_name {{ buildServerName $server.Hostname }} {{range $server.Aliases }}{{ . }} {{ end }};
+        {{ end }}
 
         {{ if gt (len $cfg.BlockUserAgents) 0 }}
         if ($block_ua) {

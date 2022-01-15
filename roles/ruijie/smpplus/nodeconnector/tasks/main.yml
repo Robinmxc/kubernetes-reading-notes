@@ -1,0 +1,54 @@
+- name: 复制配置文件
+  tags:
+  - config
+  copy:
+    src: "{{ namespace_dir }}/conf/{{ item }}/conf/" # /opt/kad/workspace/ruijie-smpplus/conf/nodeconnector/conf
+    dest: "{{ config_base_dir }}/{{ item }}/conf/" # /home/ruijie/ruijie-smpplus/nodeconnector/conf
+  with_items:
+    - "nodeconnector"
+
+- name: 自动配置
+  tags:
+  - config  # replace：path 指定要操作的文件，regexp 指定一个python正则表达式，文件中与正则匹配的字符串将会被替换
+  replace: path="{{ config_base_dir }}/nodeconnector/conf/application-prd.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+  - {regexp: "name-srv-addr:.*", replace: "name-srv-addr: rg-rocket.{{ APP_NAMESPACE }}.svc:9876"}
+  - {regexp: "hostIp:.*", replace: "hostIp: {{groups['kube_node'][0]}}"}
+  no_log: true
+
+- name: 准备部署文件目录
+  tags:
+  - config
+  file: path={{ item }} state=directory
+  with_items:
+  - "{{ yaml_dir }}/nodeconnector" # /opt/kad/workspace/ruijie-smpplus/yaml/nodeconnector
+  run_once: true
+  connection: local
+
+- name: 准备部署文件
+  tags:
+  - config
+  vars:
+    deploy_conf: '{{nodeconnector_deploy_conf}}'
+    JAVA_OPT_EXT: '{{nodeconnector_java_opt}}'
+    JAVA_AUTHENTICATION_API_OPT_EXT: '{{authentication_api_java_opt}}'
+    comp_name: 'nodeconnector'
+  template: src='nodeconnector.yaml.j2' dest={{ yaml_dir }}/nodeconnector/nodeconnector.yml
+  run_once: true
+  connection: local
+
+- name: 获取所有已经创建的POD信息
+  tags:
+  - deploy
+  command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+  register: pod_info
+  run_once: true
+  connection: local
+
+- name: 执行部署
+  tags:
+  - deploy # bin_dir /opt/kube/bin
+  shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/nodeconnector/"
+  when: '"rg-nodeconnector" not in pod_info.stdout'
+  run_once: true
+  connection: local

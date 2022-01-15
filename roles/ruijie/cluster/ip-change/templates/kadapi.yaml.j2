@@ -1,0 +1,44 @@
+port: 11938
+
+filelist:
+-  /etc/sysconfig/network-scripts/{{ ifcfg }}
+-  /etc/systemd/system/etcd.service
+-  /etc/systemd/system/kube-apiserver.service
+-  /etc/systemd/system/kube-controller-manager.service
+-  /etc/systemd/system/kubelet.service
+-  /etc/systemd/system/kube-proxy.service
+-  /etc/systemd/system/kube-scheduler.service
+-  /etc/etcd/ssl/etcd-csr.json
+-  /etc/kubernetes/ssl/kubelet-csr.json
+-  /etc/kubernetes/ssl/kubernetes-csr.json
+-  {{ config_base_dir }}/frontend-smp/conf/Environment.js
+-  /opt/kube/kube-system/flannel/kube-flannel.yaml
+-  /opt/kad/workspace/ruijie-smpplus/yaml/mongo/mongo1.yml
+-  /opt/kad/workspace/ruijie-smpplus/yaml/rocketmq/rocketmq.yml
+-  {{ config_base_dir }}/rocketmq/conf/broker.conf
+-  /opt/kad/workspace/k8s/conf/all.yml
+-  {{ config_base_dir }}/authentication/conf/application-prd.yml
+-  {{ config_base_dir }}/linkid/conf/application-prd.properties
+-  {{ config_base_dir }}/eportal/conf/application-prd.properties
+-  {{ config_base_dir }}/nodeidentify/conf/application-prd.yml
+-  {{ config_base_dir }}/linkage-devices/conf/application-prd.yml
+-  {{ config_base_dir }}/nodeconnector/conf/application-prd.yml
+-  {{ config_base_dir }}/nodeconnector/conf/application-prd.yml
+-  {{ config_base_dir }}/license/conf/application-prd.yml
+-  {{ config_base_dir }}/nodemanager-scan/conf/application-prd.yml
+-  {{ config_base_dir }}/operations/conf/application-prd.yml
+-  {{ config_base_dir }}/pcap-scan/conf/application-prd.yml
+-  {{ config_base_dir }}/sms-middleware/conf/application-prd.yml
+-  {{ config_base_dir }}/aggregation/conf/application-prd.yml
+-  {{ config_base_dir }}/component/conf/application-prd.properties
+-  /opt/kube/kube-system/nginx-ingress/nginx.tmpl
+-  /opt/kube/kube-system/nginx-ingress/ingress-smpplus.yaml
+-  /etc/init.d/autostart.sh
+
+mongofile: {{ config_base_dir }}/mongodb/init/smpplus/rg-init-db/update-replset.js
+
+CA_FILE: /etc/kad/api/ssl/ca.pem 
+KEY_FILE: /etc/kad/api/ssl/kadapi-key.pem
+CERT_FILE: /etc/kad/api/ssl/kadapi.pem
+
+networkfile: /etc/sysconfig/network-scripts/{{ ifcfg }}

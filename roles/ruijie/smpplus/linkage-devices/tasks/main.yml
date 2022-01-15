@@ -1,0 +1,50 @@
+- name: 复制配置文件
+  tags:
+  - config
+  copy:
+    src: "{{ namespace_dir }}/conf/linkage-devices/conf/"
+    dest: "{{ config_base_dir }}/linkage-devices/conf/"
+
+- name: 自动配置
+  tags:
+  - config
+  replace: path="{{ config_base_dir }}/linkage-devices/conf/application-prd.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+  - {regexp: "namesrv:", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc:"}
+  no_log: true
+
+- name: 准备部署文件目录
+  tags:
+  - config
+  file: path={{ item }} state=directory
+  with_items:
+  - "{{ yaml_dir }}/linkage-devices"
+  run_once: true
+  connection: local
+
+- name: 准备部署文件
+  tags:
+  - config
+  vars:
+    deploy_conf: '{{linkage_devices_deploy_conf}}'
+    JAVA_OPT_EXT: '{{linkage_devices_java_opt}}'
+    comp_name: 'linkage-devices'
+  template: src='linkage-devices.yaml.j2' dest={{ yaml_dir }}/linkage-devices/linkage-devices.yml
+  run_once: true
+  connection: local
+
+- name: 获取所有已经创建的POD信息
+  tags:
+  - deploy
+  command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+  register: pod_info
+  run_once: true
+  connection: local
+
+- name: 执行部署
+  tags:
+  - deploy
+  shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/linkage-devices/"
+  when: '"rg-linkage-devices" not in pod_info.stdout'
+  run_once: true
+  connection: local

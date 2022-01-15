@@ -33,6 +33,8 @@
   - {regexp: "mongodb:.*/operations.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{groups['kube_node'][0]}}/operations?replicaSet=rs0"}
   - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
   - {regexp: "grabIp:.*$", replace: "grabIp: {{groups['kube_node'][0]}}"}
+  - {regexp: "protectEnable.*$", replace: "protectEnable: {{ protectEnable_value }}"}
+  - {regexp: "hostPath:.*$", replace: "hostPath: {{ config_base_dir }}"}
   no_log: true
 
 - name: 自定义配置

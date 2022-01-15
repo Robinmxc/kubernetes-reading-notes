@@ -7,7 +7,7 @@ CLUSTER_NETWORK: "flannel"
 #SERVICE_CIDR: "10.68.0.0/16"
 
 # POD 网段 (Cluster CIDR），注意不要与内网已有网段冲突
-CLUSTER_CIDR: "172.30.16.0/20"
+CLUSTER_CIDR: "196.200.192.0/20"
 
 # 服务端口范围 (NodePort Range)
 NODE_PORT_RANGE: "1-65535"
@@ -45,3 +45,5 @@ max_space_dir: "{{
 DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}"
 
 DOCKER_STORAGE_DIR: "{{ DATA_DIR }}/docker"
+
+

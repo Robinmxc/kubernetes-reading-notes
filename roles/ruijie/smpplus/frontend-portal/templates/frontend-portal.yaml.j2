@@ -36,6 +36,13 @@ spec:
           subPath: config.js
         - mountPath: /usr/share/nginx/html/portal/assets/plugin
           name: plugin
+        - mountPath: /usr/share/nginx/html/portal/assets/img/visitor/pc/logo.png
+          name: logo
+          subPath: logo.png
+        - mountPath: /usr/share/nginx/html/portal/assets/img/visitor/pc/logo-pc.png
+          name: logo-pc
+          subPath: logo-pc.png
+
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -45,6 +52,12 @@ spec:
         - name: plugin
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}/plugin
+        - name: logo
+          hostPath:
+            path: {{ config_base_dir }}/{{comp_name}}/img/visitor/pc/
+        - name: logo-pc
+          hostPath:
+            path: {{ config_base_dir }}/{{comp_name}}/img/visitor/pc/
 
 ---
 apiVersion: v1
@@ -53,12 +66,9 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-  externalTrafficPolicy: Local
   selector:
     k8s-app: rg-{{comp_name}}
-  type: NodePort
   ports:
-  - name: n80
-    port: 80
+  - name: n81
+    port: 81
     targetPort: 80
-    nodePort: 80

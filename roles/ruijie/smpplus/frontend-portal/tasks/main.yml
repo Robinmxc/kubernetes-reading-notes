@@ -24,6 +24,18 @@
   - {regexp: "rg-rocketmq", replace: "{{groups['kube_node'][0]}}"}
   - {regexp: "var ip =.*", replace: "var ip = \'{{groups['kube_node'][0]}}:8090\'"}
   - {regexp: "smpdomain:.*", replace: "smpdomain: \'http://{{groups['kube_node'][0]}}:9999/api/aggregation\',"}
+
+- name: 自动配置
+  tags:
+  - config
+  replace: path="{{ config_base_dir }}/frontend-portal/conf/config.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+  - {regexp: "smpdomain:.*", replace: "smpdomain: '/api/aggregation',"}
+  - {regexp: "src:.*", replace: "src: '/eportal/qrcode',"}
+  - {regexp: "var ip.*", replace: "var ip = ''"}
+  - {regexp: "crypto : true,", replace: "crypto : {{ protectEnable_value }},"}
+  - {regexp: "cryptoLog : true,", replace: "cryptoLog : {{ protectEnable_value }},"}
+
 - name: 准备部署文件目录
   tags:
     - config

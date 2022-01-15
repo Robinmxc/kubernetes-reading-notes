@@ -31,7 +31,7 @@ spec:
         ports:
         - containerPort: 8088
         volumeMounts:
-        - mountPath: /usr/share/nginx/html/smp/assets/Environment.js
+        - mountPath: /usr/share/nginx/html/admin/assets/Environment.js
           name: conf
           subPath: Environment.js
       imagePullSecrets:
@@ -50,9 +50,7 @@ metadata:
 spec:
   selector:
     k8s-app: rg-{{comp_name}}
-  type: NodePort
   ports:
   - name: n8088
     port: 8088
     targetPort: 8088
-    nodePort: 8088

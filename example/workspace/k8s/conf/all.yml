@@ -5,7 +5,7 @@ KUBE_MASTER_HOSTS: ["192.168.1.61"]
 KUBE_NODE_HOSTS: ["192.168.1.62", "192.168.1.63", "192.168.1.64"]
 
 # POD 网段 (Cluster CIDR），不要与内网已有网段冲突，网络位数不能大于20
-CLUSTER_CIDR: "172.30.16.0/20"
+CLUSTER_CIDR: "196.200.192.0/20"
 
 # 部署规模：small, normal, single。normal为标准规模，small主要用于开发、测试，single为单机
 #CLUSTER_SCALE: "normal"
