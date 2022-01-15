@@ -26,7 +26,9 @@
     - {regexp: "^lincese.check=.*$", replace: "lincese.check={{ linkid_license_check }}"}
     - {regexp: "^lincese.url=.*$", replace: "lincese.url=http://rg-license.{{ APP_NAMESPACE }}.svc/license/check/"}
     - {regexp: "/ruijie/sourceid/linkid/conf", replace: "{{ config_base_dir }}/sourceid/linkid/etcdtls"}
-    - {regexp: "sid.lock.etcd.endpoints.*$", replace: "sid.lock.etcd.endpoints = {{ etcd_address | join(',') }}"}    
+    - {regexp: "sid.lock.etcd.endpoints.*$", replace: "sid.lock.etcd.endpoints = {{ etcd_address | join(',') }}"}
+    - {regexp: "^linkid.self.url=.*$", replace: "linkid.self.url = {{ SOURCEID_FRONTEND_URL }}"}
+    - {regexp: "^cas.server.name=.*$", replace: "cas.server.name = {{ SOURCEID_SSO_URL }}"}
   no_log: true
 
 - name: 自定义配置

@@ -15,11 +15,35 @@ spec:
       labels:
         k8s-app: rg-career-event
     spec:
+{%if SKYWALKING["enable"] %}
+      initContainers:
+      - name: init-agent
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/skywalking:{{ SKYWALKING.IMAGE_VERSION }}
+        command:
+        - 'sh'
+        - '-c'
+        - 'set -ex;mkdir -p /skywalking/agent;cp -r /opt/skywalking/agent/* /skywalking/agent;'
+        volumeMounts:
+        - name: agent
+          mountPath: /skywalking/agent
+{% endif %}
       containers:
       - name: rg-career-event
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["career-event"].name }}:{{ SOURCEID_DOCKERS["career-event"].version }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["career"].name }}:{{ SOURCEID_DOCKERS["career"].version }}
         imagePullPolicy: IfNotPresent
         env:
+{%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
+        - name: SW_AGENT_NAME
+          value: {{ SKYWALKING.AGENT_PREFIX }}-career-event
+        - name: SW_AGENT_NAMESPACE
+          value: {{ SKYWALKING.NAMESPACE }}
+        - name: SW_GRPC_LOG_SERVER_HOST
+          value: {{ SKYWALKING.SERVER_HOST }}
+        - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
+          value: {{ SKYWALKING.SERVER_HOST }}:11800          
+{% endif %}
         - name: JAVA_OPT_EXT
           value: "{{ career_event_java_opt }}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
@@ -38,6 +62,8 @@ spec:
           name: conf
         - mountPath: /logs
           name: logpath
+        - mountPath: /skywalking/agent
+          name: agent
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -47,6 +73,8 @@ spec:
         - name: logpath
           hostPath:
             path: {{ config_base_dir }}/logs
+        - name: agent
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
