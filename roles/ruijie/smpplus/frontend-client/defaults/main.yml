@@ -1,0 +1,29 @@
+frontendclient_java_opt: "-Xms256m -Xmx512m"
+
+frontendclient_configs: []
+
+frontendclient_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 500Mi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 500Mi
+
+frontendclient_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
