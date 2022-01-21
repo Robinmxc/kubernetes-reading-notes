@@ -53,6 +53,7 @@
   - { role: ruijie/smpplus/eportal, tags: ["eportal"] }
   - { role: ruijie/smpplus/frontend-smp, tags: ["frontend-smp"] }
   - { role: ruijie/smpplus/frontend-portal, tags: ["frontend-portal"] }
+  - { role: ruijie/smpplus/frontend-client, tags: ["frontend-client"] }
   - { role: ruijie/smpplus/freeradius, tags: ["freeradius"] }
   - { role: ruijie/smpplus/license, tags: ["license"] }
 #  - { role: ruijie/smpplus/adminui, tags: ["adminui"] }

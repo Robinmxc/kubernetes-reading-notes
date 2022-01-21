@@ -113,6 +113,12 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/linkage-devices/"
     when: '"linkage-devices" in pod_info.stdout'
 
+  - name: delete frontend-client
+    tags:
+      - frontend-client
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/frontend-client/"
+    when: '"frontend-client" in pod_info.stdout'
+
   - name: 等待frontend-smp结束运行
     tags:
       - frontend-smp
@@ -282,3 +288,14 @@
     retries: 30
     delay: 3
     ignore_errors: true
+
+  - name: 等待frontend-client结束运行
+    tags:
+      - frontend-client
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"frontend-client" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
