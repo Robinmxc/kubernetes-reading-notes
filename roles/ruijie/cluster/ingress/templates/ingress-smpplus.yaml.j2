@@ -108,6 +108,10 @@ spec:
         backend:
           serviceName: rg-nodeidentify
           servicePort: 8001
+      - path: /self
+        backend:
+          serviceName: rg-frontend-client
+          servicePort: 3000
 {% if '' != SMPPLUS_SSO_DOMAIN %}
   - host: {{ SMPPLUS_SSO_DOMAIN }}
     http: *http_rules
