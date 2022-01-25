@@ -10,8 +10,9 @@
     - config
   replace: path="{{ config_base_dir }}/frontend-client/conf/client_config.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-    - {regexp: "ip.*$,", replace: "ip: {{groups['kube_node'][0]}},"}
-    - {regexp: "smpdomain.*$,", replace: "smpdomain: http://{{groups['kube_node'][0]}},"}
+    - {regexp: "ip.*$", replace: "ip: \"{{groups['kube_node'][0]}}\","}
+    - {regexp: "smpdomain.*$", replace: "smpdomain: \"http://{{groups['kube_node'][0]}}\","}
+
 
 - name: 准备部署文件目录
   tags:
