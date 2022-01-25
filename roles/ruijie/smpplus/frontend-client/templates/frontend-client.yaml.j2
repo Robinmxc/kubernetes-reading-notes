@@ -30,8 +30,16 @@ spec:
 {% endif %}
         ports:
         - containerPort: 3000
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html/self/public/client_config.js
+          name: conf
+          subPath: client_config.js
       imagePullSecrets:
       - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/{{comp_name}}/conf
 ---
 apiVersion: v1
 kind: Service

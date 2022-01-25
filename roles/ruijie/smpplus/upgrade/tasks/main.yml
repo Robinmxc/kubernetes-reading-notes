@@ -88,6 +88,7 @@
       - "share"
       - "operations"
       - "authentication-api"
+      - "frontend-client"
     connection: local
     run_once: true
   when: 'inventory_hostname == groups.kube_master[0]'
