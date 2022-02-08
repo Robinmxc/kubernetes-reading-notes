@@ -74,12 +74,30 @@ LDAP: {
   #只有enable设置为true时，才会部署
   enable: false,
 
-  #LDAP服务器IP，双主模式就写两个IP，单节点就一个IP
+  #部署模式：standalone表示独立部署；k8s表示部署到K8S
+  LDAP_MODE: 'standalone'
+
+  #LDAP服务器IP，双主模式就写两个IP，单节点就一个IP。只对独立部署有效
   LDAP_HOST: ["172.17.9.59","172.17.9.58"],
 
   #LDAP虚IP，双主模式必须配置
   LDAP_VIP: "172.17.9.57",
 
-  LDAP_ADMIN_PWD: "234567",
-  
+  #管理员密码，默认与数据库管理员密码相同
+  LDAP_ADMIN_PWD: "",
+
+  #只读用户密码，必须设置
+  LDAP_READONLY_PWD: ""
+
+  #Root DN，例如"example.com",默认为SSO域名的上级域名
+  LDAP_DOMAIN: ""
+
+  #根组织名称，例如"Ruijie"，默认和LDAP_DOMAIN相同
+  LDAP_ORGANISATION: ""
+
+  #LDAP端口，独立部署时默认值为389，K8S部署时默认值为30389（NodePort）
+  LDAP_PORT: ""
+
+  #LDAPS端口，独立部署时默认值为636，K8S部署时默认值为30636（NodePort）
+  LDAP_SSL_PORT: ""
 }
