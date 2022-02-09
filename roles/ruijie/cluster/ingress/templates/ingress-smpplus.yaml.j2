@@ -9,6 +9,7 @@ metadata:
     #nginx.ingress.kubernetes.io/app-root: /admin/
     nginx.ingress.kubernetes.io/configuration-snippet: |
       rewrite ^/admin$ /admin/;
+      rewrite ^/self$ /self/;
       rewrite ^/entry/(.*)$ /portal/entry/$1;
       rewrite ^/access/(.*)$ /portal/access/$1;
       rewrite ^/api/linkid/(.*)$ /linkid/$1;
