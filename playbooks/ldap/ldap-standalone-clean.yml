@@ -1,0 +1,26 @@
+- hosts:
+    - ldap
+  tasks:
+    - name: stop and disable service
+      service: name={{ item }} state=stopped enabled=no
+      with_items:
+        - slapd
+        - keepalived
+        - nginx
+      ignore_errors: true
+
+    - name: 卸载 openldap
+      yum:
+        name:
+          - openldap-servers
+          - openldap-clients
+        state: absent
+      ignore_errors: true
+
+    - name: delete files
+      file: name={{ item }} state=absent
+      with_items:
+        - "/var/lib/ldap"
+        - "/etc/openldap"
+        - "/etc/systemd/system/nginx.service"
+

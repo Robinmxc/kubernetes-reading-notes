@@ -1,0 +1,46 @@
+- name: 部署LDAP组件
+  when: 'LDAP is defined and LDAP.LDAP_MODE == "k8s"'
+  block:
+  - name: 准备LDAP存储目录
+    file: path={{ item }} state=directory
+    with_items:
+      - "{{ ldap_base_dir }}/conf"
+      - "{{ ldap_base_dir }}/data"
+      - "{{ ldap_base_dir }}/certs"
+
+  - name: 获取secret数据
+    command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
+    register: secret_info
+    connection: local
+    run_once: true
+
+  - name: 准备密码
+    shell: "{{ bin_dir }}/kubectl create secret generic -n {{ APP_NAMESPACE }} ldap-pwds --from-literal=admin={{ LDAP.LDAP_ADMIN_PWD }} --from-literal=readonly={{ LDAP.LDAP_READONLY_PWD }}"
+    when: '"ldap-pwds" not in secret_info.stdout'
+    no_log: true
+    connection: local
+    run_once: true
+
+  - name: 准备部署文件目录
+    file: path={{ item }} state=directory
+    with_items:
+      - "{{ yaml_dir }}/openldap"
+    run_once: true
+    connection: local
+
+  - name: 准备部署文件
+    template: src='openldap.yml.j2' dest={{ yaml_dir }}/openldap/openldap.yml
+    run_once: true
+    connection: local
+
+  - name: 获取所有已经创建的POD信息
+    command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    run_once: true
+    connection: local
+
+  - name: 执行部署
+    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/openldap/"
+    when: '"openldap" not in pod_info.stdout'
+    run_once: true
+    connection: local

@@ -1,0 +1,11 @@
+ldap_base_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/openldap"
+ldap_version: 1.5.0
+
+openldap_deploy_conf:
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi

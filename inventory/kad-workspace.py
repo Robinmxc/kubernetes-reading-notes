@@ -20,6 +20,13 @@ def is_IP(str):
     p = re.compile('^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$')
     return p.match(str)
 
+def is_port(s):
+    try:
+        port = int(s)
+        return (port > 0 and port < 65536)
+    except ValueError:
+        return False
+
 def read_yml(file_path):
     file = open(file_path)
     config = yaml.load(file)
@@ -289,7 +296,8 @@ def parse_ldap_config(host_data):
         raise Exception(u"LDAP_SSL_PORT参数不是有效的端口号")
 
     if ldap_mode == "k8s":
-        pass
+        if "single" != group_all_vars["CLUSTER_SCALE"]:
+            raise Exception(u"openldap组件不支持集群环境")
 
     if ldap_mode == "standalone":
         ldap_hosts =  ldap_config["LDAP_HOST"] if "LDAP_HOST" in ldap_config else []

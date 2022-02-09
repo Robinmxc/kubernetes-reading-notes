@@ -1,0 +1,7 @@
+- hosts:
+    - kube_node
+  any_errors_fatal: true
+  vars_files:
+    - "/etc/kad/config.yml"
+  roles:
+    - { role: ruijie/ldap-k8s }

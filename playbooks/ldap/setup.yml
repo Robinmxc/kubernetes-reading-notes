@@ -1,26 +1,7 @@
-- hosts:
-  - ldap
-  any_errors_fatal: true
-  roles:
-  - ruijie/ldap/envcheck
+- name: 独立部署
+  when: "LDAP['LDAP_MODE']  == 'standalone'"
+  import_playbook: ldap-standalone-setup.yml
 
-- hosts:
-  - ldap
-  any_errors_fatal: true
-  vars:
-    local_ntp_server: '{{ groups["ldap"][0] }}'
-  roles:
-  - ruijie/cluster/chrony
-
-- hosts:
-  - ldap
-  tags:
-  - ldap
-  any_errors_fatal: true
-  roles:
-  - ruijie/ldap/common
-  - ruijie/ldap/openldap
-
-- name: 配置双主模式
-  when: "ldap_deploy_mode  == '2'"
-  import_playbook: dual.yml
+- name: K8S部署
+  when: "LDAP['LDAP_MODE']  == 'k8s'"
+  import_playbook: ldap-k8s-setup.yml

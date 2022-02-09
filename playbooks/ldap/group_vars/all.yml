@@ -1,5 +1,7 @@
 LDAP_ENABLE: "{% if LDAP is defined and LDAP['enable'] %}yes{% else %}no{% endif %}"
 
+bin_dir: "/opt/kube/bin"
+
 max_space_dir: "{{
     hostvars[groups['ldap'][0]].ansible_mounts
     | selectattr('mount', 'match', '^(?!/var/lib/).*')
@@ -9,6 +11,10 @@ max_space_dir: "{{
     | last }}"
 
 DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}"
+
+namespace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
+
+yaml_dir: "{{ namespace_dir }}/yaml"
 
 LDAP_DOWN_PATH: "/opt/kad/down/ldap"
 

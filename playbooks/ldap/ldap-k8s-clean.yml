@@ -1,0 +1,22 @@
+- hosts:
+    - localhost
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+
+  tasks:
+    - name: 获取所有部署的Pod信息
+      command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+      register: pod_info
+
+    - name: 停止openldap
+      command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/openldap/"
+      when: '"openldap" in pod_info.stdout'
+
+    - name: 等待openldap结束运行
+      shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+      register: pod_info
+      until: '"openldap" not in pod_info.stdout'
+      retries: 30
+      delay: 3
+      ignore_errors: true
