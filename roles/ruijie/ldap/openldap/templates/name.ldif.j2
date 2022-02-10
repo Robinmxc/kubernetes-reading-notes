@@ -10,6 +10,13 @@ cn: admin
 objectClass: organizationalRole
 description: Directory Manager
 
+dn: cn={{ LDAP_READONLY_USER_USERNAME }},{{ LDAP.LDAP_BASE_DN }}
+cn: {{ LDAP_READONLY_USER_USERNAME }}
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+userPassword: {{ readonly_pwd }}
+description: LDAP read only user
+
 dn: ou=People,{{ LDAP.LDAP_BASE_DN }}
 ou: People
 objectClass: top
@@ -19,4 +26,3 @@ dn: ou=Group,{{ LDAP.LDAP_BASE_DN }}
 ou: Group
 objectClass: top
 objectClass: organizationalUnit
-

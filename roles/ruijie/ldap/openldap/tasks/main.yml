@@ -58,7 +58,7 @@
   delay: 2
 
 
-- name: 生成 slapd 密码
+- name: 生成 admin 密码
   shell: "slappasswd -s {{ LDAP.LDAP_ADMIN_PWD }}"
   register: slapd_pwd_status
 
@@ -79,6 +79,7 @@
   - "ppolicy_overlay.ldif"
   - "disable_anon.ldif"
   - "hdb-index.ldif"
+  - "olcAccess.ldif"
 
 - name: 准备schema文件
   tags:
@@ -116,7 +117,14 @@
   with_items:
   - "chdomain.ldif"
 
+- name: 生成 readonly 密码
+  shell: "slappasswd -s {{ LDAP.LDAP_READONLY_PWD }}"
+  register: readonly_pwd_status
+  run_once: true
+
 - name: name.ldif文件
+  vars:
+    readonly_pwd: '{{ readonly_pwd_status.stdout }}'
   template: 
     src: 'name.ldif.j2' 
     dest: /etc/openldap/name.ldif
@@ -147,6 +155,9 @@
 
 - name: 禁止匿名访问
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/disable_anon.ldif
+
+- name: 设置访问权限
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/olcAccess.ldif
 
 - name: 设置定时清理Berkeley DB Logs 
   file: 

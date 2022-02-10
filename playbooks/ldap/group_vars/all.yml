@@ -33,3 +33,5 @@ NGINX_SRC_PATH: "/usr/local/src"
 ldap_file: "ldap.tar.gz"
 nginx_file: "nginx-1.20.1.tar.gz"
 keepalived_file: "keepalived.tar.gz"
+
+LDAP_READONLY_USER_USERNAME: "readonly"
