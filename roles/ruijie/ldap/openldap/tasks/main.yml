@@ -80,11 +80,17 @@
   - "disable_anon.ldif"
   - "hdb-index.ldif"
 
+- name: 准备schema文件
+  tags:
+    - config
+  template:
+    src: '{{ item }}.j2'
+    dest: /etc/openldap/schema/{{ item }}
+  with_items:
+    - "sid_user.ldif"
+
 - name: 执行生效命令
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/chrootpw.ldif
-
-- name: 添加uid为索引字段
-  shell: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /etc/openldap/hdb-index.ldif
 
 - name: 导入基本的Schema模式 # 执行多条shell
   vars:
@@ -94,7 +100,11 @@
   - "cosine.ldif"
   - "nis.ldif"
   - "inetorgperson.ldif"
+  - "sid_user.ldif"
   ignore_errors: true
+
+- name: 添加索引
+  shell: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /etc/openldap/hdb-index.ldif
 
 - name: 导入基础域名
   tags:
@@ -112,7 +122,7 @@
     dest: /etc/openldap/name.ldif
 
 - name: 导入name.ldif文件
-  shell: ldapadd -x -D "cn=admin,dc=gongchang,dc=com" -w {{ LDAP.LDAP_ADMIN_PWD }} -f /etc/openldap/name.ldif
+  shell: ldapadd -x -D "cn=admin,{{ LDAP.LDAP_BASE_DN }}" -w {{ LDAP.LDAP_ADMIN_PWD }} -f /etc/openldap/name.ldif
 
 - name: 密码策略配置
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f /etc/openldap/schema/ppolicy.ldif'
@@ -169,7 +179,7 @@
     vars:
       ldap_1_hostname: "{{ groups.ldap[0] }}"
       ldap_2_hostname: "{{ groups.ldap[1] }}"
-      port: "{{ ldap_port }}"
+      port: "{{ ldap_dual_mode_port }}"
     template:
       src: 'master_node.j2'
       dest: /etc/openldap/master_node.ldif

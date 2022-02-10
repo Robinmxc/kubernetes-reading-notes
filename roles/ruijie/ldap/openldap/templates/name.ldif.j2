@@ -1,21 +1,21 @@
-dn: dc=gongchang,dc=com
-o: gongchang com
-dc: gongchang
+dn: {{ LDAP.LDAP_BASE_DN }}
+o: {{ LDAP.LDAP_ORGANISATION }}
+dc: {{ LDAP.LDAP_DC }}
 objectClass: top
 objectClass: dcObject
 objectclass: organization
 
-dn: cn=admin,dc=gongchang,dc=com
+dn: cn=admin,{{ LDAP.LDAP_BASE_DN }}
 cn: admin
 objectClass: organizationalRole
 description: Directory Manager
 
-dn: ou=People,dc=gongchang,dc=com
+dn: ou=People,{{ LDAP.LDAP_BASE_DN }}
 ou: People
 objectClass: top
 objectClass: organizationalUnit
 
-dn: ou=Group,dc=gongchang,dc=com
+dn: ou=Group,{{ LDAP.LDAP_BASE_DN }}
 ou: Group
 objectClass: top
 objectClass: organizationalUnit

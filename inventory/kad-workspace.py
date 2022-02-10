@@ -263,6 +263,7 @@ def parse_ldap_config(host_data):
 
     enabled = ldap_config["enable"] if "enable" in ldap_config else False
     if not enabled:
+        #设置为none，避免ansible脚本出错
         ldap_config["LDAP_MODE"] = "none"
         return
 
@@ -295,10 +296,21 @@ def parse_ldap_config(host_data):
     if not is_port(ldap_config["LDAP_SSL_PORT"]):
         raise Exception(u"LDAP_SSL_PORT参数不是有效的端口号")
 
+    #计算base dn和根节点的dc
+    domain_splited = ldap_config["LDAP_DOMAIN"].split(".")
+    ldap_config["LDAP_DC"] = domain_splited[0]
+    base_dn = ""
+    for s in domain_splited:
+        base_dn = base_dn + "dc=" + s + ","
+    base_dn = base_dn[0:-1]
+    ldap_config["LDAP_BASE_DN"] = base_dn
+
+    #k8s部署参数处理
     if ldap_mode == "k8s":
         if "single" != group_all_vars["CLUSTER_SCALE"]:
             raise Exception(u"openldap组件不支持集群环境")
 
+    #独立部署参数处理
     if ldap_mode == "standalone":
         ldap_hosts =  ldap_config["LDAP_HOST"] if "LDAP_HOST" in ldap_config else []
         ldap_vip = ldap_config["LDAP_VIP"] if "LDAP_VIP" in ldap_config else ""

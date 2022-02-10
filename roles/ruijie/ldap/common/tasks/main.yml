@@ -29,6 +29,9 @@
     regexp: "^SELINUX="
     line: "SELINUX=disabled"
 
+- name: 设置系统 ulimits
+  template: src=30-ldap-ulimits.conf.j2 dest=/etc/security/limits.d/30-ldap-ulimits.conf
+
 - name: 准备目录
   file: name={{ item }} state=directory
   with_items:

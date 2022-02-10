@@ -1,0 +1,23 @@
+# Schema for SourceID user
+dn: cn=sid-user,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: sid-user
+olcAttributeTypes: ( 1.3.6.1.4.1.4881.83.1.1001 NAME 'sidPassword' DESC '密码'
+  EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.4881.83.1.1002 NAME 'sflbdm' DESC '身份类型'
+  EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.4881.83.1.1003 NAME 'sfzt' DESC '身份状态'
+  EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.4881.83.1.1004 NAME 'certificateType' DESC '证件类型'
+  EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.4881.83.1.1005 NAME 'certificateNo' DESC '证件号'
+  EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.4881.83.1.1006 NAME 'sex' DESC '性别'
+  EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.4881.83.1.1007 NAME 'netAccountExpireTime' DESC '自动预销户时间'
+  EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.4881.83.1.1008 NAME 'personMatchStatus' DESC '实名核验状态'
+  EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcObjectClasses:  ( 1.3.6.1.4.1.4881.83.1.1000 NAME 'sidUser' DESC 'SourceID用户信息'
+  SUP InetOrgPerson STRUCTURAL
+  MAY ( cn $ sidPassword $ sflbdm $ sfzt $ certificateType $ certificateNo $ sex $ netAccountExpireTime $ personMatchStatus ) )

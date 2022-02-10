@@ -3,6 +3,6 @@ changeType: add
 objectClass: olcOverlayConfig
 objectClass: olcPPolicyConfig
 olcOverlay: ppolicy
-olcPPolicyDefault: cn=default,ou=ppolicy,dc=gongchang,dc=com
+olcPPolicyDefault: cn=default,ou=ppolicy,{{ LDAP.LDAP_BASE_DN }}
 olcPPolicyHashCleartext: TRUE
 

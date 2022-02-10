@@ -2,3 +2,7 @@ dn: olcDatabase={2}hdb,cn=config
 changetype:modify
 add:olcDbIndex
 olcDbIndex: uid pres,eq,sub
+olcDbIndex: certificateNo eq
+olcDbIndex: mobile eq
+olcDbIndex: entryCSN eq
+olcDbIndex: entryUUID eq

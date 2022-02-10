@@ -17,9 +17,9 @@ olcSyncRepl: rid=001
   provider=ldap://{{ ldap_1_hostname }}:{{ port }}/
 {% endif %}
   bindmethod=simple
-  binddn="cn=admin,dc=gongchang,dc=com"
+  binddn="cn=admin,{{ LDAP.LDAP_BASE_DN }}"
   credentials={{ LDAP.LDAP_ADMIN_PWD }}
-  searchbase="dc=gongchang,dc=com"
+  searchbase="{{ LDAP.LDAP_BASE_DN }}"
   scope=sub
   schemachecking=on
   type=refreshAndPersist

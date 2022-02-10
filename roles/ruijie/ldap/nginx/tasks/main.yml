@@ -59,7 +59,7 @@
     vars:
       ldap_1_hostname: "{{ groups.ldap[0] }}"
       ldap_2_hostname: "{{ groups.ldap[1] }}"
-      port: "{{ ldap_port }}"
+      port: "{{ ldap_dual_mode_port }}"
     template:
       src: 'nginx.conf.j2'
       dest: /usr/local/nginx/conf/nginx.conf
