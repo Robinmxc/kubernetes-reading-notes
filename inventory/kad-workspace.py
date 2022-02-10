@@ -278,6 +278,9 @@ def parse_ldap_config(host_data):
     if "LDAP_ADMIN_PWD" not in ldap_config or ldap_config["LDAP_ADMIN_PWD"] == "":
         ldap_config["LDAP_ADMIN_PWD"] = group_all_vars["MONGODB_ADMIN_PWD"]
 
+    if ldap_config["LDAP_ADMIN_PWD"] == ldap_config["LDAP_READONLY_PWD"]:
+        raise Exception(u"LDAP只读用户的密码不能和管理员密码相同")
+
     if "LDAP_DOMAIN" not in ldap_config or ldap_config["LDAP_DOMAIN"] == "":
         sso_domain = group_all_vars["SOURCEID_SSO_DOMAIN"]
         idx = sso_domain.find(".")
