@@ -38,6 +38,15 @@
   - name: 赋予文件权限
     shell: "chown ldap. /var/lib/ldap/DB_CONFIG"
 
+  - name: 设置日志文件
+    template: src='openldap_log.conf.j2' dest='/etc/rsyslog.d/openldap.conf'
+
+  - name: 设置日志文件清理条件
+    template: src='openldap_logrotate.conf.j2' dest='/etc/logrotate.d/openldap.conf'
+
+  - name: 日志配置生效
+    shell: "systemctl restart rsyslog.service"
+    ignore_errors: true
 
 - name: 开机启用 slapd 服务
   tags:
