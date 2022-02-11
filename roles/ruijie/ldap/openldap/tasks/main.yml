@@ -20,6 +20,9 @@
     no_log: false
     ignore_errors: false
 
+  - name: 修改service参数
+    template: src='slapd.service.j2' dest='/usr/lib/systemd/system/slapd.service'
+
   - name: 准备目录
     file: name={{ item }} state=directory
     with_items:
