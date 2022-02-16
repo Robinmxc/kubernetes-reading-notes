@@ -17,7 +17,7 @@
 
 - name: 下载nginx源码
   vars:
-    tgz_file: '{{ base_dir }}/down/nginx-{{ ldap_nginx_version }}.tar.gz'
+    tgz_file: '{{ LDAP_DOWN_PATH }}/nginx-{{ ldap_nginx_version }}.tar.gz'
   get_url:
     url: "http://nginx.org/download/nginx-{{ ldap_nginx_version }}.tar.gz"
     dest: "{{ tgz_file }}"
@@ -28,7 +28,7 @@
 - name: 解压nginx源码
   vars:
     #下载压缩包目录
-    tgz_file: '{{ base_dir }}/down/nginx-{{ ldap_nginx_version }}.tar.gz'
+    tgz_file: '{{ LDAP_DOWN_PATH }}/nginx-{{ ldap_nginx_version }}.tar.gz'
     #nginx安装目录
     src_dir: '{{ NGINX_SRC_PATH }}/nginx-{{ ldap_nginx_version }}'
   unarchive:
