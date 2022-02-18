@@ -100,6 +100,9 @@ SOURCEID_MDM_DB_PWD: ""
 SOURCEID_CAREER_DB_USER: "career"
 SOURCEID_CAREER_DB_PWD: ""
 
+SOURCEID_READONLY_DB_USER: "readonly"
+SOURCEID_READONLY_DB_PWD: "{{ MONGODB_READONLY_PWD }}"
+
 SOURCEID_LICENSE_ENABLED: "{% if SOURCEID_DOCKERS.license is defined %}yes{% else %}no{% endif %}"
 
 SOURCEID_HTTPS_MODE: "{% if 'https' == ingress_mode %}normal{% else %}none{% endif %}"

@@ -61,6 +61,7 @@
     - "sourceid/adapter"
     - "sourceid/mdm"
     - "sourceid/career-event"
+    - "sourceid/xxl-job"
   connection: local
   run_once: true
 

@@ -126,6 +126,7 @@
       - "sourceid/adapter"
       - "sourceid/mdm"
       - "sourceid/career-event"
+      - "sourceid/xxl-job"
     connection: local
 
   - name: 准备https证书新目录

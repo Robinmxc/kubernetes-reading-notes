@@ -7,6 +7,7 @@
 - name: 设置pgsql shell
   set_fact:
     pgsql_pod_name: "{{ shell_result.stdout }}"
+    pgsql_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
     pgsql_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- psql -U postgres "
   connection: local
   run_once: true
@@ -56,7 +57,8 @@
 
 - name: 准备升级数据的脚本
   vars:
-    current_db_version: '{% if db_version.stdout is defined %}{{db_version.stdout_lines[2]}}{% endif%}'
+    current_db_value: '{% if db_version.stdout is defined %}{{db_version.stdout_lines[2]}}{% endif%}'
+    current_db_version: '{% if "rows" in current_db_value %}R0.0{% else %}{{ current_db_value }}{% endif%}'
     src_file: pgsql-update.sh.j2
   template: src="{{ src_file }}" dest="{{ pgsql_init_dir }}/pgsql-update.sh"
 
@@ -64,9 +66,11 @@
   file: name="{{ item }}" mode=0700
   with_items:
   - "{{ pgsql_init_dir }}/pgsql-update.sh"
+  - "{{ pgsql_init_dir }}/sourceid/rg-upgrade-db/upgrade_pg.sh"
+
 
 - name: 执行升级脚本
-  shell: '{{ pgsql_pod_shell }} /ruijie/init/update-pg.sh'
+  shell: '{{ pgsql_shell }} /ruijie/init/pgsql-update.sh'
   register: pg_result
   connection: local
 
