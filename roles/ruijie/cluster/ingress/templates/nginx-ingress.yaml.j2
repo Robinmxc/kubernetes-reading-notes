@@ -42,8 +42,9 @@ spec:
             - --election-id=ingress-controller-leader
             - --ingress-class=nginx
             - --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
+{% if KAD_APP_NAME == 'smpplus' %}
             - --default-backend-service=ruijie-smpplus/rg-frontend-smp
-
+{% endif %}
           securityContext:
             capabilities:
               drop:

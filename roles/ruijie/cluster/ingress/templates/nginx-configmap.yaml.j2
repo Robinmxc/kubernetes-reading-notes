@@ -22,5 +22,7 @@ data:
   compute-full-forwarded-for: "true"
   use-forwarded-headers: "true"
 {% endif %}
+{% if KAD_APP_NAME == 'smpplus' %}
   ssl-redirect: "false"
   custom-http-errors: "404,503"
+{% endif %}
