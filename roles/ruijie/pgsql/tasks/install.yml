@@ -59,7 +59,7 @@
       register: imgages_info
 
     - name: 导入镜像
-      when: '"postgresql" not in imgages_info.stdout'
+      when: '"postgres:13.6" not in imgages_info.stdout'
       vars:
         img_dir: '{% if "allinone" == DEPLOY_MODE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'
       shell: "{{ bin_dir }}/docker load -i {{ img_dir }}/{{ pgsql_offline }}"
