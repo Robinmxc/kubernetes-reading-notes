@@ -73,5 +73,5 @@
 - name: 保存数据库版本到SYSTEM_VERSION表中
   vars:
     db_cur_version: "{{ DB_VERSION['xxl-job'].version }}"
-  shell: '{{ pgsql_pod_shell }}  -d postgres -c  "UPDATE system_version SET postgres_version=''{{ db_cur_version }}'' WHERE name=''db_version'''
+  shell: "{{ pgsql_pod_shell }}  -d postgres -c  \"UPDATE system_version SET postgres_version='{{ db_cur_version }}' WHERE name='db_version'\""
   connection: local
