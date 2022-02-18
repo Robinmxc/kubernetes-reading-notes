@@ -23,15 +23,15 @@ deploy_conf_defaults:
   normal:
     resources:
       limits:
-        cpu: 8
-        memory: 8Gi
+        cpu: "{%- if KAD_APP_NAME == 'smpplus' -%}8{%- else -%}16{%- endif -%}"
+        memory: "{%- if KAD_APP_NAME == 'smpplus' -%}8Gi{%- else -%}24Gi{%- endif -%}"
       requests:
-        cpu: 1
-        memory: 4Gi
+        cpu: "{%- if KAD_APP_NAME == 'smpplus' -%}{%- else -%}8{%- endif -%}"
+        memory: "{%- if KAD_APP_NAME == 'smpplus' -%}4Gi{%- else -%}16Gi{%- endif -%}"
   single:
     resources:
       limits:
-        cpu: 8
+        cpu: "{%- if KAD_APP_NAME == 'smpplus' -%}8{%- else -%}4{%- endif -%}"
         memory: 8Gi
       requests:
         cpu: 1
@@ -42,8 +42,8 @@ mongodb_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
 mongodb_3_deploy_conf: 
   resources:
     limits:
-      cpu: 4
-      memory: 8Gi
+      cpu: "{%- if KAD_APP_NAME == 'smpplus' -%}4{%- else -%}1{%- endif -%}"
+      memory: "{%- if KAD_APP_NAME == 'smpplus' -%}8Gi{%- else -%}1Gi{%- endif -%}"
     requests:
       cpu: 1
-      memory: 4Gi
+      memory: "{%- if KAD_APP_NAME == 'smpplus' -%}4Gi{%- else -%}1Gi{%- endif -%}"

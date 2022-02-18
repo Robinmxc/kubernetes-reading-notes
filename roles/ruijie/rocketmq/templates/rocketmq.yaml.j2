@@ -102,15 +102,21 @@ spec:
     port: 10911
     targetPort: 10911
     nodePort: 10911
+{% endif %}
+{% if KAD_APP_NAME == 'smpplus' %}
   - name: n8133
     port: 8133
     targetPort: 8133
     nodePort: 8133
 {% endif %}
-{% if "yes" != (rocketmq_public) %}
+{% if KAD_APP_NAME == 'smpplus' %}
   type: NodePort
+{% endif %}
+{% if "yes" != (rocketmq_public) %}
   ports:
   - port: 9876
     targetPort: 9876
+{% endif %}
+{% if KAD_APP_NAME == 'smpplus' %}
     nodePort: 9876
 {% endif %}
