@@ -70,36 +70,6 @@ spec:
         - mountPath: /skywalking/agent
           name: agent
 
-        startupProbe:
-          failureThreshold: 20
-          httpGet:
-            path: /xxl-job/livenessProbe
-            port: 8082
-            scheme: HTTP
-          periodSeconds: 5
-          successThreshold: 1
-          timeoutSeconds: 1
-
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /xxl-job/livenessProbe
-            port: 8082
-            scheme: HTTP
-          periodSeconds: 5
-          successThreshold: 1
-          timeoutSeconds: 1
-          
-        livenessProbe:
-          failureThreshold: 5
-          httpGet:
-            path: /xxl-job/livenessProbe
-            port: 8082
-            scheme: HTTP
-          periodSeconds: 30
-          successThreshold: 1
-          timeoutSeconds: 1
-
       imagePullSecrets:
       - name: regsecret
       volumes:
