@@ -64,3 +64,9 @@ db.getSiblingDB("career-event").runCommand({
   pwd: "{{ SOURCEID_CAREER_DB_PWD }}",
   roles: [{role:"dbOwner", db: "career-event"}]
 });
+
+db.getSiblingDB("admin").runCommand({
+  createUser: "{{ SOURCEID_READONLY_DB_USER }}",
+  pwd: "{{ SOURCEID_READONLY_DB_PWD }}",
+  roles: [{role:"readAnyDatabase", db: "admin"}]
+});

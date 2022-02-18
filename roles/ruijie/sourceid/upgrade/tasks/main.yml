@@ -171,4 +171,40 @@
     when: '"mongo3" in pod_info.stdout'
     connection: local
 
+  - name: 获取pgsql POD 名称
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep postgresql"
+    register: shell_result
+    connection: local
+    run_once: true
+
+  - name: 设置pgsql shell
+    set_fact:
+      pgsql_dump_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- pg_dump -U postgres "
+      pgsql_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- psql -U postgres "
+    connection: local
+    run_once: true
+
+
+  - name: 查询pgsql 是否已初始化
+    shell: '{{ pgsql_pod_shell }} -c "\l"'
+    register: table_result
+    connection: local
+    run_once: true
+
+  - name: 导出quartz数据库数据
+    shell: '{{ pgsql_dump_shell }} quartz > {{ KAD_PACKAGE_DIR }}/db/sourceid/rg-init-db/init.sql'
+    when: '"xxl_job" not in table_result.stdout'
+    connection: local
+    
+  - name: 停止postgres数据库
+    shell: 'kubectl delete -f {{ yaml_dir }}/pgsql/pgsql.yml'
+    when: '"xxl_job" not in table_result.stdout'
+    connection: local
+
+  - name: 删除postgres数据目录
+    file:
+      path: "{{ pgsql_data_dir }}"
+      state: absent
+    connection: local 
+
   when: 'inventory_hostname == groups.kube_master[0]'

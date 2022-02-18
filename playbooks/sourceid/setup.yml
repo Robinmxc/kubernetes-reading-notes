@@ -85,6 +85,7 @@
   - { role: ruijie/sourceid/adapter, tags: ["adapter"] }
   - { role: ruijie/sourceid/mdm, tags: ["mdm"] }
   - { role: ruijie/sourceid/career-event, tags: ["career-event"] }
+  - { role: ruijie/sourceid/xxl-job, tags: ["xxl-job"] }
 
 - hosts:
   - gateway

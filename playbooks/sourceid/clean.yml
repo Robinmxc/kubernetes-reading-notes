@@ -147,6 +147,12 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/career-event/"
     when: 'pod_info.stdout is search("rg-career-event-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 xxl-job
+    tags:
+      - xxl-job
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/xxl-job/"
+    when: 'pod_info.stdout is search("rg-xxl-job-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 rocketmq
     tags:
       - rocketmq
@@ -168,7 +174,7 @@
     - sso
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
-    until: '"rg-sso" not in pod_info.stdout'
+    until: 'pod_info.stdout is not search("rg-sso-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
     delay: 3
     ignore_errors: true
@@ -384,6 +390,16 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-career-event" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待xxl-job结束运行
+    tags:
+      - xxl-job
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: 'pod_info.stdout is not search("rg-xxl-job-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
     delay: 3
     ignore_errors: true

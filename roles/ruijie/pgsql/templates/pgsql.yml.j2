@@ -24,33 +24,16 @@ spec:
 {% endfor %}
       containers:
       - name: postgresql
-        image: docker.io/bitnami/postgresql-repmgr:11-debian-10
+        image: postgres:13.6
         imagePullPolicy: IfNotPresent
         env:
-        - name: POSTGRESQL_DATABASE
-          value: customdatabase
-        - name: POSTGRESQL_PASSWORD
-          value: custompassword
-        - name: PGPASSWORD
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
           value: {{ PGSQL_ADMIN_PWD }}
-        - name: POSTGRESQL_POSTGRES_PASSWORD
-          value: {{ PGSQL_ADMIN_PWD }}
-        - name: POSTGRESQL_USERNAME
-          value: customuser
-        - name: REPMGR_NODE_NAME
-          value: {{ pgsql_node_name }}
-        - name: REPMGR_NODE_NETWORK_NAME
-          value: {{ pgsql_node_name }}
-        - name: REPMGR_PARTNER_NODES
-          value: {{ pgsql_node_name }}
-        - name: REPMGR_PASSWORD
-          value: repmgrpassword
-        - name: REPMGR_PORT_NUMBER
-          value: "5432"
-        - name: REPMGR_PRIMARY_HOST
-          value: {{ pgsql_node_name }}
-        - name: REPMGR_PRIMARY_PORT
-          value: "5432"
+        - name: POSTGRES_DB
+          value: master
+
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:

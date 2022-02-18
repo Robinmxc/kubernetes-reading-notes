@@ -102,6 +102,14 @@
   connection: local
   run_once: true
 
+- name: 检查数据库只读账号密码是否符合要求
+  tags:
+  - config
+  fail: msg="数据库只读账号密码不符合要求，{{ db_pwd_invalid_msg }}"
+  when: 'mongodb_auth_mode == "yes" and ( MONGODB_READONLY_PWD is not search(db_pwd_pattern1) or MONGODB_READONLY_PWD is not search(db_pwd_pattern2) )'
+  connection: local
+  run_once: true
+
 - name: 准备第1个mongodb的部署文件
   tags:
   - config

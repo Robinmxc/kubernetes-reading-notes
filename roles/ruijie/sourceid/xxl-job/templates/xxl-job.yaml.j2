@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rg-xxl-job
+  namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-xxl-job
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      k8s-app: rg-xxl-job
+  template:
+    metadata:
+      labels:
+        k8s-app: rg-xxl-job
+    spec:
+{%if SKYWALKING["enable"] %}
+      initContainers:
+      - name: init-agent
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/skywalking:{{ SKYWALKING.IMAGE_VERSION }}
+        command:
+        - 'sh'
+        - '-c'
+        - 'set -ex;mkdir -p /skywalking/agent;cp -r /opt/skywalking/agent/* /skywalking/agent;'
+        volumeMounts:
+        - name: agent
+          mountPath: /skywalking/agent
+{% endif %}
+      containers:
+      - name: rg-xxl-job
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["xxl-job"].name }}:{{ SOURCEID_DOCKERS["xxl-job"].version }}
+        imagePullPolicy: IfNotPresent
+        env:
+{%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
+        - name: SW_AGENT_NAME
+          value: {{ SKYWALKING.AGENT_PREFIX }}-xxl-job
+        - name: SW_AGENT_NAMESPACE
+          value: {{ SKYWALKING.NAMESPACE }}
+        - name: SW_GRPC_LOG_SERVER_HOST
+          value: {{ SKYWALKING.SERVER_HOST }}
+        - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
+          value: {{ SKYWALKING.SERVER_HOST }}:11800          
+{% endif %}
+        - name: JAVA_OPT_EXT
+          value: "{{ xxl-job_java_opt }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 8082
+        volumeMounts:
+        - mountPath: /ruijie/sourceid/xxl-job/conf
+          name: conf
+        - mountPath: /logs
+          name: logpath
+        - mountPath: /skywalking/agent
+          name: agent
+
+        startupProbe:
+          failureThreshold: 20
+          httpGet:
+            path: /xxl-job/livenessProbe
+            port: 8082
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /xxl-job/livenessProbe
+            port: 8082
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+          
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /xxl-job/livenessProbe
+            port: 8082
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/xxl-job/conf
+        - name: logpath
+          hostPath:
+            path: {{ config_base_dir }}/logs
+        - name: agent
+          emptyDir: {}        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-xxl-job
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    k8s-app: rg-xxl-job
+  ports:
+  - port: 80
+    targetPort: 8082

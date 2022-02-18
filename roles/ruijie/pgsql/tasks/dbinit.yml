@@ -1,0 +1,77 @@
+- name: 获取pgsql POD 名称
+  shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep postgresql"
+  register: shell_result
+  connection: local
+  run_once: true
+
+- name: 设置pgsql shell
+  set_fact:
+    pgsql_pod_name: "{{ shell_result.stdout }}"
+    pgsql_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- psql -U postgres "
+  connection: local
+  run_once: true
+
+- name: 查询pgsql 是否已初始化
+  shell: '{{ pgsql_pod_shell }} -c "\l"'
+  register: db_result
+  connection: local
+  run_once: true
+
+- name: 创建quartz数据库
+  shell: '{{ pgsql_pod_shell }} -c "CREATE DATABASE quartz"'
+  when: '"quartz" not in db_result.stdout'
+  register: create_result
+  failed_when: 'create_result.stdout is not search("CREATE DATABASE")'
+  connection: local
+
+- name: 初始化quartz数据
+  shell: '{{ pgsql_pod_shell }} -d quartz -f /ruijie/init/sourceid/rg-init-db/init.sql'
+  when: '"quartz" not in db_result.stdout'
+  connection: local
+
+- name: 创建quartz数据库
+  shell: '{{ pgsql_pod_shell }} -c "CREATE DATABASE xxl_job"'
+  when: '"xxl_job" not in db_result.stdout'
+  register: create_result
+  failed_when: 'create_result.stdout is not search("CREATE DATABASE")'
+  connection: local
+
+- name: 创建获取postgres中所有表
+  shell: '{{ pgsql_pod_shell }} -d postgres -c "\dt"'
+  register: table_result
+  connection: local
+
+- name: 创建system_version表
+  shell: '{{ pgsql_pod_shell }}  -d postgres -c "CREATE TABLE system_version( name character varying(120) NOT NULL, postgres_version character varying(200) NOT NULL);alter table system_version add primary key(name);"'
+  when: '"system_version" not in table_result.stdout'
+  register: creat_result
+  failed_when: '"ALTER TABLE" not in creat_result.stdout'
+  connection: local
+
+- name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
+  shell: '{{ pgsql_pod_shell }}  -d postgres -c  "SELECT postgres_version FROM system_version WHERE name=''db_version''"'
+  register: db_version
+  failed_when: '"postgres_version" not in db_version.stdout' 
+  connection: local
+
+- name: 准备升级数据的脚本
+  vars:
+    current_db_version: '{% if db_version.stdout is defined %}{{db_version.stdout_lines[2]}}{% endif%}'
+    src_file: pgsql-update.sh.j2
+  template: src="{{ src_file }}" dest="{{ pgsql_init_dir }}/pgsql-update.sh"
+
+- name: 设置升级脚本文件执行权限
+  file: name="{{ item }}" mode=0700
+  with_items:
+  - "{{ pgsql_init_dir }}/pgsql-update.sh"
+
+- name: 执行升级脚本
+  shell: '{{ pgsql_pod_shell }} /ruijie/init/update-pg.sh'
+  register: pg_result
+  connection: local
+
+- name: 保存数据库版本到SYSTEM_VERSION表中
+  vars:
+    db_cur_version: "{{ DB_VERSION['xxl-job'].version }}"
+  shell: '{{ pgsql_pod_shell }}  -d postgres -c  "UPDATE system_version SET postgres_version=''{{ db_cur_version }}'' WHERE name=''db_version'''
+  connection: local

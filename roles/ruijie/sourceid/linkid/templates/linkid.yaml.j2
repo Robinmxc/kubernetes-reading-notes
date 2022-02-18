@@ -7,6 +7,11 @@ metadata:
     k8s-app: rg-linkid
 spec:
   replicas: {{ deploy_conf.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       k8s-app: rg-linkid
@@ -66,6 +71,37 @@ spec:
           name: etcd-tls
         - mountPath: /skywalking/agent
           name: agent
+
+        startupProbe:
+          failureThreshold: 20
+          httpGet:
+            path: /linkid/api/rule/organization/common/item
+            port: 8901
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /linkid/api/rule/organization/common/item
+            port: 8901
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+          
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /linkid/api/rule/organization/common/item
+            port: 8901
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+
       imagePullSecrets:
       - name: regsecret
       volumes:
