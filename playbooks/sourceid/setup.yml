@@ -34,7 +34,7 @@
   - midware
   - sourceid-universities
   vars_files:
-  
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   - "/etc/kad/config.yml"
   any_errors_fatal: true
   roles:
