@@ -9,11 +9,10 @@
 - name: 自动配置
   tags:
     - config
-  replace: path="{{ config_base_dir }}/sourceid/xxl-job/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  replace: path="{{ config_base_dir }}/sourceid/xxl-job/conf/application-pro.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-    - {regexp: "^spring.datasource.username=.*$", replace: "spring.datasource.username=postgres"}
-    - {regexp: "^spring.datasource.password=.*$", replace: "spring.datasource.password={{ MONGODB_ADMIN_USER }}"}
-
+    - {regexp: "spring.datasource.username=.*$", replace: "spring.datasource.username=postgres"}
+    - {regexp: "spring.datasource.password=.*$", replace: "spring.datasource.password={{ PGSQL_ADMIN_PWD }}"}
   no_log: true
 
 

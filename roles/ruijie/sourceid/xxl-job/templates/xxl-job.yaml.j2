@@ -50,7 +50,7 @@ spec:
           value: {{ SKYWALKING.SERVER_HOST }}:11800          
 {% endif %}
         - name: JAVA_OPT_EXT
-          value: "{{ xxl-job_java_opt }}"
+          value: "{{ xxl_job_java_opt }}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
