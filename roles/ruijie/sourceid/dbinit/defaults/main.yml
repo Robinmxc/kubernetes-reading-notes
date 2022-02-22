@@ -7,3 +7,5 @@ db_pwd_checklist: [
   ]
 
 db_script_version: "2"
+
+db_list: ["cas","faceid","gate","groupview","internet-id","linkid-dev","log","career-event","mdm"]

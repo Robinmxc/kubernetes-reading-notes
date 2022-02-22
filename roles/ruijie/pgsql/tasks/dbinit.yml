@@ -30,7 +30,7 @@
   when: '"quartz" not in db_result.stdout'
   connection: local
 
-- name: 创建quartz数据库
+- name: 创建xxl_job数据库
   shell: '{{ pgsql_pod_shell }} -c "CREATE DATABASE xxl_job"'
   when: '"xxl_job" not in db_result.stdout'
   register: create_result

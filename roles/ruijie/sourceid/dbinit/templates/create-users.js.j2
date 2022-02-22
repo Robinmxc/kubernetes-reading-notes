@@ -70,3 +70,12 @@ db.getSiblingDB("admin").runCommand({
   pwd: "{{ SOURCEID_READONLY_DB_PWD }}",
   roles: [{role:"readAnyDatabase", db: "admin"}]
 });
+
+{% for value in db_list %}
+db.getSiblingDB("{{ value }}").runCommand({
+  createUser: "{{ SOURCEID_READONLY_DB_USER }}",
+  pwd: "{{ SOURCEID_READONLY_DB_PWD }}",
+  roles: [{role:"read", db: "{{ value }}"}]
+});
+
+{% endfor %}
