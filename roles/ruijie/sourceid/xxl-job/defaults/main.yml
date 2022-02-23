@@ -1,6 +1,6 @@
 XXL_JOB_ENABLE: "{% if SOURCEID_DOCKERS['xxl-job'] is defined and (SOURCEID_DOCKERS['xxl-job'].enable is not defined or SOURCEID_DOCKERS['xxl-job'].enable) %}yes{% else %}no{% endif %}"
 
-xxl_job_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
+xxl_job_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms128m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms128m -Xmx512m{% else %}-Xms128m -Xmx512m{% endif %}"
 
 xxl_job_configs: []
 
