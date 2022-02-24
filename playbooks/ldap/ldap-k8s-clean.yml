@@ -20,3 +20,11 @@
       retries: 30
       delay: 3
       ignore_errors: true
+
+    - name: delete files
+      file: name="{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/openldap" state=absent
+      ignore_errors: true
+
+    - name: delete secret
+      shell: "{{ bin_dir }}/kubectl delete secrets ldap-pwds -n {{ APP_NAMESPACE }} --ignore-not-found"
+      ignore_errors: true
