@@ -25,7 +25,7 @@ ldap_deploy_mode: "{{ groups['ldap'] | length }}"
 ldap_dual_mode_port: 388
 
 #将ldap改成388端口
-ldap_port_conf: "{% if ldap_deploy_mode  == '2' %}ldapi:/// ldap://0.0.0.0:{{ ldap_dual_mode_port }}/ ldaps:///{% else %}ldapi:/// ldap://0.0.0.0:{{ LDAP.LDAP_PORT }}/ ldaps:///{% endif %}"
+ldap_port_conf: "{% if ldap_deploy_mode  == '2' %}ldapi:/// ldap://0.0.0.0:{{ ldap_dual_mode_port }}/ ldaps:///{% else %}ldapi:/// ldap://0.0.0.0:{{ LDAP.LDAP_PORT }}/ ldaps://0.0.0.0:{{ LDAP.LDAP_SSL_PORT }}/{% endif %}"
 
 #nginx安装目录
 NGINX_SRC_PATH: "/usr/local/src"
