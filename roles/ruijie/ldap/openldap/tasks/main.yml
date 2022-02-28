@@ -23,6 +23,13 @@
   - name: 修改service参数
     template: src='slapd.service.j2' dest='/usr/lib/systemd/system/slapd.service'
 
+  - name: 修改slapd端口
+    vars:
+      SLAPD_URLS: "{{ ldap_port_conf }}"
+    template:
+      src: 'slapd.j2'
+      dest: /etc/sysconfig/slapd
+
   - name: 准备目录
     file: name={{ item }} state=directory
     with_items:
@@ -206,23 +213,6 @@
     template:
       src: 'master_node.j2'
       dest: /etc/openldap/master_node.ldif
-
-  - name: 暂停 slapd 服务
-    tags:
-      - config
-    shell: systemctl stop slapd.service
-
-  - name: 修改slapd端口
-    vars:
-      SLAPD_URLS: "{{ ldap_port_conf }}"
-    template:
-      src: 'slapd.j2'
-      dest: /etc/sysconfig/slapd
-
-  - name: 重启 slapd 服务
-    tags:
-      - config
-    shell: systemctl restart slapd.service
 
   - name: 导入双主配置文件
     vars:
