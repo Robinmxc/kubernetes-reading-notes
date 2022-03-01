@@ -6,6 +6,9 @@ worker_processes  1;
 #error_log  logs/error.log  notice;
 #error_log  logs/error.log  info;
 
+access_log  {{ DATA_DIR }}/nginx/logs/access.log  main;
+error_log  {{ DATA_DIR }}/nginx/logs/error.log  info;
+
 #pid        logs/nginx.pid;
 
 

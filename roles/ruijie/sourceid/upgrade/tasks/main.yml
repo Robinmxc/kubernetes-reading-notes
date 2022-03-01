@@ -91,7 +91,6 @@
     shell: "mongodump -h {{ groups.mongodb[0] }} -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase 'admin' -o {{BAK_DIR}}/mongodbbak"
     register: shell_result
     connection: local
-    run_once: true
 
   - name: 替换kad
     shell: "\\cp -rpf {{UPGRADE_DIR}}/kad/* {{base_dir}}"
@@ -176,21 +175,17 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep postgresql"
     register: shell_result
     connection: local
-    run_once: true
 
   - name: 设置pgsql shell
     set_fact:
       pgsql_dump_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- pg_dump -U postgres "
       pgsql_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- psql -U postgres "
     connection: local
-    run_once: true
-
 
   - name: 查询pgsql 是否已初始化
     shell: '{{ pgsql_pod_shell }} -c "\l"'
     register: table_result
     connection: local
-    run_once: true
 
   - name: 导出quartz数据库数据
     shell: '{{ pgsql_dump_shell }} quartz > {{ KAD_PACKAGE_DIR }}/db/sourceid/rg-init-db/init.sql'

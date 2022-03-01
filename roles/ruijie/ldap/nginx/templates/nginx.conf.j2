@@ -2,7 +2,8 @@ worker_processes  1;
 events {
     worker_connections  1024;
 }
-
+access_log  {{ DATA_DIR }}/nginx/logs/access.log  main;
+error_log  {{ DATA_DIR }}/nginx/logs/error.log  info;
 # 配置tcp
 stream {
     upstream slapd {

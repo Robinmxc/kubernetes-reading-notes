@@ -1,0 +1,13 @@
+{{ DATA_DIR }}/nginx/logs/access.log
+{{ DATA_DIR }}/nginx/logs/error.log
+{
+    daily
+    rotate 20
+    size 100M
+    dateext
+    missingok
+    notifempty
+    postrotate
+        test -r /usr/local/nginx/logs/nginx.pid && kill -USR1 'cat /usr/local/nginx/logs/nginx.pid'
+    endscript
+}
