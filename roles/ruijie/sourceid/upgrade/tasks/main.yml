@@ -91,7 +91,6 @@
     shell: "mongodump -h {{ groups.mongodb[0] }} -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase 'admin' -o {{BAK_DIR}}/mongodbbak"
     register: shell_result
     connection: local
-    run_once: true
 
   - name: 替换kad
     shell: "\\cp -rpf {{UPGRADE_DIR}}/kad/* {{base_dir}}"
