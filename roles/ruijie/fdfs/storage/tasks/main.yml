@@ -56,3 +56,10 @@
     until: '"running" in service_status.stdout'
     retries: 8
     delay: 2
+
+- name: 配置nginx日志滚动
+  template: src='nginx_logrotate.conf.j2' dest='/etc/logrotate.d/nginx.conf'
+
+- name: 日志配置生效
+  shell: "systemctl restart rsyslog.service"
+  ignore_errors: true

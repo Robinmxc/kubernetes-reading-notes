@@ -8,6 +8,9 @@ worker_processes  1;
 
 #pid        logs/nginx.pid;
 
+access_log  {{ DATA_DIR }}/nginx/logs/access.log  main;
+error_log  {{ DATA_DIR }}/nginx/logs/error.log  info;
+
 
 events {
     worker_connections  1024;
