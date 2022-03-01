@@ -149,7 +149,7 @@
     dest: /etc/openldap/name.ldif
 
 - name: 导入name.ldif文件
-  shell: ldapadd -x -D "cn=admin,{{ LDAP.LDAP_BASE_DN }}" -w {{ LDAP.LDAP_ADMIN_PWD }} -f /etc/openldap/name.ldif
+  shell: ldapadd -x -H ldapi:/// -D "cn=admin,{{ LDAP.LDAP_BASE_DN }}" -w {{ LDAP.LDAP_ADMIN_PWD }} -f /etc/openldap/name.ldif
 
 - name: 密码策略配置
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f /etc/openldap/schema/ppolicy.ldif'
