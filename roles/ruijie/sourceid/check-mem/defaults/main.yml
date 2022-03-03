@@ -6,5 +6,5 @@ mem_required:
     master: 16
     node: 64
   single:
-    master: 32
-    node: 32
+    master: 64
+    node: 64

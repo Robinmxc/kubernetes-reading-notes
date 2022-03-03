@@ -2,7 +2,7 @@ INTERNETID_ENABLE: "{% if SOURCEID_DOCKERS['internetid'] is defined and (SOURCEI
 
 GROUP_VIEW_ENABLE: "{% if SOURCEID_DOCKERS['groupview'] is defined and (SOURCEID_DOCKERS['groupview'].enable is not defined or SOURCEID_DOCKERS['groupview'].enable) %}true{% else %}false{% endif %}"
 
-internetid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
+internetid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 internetid_configs: []
 
@@ -24,10 +24,10 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 4
-        memory: 4Gi
+        cpu: 1
+        memory: 640Mi
       requests:
-        cpu: 2
-        memory: 2Gi
+        cpu: 500m
+        memory: 512Mi
 
 internetid_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

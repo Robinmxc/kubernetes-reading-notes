@@ -1,5 +1,5 @@
 
-sso_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms6144m -Xmx6144m{% elif CLUSTER_SCALE == 'single' %}-Xms2048m -Xmx4096m{% else %}-Xms256m -Xmx512m{% endif %}"
+sso_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx8192m{% elif CLUSTER_SCALE == 'single' %}-Xms2048m -Xmx8192m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 sso_configs: []
 
@@ -13,7 +13,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 8
-        memory: 9Gi
+        memory: 10Gi
       requests:
         cpu: 4
         memory: 5Gi
@@ -21,8 +21,8 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 4
-        memory: 5Gi
+        cpu: 10
+        memory: 10Gi
       requests:
         cpu: 2
         memory: 2Gi

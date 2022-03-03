@@ -7,25 +7,25 @@ pgsql_deploy_conf_defaults:
     resources:
       limits:
         cpu: 1
-        memory: 200M
+        memory: 200Mi
       requests:
         cpu: 0.5
-        memory: 100M
+        memory: 100Mi
   normal:
     resources:
       limits:
         cpu: 1
-        memory: 200M
+        memory: 200Mi
       requests:
         cpu: 0.5
-        memory: 100M
+        memory: 100Mi
   single:
     resources:
       limits:
         cpu: 1
-        memory: 200M
+        memory: 200Mi
       requests:
         cpu: 0.5
-        memory: 100M
+        memory: 100Mi
 
 pgsql_deploy_conf: '{{ pgsql_deploy_conf_defaults[CLUSTER_SCALE] }}'
