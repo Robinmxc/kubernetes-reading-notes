@@ -14,7 +14,7 @@
   - name: drop mongo中所有数据库
     vars:
       comp_name: "{{ item }}"
-      db_name: "{{ DB_VERSION[comp_name].name }}_version"
+      db_name: "{{ DB_VERSION[comp_name].name }}"
     shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("{{ db_name }}").dropDatabase()'''
     with_items: "{{ DB_VERSION.keys() }}" 
     connection: local
