@@ -1,7 +1,37 @@
 - block:
+  - name: 获取mongo1 POD 名称
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
+    register: shell_result
+    connection: local
+    
+  - name: 设置mongo shell
+    set_fact:
+      mongo_pod_name: "{{ shell_result.stdout }}"
+      mongo_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
+      mongo_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- mongo {{ mongo_auth_param }}"
+    connection: local
+
+  - name: drop mongo中所有数据库
+    vars:
+      comp_name: "{{ item }}"
+      db_name: "{{ DB_VERSION[comp_name].name }}_version"
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("{{ db_name }}").dropDatabase()'''
+    with_items: "{{ DB_VERSION.keys() }}" 
+    connection: local
+
+  - name: drop mongo中mdm和carrer数据库
+    vars:
+      db_name: "{{ item }}"
+    shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("{{ db_name }}").dropDatabase()'''
+    with_items: 
+    - "mdm"
+    - "career-event"
+    - "internet-id"
+    connection: local
+
   - name: 恢复 mongodb备份数据
     shell: "mongorestore -h {{ groups.mongodb[0] }} -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase 'admin' --drop {{BAK_DIR}}/mongodbbak"
-    register: shell_result
+    register: restore_result
     connection: local
     run_once: true
   when: 'inventory_hostname == groups.kube_master[0]'
