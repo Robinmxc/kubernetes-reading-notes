@@ -1,3 +1,4 @@
+COMPONENT_ENABLE: "{% if SOURCEID_DOCKERS['component'] is defined and (SOURCEID_DOCKERS['component'].enable is not defined or SOURCEID_DOCKERS['component'].enable) %}yes{% else %}no{% endif %}"
 
 component_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1024m -Xmx1024m{% elif CLUSTER_SCALE == 'single' %}-Xms512m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
 

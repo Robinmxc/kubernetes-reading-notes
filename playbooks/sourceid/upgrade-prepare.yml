@@ -63,3 +63,9 @@
 - name: 安装k8s
   when: '"v1.18.8" not in k8s_result.stdout'
   import_playbook: ../cluster/k8s-setup.yml
+
+- hosts: localhost
+  tasks: 
+  - name: 输出mongo备份路径
+    debug:
+      msg: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/upgrade_temp/mongodbbak"

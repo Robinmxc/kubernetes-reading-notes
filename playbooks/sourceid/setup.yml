@@ -65,6 +65,7 @@
   - { role: ruijie/sourceid/linkid, tags: ["linkid"]}
   - { role: ruijie/sourceid/sso, tags: ["sso"] }
   - { role: ruijie/sourceid/gate, tags: ["gate"] }
+  - { role: ruijie/sourceid/component, tags: ["component"] }
   - { role: ruijie/sourceid/frontend, tags: ["frontend"] }
   - { role: ruijie/sourceid/license, tags: ["license"] }
   - { role: ruijie/sourceid/faceid, tags: ["faceid"] }
