@@ -1,4 +1,4 @@
-REPORT_ENABLE: "{% if SOURCEID_DOCKERS['report'] is defined and (SOURCEID_DOCKERS['report'].enable is not defined or SOURCEID_DOCKERS['report'].enable) %}yes{% else %}no{% endif %}"
+REPORT_ENABLE: "{% if CLUSTER_SCALE == 'normal' and SOURCEID_DOCKERS['report'] is defined and (SOURCEID_DOCKERS['report'].enable is not defined or SOURCEID_DOCKERS['report'].enable) %}yes{% else %}no{% endif %}"
 
 report_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms256m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
 
