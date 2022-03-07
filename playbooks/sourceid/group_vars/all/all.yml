@@ -116,6 +116,8 @@ SOURCEID_FRONTEND_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}http
 
 SOURCEID_SSO_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}https{% endif %}://{{ SOURCEID_SSO_DOMAIN }}"
 
+SOURCEID_MYAPP_URL: "{% if 'none' == SOURCEID_HTTPS_MODE %}http{% else %}https{% endif %}://{{ SOURCEID_MYAPP_DOMAIN }}"
+
 SOURCEID_FGM_VERSION_ENABLED: "yes"
 
 SOURCEDATA_USER_SYNC_TABLE_NAME: "sid_user_info"

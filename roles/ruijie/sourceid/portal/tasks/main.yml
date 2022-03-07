@@ -13,9 +13,9 @@
       - config
     replace: path="{{ config_base_dir }}/sourceid/portal/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-      - {regexp: "mongodb:.*/portal.*$", replace: "mongodb://{{ SOURCEID_portal_DB_USER }}:{{ SOURCEID_portal_DB_PWD }}@{{ mongodb_addr }}/portal?replicaSet=rs0"}
-      - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
-      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+      - {regexp: "url:.*$", replace: "url: {{ SOURCEID_SSO_URL }}"}
+      - {regexp: "apiServer:.*$", replace: "apiServer: {{ SOURCEID_FRONTEND_URL }}"}
+      - {regexp: "name:.*$", replace: "name: {{ SOURCEID_MYAPP_URL }}"}
     no_log: true
 
   - name: 准备部署文件目录
