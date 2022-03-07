@@ -8,4 +8,5 @@ db_pwd_checklist: [
 
 db_script_version: "2"
 
-db_list: ["cas","faceid","gate","groupview","internet-id","linkid-dev","log","career-event","mdm"]
+tmp_list: "{% for h in DB_VERSION.keys() %}{{ DB_VERSION[h]['name'] }},{% endfor %}"
+db_list: "{{ tmp_list.rstrip(',').split(',') }}"

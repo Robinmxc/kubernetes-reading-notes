@@ -153,6 +153,18 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/xxl-job/"
     when: 'pod_info.stdout is search("rg-xxl-job-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 portal
+    tags:
+      - portal
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/portal/"
+    when: 'pod_info.stdout is search("rg-portal-[a-z0-9]*-[a-z0-9]*\s")'
+
+  - name: 停止 report
+    tags:
+      - report
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/report/"
+    when: 'pod_info.stdout is search("rg-report-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 rocketmq
     tags:
       - rocketmq
@@ -400,6 +412,26 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: 'pod_info.stdout is not search("rg-xxl-job-[a-z0-9]*-[a-z0-9]*\s")'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待portal结束运行
+    tags:
+      - portal
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: 'pod_info.stdout is not search("rg-portal-[a-z0-9]*-[a-z0-9]*\s")'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待report结束运行
+    tags:
+      - report
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: 'pod_info.stdout is not search("rg-report-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
     delay: 3
     ignore_errors: true

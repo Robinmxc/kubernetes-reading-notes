@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rg-report
+  namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-report
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-report
+  template:
+    metadata:
+      labels:
+        k8s-app: rg-report
+    spec:
+{%if SKYWALKING["enable"] %}
+      initContainers:
+      - name: init-agent
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/skywalking:{{ SKYWALKING.IMAGE_VERSION }}
+        command:
+        - 'sh'
+        - '-c'
+        - 'set -ex;mkdir -p /skywalking/agent;cp -r /opt/skywalking/agent/* /skywalking/agent;'
+        volumeMounts:
+        - name: agent
+          mountPath: /skywalking/agent
+{% endif %}
+      containers:
+      - name: rg-report
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.report.name }}:{{ SOURCEID_DOCKERS.report.version }}
+        imagePullPolicy: IfNotPresent
+        env:
+{%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
+        - name: SW_AGENT_NAME
+          value: {{ SKYWALKING.AGENT_PREFIX }}-report
+        - name: SW_AGENT_NAMESPACE
+          value: {{ SKYWALKING.NAMESPACE }}
+        - name: SW_GRPC_LOG_SERVER_HOST
+          value: {{ SKYWALKING.SERVER_HOST }}
+        - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
+          value: {{ SKYWALKING.SERVER_HOST }}:11800          
+{% endif %}
+        - name: JAVA_OPT_EXT
+          value: "{{ report_java_opt }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /ruijie/sourceid/report/conf
+          name: conf
+        - mountPath: /logs
+          name: logpath
+        - mountPath: /skywalking/agent
+          name: agent
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/report/conf
+        - name: logpath
+          hostPath:
+            path: {{ config_base_dir }}/logs
+        - name: agent
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-report
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    k8s-app: rg-report
+  ports:
+  - port: 80
+    targetPort: 80

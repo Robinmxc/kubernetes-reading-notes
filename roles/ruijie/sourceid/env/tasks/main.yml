@@ -62,6 +62,8 @@
     - "sourceid/mdm"
     - "sourceid/career-event"
     - "sourceid/xxl-job"
+    - "sourceid/portal"
+    - "sourceid/report"
   connection: local
   run_once: true
 

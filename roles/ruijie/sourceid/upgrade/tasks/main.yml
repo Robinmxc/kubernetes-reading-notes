@@ -126,6 +126,8 @@
       - "sourceid/mdm"
       - "sourceid/career-event"
       - "sourceid/xxl-job"
+      - "sourceid/portal"
+      - "sourceid/report"
     connection: local
 
   - name: 准备https证书新目录
@@ -201,6 +203,7 @@
     file:
       path: "{{ pgsql_data_dir }}"
       state: absent
+    when: '"xxl_job" not in table_result.stdout'
     connection: local 
 
   when: 'inventory_hostname == groups.kube_master[0]'

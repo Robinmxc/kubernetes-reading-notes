@@ -19,3 +19,10 @@ db.getSiblingDB("ztsync").changeUserPassword("{{ SOURCEID_ZTSYNC_DB_USER }}","{{
 db.getSiblingDB("mdm").changeUserPassword("{{ SOURCEID_MDM_DB_USER }}","{{ SOURCEID_MDM_DB_PWD }}");
 
 db.getSiblingDB("career-event").changeUserPassword("{{ SOURCEID_CAREER_DB_USER }}","{{ SOURCEID_CAREER_DB_PWD }}");
+
+db.getSiblingDB("report").changeUserPassword("{{ SOURCEID_REPORT_DB_USER }}","{{ SOURCEID_REPORT_DB_PWD }}");
+
+{% for value in db_list %}
+db.getSiblingDB("{{ value }}").changeUserPassword("{{ SOURCEID_READONLY_DB_USER }}","{{ SOURCEID_READONLY_DB_PWD }}");
+
+{% endfor %}
