@@ -6,8 +6,12 @@ events {
 # 配置tcp
 stream {
 
-    access_log  {{ DATA_DIR }}/nginx/logs/access.log ;
-    error_log  {{ DATA_DIR }}/nginx/logs/error.log ;
+    log_format proxy '$remote_addr [$time_local] '
+                 '$protocol $status $bytes_sent $bytes_received '
+                 '$session_time "$upstream_addr" '
+                 '"$upstream_bytes_sent" "$upstream_bytes_received" "$upstream_connect_time"';
+
+    access_log  {{ DATA_DIR }}/nginx/logs/access.log proxy;
 
     upstream slapd {
         hash $remote_addr consistent;

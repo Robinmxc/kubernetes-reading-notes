@@ -48,6 +48,9 @@
     chdir: "{{ NGINX_SRC_PATH }}/nginx-{{ ldap_nginx_version }}"
   when: '"/usr/local/nginx/sbin/nginx" is not exists'
 
+- name: 准备nginx日志目录
+  file: name="{{ DATA_DIR }}/nginx/logs" state=directory
+
 - name: 检查nginx服务状态
   stat: path="/etc/systemd/system/multi-user.target.wants/nginx.service"
   register: service_stat
