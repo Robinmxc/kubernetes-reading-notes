@@ -56,7 +56,7 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
-        - containerPort: 80
+        - containerPort: 9879
         volumeMounts:
         - mountPath: /ruijie/sourceid/portal/conf
           name: conf
@@ -87,7 +87,7 @@ spec:
     k8s-app: rg-portal
   ports:
   - port: 80
-    targetPort: 80
+    targetPort: 9879
 
 ---
 apiVersion: networking.k8s.io/v1beta1

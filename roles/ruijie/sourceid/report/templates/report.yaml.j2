@@ -56,7 +56,7 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
-        - containerPort: 80
+        - containerPort: 8082
         volumeMounts:
         - mountPath: /ruijie/sourceid/report/conf
           name: conf
@@ -87,4 +87,4 @@ spec:
     k8s-app: rg-report
   ports:
   - port: 80
-    targetPort: 80
+    targetPort: 8082
