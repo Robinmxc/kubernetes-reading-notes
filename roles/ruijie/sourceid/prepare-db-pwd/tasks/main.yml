@@ -44,6 +44,7 @@
     SOURCEID_ZTSYNC_DB_PWD: '{% if SOURCEID_ZTSYNC_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_ZTSYNC_DB_PWD }}{% endif %}'
     SOURCEID_MDM_DB_PWD: '{% if SOURCEID_MDM_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_MDM_DB_PWD }}{% endif %}'
     SOURCEID_CAREER_DB_PWD: '{% if SOURCEID_CAREER_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_CAREER_DB_PWD }}{% endif %}'
+    SOURCEID_REPORT_DB_PWD: '{% if SOURCEID_REPORT_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_REPORT_DB_PWD }}{% endif %}'
   connection: local
   run_once: true
 
