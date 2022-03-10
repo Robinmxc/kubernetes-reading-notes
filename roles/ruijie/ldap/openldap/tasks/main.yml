@@ -99,6 +99,7 @@
   - "disable_anon.ldif"
   - "hdb-index.ldif"
   - "olcAccess.ldif"
+  - "limits.ldif"
 
 - name: 准备schema文件
   tags:
@@ -177,6 +178,9 @@
 
 - name: 设置访问权限
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/olcAccess.ldif
+
+- name: 取消只读账号最大读取500条记录限制
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/limits.ldif
 
 - name: 设置定时清理Berkeley DB Logs 
   file: 
