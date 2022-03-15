@@ -10,6 +10,7 @@ metadata:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       rewrite ^/admin$ /admin/;
       rewrite ^/self$ /self/;
+      rewrite ^/mn$ /self/mn;
       rewrite ^/entry/(.*)$ /portal/entry/$1;
       rewrite ^/access/(.*)$ /portal/access/$1;
       rewrite ^/api/linkid/(.*)$ /linkid/$1;
@@ -110,6 +111,10 @@ spec:
           serviceName: rg-nodeidentify
           servicePort: 8001
       - path: /self
+        backend:
+          serviceName: rg-frontend-client
+          servicePort: 3000
+      - path: /mn
         backend:
           serviceName: rg-frontend-client
           servicePort: 3000
