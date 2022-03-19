@@ -7,6 +7,11 @@ metadata:
     k8s-app: rg-frontend
 spec:
   replicas: {{ deploy_conf.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       k8s-app: rg-frontend

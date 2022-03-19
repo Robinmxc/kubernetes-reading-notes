@@ -101,3 +101,10 @@ LDAP: {
   #LDAPS端口，独立部署时默认值为636，K8S部署时默认值为30636（NodePort）
   LDAP_SSL_PORT: ""
 }
+
+# 健康检查相关配置，默认关闭
+HEALTH_CHECK: {
+  
+  enable: false,
+
+}

@@ -164,3 +164,10 @@ SKYWALKING: {
 
   JAVA_AGENT_EXT: "-javaagent:/skywalking/agent/skywalking-agent.jar",
 }
+
+# 健康检查相关配置，默认关闭
+HEALTH_CHECK: {
+  
+  enable: false,
+
+}

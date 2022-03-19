@@ -49,6 +49,11 @@ metadata:
     k8s-app: rg-license
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       k8s-app: rg-license
@@ -100,6 +105,39 @@ spec:
           name: logpath
         - mountPath: /skywalking/agent
           name: agent
+
+{%if HEALTH_CHECK["enable"] %}
+        startupProbe:
+          failureThreshold: 20
+          httpGet:
+            path: /livenessProbe
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /livenessProbe
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+          
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /livenessProbe
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+{% endif %}
+
       volumes:
         - name: conf
           hostPath:

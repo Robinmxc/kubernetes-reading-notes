@@ -46,7 +46,7 @@ spec:
         ports:
         - containerPort: 5432
         volumeMounts:
-        - mountPath: /bitnami/postgresql
+        - mountPath: /var/lib/postgresql/data
           name: postgresql-data
         - mountPath: /ruijie/init
           name: postgresql-init
