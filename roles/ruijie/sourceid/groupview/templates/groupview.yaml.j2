@@ -79,7 +79,7 @@ spec:
         startupProbe:
           failureThreshold: 20
           httpGet:
-            path: /livenessProbe
+            path: /liveProbe
             port: 8080
             scheme: HTTP
           periodSeconds: 5
@@ -89,7 +89,7 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /livenessProbe
+            path: /liveProbe
             port: 8080
             scheme: HTTP
           periodSeconds: 5
@@ -99,7 +99,7 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /livenessProbe
+            path: /liveProbe
             port: 8080
             scheme: HTTP
           periodSeconds: 30

@@ -74,7 +74,7 @@ spec:
         startupProbe:
           failureThreshold: 20
           httpGet:
-            path: /mdm/livenessProbe
+            path: /mdm/liveProbe
             port: 8910
             scheme: HTTP
           periodSeconds: 5
@@ -84,7 +84,7 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /mdm/livenessProbe
+            path: /mdm/liveProbe
             port: 8910
             scheme: HTTP
           periodSeconds: 5
@@ -94,7 +94,7 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /mdm/livenessProbe
+            path: /mdm/liveProbe
             port: 8910
             scheme: HTTP
           periodSeconds: 30

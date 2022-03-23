@@ -50,7 +50,7 @@ spec:
         startupProbe:
           failureThreshold: 20
           httpGet:
-            path: /sync/livenessProbe
+            path: /sync/liveProbe
             port: 8903
             scheme: HTTP
           periodSeconds: 5
@@ -60,7 +60,7 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /sync/livenessProbe
+            path: /sync/liveProbe
             port: 8903
             scheme: HTTP
           periodSeconds: 5
@@ -70,7 +70,7 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /sync/livenessProbe
+            path: /sync/liveProbe
             port: 8903
             scheme: HTTP
           periodSeconds: 30

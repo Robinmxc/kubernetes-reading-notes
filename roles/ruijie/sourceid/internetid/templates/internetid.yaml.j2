@@ -81,7 +81,7 @@ spec:
         startupProbe:
           failureThreshold: 20
           httpGet:
-            path: /internetid/livenessProbe
+            path: /internetid/liveProbe
             port: 8902
             scheme: HTTP
           periodSeconds: 5
@@ -91,7 +91,7 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /internetid/livenessProbe
+            path: /internetid/liveProbe
             port: 8902
             scheme: HTTP
           periodSeconds: 5
@@ -101,7 +101,7 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /internetid/livenessProbe
+            path: /internetid/liveProbe
             port: 8902
             scheme: HTTP
           periodSeconds: 30
