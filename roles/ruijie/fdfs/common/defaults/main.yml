@@ -4,4 +4,4 @@ fastdfs_version: "5.11"
 
 fastdfs_nginx_module_version: "1.20"
 
-fastdfs_nginx_version: "1.16.0"
+fastdfs_nginx_version: "1.20.1"

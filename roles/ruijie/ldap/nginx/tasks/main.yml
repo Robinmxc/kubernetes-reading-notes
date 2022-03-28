@@ -1,19 +1,18 @@
-- name: 安装nginx依赖配置
-  yum:
-    state: present
-    name:
-    - gcc
-    - gcc-c++
-    - make
-    - automake
-    - autoconf
-    - libtool
-    - pcre
-    - pcre-devel
-    - zlib
-    - zlib-devel
-    - openssl-devel
-    - wget
+- name: 解压nginx 编译所需rpm包
+  vars:
+    #下载压缩包目录
+    tgz_file: '{{ LDAP_DOWN_PATH }}/nginxbuild.tar.gz'
+    #nginx安装目录
+    src_dir: '{{ NGINX_SRC_PATH }}/nginxbuild'
+  unarchive:
+    src: "{{ tgz_file }}"
+    dest: "{{ NGINX_SRC_PATH }}"
+  when: 'tgz_file is exists and src_dir is not exists'
+
+- name: 安装 rpm
+  shell: "yum install -y {{ NGINX_SRC_PATH }}/nginxbuild/*rpm"
+  no_log: false
+  ignore_errors: false
 
 - name: 下载nginx源码
   vars:
