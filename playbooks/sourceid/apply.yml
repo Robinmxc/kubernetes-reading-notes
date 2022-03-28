@@ -1,0 +1,38 @@
+- hosts:
+  - kube_node
+  tags:
+  - sourceid
+  any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
+  roles:
+  - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
+  - { role: ruijie/sourceid/linkid, tags: ["linkid"]}
+  - { role: ruijie/sourceid/sso, tags: ["sso"] }
+  - { role: ruijie/sourceid/gate, tags: ["gate"] }
+  - { role: ruijie/sourceid/component, tags: ["component"] }
+  - { role: ruijie/sourceid/frontend, tags: ["frontend"] }
+  - { role: ruijie/sourceid/license, tags: ["license"] }
+  - { role: ruijie/sourceid/faceid, tags: ["faceid"] }
+  - { role: ruijie/sourceid/faceid-display, tags: ["faceid-display"] }
+  - { role: ruijie/sourceid/gateway/common, tags: ["gateway"] }
+  - { role: ruijie/sourceid/gateway/k8s, tags: ["gateway"] }
+  - { role: ruijie/sourceid/import-user, tags: ["import-user"] }
+  - { role: ruijie/sourceid/data-sync, tags: ["data-sync"] }
+  - { role: ruijie/sourceid/security, tags: ["security"] }
+  - { role: ruijie/sourceid/convert, tags: ["convert"] }
+  - { role: ruijie/fgm/fgm-backend, tags: ["fgm-backend"] }
+  - { role: ruijie/sourceid/groupview, tags: ["groupview"] }
+  - { role: ruijie/sourceid/mgob, tags: ["mgob"] }
+  - { role: ruijie/sourceid/faceid-task, tags: ["faceid-task"] }
+  - { role: ruijie/sourceid/rg-log, tags: ["rg-log"] }
+  - { role: ruijie/sourceid/internetid, tags: ["internetid"] }
+  - { role: ruijie/sourceid/ztsync, tags: ["ztsync"] }
+  - { role: ruijie/sourceid/collect, tags: ["collect"] }
+  - { role: ruijie/sourceid/adapter, tags: ["adapter"] }
+  - { role: ruijie/sourceid/mdm, tags: ["mdm"] }
+  - { role: ruijie/sourceid/career-event, tags: ["career-event"] }
+  - { role: ruijie/sourceid/xxl-job, tags: ["xxl-job"] }
+  - { role: ruijie/sourceid/portal, tags: ["portal"] }
+  - { role: ruijie/sourceid/report, tags: ["report"] }
