@@ -60,3 +60,4 @@
   file: path="{{ img_dir }}/{{ img_file_name }}" state=absent
   when: '"gateway" != item or SOURCEID_GATEWAY_DEPLOY_MODE == "k8s"'
   with_items: "{{ SOURCEID_DOCKERS.keys() }}"
+
