@@ -46,6 +46,5 @@
   tags:
     - deploy
   shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/xxl-job/"
-  when: '"rg-xxl-job" not in pod_info.stdout'
   run_once: true
   connection: local

@@ -61,6 +61,5 @@
   tags:
     - deploy
   shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/sso/"
-  when: '"rg-sso" not in pod_info.stdout'
   run_once: true
   connection: local

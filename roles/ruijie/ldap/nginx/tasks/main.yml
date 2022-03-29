@@ -11,8 +11,8 @@
 
 - name: 安装 rpm
   shell: "yum install -y {{ NGINX_SRC_PATH }}/nginxbuild/*rpm"
-  no_log: false
-  ignore_errors: false
+  no_log: true
+  ignore_errors: true
 
 - name: 下载nginx源码
   vars:
@@ -39,13 +39,11 @@
   shell: "./configure && make && make install"
   args:
     chdir: "{{ NGINX_SRC_PATH }}/nginx-{{ ldap_nginx_version }}"
-  when: '"/usr/local/nginx/sbin/nginx" is not exists'
 
 - name: 安装stream模块
   shell: "./configure --with-stream && make && make install"
   args:
     chdir: "{{ NGINX_SRC_PATH }}/nginx-{{ ldap_nginx_version }}"
-  when: '"/usr/local/nginx/sbin/nginx" is not exists'
 
 - name: 准备nginx日志目录
   file: name="{{ DATA_DIR }}/nginx/logs" state=directory

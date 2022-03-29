@@ -55,6 +55,5 @@
   tags:
     - deploy
   shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/gate/"
-  when: '"rg-gate" not in pod_info.stdout'
   run_once: true
   connection: local

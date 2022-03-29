@@ -50,6 +50,4 @@
   when: 'file_name not in rpm_copy_info.stdout'
   with_items: 
   - "{{ ldap_file }}"
-  - "{{ nginx_file }}"
-  - "{{ keepalived_file }}"
 

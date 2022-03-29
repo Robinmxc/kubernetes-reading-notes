@@ -38,6 +38,5 @@
     tags:
       - deploy
     shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/adapter/"
-    when: '"rg-adapter" not in pod_info.stdout'
     run_once: true
     connection: local
