@@ -152,16 +152,23 @@
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
+  - name: 清理历史mongo日志
+    shell: '{{ mongo_pod_shell }} rm /ruijie/init/sourceid/rg-upgrade-db/update.log -rf'
+    connection: local
+
   - name: 执行升级脚本
     shell: '{{ mongo_pod_shell }} /ruijie/init/update-data.sh'
     when: '"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w" in mongo_result.stdout'
+    connection: local
+
+  - name: 查看执行结果
+    shell: '{{ mongo_pod_shell }} cat /ruijie/init/sourceid/rg-upgrade-db/update.log | grep Error'
     register: mongo_result
-    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    failed_when: 'mongo_result.stdout is search("Error") '
     connection: local
 
   - name: 执行功能开启/关闭脚本
     shell: '{{ mongo_pod_shell }} /ruijie/init/function-switch.sh'
-    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
   - name: 保存数据库版本到SYSTEM_VERSION表中
