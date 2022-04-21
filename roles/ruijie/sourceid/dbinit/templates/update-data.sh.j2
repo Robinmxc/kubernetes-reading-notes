@@ -19,5 +19,7 @@ cd /ruijie/init/sourceid/rg-upgrade-db
 ./upgrade_data.sh 127.0.0.1 27017 {{value}} sourceid {{current_db_version[DB_VERSION[value]["name"]+'_version']}} {{DB_VERSION[value]["version"]}} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin
 {% endif %}
 {% endfor %}
+{% if "mdm" in DB_VERSION %}
 ./upgrade_data.sh 127.0.0.1 27017 mdm sourceid {{current_db_version[DB_VERSION["mdm"]["name"]+'_version']}} {{DB_VERSION["mdm"]["version"]}} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin
+{% endif %}
 {% endif %}
