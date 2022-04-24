@@ -21,10 +21,10 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 2
-        memory: 3Gi
+        cpu: 8
+        memory: 8Gi
       requests:
-        cpu: 1
-        memory: 1Gi
+        cpu: 2
+        memory: 2Gi
 
 nodeidentify_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
