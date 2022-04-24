@@ -75,7 +75,7 @@ spec:
         - mountPath: /skywalking/agent
           name: agent
 
-{%if HEALTH_CHECK["enable"] %}
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["xxl-job"] is not defined or HEALTH_CHECK["xxl-job"])  %}
         startupProbe:
           failureThreshold: 20
           httpGet:

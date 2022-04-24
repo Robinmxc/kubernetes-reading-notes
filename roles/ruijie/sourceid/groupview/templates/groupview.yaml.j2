@@ -75,7 +75,7 @@ spec:
         - mountPath: /skywalking/agent
           name: agent
 
-{%if HEALTH_CHECK["enable"] %}
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["groupview"] is not defined or HEALTH_CHECK["groupview"]) %}
         startupProbe:
           failureThreshold: 20
           httpGet:

@@ -76,7 +76,7 @@ spec:
         - mountPath: /skywalking/agent
           name: agent
 
-{%if HEALTH_CHECK["enable"] %}
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK.internetid is not defined or HEALTH_CHECK["internetid"]) %}
         startupProbe:
           failureThreshold: 20
           httpGet:

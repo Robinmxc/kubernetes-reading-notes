@@ -170,4 +170,6 @@ HEALTH_CHECK: {
   
   enable: false,
 
+  internetid: false
 }
+
