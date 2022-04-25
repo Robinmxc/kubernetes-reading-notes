@@ -204,6 +204,6 @@
       path: "{{ pgsql_data_dir }}"
       state: absent
     when: '"xxl_job" not in table_result.stdout'
-    connection: local 
+    delegate_to: "{{ groups.pgsql[0] }}"
 
   when: 'inventory_hostname == groups.kube_master[0]'
