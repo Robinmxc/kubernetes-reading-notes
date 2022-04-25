@@ -1,0 +1,12 @@
+#!/bin/bash
+
+{% if 'none' != SOURCEID_HTTPS_MODE %}
+certDate=$(echo | openssl s_client -servername {{ SOURCEID_SSO_DOMAIN }} -connect {{ SOURCEID_SSO_DOMAIN }}:443 2>/dev/null | openssl x509 -noout -dates | grep notAfter | awk -F '=' '{print $2}')
+certTime=$(date -d "${certDate}" +'%Y-%m-%d %H:%M:%S')
+
+
+cat <<EOF | curl --data-binary @- http://{{ KUBE_MASTER_HOSTS[0] }}:39091/metrics/job/certdate/instance/cert
+# TYPE certdate_metric counter
+certdate_metric{date="hour"} ${certTime}
+EOF
+{% endif %}

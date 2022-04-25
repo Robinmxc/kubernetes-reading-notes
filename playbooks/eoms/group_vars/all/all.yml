@@ -26,5 +26,7 @@ grafana_prometheus_file: "prometheus.tar.gz"
 
 prometheus_file: ""
 
+SOURCEID_HTTPS_MODE: "{% if 'https' == ingress_mode %}normal{% else %}none{% endif %}"
+
 #默认二进制文件目录
 bin_dir: "/opt/kube/bin"

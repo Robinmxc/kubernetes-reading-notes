@@ -27,6 +27,7 @@
   with_items:
   - "componentVersion.sh"
   - "kubectlCmd.sh"
+  - "httpsCertDate.sh"
 
 - name: 设置文件执行权限
   tags:
@@ -36,6 +37,7 @@
   - "componentVersion.sh"
   - "kubectlCmd.sh"
   - "system_date.sh"
+  - "httpsCertDate.sh"
 
 - name: 准备文件
   file: name={{ item }} state=touch
@@ -64,5 +66,6 @@
   shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/5 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}' >> /var/spool/cron/root"
   with_items:
   - "componentVersion.sh"
+  - "httpsCertDate.sh"
   run_once: true
   connection: local
