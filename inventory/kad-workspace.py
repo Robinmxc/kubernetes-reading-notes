@@ -310,8 +310,10 @@ def parse_ldap_config(host_data):
 
     #k8s部署参数处理
     if ldap_mode == "k8s":
-        if "normal" == group_all_vars["CLUSTER_SCALE"]:
-            raise Exception(u"openldap组件不支持集群环境")
+        if 3 == len(group_all_vars["KUBE_NODE_HOSTS"]):
+            host_data["groups"]["ldap"] = {"hosts": [group_all_vars["KUBE_NODE_HOSTS"][1]]}
+        else:
+            host_data["groups"]["ldap"] = {"hosts": [group_all_vars["KUBE_NODE_HOSTS"][0]]}
 
     #独立部署参数处理
     if ldap_mode == "standalone":

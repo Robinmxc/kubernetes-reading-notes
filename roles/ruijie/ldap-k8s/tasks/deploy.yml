@@ -56,6 +56,8 @@
     connection: local
 
   - name: 准备部署文件
+    vars:
+      ldap_node_ip: "{{ groups.ldap[0] }}" 
     template: src='openldap.yml.j2' dest={{ yaml_dir }}/openldap/openldap.yml
     run_once: true
     connection: local

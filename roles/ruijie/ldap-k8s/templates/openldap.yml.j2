@@ -1,4 +1,4 @@
-kind: Deployment
+kind: StatefulSet
 apiVersion: apps/v1
 metadata:
   name: openldap
@@ -15,6 +15,7 @@ spec:
       labels:
         app: openldap
     spec:
+      nodeName: {{ ldap_node_ip }}
       containers:
         - name: openldap
           image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/openldap:{{ ldap_version }}
