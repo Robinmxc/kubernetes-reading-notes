@@ -59,7 +59,7 @@
   vars:
     db_cur_version: "{{ DB_VERSION['xxl-job'].version }}"
   shell: "{{ pgsql_pod_shell }}  -d postgres -c  \"INSERT INTO system_version (name,postgres_version) VALUES ('db_version','R0.0');\""
-  when: '"rows" in db_version.stdout_lines[2]'
+  when: '"xxl-job" in DB_VERSION and "rows" in db_version.stdout_lines[2]'
   register: insert_result
   failed_when: '"INSERT" not in insert_result.stdout' 
   connection: local
@@ -87,6 +87,7 @@
   vars:
     db_cur_version: "{{ DB_VERSION['xxl-job'].version }}"
   shell: "{{ pgsql_pod_shell }}  -d postgres -c  \"UPDATE system_version SET postgres_version='{{ db_cur_version }}' WHERE name='db_version'\""
+  when: '"xxl-job" in DB_VERSION'
   register: update_result
   failed_when: '"UPDATE" not in update_result.stdout' 
   connection: local

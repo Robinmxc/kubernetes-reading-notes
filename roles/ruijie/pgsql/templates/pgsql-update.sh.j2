@@ -3,4 +3,6 @@
 cd /ruijie/init/sourceid/rg-upgrade-db
 
 # xxl-job组件数据库版本记录
+{% if "xxl-job" in DB_VERSION %}
 ./upgrade_pg.sh {{current_db_version}} {{DB_VERSION["xxl-job"]["version"]}} xxl_job {{DB_VERSION["xxl-job"]["name"]}} sourceid
+{% endif %}
