@@ -100,6 +100,7 @@
   - "hdb-index.ldif"
   - "olcAccess.ldif"
   - "limits.ldif"
+  - "tls1.2.ldif"
 
 - name: 准备schema文件
   tags:
@@ -181,6 +182,9 @@
 
 - name: 取消只读账号最大读取500条记录限制
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/limits.ldif
+
+- name: 设置ldap默认的ssl加密算法
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/tls1.2.ldif
 
 - name: 设置定时清理Berkeley DB Logs 
   file: 
