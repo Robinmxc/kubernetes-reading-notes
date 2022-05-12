@@ -43,6 +43,28 @@
     run_once: true
     when: '"traefik" in ingress_result.stdout'
 
+  - name: 获取当前docker service配置
+    shell: "cat /etc/systemd/system/docker.service"
+    register: docker_service
+
+  - name: 修改docker service配置
+    replace:
+      path: '/etc/systemd/system/docker.service'
+      regexp: 'LimitCORE=infinity'
+      replace: 'LimitCORE=0'
+    when: '"infinity" in docker_service.stdout'
+
+  - name: 重启docker 服务
+    shell: systemctl daemon-reload && systemctl restart docker
+    when: '"infinity" in docker_service.stdout'
+  
+  - name: 轮询等待docker服务运行
+    shell: "systemctl status docker.service|grep Active"
+    register: docker_status
+    until: '"running" in docker_status.stdout'
+    retries: 8
+    delay: 2
+
 - name: 启动ingress
   when: '"traefik" in ingress_result.stdout'
   import_playbook: ../cluster/ingress.yml
