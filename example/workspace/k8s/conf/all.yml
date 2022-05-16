@@ -102,10 +102,10 @@ LDAP: {
   LDAP_SSL_PORT: ""
 }
 
-# 健康检查相关配置，默认关闭
+# 健康检查相关配置，默认部分组件关闭
 HEALTH_CHECK: {
   
-  enable: false,
+  enable: true,
   internetid: false,
   faceid: false,
   groupview: false
