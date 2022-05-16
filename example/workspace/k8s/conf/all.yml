@@ -106,5 +106,8 @@ LDAP: {
 HEALTH_CHECK: {
   
   enable: false,
+  internetid: false,
+  faceid: false,
+  groupview: false
 
 }
