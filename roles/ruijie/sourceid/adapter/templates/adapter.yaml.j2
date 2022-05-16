@@ -74,8 +74,8 @@ spec:
         startupProbe:
           failureThreshold: 20
           httpGet:
-            path: /linkid/liveProbe
-            port: 8901
+            path: /liveProbe
+            port: 80
             scheme: HTTP
           periodSeconds: 5
           successThreshold: 1
@@ -84,8 +84,8 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /linkid/liveProbe
-            port: 8901
+            path: /liveProbe
+            port: 80
             scheme: HTTP
           periodSeconds: 5
           successThreshold: 1
@@ -94,8 +94,8 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /linkid/liveProbe
-            port: 8901
+            path: /liveProbe
+            port: 80
             scheme: HTTP
           periodSeconds: 30
           successThreshold: 1
