@@ -49,14 +49,10 @@
       state: absent
     connection: local
 
-
   - name: 准备备份目录
     file: path={{ item }} state=directory
     with_items:
       - "{{BAK_DIR}}"
-      - "{{BAK_DIR}}/workspace"
-      - "{{BAK_DIR}}/mongodbbak"
-      - "{{BAK_DIR}}/dockerimages"
     connection: local
 
   - name: 备份备份
@@ -71,6 +67,15 @@
       state: absent
     connection: local
 
+  - name: 准备备份目录
+    file: path={{ item }} state=directory
+    with_items:
+      - "{{BAK_DIR}}"
+      - "{{BAK_DIR}}/workspace"
+      - "{{BAK_DIR}}/mongodbbak"
+      - "{{BAK_DIR}}/dockerimages"
+    connection: local
+
   - name: 备份kadworkspace
     copy:
       src: "{{ base_dir }}/workspace/"
@@ -79,6 +84,7 @@
 
   - name: 备份标准组件docker镜像
     shell: "docker save {{ docker_images }} -o {{BAK_DIR}}/dockerimages/dockerimages.tar"
+    ignore_errors: true
     connection: local
 
   - name: 准备backup目录
