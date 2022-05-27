@@ -244,6 +244,9 @@ def parse_host_data(workspace_dir):
         host_vars[ip]["PG_NODE_NAME"] = "postgresql-" + bytes(idx)
         idx = idx + 1
 
+    if  group_all_vars["KAD_APP_VERSION"] < "1.9.1":
+        group_all_vars["HEALTH_CHECK"] = {"enable": False,}
+        
     parse_fdfs_config(result)
 
     parse_sourceid_gateway_config(result)
