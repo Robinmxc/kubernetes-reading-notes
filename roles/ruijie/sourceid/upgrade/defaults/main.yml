@@ -1,7 +1,7 @@
 BAK_DIR: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/upgrade_temp"
 
-KAD_UPGRADE_PACKAGE_NAME: "sourceid-kad-1.2.1"
+KAD_UPGRADE_PACKAGE_NAME: "sourceid-kad-1.9.1"
 
-UPGRADE_DIR: "{{base_dir}}/down/sourceid-zt-kad-1.2.1-upgrade"
+UPGRADE_DIR: "{{base_dir}}/down/sourceid-kad-1.9.1-upgrade"
 
 docker_images: "{% for h in SOURCEID_DOCKERS.keys() %} {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS[h]['name'] }}:{{ SOURCEID_DOCKERS[h]['version'] }} {% endfor %}"
