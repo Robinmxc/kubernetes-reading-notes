@@ -299,13 +299,13 @@
     delay: 3
     ignore_errors: true
 
-   - name: delete flow 
+  - name: delete flow 
     tags:
       - flow
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/flow/"
     when: '"pcap-scan" in pod_info.stdout'
 
-   - name: delete aiidentify 
+  - name: delete aiidentify 
     tags:
       - aiidentify
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aiidentify/"
