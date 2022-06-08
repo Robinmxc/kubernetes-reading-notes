@@ -19,7 +19,6 @@
   - config
   vars:
     deploy_conf: '{{aiidentify_deploy_conf}}'
-    JAVA_OPT_EXT: '{{aiidentify_java_opt}}'
     comp_name: 'aiidentify'
   template: src='aiidentify.yaml.j2' dest={{ yaml_dir }}/aiidentify/aiidentify.yml
   run_once: true

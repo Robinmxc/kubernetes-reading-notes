@@ -19,7 +19,6 @@
   - config
   vars:
     deploy_conf: '{{flow_deploy_conf}}'
-    JAVA_OPT_EXT: '{{flow_java_opt}}'
     comp_name: 'flow'
   template: src='flow.yaml.j2' dest={{ yaml_dir }}/flow/flow.yml
   run_once: true
