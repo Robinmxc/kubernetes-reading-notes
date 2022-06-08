@@ -91,6 +91,8 @@
       - "frontend-client"
       - "linkage-devices"
       - "nodeconnector"
+      - "flow"
+      - "aiidentify"       
     connection: local
     run_once: true
   when: 'inventory_hostname == groups.kube_master[0]'
