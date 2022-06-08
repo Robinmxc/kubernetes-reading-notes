@@ -42,16 +42,3 @@ spec:
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: rg-{{comp_name}}
-  namespace: {{ APP_NAMESPACE }}
-spec:
-  selector:
-    k8s-app: rg-{{comp_name}}
-  ports:
-  - port: 80
-    targetPort: 80
-
