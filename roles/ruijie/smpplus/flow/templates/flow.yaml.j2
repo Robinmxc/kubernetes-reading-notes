@@ -30,8 +30,6 @@ spec:
             cpu: {{ deploy_conf.resources.requests.cpu }}
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
-        ports:
-        - containerPort: 80
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
