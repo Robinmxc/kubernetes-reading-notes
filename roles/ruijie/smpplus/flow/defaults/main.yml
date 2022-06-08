@@ -1,7 +1,7 @@
 
-aiidentify_configs: []
+flow_configs: []
 
-aiidentify_templates_path: ""
+flow_templates_path: ""
 
 deploy_conf_defaults:
   small:
@@ -24,4 +24,4 @@ deploy_conf_defaults:
       requests:
         cpu: 1
         memory: 1Gi
-aiidentify_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+flow_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
