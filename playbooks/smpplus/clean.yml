@@ -304,10 +304,10 @@
       - flow
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/flow/"
     when: '"pcap-scan" in pod_info.stdout'
-
+    ignore_errors: true
   - name: delete aiidentify 
     tags:
       - aiidentify
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aiidentify/"
     when: '"aiidentify" in pod_info.stdout'
-   
+    ignore_errors: true   
