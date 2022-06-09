@@ -34,7 +34,7 @@ spec:
 {% endif %}
       containers:
       - name: rg-organization-center
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.organization-center.name }}:{{ SOURCEID_DOCKERS.organization-center.version }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["organization-center"].name }}:{{ SOURCEID_DOCKERS["organization-center"].version }}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
