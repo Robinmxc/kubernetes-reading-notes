@@ -15,8 +15,6 @@ spec:
       labels:
         k8s-app: rg-{{ comp_name }}
     spec:
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
@@ -31,31 +29,17 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
-        - containerPort: 1812
-          protocol: UDP
-        - containerPort: 1813
-          protocol: UDP
+        - containerPort: 3000
         volumeMounts:
-         - mountPath: /usr/local/var/log/radius
-           name: log
-         - mountPath: /ruijie/{{comp_name}}
-           name: conf
-         - mountPath: /usr/local/etc/raddb/certs/server.pem
-           name: certs
-           subPath: server.pem
+        - mountPath: /usr/share/nginx/html/self/assets/js/client_config.js
+          name: conf
+          subPath: client_config.js
       imagePullSecrets:
       - name: regsecret
       volumes:
-        - name: log
-          hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}/log
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}
-        - name: certs
-          hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}/certs/
-
+            path: {{ config_base_dir }}/{{comp_name}}/conf
 ---
 apiVersion: v1
 kind: Service
@@ -66,11 +50,6 @@ spec:
   selector:
     k8s-app: rg-{{comp_name}}
   ports:
-  - protocol: UDP
-    port: 1812
-    name: port1812
-    targetPort: 1812
-  - protocol: UDP
-    port: 1813
-    name: port1813
-    targetPort: 1813
+  - name: n3000
+    port: 3000
+    targetPort: 3000
