@@ -10,7 +10,7 @@
   - config
   replace: path="{{ config_base_dir }}/flow/conf/config.json" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "hostname\".*$", replace: "hostname\":\"{{groups['kube_node'][0]}}\""}
+  - {regexp: "hostname\".*$", replace: "hostname\":\"{{groups['kube_node'][0]}}\","}
   no_log: true
 
 
