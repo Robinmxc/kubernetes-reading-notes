@@ -1,0 +1,22 @@
+#!/bin/bash
+
+cd /ruijie/init/sourceid-hotfix/rg-upgrade-db
+
+touch update.log
+
+
+dbfilepath=$(ls -d sourceid-university/rg-upgrade-db/*_upgrade_db/sourceid/R1.9.1p1)
+
+dbfilepathNew=(${dbfilepath//\\n/ })
+for((i=0;i<${#dbfilepathNew[*]};i++))
+do
+    errorinfo=$(grep "Error" update.log)
+
+    if [[ ${errorinfo} =~ "Error" ]]
+    then
+        exit
+    fi
+
+    mongo 127.0.0.1:27017 -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin --quiet ${dbfilepathNew[i]}/*.js >> update.log 2>&1
+
+done 

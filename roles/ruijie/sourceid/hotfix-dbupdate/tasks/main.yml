@@ -1,0 +1,92 @@
+#数据库脚本压缩、复制、解压、脚本执行
+- name: 压缩数据初始化脚本
+  archive:
+    path: "{{ KAD_PACKAGE_DIR }}-hotfix/db/"
+    dest: "{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz"
+  connection: local
+  run_once: true
+
+- name: 复制数据初始化脚本
+  copy: src="{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz" dest="{{ pgsql_init_dir }}/data.tgz"
+  
+- name: 复制数据初始化脚本
+  copy: src="{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz" dest="{{ mongodb_init_dir }}/data.tgz"
+
+- name: 解压数据初始化脚本
+  unarchive:
+    src: "{{ pgsql_init_dir }}/data.tgz"
+    dest: "{{ pgsql_init_dir }}/"
+    remote_src: yes
+
+- name: 解压数据初始化脚本
+  unarchive:
+    src: "{{ mongodb_init_dir }}/data.tgz"
+    dest: "{{ mongodb_init_dir }}/"
+    remote_src: yes
+
+- name: 获取mongo1 POD 名称
+  shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
+  register: shell_result
+  connection: local
+  run_once: true
+
+- name: set vars
+  set_fact:
+    mongo_pod_name: "{{ shell_result.stdout }}"
+    mongo_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
+  connection: local
+  run_once: true
+
+- name: 准备升级数据的脚本
+  vars:
+    src_file: mongo-hotfix.sh.j2
+  template: src="{{ src_file }}" dest="{{ mongodb_init_dir }}/mongo-hotfix.sh"
+
+- name: 设置升级脚本文件执行权限
+  file: name="{{ item }}" mode=0700
+  with_items:
+  - "{{ mongodb_init_dir }}/mongo-hotfix.sh"
+
+
+- name: 清理历史mongo日志
+  shell: '{{ mongo_pod_shell }} rm /ruijie/init/sourceid-hotfix/rg-upgrade-db/update.log -rf'
+  connection: local
+  run_once: true
+
+- name: 执行升级脚本
+  shell: '{{ mongo_pod_shell }} /ruijie/init/mongo-hotfix.sh'
+  connection: local
+  run_once: true
+
+
+#执行pg升级脚本
+
+- name: 获取pgsql POD 名称
+  shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep postgresql"
+  register: shell_result
+  connection: local
+  run_once: true
+
+- name: 设置pgsql shell
+  set_fact:
+    pgsql_pod_name: "{{ shell_result.stdout }}"
+    pgsql_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
+    pgsql_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- psql -U postgres "
+  connection: local
+  run_once: true
+
+- name: 准备升级数据的脚本
+  vars:
+    src_file: pg-hotfix.sh.j2
+  template: src="{{ src_file }}" dest="{{ pgsql_init_dir }}/pg-hotfix.sh"
+
+- name: 设置升级脚本文件执行权限
+  file: name="{{ item }}" mode=0700
+  with_items:
+  - "{{ pgsql_init_dir }}/pg-hotfix.sh"
+
+
+- name: 执行升级脚本
+  shell: '{{ pgsql_shell }} /ruijie/init/pg-hotfix.sh'
+  register: pg_result
+  connection: local

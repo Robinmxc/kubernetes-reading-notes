@@ -25,6 +25,8 @@
   block:
   - name: 复制LDAP证书文件1
     shell: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} cp {{ ldap_pod_name }}:container/run/service/:ssl-tools/assets/default-ca/default-ca.pem {{ ldap_base_dir }}/certs/ca.crt"
+    connection: local
+    run_once: true
 
   - name: 复制LDAP证书文件2
     shell: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} cp {{ ldap_pod_name }}:container/run/service/slapd/assets/certs/{{ item }} {{ ldap_base_dir }}/certs/{{ item }}"
@@ -32,9 +34,13 @@
       - "ldap.key"
       - "ldap.crt"
       - "dhparam.pem"
+    connection: local
+    run_once: true
 
   - name: 设置LDAP证书目录权限
     file: path="{{ ldap_base_dir }}/certs" state=directory mode=0770 owner=911 group=911
+    connection: local
+    run_once: true
 
   - name: 设置LDAP证书文件权限
     file: path="{{ ldap_base_dir }}/certs/{{ item }}" mode=0660 owner=911 group=911
@@ -43,3 +49,5 @@
       - "ldap.crt"
       - "dhparam.pem"
       - "ca.crt"
+    connection: local
+    run_once: true

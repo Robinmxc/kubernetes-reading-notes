@@ -1,0 +1,12 @@
+- hosts:
+  - kube_node
+  tags:
+  - initdata
+  any_errors_fatal: true
+  vars_files:
+  - "/etc/kad/config.yml"
+  roles:
+  - { role: ruijie/sourceid/hotfix-dbupdate, tags: always }
+
+
+- import_playbook: apply.yml
