@@ -31,14 +31,15 @@ spec:
         ports:
         - containerPort: 5000
         volumeMounts:
-        - mountPath: /ruijie/{{comp_name}}
+        - mountPath: /home/workspace/smplus_ai/configs/mongodb_config.json
           name: conf
+          subPath: mongodb_config.json
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}
+            path: {{ config_base_dir }}/{{comp_name}}/conf
 
 ---
 apiVersion: v1

@@ -14,6 +14,15 @@
   run_once: true
   connection: local
 
+- name: 自动配置
+  tags:
+  - config
+  replace: path="{{ config_base_dir }}/aiidentify/conf/mongodb_config.json" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+  - {regexp: "mongodb:.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}\""}
+
+
+
 - name: 准备部署文件
   tags:
   - config
