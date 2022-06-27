@@ -1,12 +1,6 @@
 #!/bin/bash
 
-cd /ruijie/init/sourceid-hotfix/rg-upgrade-db
-
-# xxl-job组件数据库版本记录
-{% if "xxl-job" in DB_VERSION %}
-./upgrade_pg.sh {{current_db_version}} {{DB_VERSION["xxl-job"]["version"]}} xxl_job {{DB_VERSION["xxl-job"]["name"]}} sourceid
-{% endif %}
-
+cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db/
 
 for file in ./xxl-job_upgrade_db/sourceid/R1.9.1p1/*.sql
 do
