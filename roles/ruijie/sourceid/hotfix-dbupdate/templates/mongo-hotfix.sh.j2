@@ -18,7 +18,8 @@ do
     then
         exit
     fi
-
-    mongo 127.0.0.1:27017 -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin --quiet ${dbfilepathNew[i]}/*.js >> update.log 2>&1
-
+    
+    if [ -e ${dbfilepathNew[i]}/*.js ]; then
+        mongo 127.0.0.1:27017 -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin --quiet ${dbfilepathNew[i]}/*.js >> update.log 2>&1
+    fi
 done 
