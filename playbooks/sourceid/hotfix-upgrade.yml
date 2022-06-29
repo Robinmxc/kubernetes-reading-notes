@@ -9,4 +9,4 @@
   - { role: ruijie/sourceid/hotfix-dbupdate, tags: always }
 
 
-- import_playbook: apply.yml
+- import_playbook: update-pod.yml
