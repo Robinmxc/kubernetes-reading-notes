@@ -6,6 +6,14 @@
   connection: local
   run_once: true
 
+- name: 准备init目录
+  tags:
+  - config
+  file: path="{{ item }}" state=directory
+  with_items:
+  - "{{ pgsql_init_dir }}"
+  - "{{ mongodb_init_dir }}"
+
 - name: 复制数据初始化脚本
   copy: src="{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz" dest="{{ pgsql_init_dir }}/data.tgz"
   
