@@ -1,0 +1,14 @@
+# 应用名称
+KAD_APP_NAME: "smpplus"
+
+rocketmq_public: "yes"
+# 应用版本
+KAD_APP_VERSION: "r1.0.0-test"
+
+#MongoDB管理员密码
+MONGODB_ADMIN_USER: "admin"
+MONGODB_ADMIN_PWD: "123Admin"
+#smp+支持https，填写域名即可
+SMPPLUS_SSO_DOMAIN: ""
+# 0.不部署探针 7.虚拟机部署探针(2个队列) 31.浪潮服务器单万兆网卡（4个队列） 511.浪潮服务器双万兆网卡（8个队列）
+FLOW_PORT_MODE: 0

@@ -106,7 +106,7 @@
       - pcap-scan
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/pcap-scan/"
     when: '"pcap-scan" in pod_info.stdout'
-  
+
   - name: delete linkagedevices # 删除linkagedevices服务
     tags:
       - linkage-devices
@@ -299,3 +299,24 @@
     delay: 3
     ignore_errors: true
 
+  - name: 获取flow容器状态
+    tags:
+    - flow
+    shell: "docker ps -a --format '{{ '{{' }}.Names {{ '}}' }}' --filter name=flow"
+    register: flow_info
+
+
+
+  - name: delete flow 
+    tags:
+      - flow
+    shell: "docker rm -f  `docker ps -aq --filter name=flow`"
+    when: '"flow"  in flow_info.stdout'
+    ignore_errors: true
+
+  - name: delete aiidentify 
+    tags:
+      - aiidentify
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aiidentify/"
+    when: '"aiidentify" in pod_info.stdout'
+    ignore_errors: true   

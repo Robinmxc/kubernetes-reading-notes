@@ -19,9 +19,6 @@ spec:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
         imagePullPolicy: IfNotPresent
-        env:
-        - name: JAVA_OPT_EXT
-          value: "{{ JAVA_OPT_EXT}}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
@@ -32,24 +29,17 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
-        - containerPort: 8001
-        - containerPort: 60000
+        - containerPort: 5000
         volumeMounts:
-        - mountPath: /ruijie/{{comp_name}}
+        - mountPath: /home/workspace/smplus_ai/configs/mongodb_config.json
           name: conf
-        - mountPath: /usr/share/nmap/scripts/ruishanhttp.nse
-          name: script
-          subPath: ruishanhttp.nse
+          subPath: mongodb_config.json
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}
-        - name: script
-          hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}/scripts
-
+            path: {{ config_base_dir }}/{{comp_name}}/conf
 
 ---
 apiVersion: v1
@@ -60,12 +50,7 @@ metadata:
 spec:
   selector:
     k8s-app: rg-{{comp_name}}
-  type: NodePort
   ports:
-  - port: 8001
-    targetPort: 8001
-    name: port8001
-  - port: 60000
-    targetPort: 60000
-    name: port60000
-    nodePort: 60000
+  - port: 5000
+    targetPort: 5000
+
