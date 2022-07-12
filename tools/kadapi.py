@@ -175,7 +175,9 @@ def prase_netfile():
             a=line.strip()
             if len(a)==0:
                 continue
-            if(a.startswith('#')):
+            if a.startswith('#'):
+                continue
+            if a.find("=") == -1:
                 continue
             key=str(line.split('=')[0]).strip()
             value=str(line.split('=')[1]).strip()
