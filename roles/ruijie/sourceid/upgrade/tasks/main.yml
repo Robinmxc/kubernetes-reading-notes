@@ -139,6 +139,7 @@
       - "sourceid/xxl-job"
       - "sourceid/portal"
       - "sourceid/report"
+      - "sourceid/organization-center"
     connection: local
 
   - name: 准备https证书新目录

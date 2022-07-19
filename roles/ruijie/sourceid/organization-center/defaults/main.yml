@@ -1,0 +1,31 @@
+ORGANIZATION_CENTER_ENABLE: "{% if SOURCEID_DOCKERS['organization-center'] is defined and (SOURCEID_DOCKERS['organization-center'].enable is not defined or SOURCEID_DOCKERS['organization-center'].enable) %}yes{% else %}no{% endif %}"
+
+organization_center_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms256m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
+
+organization_center_configs: []
+
+organization_center_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+
+organization_center_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
