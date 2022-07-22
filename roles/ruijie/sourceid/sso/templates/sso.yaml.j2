@@ -84,7 +84,7 @@ spec:
 
 {%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["sso"] is not defined or HEALTH_CHECK["sso"]) %}
         startupProbe:
-          failureThreshold: 20
+          failureThreshold: 40
           httpGet:
             path: /liveProbe
             port: 80
