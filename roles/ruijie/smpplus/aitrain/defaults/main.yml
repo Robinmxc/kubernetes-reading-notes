@@ -1,0 +1,27 @@
+
+aitrain_configs: []
+
+aitrain_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 3Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 4
+        memory: 4Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+aitrain_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
