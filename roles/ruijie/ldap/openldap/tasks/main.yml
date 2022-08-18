@@ -36,6 +36,13 @@
     - "/etc/openldap/certs"
 
 ###为了在卸载后可以再次部署
+
+  - name: 设置证书过期时间
+    replace: path="/usr/libexec/openldap/generate-server-cert.sh" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "^CERT_VALID_MONTHS=.*$", replace: "CERT_VALID_MONTHS=240"}
+    ignore_errors: true
+
   - name: 准备证书文件
     shell: "sh /usr/libexec/openldap/create-certdb.sh && sh /usr/libexec/openldap/generate-server-cert.sh"
     ignore_errors: true
