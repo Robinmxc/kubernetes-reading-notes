@@ -316,14 +316,14 @@
 
   - name: delete aiidentify 
     tags:
-      - aiidentify
+    - aiidentify
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aiidentify/"
     when: '"aiidentify" in pod_info.stdout'
     ignore_errors: true   
 
   - name: delete aitrain 
     tags:
-      - aitrain
+    - aitrain
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aitrain/"
     when: '"aitrain" in pod_info.stdout'
-    ignore_errors: true     
+    ignore_errors: true   
