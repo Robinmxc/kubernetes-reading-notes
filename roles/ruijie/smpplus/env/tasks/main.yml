@@ -49,7 +49,8 @@
     - "linkage-devices"
     - "frontend-client"
     - "flow"
-    - "aiidentify"  
+    - "aiidentify" 
+    - "aitrain" 
 - name: 获取autostart.sh状态
   stat: path="/etc/init.d/autostart.sh"
   register: data_dir_stat  
