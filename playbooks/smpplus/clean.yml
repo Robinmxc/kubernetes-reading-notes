@@ -312,7 +312,7 @@
       - flow
     shell: "docker rm -f  `docker ps -aq --filter name=flow`"
     when: '"flow"  in flow_info.stdout'
-    ignore_errors: true
+    ignore_errors: trueai
 
   - name: delete aiidentify 
     tags:
@@ -320,3 +320,10 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aiidentify/"
     when: '"aiidentify" in pod_info.stdout'
     ignore_errors: true   
+
+  - name: delete aitrain 
+    tags:
+      - aitrain
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aitrain/"
+    when: '"aitrain" in pod_info.stdout'
+    ignore_errors: true     

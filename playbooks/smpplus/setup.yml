@@ -68,3 +68,4 @@
   - { role: ruijie/smpplus/linkage-devices, tags: ["linkage-devices"]}
   - { role: ruijie/smpplus/flow, tags: ["flow"]}
   - { role: ruijie/smpplus/aiidentify, tags: ["aiidentify"]}  
+  - { role: ruijie/smpplus/aitrain, tags: ["aitrain"]}  
