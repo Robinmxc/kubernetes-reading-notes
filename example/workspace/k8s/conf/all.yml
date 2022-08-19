@@ -29,7 +29,7 @@ FDFS_MODE: "none"
 
 ####  mongo备份组件参数   ####
 MGOB: {
-# MGOB_ENABLED：yes - 部署mongodb备份组件； no - 不部署；默认不部署
+# MGOB_ENABLED：true - 部署mongodb备份组件； false - 不部署；默认不部署
   MGOB_ENABLED: false,
 
   #备份数据库名称，""表示备份所有
@@ -96,7 +96,7 @@ LDAP: {
   #只读用户密码，必须设置
   LDAP_READONLY_PWD: "",
 
-  #Root DN，例如"example.com",默认为SSO域名的上级域名
+  #Root DN，例如"example.com",默认为SSO域名的上级域名，如SSO地址为：sso.example.com 则DN为：dc=example,dc=com
   LDAP_DOMAIN: "",
 
   #根组织名称，例如"Ruijie"，默认和LDAP_DOMAIN相同
