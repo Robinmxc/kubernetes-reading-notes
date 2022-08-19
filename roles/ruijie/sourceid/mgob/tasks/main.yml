@@ -1,5 +1,5 @@
 - name: 部署License
-  when: 'MGOB_ENABLED == "yes"'
+  when: 'MGOB_POD_ENABLE == "yes"'
   block:
   - name: 在deploy节点准备目录
     tags:

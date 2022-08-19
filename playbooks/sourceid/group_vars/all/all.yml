@@ -174,3 +174,25 @@ HEALTH_CHECK: {
   groupview: false
 
 }
+
+MGOB: {
+# MGOB_ENABLED：yes - 部署mongodb备份组件； no - 不部署；默认不部署
+  MGOB_ENABLED: true,
+
+  #备份数据库名称，""表示备份所有
+  MGOB_DATABASE: "admin",
+  #备份操作执行时间
+  MGOB_CRON: "0 2 */1 * *",
+# MGOB_SFTP_RETENTION：备份文件保存个数，结合数据库实际大小和磁盘空间合理配置
+  MGOB_SFTP_RETENTION: "3",
+
+# MGOB_SFTP_ENABLED: yes - mongodb上传sftp服务器； no - 不上传；默认不上传,不配置时，备份的数据库文件只会保留在本地，存在丢失风险
+  MGOB_SFTP_ENABLED: "no",
+
+# MGOB_SFTP_HOSTS、MGOB_SFTP_PORT、MGOB_SFTP_USER、MGOB_SFTP_PWD：SFTP服务器地址、端口、用户名、密码
+  MGOB_SFTP_HOSTS: "172.17.8.128",
+  MGOB_SFTP_PORT: "22",
+  MGOB_SFTP_USER: "root",
+  MGOB_SFTP_PWD: "shyfzx@163",
+  MGOB_SFTP_DIR: "/home/mongodbBackUP"
+}

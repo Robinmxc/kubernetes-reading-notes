@@ -257,7 +257,30 @@ def parse_host_data(workspace_dir):
 
     parse_ldap_config(result)
     
+    parse_mgob_config(result)
+
     return result
+
+# 处理mgob配置参数
+def parse_mgob_config(host_data):
+    group_all_vars = host_data["groups"]["all"]["vars"]
+    mgob_config = group_all_vars["MGOB"] if "MGOB" in group_all_vars else {}
+    enabled = group_all_vars["MGOB_ENABLED"] if "MGOB_ENABLED" in group_all_vars else "no"
+    if  enabled == "no":
+        #设置为False，避免ansible脚本出错
+        mgob_config["MGOB_ENABLED"] = False
+        group_all_vars["MGOB"] = mgob_config
+        return
+
+    if mgob_config == {}:
+        for key in ["MGOB_SFTP_RETENTION","MGOB_SFTP_ENABLED","MGOB_SFTP_HOSTS","MGOB_SFTP_PORT","MGOB_SFTP_USER","MGOB_SFTP_PWD"]:
+            mgob_config[key] = group_all_vars[key] if key in group_all_vars else ""
+        mgob_config["MGOB_DATABASE"] = "admin"
+        mgob_config["MGOB_CRON"] = "0 2 */1 * *"
+        mgob_config["MGOB_SFTP_DIR"] = "/home/mongodbBackUP"
+        mgob_config["MGOB_ENABLED"] = True
+
+    group_all_vars["MGOB"] = mgob_config
 
 # 处理Ldap配置参数
 def parse_ldap_config(host_data):

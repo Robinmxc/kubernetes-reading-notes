@@ -81,22 +81,22 @@ data:
     target:
       host: {{ groups['mongodb'][0] }}
       port: 27017
-      database: "admin"
-      username: {{ MONGODB_ADMIN_USER }}
-      password: {{ MONGODB_ADMIN_PWD }}
+      database: {{ MGOB.MGOB_DATABASE }}
+      username: {{ MGOB.MONGODB_ADMIN_USER }}
+      password: {{ MGOB.MONGODB_ADMIN_PWD }}
     scheduler:
-      cron: "0 2 */1 * *"
-      retention: {{ MGOB_SFTP_RETENTION }}
+      cron: {{ MGOB.MGOB_CRON }}
+      retention: {{ MGOB.MGOB_SFTP_RETENTION }}
       timeout: 60
-{% if "yes" == (MGOB_SFTP_ENABLED) %}
+{% if "yes" == (MGOB.MGOB_SFTP_ENABLED) %}
     sftp:
-      host: {{ MGOB_SFTP_HOSTS }}
-      port: {{ MGOB_SFTP_PORT }}
-      username: {{ MGOB_SFTP_USER }}
-      password: {{ MGOB_SFTP_PWD }}
+      host: {{ MGOB.MGOB_SFTP_HOSTS }}
+      port: {{ MGOB.MGOB_SFTP_PORT }}
+      username: {{ MGOB.MGOB_SFTP_USER }}
+      password: {{ MGOB.MGOB_SFTP_PWD }}
       # you can also specify path to a private key and a passphrase
       #private_key: /etc/ssh/ssh_host_rsa_key
       #passphrase: secretpassphrase
       # dir must exist on the SFTP server
-      dir: upload
+      dir: {{ MGOB.MGOB_SFTP_DIR }}
 {% endif %}    
