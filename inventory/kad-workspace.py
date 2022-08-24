@@ -266,7 +266,7 @@ def parse_mgob_config(host_data):
     group_all_vars = host_data["groups"]["all"]["vars"]
     mgob_config = group_all_vars["MGOB"] if "MGOB" in group_all_vars else {}
     enabled = group_all_vars["MGOB_ENABLED"] if "MGOB_ENABLED" in group_all_vars else "no"
-    if  enabled == "no":
+    if  enabled == "no" and mgob_config == {}:
         #设置为False，避免ansible脚本出错
         mgob_config["MGOB_ENABLED"] = False
         group_all_vars["MGOB"] = mgob_config
