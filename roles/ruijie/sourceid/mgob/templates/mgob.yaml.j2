@@ -82,8 +82,8 @@ data:
       host: {{ groups['mongodb'][0] }}
       port: 27017
       database: {{ MGOB.MGOB_DATABASE }}
-      username: {{ MGOB.MONGODB_ADMIN_USER }}
-      password: {{ MGOB.MONGODB_ADMIN_PWD }}
+      username: {{ MONGODB_ADMIN_USER }}
+      password: {{ MONGODB_ADMIN_PWD }}
     scheduler:
       cron: {{ MGOB.MGOB_CRON }}
       retention: {{ MGOB.MGOB_SFTP_RETENTION }}
