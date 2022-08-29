@@ -22,9 +22,9 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 8
-        memory: 8Gi
+        memory: 16Gi
       requests:
-        cpu: 2
-        memory: 2Gi
+        cpu: 1
+        memory: 1Gi
 
 nodeidentify_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
