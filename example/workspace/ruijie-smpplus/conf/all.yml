@@ -8,6 +8,10 @@ KAD_APP_VERSION: "r1.0.0-test"
 #MongoDB管理员密码
 MONGODB_ADMIN_USER: "admin"
 MONGODB_ADMIN_PWD: "123Admin"
+
+# 数据库只读账号密码，只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符。
+MONGODB_READONLY_PWD: "123Admin"
+
 #smp+支持https，填写域名即可
 SMPPLUS_SSO_DOMAIN: ""
 # 0.不部署探针 7.虚拟机部署探针(2个队列) 31.浪潮服务器单万兆网卡（4个队列） 511.浪潮服务器双万兆网卡（8个队列）
