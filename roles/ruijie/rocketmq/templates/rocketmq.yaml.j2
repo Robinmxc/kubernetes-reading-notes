@@ -26,7 +26,12 @@ spec:
 {% endif %}
         env:
         - name: JAVA_OPT_EXT
+{% if KAD_APP_NAME == 'smpplus' %}
           value: "{{ smpplus_mq_broker_java_opt }}"
+{% endif %}
+{% if KAD_APP_NAME != 'smpplus' %}
+          value: "{{ mq_broker_java_opt }}"
+{% endif %}
         imagePullPolicy: IfNotPresent
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
@@ -52,7 +57,12 @@ spec:
         command: ["sh","mqnamesrv"]
         env:
         - name: JAVA_OPT_EXT
+{% if KAD_APP_NAME == 'smpplus' %}
           value: "{{ smpplus_mq_server_java_opt }}"
+{% endif %}
+{% if KAD_APP_NAME != 'smpplus' %}
+          value: "{{ mq_server_java_opt }}"
+{% endif %}
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 9876
