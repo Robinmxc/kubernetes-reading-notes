@@ -26,7 +26,7 @@ spec:
 {% endif %}
         env:
         - name: JAVA_OPT_EXT
-          value: "{{ mq_broker_java_opt }}"
+          value: "{{ smpplus_mq_broker_java_opt }}"
         imagePullPolicy: IfNotPresent
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
@@ -52,7 +52,7 @@ spec:
         command: ["sh","mqnamesrv"]
         env:
         - name: JAVA_OPT_EXT
-          value: "{{ mq_server_java_opt }}"
+          value: "{{ smpplus_mq_server_java_opt }}"
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 9876
@@ -110,9 +110,7 @@ spec:
     nodePort: 8133
 {% endif %}
 {% if "yes" != (rocketmq_public) %}
-  type: NodePort
   ports:
   - port: 9876
     targetPort: 9876
-    nodePort: 9876
 {% endif %}

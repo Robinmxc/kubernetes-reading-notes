@@ -34,4 +34,41 @@ deploy_conf_defaults:
         cpu: 500m
         memory: 1Gi
 
-mq_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+#mq_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+mq_deploy_conf: "{%- if KAD_APP_NAME == 'smpplus' -%} \
+                {{ smpplus_deploy_conf_defaults[CLUSTER_SCALE] }} \
+              {%- else -%} \
+                {{ deploy_conf_defaults[CLUSTER_SCALE] }} \
+              {%- endif -%}"
+
+
+#smpplus定制资源配置，rocketmq_public参数在smpplus的all.yml中有定义为yes，sid默认为no
+smpplus_mq_broker_java_opt: "{%- if CLUSTER_SCALE == 'normal' -%}-Xms4096m -Xmx4096m -Xmn2g -XX:MaxDirectMemorySize=4096m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx4096m -Xmn1024m -XX:MaxDirectMemorySize=4096m{%- else -%}-Xms512m -Xmx512m -Xmn256m -XX:MaxDirectMemorySize=256m{%- endif -%}"
+
+smpplus_mq_server_java_opt: "{%- if CLUSTER_SCALE == 'normal' -%}-Xms512m -Xmx512m -Xmn256m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx512m -Xmn256m{%- else -%}-Xms256m -Xmx256m -Xmn128m{%- endif -%}"
+
+smpplus_deploy_conf_defaults:
+  small:
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+  normal:
+    resources:
+      limits:
+        cpu: 6
+        memory: 8Gi
+      requests:
+        cpu: 4
+        memory: 4Gi
+  single:
+    resources:
+      limits:
+        cpu: 2
+        memory: 6Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
