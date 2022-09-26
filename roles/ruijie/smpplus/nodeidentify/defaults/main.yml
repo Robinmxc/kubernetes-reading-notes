@@ -1,5 +1,4 @@
-
-nodeidentify_java_opt: "-Xms1024m -Xmx2048m"
+nodeidentify_java_opt: "-Xms2048m -Xmx8192m"
 
 nodeidentify_configs: []
 
