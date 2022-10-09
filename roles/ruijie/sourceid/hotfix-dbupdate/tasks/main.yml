@@ -6,6 +6,13 @@
   connection: local
   run_once: true
 
+- name: 复制hotfix脚本到数据库目录
+  copy: 
+    src: "{{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/rg-upgrade-db" 
+    dest: "{{ KAD_PACKAGE_DIR }}/db/sourceid"
+  connection: local
+  run_once: true
+
 - name: 准备init目录
   tags:
   - config
