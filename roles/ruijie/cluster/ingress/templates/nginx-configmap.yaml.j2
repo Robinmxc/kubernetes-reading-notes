@@ -26,3 +26,6 @@ data:
   ssl-redirect: "false"
   custom-http-errors: "404,503"
 {% endif %}
+{% if KAD_APP_NAME == 'sourceid' %}
+  custom-http-errors: "500,404,503"
+{% endif %}

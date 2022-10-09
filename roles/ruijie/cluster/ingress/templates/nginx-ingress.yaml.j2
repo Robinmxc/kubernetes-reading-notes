@@ -48,6 +48,10 @@ spec:
 {% if KAD_APP_NAME == 'smpplus' %}
             - --default-backend-service=ruijie-smpplus/rg-frontend-smp
 {% endif %}
+{% if KAD_APP_NAME == 'sourceid' %}
+            - --default-backend-service=ruijie-sourceid/rg-frontend
+{% endif %}
+
           securityContext:
             capabilities:
               drop:
