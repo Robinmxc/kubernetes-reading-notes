@@ -154,6 +154,10 @@ spec:
           backend:
             serviceName: rg-gate
             servicePort: 80
+        - path: /public/error-page
+          backend:
+            serviceName: rg-frontend
+            servicePort: 80            
         - path: /data-sync/v2/api-docs
           backend:
             serviceName: rg-frontend
