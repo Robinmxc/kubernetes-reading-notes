@@ -64,7 +64,7 @@
 
 
 - name: 清理历史mongo日志
-  shell: '{{ mongo_pod_shell }} rm /ruijie/init/sourceid-hotfix/rg-upgrade-db/update.log -rf'
+  shell: '{{ mongo_pod_shell }} rm /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db/update.log -rf'
   connection: local
   run_once: true
 
