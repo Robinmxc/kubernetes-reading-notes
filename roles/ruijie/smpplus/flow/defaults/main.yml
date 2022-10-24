@@ -1,6 +1,6 @@
-FLOW_PORT_MODE: 0
+FLOW_MODE: 0
 flow_configs: []
-
+FLOW_PORTS: ["eth5"]
 flow_templates_path: ""
 
 deploy_conf_defaults:

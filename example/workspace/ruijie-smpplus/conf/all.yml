@@ -14,5 +14,6 @@ MONGODB_READONLY_PWD: "123Admin"
 
 #smp+支持https，填写域名即可
 SMPPLUS_SSO_DOMAIN: ""
-# 0.不部署探针 7.虚拟机部署探针(2个队列) 31.浪潮服务器单万兆网卡（4个队列） 511.浪潮服务器双万兆网卡（8个队列）
-FLOW_PORT_MODE: 0
+# 0.不部署探针 1.浪潮服务器
+FLOW_MODE: 0
+FLOW_PORTS: ["eth5"]
