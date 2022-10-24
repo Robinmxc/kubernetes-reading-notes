@@ -16,4 +16,4 @@ MONGODB_READONLY_PWD: "123Admin"
 SMPPLUS_SSO_DOMAIN: ""
 # 0.不部署探针 1.浪潮服务器
 FLOW_MODE: 0
-FLOW_PORTS: ["eth5"]
+FLOW_PORTS: "eth1,eth2"

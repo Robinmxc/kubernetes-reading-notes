@@ -14,7 +14,7 @@
     replace: path="{{ config_base_dir }}/flow/conf/config.json" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
     - {regexp: "smpPlusIp\".*$", replace: "smpPlusIp\":\"{{groups['kube_node'][0]}}\","}
-    - {regexp: "ports\".*$", replace: "ports\": {{ FLOW_PORTS }}\""}
+    - {regexp: "ports\".*$", replace: "ports\": \"{{ FLOW_PORTS }}\""}
     no_log: true
 
 
