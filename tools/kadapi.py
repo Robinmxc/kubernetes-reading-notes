@@ -50,7 +50,7 @@ def get_expiry_date():
         "data": {}
     }
     data = json.loads(request.get_data(as_text=True))
-    logging.debug("certificate expiryDate request parameter:"+str(data))
+    logging.debug("certificate expiryDate request parameter:" + str(data))
     if "certNames" not in data.keys():
         result["result"] = False
         result["code"] = 204
@@ -106,7 +106,7 @@ def certs_enabled():
         "data": {}
     }
     data = json.loads(request.get_data(as_text=True))
-    logging.debug("certificate validity request parameter:"+str(data))
+    logging.debug("certificate validity request parameter:" + str(data))
     keys = ['oldCertName', "oldCertPriKeyPWD", 'certName', 'certPriKeyPWD', ]
     if all(t not in data.keys() for t in keys):
         result["result"] = False
@@ -129,8 +129,8 @@ def certs_enabled():
     old_cert_private_key_pwd = data["oldCertPriKeyPWD"]
     certs_path = data_dir + "/ruijie/ruijie-smpplus/share/certs/" + cert_name
     logging.debug("prepare to copy cert. certs_path:" + certs_path)
-    copy_result_1 = int(os.system("cp " + certs_path + "  /opt/kad/workspace/ruijie-smpplus/conf/freeradius/certs/"))
-    copy_result_2 = int(os.system("cp " + certs_path + "  " + data_dir + "/ruijie/ruijie-smpplus/freeradius/certs/"))
+    copy_result_1 = int(os.system("\\cp -f " + certs_path + "  /opt/kad/workspace/ruijie-smpplus/conf/freeradius/certs/" + cert_name))
+    copy_result_2 = int(os.system("\\cp -f " + certs_path + "  " + data_dir + "/ruijie/ruijie-smpplus/freeradius/certs/" + cert_name))
     if not copy_result_1 == 0 or not copy_result_2 == 0:
         result["result"] = False
         result["code"] = 204
@@ -195,6 +195,30 @@ def certs_enabled():
         os.system("rm -rf /opt/kad/workspace/ruijie-smpplus/conf/freeradius/certs/" + old_cert_name)
         os.system("rm -rf  " + data_dir + "/ruijie/ruijie-smpplus/freeradius/certs/" + old_cert_name)
 
+    return result
+
+
+@server.route('/kadapi/systemConfig/certs/getFreeradiusStatus', methods=['get', 'post'])
+def get_freeradius_status():
+    result = {
+        "code": 200,
+        "message": "ok",
+        "result": False,
+        "data": {
+        }
+    }
+    try:
+        output = os.popen('kubectl get pod -A')
+        for line in output.readlines():
+            if ('rg-freeradius' in line and 'Running' in line):
+                result["result"] = True
+                break
+    except Exception as e:
+        logging.error(e)
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'get_freeradius_status exception'
+        return result
     return result
 
 
