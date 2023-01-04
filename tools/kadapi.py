@@ -92,7 +92,6 @@ def validity_calculation(data_dir, cert_name):
             return 0
         return output
     except Exception as e:
-        time.sleep(1)
         logging.error(e)
         return 0
 
@@ -106,7 +105,8 @@ def certs_enabled():
         "data": {}
     }
     data = json.loads(request.get_data(as_text=True))
-    keys = ['oldCertName', "oldCertPriKeyPWD", 'certName', 'certPriKeyPWD']
+    logging.debug("Certificate validity request parameter:"+str(data))
+    keys = ['oldCertName', "oldCertPriKeyPWD", 'certName', 'certPriKeyPWD', ]
     if all(t not in data.keys() for t in keys):
         result["result"] = False
         result["code"] = 204
@@ -127,6 +127,7 @@ def certs_enabled():
     cert_private_key_pwd = data["certPriKeyPWD"]
     old_cert_private_key_pwd = data["oldCertPriKeyPWD"]
     certs_path = data_dir + "/ruijie/ruijie-smpplus/share/certs/" + cert_name
+    logging.debug("prepare to copy cert. certs_path:" + certs_path)
     copy_result_1 = int(os.system("cp " + certs_path + "  /opt/kad/workspace/ruijie-smpplus/conf/freeradius/certs/"))
     copy_result_2 = int(os.system("cp " + certs_path + "  " + data_dir + "/ruijie/ruijie-smpplus/freeradius/certs/"))
     if not copy_result_1 == 0 or not copy_result_2 == 0:
@@ -134,16 +135,27 @@ def certs_enabled():
         result["code"] = 204
         result["message"] = 'copy certs fail'
         return result
-
+    logging.debug("prepare to replace related args")
     # 3.replace certName and certPriKeyPWD
     effect_certs_config_file = data_dir + "/ruijie/ruijie-smpplus/freeradius/sites-available/tls"
     kad_certs_config_file = "/opt/kad/workspace/ruijie-smpplus/conf/freeradius/sites-available/tls"
+    freeradius_yml_file = "/opt/kad/workspace/ruijie-smpplus/yaml/freeradius/freeradius.yml"
+    freeradius_yml_role_file = "/opt/kad/roles/ruijie/smpplus/freeradius/templates/freeradius.yaml.j2"
+
     effect_result_pwd = int(os.system("sed -i '/^.*private_key_password = /s/" + old_cert_private_key_pwd + "/" + cert_private_key_pwd + "/' " + effect_certs_config_file))
     effect_result_file_1 = int(os.system("sed -i '/^.*private_key_file = /s/" + old_cert_name + "/" + cert_name + "/' " + effect_certs_config_file))
     effect_result_file_2 = int(os.system("sed -i '/^.*certificate_file = /s/" + old_cert_name + "/" + cert_name + "/' " + effect_certs_config_file))
+
     kad_result_pwd = int(os.system("sed -i '/^.*private_key_password = /s/" + old_cert_private_key_pwd + "/" + cert_private_key_pwd + "/' " + kad_certs_config_file))
     kad_result_file_1 = int(os.system("sed -i '/^.*private_key_file = /s/" + old_cert_name + "/" + cert_name + "/' " + kad_certs_config_file))
     kad_result_file_2 = int(os.system("sed -i '/^.*certificate_file = /s/" + old_cert_name + "/" + cert_name + "/' " + kad_certs_config_file))
+
+    freeradius_yml_result_1 = int(os.system("sed -i '/^.*mountPath: \/usr\/local\/etc\/raddb\/certs/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_file))
+    freeradius_yml_result_2 = int(os.system("sed -i '/^.*subPath:/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_file))
+
+    freeradius_yml_role_result_1 = int(os.system("sed -i '/^.*mountPath: \/usr\/local\/etc\/raddb\/certs/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_role_file))
+    freeradius_yml_role_result_2 = int(os.system("sed -i '/^.*subPath:/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_role_file))
+
     if not effect_result_pwd == 0 or not effect_result_file_1 == 0 or not effect_result_file_2 == 0:
         result["result"] = False
         result["code"] = 204
@@ -156,16 +168,29 @@ def certs_enabled():
         result["message"] = 'replace kad certName and certPriKeyPWD fail'
         return result
 
+    if not freeradius_yml_result_1 == 0 or not freeradius_yml_result_2 == 0:
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'replace freeradius_yml certName fail'
+        return result
 
-    result = int(os.system("cd /opt/kad/workspace/ruijie-smpplus/yaml/freeradius;kubectl delete -f freeradius.yml && "
+    if not freeradius_yml_role_result_1 == 0 or not freeradius_yml_role_result_2 == 0:
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'replace freeradius_yml_role certName fail'
+        return result
+
+    logging.debug("replace file and args success, preparing to restart freeradius")
+    restart_pod = int(os.system("cd /opt/kad/workspace/ruijie-smpplus/yaml/freeradius;kubectl delete -f freeradius.yml && "
                            "kubectl create -f freeradius.yml"))
-    if not result == 0:
+    if not restart_pod == 0:
         result["result"] = False
         result["code"] = 204
         result["message"] = 'restart freeradius pod fail'
         return result
     # 4.rm old certs
     if not cert_name == old_cert_name:
+        logging.debug("preparing to delete old_cert. old_cert_name:" + old_cert_name)
         os.system("rm -rf /opt/kad/workspace/ruijie-smpplus/conf/freeradius/certs/" + old_cert_name)
         os.system("rm -rf  " + data_dir + "/ruijie/ruijie-smpplus/freeradius/certs/" + old_cert_name)
 
