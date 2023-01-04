@@ -43,6 +43,9 @@ spec:
          - mountPath: /usr/local/etc/raddb/certs/server.pem
            name: certs
            subPath: server.pem
+         - mountPath: /usr/local/etc/raddb/sites-available/tls
+           name: tls
+           subPath: tls
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -55,6 +58,9 @@ spec:
         - name: certs
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}/certs/
+        - name: tls
+          hostPath:
+            path: {{ config_base_dir }}/{{comp_name}}/sites-available/
 
 ---
 apiVersion: v1

@@ -47,7 +47,7 @@ def get_expiry_date():
         "code": 200,
         "message": "ok",
         "result": True,
-        "date": {}
+        "data": {}
     }
     data = json.loads(request.get_data(as_text=True))
     if "certNames" not in data.keys():
@@ -94,7 +94,7 @@ def validity_calculation(data_dir, cert_name):
     except Exception as e:
         time.sleep(1)
         logging.error(e)
-    return 0
+        return 0
 
 
 @server.route('/kadapi/systemConfig/certs/enabled', methods=['get', 'post'])
@@ -103,7 +103,7 @@ def certs_enabled():
         "code": 200,
         "message": "ok",
         "result": True,
-        "date": {}
+        "data": {}
     }
     data = json.loads(request.get_data(as_text=True))
     keys = ['oldCertName', "oldCertPriKeyPWD", 'certName', 'certPriKeyPWD']
@@ -136,17 +136,26 @@ def certs_enabled():
         return result
 
     # 3.replace certName and certPriKeyPWD
-    effect_certs_config_file = ""
-    kad_certs_config_file = ""
+    effect_certs_config_file = data_dir + "/ruijie/ruijie-smpplus/freeradius/sites-available/tls"
+    kad_certs_config_file = "/opt/kad/workspace/ruijie-smpplus/conf/freeradius/sites-available/tls"
     effect_result_pwd = int(os.system("sed -i '/^.*private_key_password = /s/" + old_cert_private_key_pwd + "/" + cert_private_key_pwd + "/' " + effect_certs_config_file))
-    effect_result_file = int(os.system("sed -i '/^.*private_key_file = /s/" + old_cert_name + "/" + cert_name + "/' " + effect_certs_config_file))
+    effect_result_file_1 = int(os.system("sed -i '/^.*private_key_file = /s/" + old_cert_name + "/" + cert_name + "/' " + effect_certs_config_file))
+    effect_result_file_2 = int(os.system("sed -i '/^.*certificate_file = /s/" + old_cert_name + "/" + cert_name + "/' " + effect_certs_config_file))
     kad_result_pwd = int(os.system("sed -i '/^.*private_key_password = /s/" + old_cert_private_key_pwd + "/" + cert_private_key_pwd + "/' " + kad_certs_config_file))
-    kad_result_file = int(os.system("sed -i '/^.*private_key_file = /s/" + old_cert_name + "/" + cert_name + "/' " + kad_certs_config_file))
-    if not effect_result_pwd == 0 or not effect_result_file == 0 or not kad_result_pwd == 0 or not kad_result_file == 0:
+    kad_result_file_1 = int(os.system("sed -i '/^.*private_key_file = /s/" + old_cert_name + "/" + cert_name + "/' " + kad_certs_config_file))
+    kad_result_file_2 = int(os.system("sed -i '/^.*certificate_file = /s/" + old_cert_name + "/" + cert_name + "/' " + kad_certs_config_file))
+    if not effect_result_pwd == 0 or not effect_result_file_1 == 0 or not effect_result_file_2 == 0:
         result["result"] = False
         result["code"] = 204
-        result["message"] = 'replace certName and certPriKeyPWD fail'
+        result["message"] = 'replace effect certName and certPriKeyPWD fail'
         return result
+
+    if not kad_result_pwd == 0 or not kad_result_file_1 == 0 or not kad_result_file_2 == 0:
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'replace kad certName and certPriKeyPWD fail'
+        return result
+
 
     result = int(os.system("cd /opt/kad/workspace/ruijie-smpplus/yaml/freeradius;kubectl delete -f freeradius.yml && "
                            "kubectl create -f freeradius.yml"))
