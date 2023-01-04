@@ -50,6 +50,7 @@ def get_expiry_date():
         "data": {}
     }
     data = json.loads(request.get_data(as_text=True))
+    logging.debug("certificate expiryDate request parameter:"+str(data))
     if "certNames" not in data.keys():
         result["result"] = False
         result["code"] = 204
@@ -105,7 +106,7 @@ def certs_enabled():
         "data": {}
     }
     data = json.loads(request.get_data(as_text=True))
-    logging.debug("Certificate validity request parameter:"+str(data))
+    logging.debug("certificate validity request parameter:"+str(data))
     keys = ['oldCertName', "oldCertPriKeyPWD", 'certName', 'certPriKeyPWD', ]
     if all(t not in data.keys() for t in keys):
         result["result"] = False
