@@ -212,6 +212,7 @@ def get_freeradius_status():
         for line in output.readlines():
             if ('rg-freeradius' in line and 'Running' in line):
                 result["result"] = True
+                logging.debug("the freeradius pod is running")
                 break
     except Exception as e:
         logging.error(e)
