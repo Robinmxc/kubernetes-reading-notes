@@ -138,8 +138,8 @@ def certs_enabled():
         return result
     logging.debug("prepare to replace related args")
     # 3.replace certName and certPriKeyPWD
-    effect_certs_config_file = data_dir + "/ruijie/ruijie-smpplus/freeradius/sites-available/tls"
-    kad_certs_config_file = "/opt/kad/workspace/ruijie-smpplus/conf/freeradius/sites-available/tls"
+    effect_certs_config_file = data_dir + "/ruijie/ruijie-smpplus/freeradius/mods-available/eap"
+    kad_certs_config_file = "/opt/kad/workspace/ruijie-smpplus/conf/freeradius/mods-available/eap"
     freeradius_yml_file = "/opt/kad/workspace/ruijie-smpplus/yaml/freeradius/freeradius.yml"
     freeradius_yml_role_file = "/opt/kad/roles/ruijie/smpplus/freeradius/templates/freeradius.yaml.j2"
 

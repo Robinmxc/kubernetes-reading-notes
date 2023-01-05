@@ -43,9 +43,9 @@ spec:
          - mountPath: /usr/local/etc/raddb/certs/server.pem
            name: certs
            subPath: server.pem
-         - mountPath: /usr/local/etc/raddb/sites-available/tls
-           name: tls
-           subPath: tls
+         - mountPath: /usr/local/etc/raddb/mods-available/eap
+           name: eap
+           subPath: eap
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -58,9 +58,9 @@ spec:
         - name: certs
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}/certs/
-        - name: tls
+        - name: eap
           hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}/sites-available/
+            path: {{ config_base_dir }}/{{comp_name}}/mods-available/
 
 ---
 apiVersion: v1
