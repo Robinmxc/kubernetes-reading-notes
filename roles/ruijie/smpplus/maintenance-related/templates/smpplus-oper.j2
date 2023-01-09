@@ -82,6 +82,38 @@ else
 	fi
 fi
 
+#通过重启docker服务，解决docker特定状态无法自愈问题
+dockerInfo=$(docker version 2>&1)
+result=$?
+if [ $result == 0 ]
+then
+    dockerInfo_result =$(echo $dockerInfo | grep "Client: Docker Engine")
+	if[[ "dockerInfo_result"!= ""]];then
+		logger "node状态正常"
+	else
+		logger "node状态异常,开始重启docker服务"
+		kubeRestartInfo=$(systemctl restart kubelet 2>&1)
+		result=$?
+		if [ $result == 0 ]
+		then
+			logger "node状态异常,重启kubelet服务完成"
+		else
+			logger "node状态异常,重启kubelet服务失败，原因:$kubeRestartInfo"
+
+		fi
+	fi
+else
+	kubeRestartInfo=$(systemctl restart kubelet 2>&1)
+	result=$?
+	if [ $result == 0 ]
+	then
+		logger "node状态shell异常,重启docker服务完成"
+	else
+		logger "node状态shell异常,重启docker服务失败，原因:$kubeRestartInfo"
+	fi
+fi
+
+
 # 解决内网pod不通，通过iptable -F清理防火墙
 podInfo=$(kubectl get pods -A -o wide 2>&1 | grep coredns )
 result=$?
