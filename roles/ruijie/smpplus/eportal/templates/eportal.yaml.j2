@@ -7,6 +7,11 @@ metadata:
     k8s-app: rg-{{ comp_name }}
 spec:
   replicas: {{ deploy_conf.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
@@ -44,6 +49,36 @@ spec:
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
+        startupProbe:
+          failureThreshold: 20
+          httpGet:
+            path: /eportal/liveProbe/eportal
+            port: 8090
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /eportal/liveProbe/eportal
+            port: 8090
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /eportal/liveProbe/eportal
+            port: 8090
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+
       imagePullSecrets:
       - name: regsecret
       volumes:
