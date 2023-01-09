@@ -1,0 +1,38 @@
+- name: 准备目录
+  file: name={{ item }} state=directory
+  with_items:
+  - "{{ maintenanceRelated_default_dir }}/script/"
+
+- name: 准备自定义脚本
+  tags:
+    - config
+  vars:
+    file_name: "{{ item }}"
+    nodeip: "hostvars[inventory_hostname]['ansible_default_ipv4']['address']"
+  template: 
+    src: "{{ file_name }}.j2"
+    dest: "{{ maintenanceRelated_default_dir }}/script/{{ file_name }}"
+  with_items:
+  - "smpplus-oper.sh"
+
+- name: 设置文件执行权限
+  tags:
+    - config
+  file: name="{{ maintenanceRelated_default_dir }}/script/{{ item }}" mode=0777
+  with_items:
+  - "smpplus-oper.sh"
+
+- name: 准备文件
+  file: name={{ item }} state=touch
+  with_items:
+  - "/var/spool/cron/root"
+
+
+- name: 配置自动执行
+  tags:
+    - config
+  shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/1 * * * * sh {{ maintenanceRelated_default_dir }}/script/{{ item }}' >> /var/spool/cron/root"
+  with_items:
+  - "smpplus-oper.sh"
+  run_once: true
+  connection: local

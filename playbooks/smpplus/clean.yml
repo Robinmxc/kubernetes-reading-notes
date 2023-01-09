@@ -326,4 +326,22 @@
     - aitrain
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aitrain/"
     when: '"aitrain" in pod_info.stdout'
-    ignore_errors: true   
+    ignore_errors: true
+
+  - name: 获取maintenance-related script
+    tags:
+      - maintenance-related
+    shell: "grep 'smpplus-oper.sh'  /var/spool/cron/root"
+    register: maintenance_script
+
+  - name: delete maintenance-related
+    tags:
+      - maintenance-related
+    shell: "sed -i '/{{ item }}/d' /var/spool/cron/root"
+    with_items:
+      - "smpplus-oper.sh"
+    when: '"smpplus-oper.sh"  in maintenance_script.stdout'
+    ignore_errors: true
+
+
+
