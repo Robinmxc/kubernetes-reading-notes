@@ -331,8 +331,8 @@
   - name: 获取maintenance-related script
     tags:
       - maintenance-related
-    shell: "grep 'smpplus-oper.sh'  /var/spool/cron/root"
-    register: maintenance_script
+    shell: "grep 'smpplus-oper.sh'  /var/spool/cron/root | cat"
+    register: maintenance_script_status
 
   - name: delete maintenance-related
     tags:
@@ -340,7 +340,7 @@
     shell: "sed -i '/{{ item }}/d' /var/spool/cron/root"
     with_items:
       - "smpplus-oper.sh"
-    when: '"smpplus-oper.sh"  in maintenance_script.stdout'
+    when: '"smpplus-oper.sh"  in maintenance_script_status.stdout'
     ignore_errors: true
 
 

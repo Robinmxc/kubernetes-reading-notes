@@ -3,7 +3,7 @@
 netCards=(cni0)
 for netCard in  ${netCards[@]}
 do
-	netCardInfo=$(ip addr 2>&1 | grep "${netCard}:" )
+	netCardInfo=$(/usr/sbin/ip addr 2>&1 | grep "${netCard}:" )
 	result=$?
 	if [ $result == 0 ]
 	then
@@ -12,17 +12,17 @@ do
 			logger "$netCard 网卡正常"
 		else
         		logger "$netCard 网卡异常"
-			cmdInfo=$(ifconfig $netCard up 2>&1)
+			cmdInfo=$(/usr/sbin/ifconfig $netCard up 2>&1)
 			result=$?
 			if [ $result == 0 ]
 			then
 				logger "$netCard重启成功"
 			else
 				logger "$netCard重启失败"
-			fi			
+			fi
 		fi
 	fi
-done    
+done
 
 #确保kubernets各个服务正常
 services=(docker kubelet.service kube-scheduler.service kube-proxy.service kube-controller-manager.service  kubelet.service kube-apiserver.service)
@@ -58,7 +58,7 @@ then
 	nodeArray=($nodeInfo)
 	nodeStatus=${nodeArray[6]}
 	if [ "$nodeStatus" == "Ready" ];then
-		logger "node状态正常"
+		logger "node(kubectl 检测)状态正常"
 	else
 		logger "node状态异常,开始重启kubelet服务"
 		kubeRestartInfo=$(systemctl restart kubelet 2>&1)
@@ -87,9 +87,9 @@ dockerInfo=$(docker version 2>&1)
 result=$?
 if [ $result == 0 ]
 then
-    dockerInfo_result =$(echo $dockerInfo | grep "Client: Docker Engine")
-	if[[ "dockerInfo_result"!= ""]];then
-		logger "node状态正常"
+    dockerInfo_result=$(echo $dockerInfo | grep "Client: Docker Engine")
+	if [ -n "$dockerInfo_result" ];then
+		logger "node(docker 检测)状态正常"
 	else
 		logger "node状态异常,开始重启docker服务"
 		kubeRestartInfo=$(systemctl restart kubelet 2>&1)
