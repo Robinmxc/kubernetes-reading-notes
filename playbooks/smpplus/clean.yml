@@ -119,6 +119,33 @@
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/frontend-client/"
     when: '"frontend-client" in pod_info.stdout'
 
+  - name: 获取flow容器状态
+    tags:
+      - flow
+    shell: "docker ps -a --format '{{ '{{' }}.Names {{ '}}' }}' --filter name=flow"
+    register: flow_info
+
+  - name: delete flow
+    tags:
+      - flow
+    shell: "docker rm -f  `docker ps -aq --filter name=flow`"
+    when: '"flow"  in flow_info.stdout'
+    ignore_errors: trueai
+
+  - name: delete aiidentify
+    tags:
+      - aiidentify
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aiidentify/"
+    when: '"aiidentify" in pod_info.stdout'
+    ignore_errors: true
+
+  - name: delete aitrain
+    tags:
+      - aitrain
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aitrain/"
+    when: '"aitrain" in pod_info.stdout'
+    ignore_errors: true
+
   - name: 等待frontend-smp结束运行
     tags:
       - frontend-smp
@@ -299,33 +326,25 @@
     delay: 3
     ignore_errors: true
 
-  - name: 获取flow容器状态
+
+  - name: 等待aiidentify结束运行
     tags:
-    - flow
-    shell: "docker ps -a --format '{{ '{{' }}.Names {{ '}}' }}' --filter name=flow"
-    register: flow_info
+      - aiidentify
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"aiidentify" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
 
-
-
-  - name: delete flow 
+  - name: 等待aitrain结束运行
     tags:
-      - flow
-    shell: "docker rm -f  `docker ps -aq --filter name=flow`"
-    when: '"flow"  in flow_info.stdout'
-    ignore_errors: trueai
-
-  - name: delete aiidentify 
-    tags:
-    - aiidentify
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aiidentify/"
-    when: '"aiidentify" in pod_info.stdout'
-    ignore_errors: true   
-
-  - name: delete aitrain 
-    tags:
-    - aitrain
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aitrain/"
-    when: '"aitrain" in pod_info.stdout'
+      - aitrain
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"aitrain" not in pod_info.stdout'
+    retries: 30
+    delay: 3
     ignore_errors: true
 
   - name: 获取maintenance-related script
