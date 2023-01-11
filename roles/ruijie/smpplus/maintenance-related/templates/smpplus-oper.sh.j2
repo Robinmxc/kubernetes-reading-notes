@@ -25,7 +25,7 @@ do
 done
 
 #确保kubernets各个服务正常
-services=(docker kubelet.service kube-scheduler.service kube-proxy.service kube-controller-manager.service  kubelet.service kube-apiserver.service)
+services=(docker kubelet.service kube-scheduler.service kube-proxy.service kube-controller-manager.service  etcd.service kube-apiserver.service)
 for service in  ${services[@]}
 do
 	serviceInfo=$(systemctl status $service  2>&1 | grep Active)
