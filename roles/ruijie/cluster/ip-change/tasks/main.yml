@@ -1,4 +1,4 @@
-- name: 获取docker安装状态
+- name: 获取kadapi安装状态
   stat: 
     path: /etc/systemd/system/kadapi.service
   register: stat_result
@@ -84,5 +84,24 @@
       shell: "systemctl status kadapi.service|grep Active"
       register: kadapi_status
       until: '"running" in kadapi_status.stdout'
+      retries: 8
+      delay: 8
+
+- name: 更替kadapi
+  when: "stat_result.stat.exists"
+  block:
+    - name: 下载替换的kadapi二进制文件
+      copy: src={{ KADAPI_DOWN_PATH }}/{{ item }} dest=/etc/kad/api/{{ item }} mode=0755
+      with_items:
+        - kadapi
+        - changeip.sh
+    - name: 重启kadapi服务
+      shell: systemctl restart kadapi
+      ignore_errors: true
+
+    - name: 以轮询的方式等待服务同步完成
+      shell: "systemctl status kadapi.service|grep Active"
+      register: kadapi_restart_status
+      until: '"running" in kadapi_restart_status.stdout'
       retries: 8
       delay: 8
