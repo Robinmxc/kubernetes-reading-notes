@@ -297,23 +297,26 @@ def changeip_thread(data):
 
     edit_netfile(data)
     if (old_ip == new_ip):
+        logging.info("changeip: old_ip equals new_ip, only restart network")
         os.system('systemctl restart network')
         return
 
+    logging.info("changeip: old_ip is not equal to new_ip. old_ip: " + old_ip + " new_ip: " + new_ip)
     file_list = api_config['filelist']
     for filepath in file_list:
-        logging.info("change file" + filepath)
+        logging.info("changeip: change file-->" + filepath)
         os.system('sed -i "s/' + old_ip + '/' + new_ip + '/g" ' + filepath)
 
+    logging.info("changeip: start replacing mongofile")
     filepath = api_config['mongofile']
 
     os.system('cp ' + filepath + ' ' + filepath + 'temp')
     os.system('sed -i "s/oldIp/' + old_ip + '/g" ' + filepath)
     os.system('sed -i "s/newIp/' + new_ip + '/g" ' + filepath)
 
-    logging.info("start changeip.sh")
+    logging.info("changeip: start changeip.sh")
     os.system('sh /etc/kad/api/changeip.sh ' + old_ip + ' ' + new_ip)
-    logging.info("end changeip.sh")
+    logging.info("changeip: end changeip.sh")
     change_mongoip = True
     while change_mongoip:
         try:
@@ -344,7 +347,8 @@ def changeip_thread(data):
             logging.error(e)
 
     os.system('mv -f ' + filepath + 'temp ' + filepath)
-    logging.info("success update mongo")
+    logging.info("changeip: success update mongo")
+    logging.info("changeip: task executed successfully")
 
 
 @server.route('/kadapi/systemConfig/networkConfig/get', methods=['get', 'post'])
