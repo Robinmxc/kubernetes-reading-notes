@@ -304,8 +304,10 @@ def changeip_thread(data):
     logging.info("changeip: old_ip is not equal to new_ip. old_ip: " + old_ip + " new_ip: " + new_ip)
     file_list = api_config['filelist']
     for filepath in file_list:
-        logging.info("changeip: change file-->" + filepath)
-        os.system('sed -i "s/' + old_ip + '/' + new_ip + '/g" ' + filepath)
+        time.sleep(0.2)
+        logging.info("changeip:start change file-->" + filepath)
+        status_code = int(os.system('sed -i "s/' + old_ip + '/' + new_ip + '/g" ' + filepath))
+        logging.info("changeip:end change file-->" + filepath + "execution return status code-->" + str(status_code))
 
     logging.info("changeip: start replacing mongofile")
     filepath = api_config['mongofile']
