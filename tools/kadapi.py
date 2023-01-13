@@ -316,6 +316,13 @@ def changeip_thread(data):
     os.system('sed -i "s/oldIp/' + old_ip + '/g" ' + filepath)
     os.system('sed -i "s/newIp/' + new_ip + '/g" ' + filepath)
 
+    maintenance_shell_script = "smpplus-oper.sh"
+    maintenance_shell_script_path = "/opt/kube/maintenance/script/smpplus-oper.sh"
+    if os.path.isfile(maintenance_shell_script_path):
+        logging.info("changeip:start stop maintenance-related shell script")
+        stop_script_status_code = int(os.system("sed -i '/" + maintenance_shell_script + "/d' /var/spool/cron/root"))
+        logging.info("changeip:end stop maintenance-related shell script" + "execution return status code-->" + str(stop_script_status_code))
+
     logging.info("changeip: start changeip.sh")
     os.system('sh /etc/kad/api/changeip.sh ' + old_ip + ' ' + new_ip)
     logging.info("changeip: end changeip.sh")
@@ -350,6 +357,12 @@ def changeip_thread(data):
 
     os.system('mv -f ' + filepath + 'temp ' + filepath)
     logging.info("changeip: success update mongo")
+
+    if os.path.isfile(maintenance_shell_script_path):
+        logging.info("changeip: start maintenance-related shell script")
+        stop_script_status_code = int(os.system("echo '*/1 * * * * sh " + maintenance_shell_script_path + " >/dev/null 2>&1'  >> /var/spool/cron/root"))
+        logging.info("changeip: end maintenance-related shell script" + "execution return status code-->" + str(stop_script_status_code))
+
     logging.info("changeip: task executed successfully")
 
 
