@@ -359,9 +359,9 @@ def changeip_thread(data):
     logging.info("changeip: success update mongo")
 
     if os.path.isfile(maintenance_shell_script_path):
-        logging.info("changeip: start maintenance-related shell script")
+        logging.info("changeip: start startup maintenance-related shell script")
         stop_script_status_code = int(os.system("echo '*/1 * * * * sh " + maintenance_shell_script_path + " >/dev/null 2>&1'  >> /var/spool/cron/root"))
-        logging.info("changeip: end maintenance-related shell script" + "execution return status code-->" + str(stop_script_status_code))
+        logging.info("changeip: end startup maintenance-related shell script" + "execution return status code-->" + str(stop_script_status_code))
 
     logging.info("changeip: task executed successfully")
 
