@@ -146,6 +146,9 @@ spec:
       http:
         paths:
         - path: /
+          pathType: Prefix
           backend:
-            serviceName: rg-portal
-            servicePort: 80
+            service:
+              name: rg-portal
+              port:
+                number: 80            

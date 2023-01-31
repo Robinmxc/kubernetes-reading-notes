@@ -146,6 +146,9 @@ spec:
       http:
         paths:
         - path: /
+          pathType: Prefix
           backend:
-            serviceName: rg-adapter
-            servicePort: 80
+            service:
+              name: rg-adapter
+              port:
+                number: 80

@@ -122,6 +122,9 @@ spec:
       http:
         paths:
         - path: /sync
+          pathType: Prefix
           backend:
-            serviceName: rg-ztsync
-            servicePort: 80
+            service:
+              name: rg-ztsync
+              port:
+                number: 80                  

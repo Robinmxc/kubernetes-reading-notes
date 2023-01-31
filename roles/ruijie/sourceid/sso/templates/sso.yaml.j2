@@ -163,18 +163,30 @@ spec:
     http:
       paths:
       - path: /v2/api-docs
+        pathType: Prefix
         backend:
-          serviceName: rg-frontend
-          servicePort: 80
+          service:
+            name: rg-frontend
+            port:
+              number: 80
       - path: /public
+        pathType: Prefix
         backend:
-          serviceName: rg-gate
-          servicePort: 80
+          service:
+            name: rg-gate
+            port:
+              number: 80
       - path: /linkid
+        pathType: Prefix
         backend:
-          serviceName: rg-gate
-          servicePort: 80
+          service:
+            name: rg-gate
+            port:
+              number: 80
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: rg-sso
-          servicePort: 80
+          service:
+            name: rg-sso
+            port:
+              number: 80

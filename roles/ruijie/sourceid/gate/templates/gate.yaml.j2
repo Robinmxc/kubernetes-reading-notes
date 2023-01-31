@@ -152,36 +152,60 @@ spec:
       http:
         paths:
         - path: /
+          pathType: Prefix
           backend:
-            serviceName: rg-gate
-            servicePort: 80
+            service:
+              name: rg-gate
+              port:
+                number: 80
         - path: /public/error-page
+          pathType: Prefix
           backend:
-            serviceName: rg-frontend
-            servicePort: 80            
+            service:
+              name: rg-frontend
+              port:
+                number: 80          
         - path: /data-sync/v2/api-docs
+          pathType: Prefix
           backend:
-            serviceName: rg-frontend
-            servicePort: 80
+            service:
+              name: rg-frontend
+              port:
+                number: 80
         - path: /component/v2/api-docs
+          pathType: Prefix
           backend:
-            serviceName: rg-frontend
-            servicePort: 80
+            service:
+              name: rg-frontend
+              port:
+                number: 80
         - path: /faceid/v2/api-docs
+          pathType: Prefix
           backend:
-            serviceName: rg-frontend
-            servicePort: 80
+            service:
+              name: rg-frontend
+              port:
+                number: 80
         - path: /import/v2/api-docs
+          pathType: Prefix
           backend:
-            serviceName: rg-frontend
-            servicePort: 80
+            service:
+              name: rg-frontend
+              port:
+                number: 80
         - path: /linkid/v2/api-docs
+          pathType: Prefix
           backend:
-            serviceName: rg-frontend
-            servicePort: 80
+            service:
+              name: rg-frontend
+              port:
+                number: 80
 {% if "yes" == SOURCEID_FGM_VERSION_ENABLED %}
         - path: /linkid/api/ztfgm
+          pathType: Prefix
           backend:
-            serviceName: rg-frontend
-            servicePort: 80
+            service:
+              name: rg-frontend
+              port:
+                number: 80
 {% endif %}
