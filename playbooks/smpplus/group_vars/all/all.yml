@@ -13,7 +13,7 @@ namespace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
 
 yaml_dir: "{{ namespace_dir }}/yaml"
 
-max_space_dir: "{{hostvars[groups['kube_node'][0]].ansible_mounts | selectattr('mount', 'match', '^(?!/var/lib/).*') | sort('size_available' | int) | map(attribute='mount') | list | last }}"
+max_space_dir: "{{hostvars[groups['kube_node'][0]].ansible_mounts | selectattr('mount', 'match', '^(?!/var/lib/).*') | sort(attribute='size_available') | map(attribute='mount') | list | last }}"
 
 DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}"
 

@@ -3,7 +3,7 @@
 max_space_dir: "{{
     hostvars[groups['sourcedata'][0]].ansible_mounts
     | selectattr('mount', 'match', '^(?!/var/lib/).*')
-    | sort('size_available' | int)
+    | sort(attribute='size_available')
     | map(attribute='mount')
     | list
     | last }}"
