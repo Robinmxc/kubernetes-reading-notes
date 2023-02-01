@@ -8,20 +8,20 @@
     - name: 准备docker相关目录
       file: name={{ item }} state=directory
       with_items:
-      - "{{ bin_dir }}"
+      #- "{{ bin_dir }}"
       - /etc/docker
     
-    - name: 复制Docker相关文件
-      copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
-      with_items:
-      - containerd
-      - containerd-shim
-      - docker-init
-      - runc
-      - docker
-      - ctr
-      - dockerd
-      - docker-proxy
+    #- name: 复制Docker相关文件
+    #  copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
+    #  with_items:
+    #  - containerd
+    #  - containerd-shim
+    #  - docker-init
+    #  - runc
+    #  - docker
+    #  - ctr
+    #  - dockerd
+    #  - docker-proxy
 
     - name: docker命令自动补全
       copy: src=docker dest=/etc/bash_completion.d/docker mode=0644
@@ -57,7 +57,7 @@
       tags: upgrade_docker
 
     # 配置 docker 命令软链接，方便单独安装 docker
-    - name: 配置 docker 命令软链接
-      file: src={{ bin_dir }}/docker dest=/usr/bin/docker state=link
-      ignore_errors: true
+    #- name: 配置 docker 命令软链接
+    #  file: src={{ bin_dir }}/docker dest=/usr/bin/docker state=link
+    #  ignore_errors: true
 
