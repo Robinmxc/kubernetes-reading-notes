@@ -1,6 +1,10 @@
 - name: 获取docker安装状态
-  stat: path=/etc/systemd/system/docker.service
+  stat: path=/usr/lib/systemd/system/docker.service
   register: stat_result
+
+- name: 获取containerd安装状态
+  stat: path=/usr/lib/systemd/system/containerd.service
+  register: containerd_stat_result
 
 - name: 安装docker
   when: "not stat_result.stat.exists"
@@ -36,13 +40,27 @@
             && iptables -F -t raw && iptables -X -t raw \
             && iptables -F -t mangle && iptables -X -t mangle"
     
-    - name: 创建docker的systemd unit文件
-      template: src=docker.service.j2 dest=/etc/systemd/system/docker.service
-      tags: upgrade_docker, download_docker
-    
+    #- name: 创建docker的systemd unit文件
+    #  template: src=docker.service.j2 dest=/etc/systemd/system/docker.service
+    #  tags: upgrade_docker, download_docker
+
     - name: 开机启用docker 服务
       shell: systemctl enable docker
       ignore_errors: true
+
+    - name: 修改docker服务启动参数
+      tags: upgrade_docker
+      shell: 'sed -i "s/LimitNOFILE=infinity/LimitNOFILE=65535/g" /usr/lib/systemd/system/docker.service'
+      when: 'stat_result.stat.exists'
+      run_once: true
+      connection: local
+
+    - name: 修改containerd服务启动参数
+      tags: upgrade_docker
+      shell: 'sed -i "s/LimitNOFILE=infinity/LimitNOFILE=65535/g" /usr/lib/systemd/system/containerd.service'
+      when: 'containerd_stat_result.stat.exists'
+      run_once: true
+      connection: local
     
     - name: 开启docker 服务
       shell: systemctl daemon-reload && systemctl restart docker
