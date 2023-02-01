@@ -20,6 +20,11 @@
   register: pkg_dir_stat
   connection: local
 
+- name: 离线包软件安装
+  copy: src={{ base_dir }}/rpminstall.sh dest={{ base_dir }}/down/rpms/
+  with_items:
+  - rpminstall.sh
+
 #  run_once: true
 - name: 准备k8s基础安装文件
   when: 'not pkg_dir_stat.stat.exists'
@@ -124,14 +129,10 @@
       remote_src: yes
 
 - name: Oniguruma must be installed first
-  shell: "yum install -y {{ base_dir }}/down/rpms/oniguruma*rpm"
+  shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2"
   no_log: true
   ignore_errors: true
 
-- name: install offline rpm package
-  shell: "yum install -y {{ base_dir }}/down/rpms/*rpm"
-  no_log: true
-  ignore_errors: true
 
 - name: 读取基础工具压缩包状态
   stat: 
