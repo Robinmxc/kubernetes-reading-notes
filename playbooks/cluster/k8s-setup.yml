@@ -28,10 +28,10 @@
   - lb
 
 # to install etcd cluster
-- hosts: etcd
-  any_errors_fatal: true
-  roles:
-  - etcd
+#- hosts: etcd
+#  any_errors_fatal: true
+#  roles:
+#  - etcd
 
 # to install docker service
 - hosts:
