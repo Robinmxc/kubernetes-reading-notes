@@ -25,7 +25,14 @@
   with_items:
   - rpminstall.sh
 
+- name: 设置离线包文件执行权限
+  tags:
+    - config
+  file: name="{{ base_dir }}/down/rpms/{{ item }}" mode=0777
+  with_items:
+  - "rpminstall.sh"
 #  run_once: true
+
 - name: 准备k8s基础安装文件
   when: 'not pkg_dir_stat.stat.exists'
   run_once: true
