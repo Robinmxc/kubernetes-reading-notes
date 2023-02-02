@@ -1,16 +1,15 @@
 - name: 修改kubelet对应的cgroupDriver
-  shell: 'grep "--cgroup-driver=cgroupfs" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null \
-          if [ $? -ne 0 ]; then \
-            sed -i "s#--kubeconfig=/etc/kubernetes/kubelet.conf#--kubeconfig=/etc/kubernetes/kubelet.conf --cgroup-driver=cgroupfs#g" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf \
+  shell: 'grep "--cgroup-driver=cgroupfs" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null; \
+          if [ $? -ne 0 ];
+            then sed -i "s#--kubeconfig=/etc/kubernetes/kubelet.conf#--kubeconfig=/etc/kubernetes/kubelet.conf --cgroup-driver=cgroupfs#g" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf \
           fi'
   ignore_errors: true
 
 - name: 加载kubernetes镜像包
-  shell: 'path={{ base_dir }}/down/kubernetes-{{ KUBERNETES_VERSION }} \
-          files=$(ls $path) \
-          for filename in $files \
-          do \
-            docker load -i $filename \
+  shell: 'path={{ base_dir }}/down/kubernetes-{{ KUBERNETES_VERSION }}; \
+          files=$(ls $path); \
+          for filename in $files; \
+          do docker load -i $filename; \
           done'
   ignore_errors: true
 
