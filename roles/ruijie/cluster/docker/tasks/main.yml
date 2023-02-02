@@ -40,12 +40,10 @@
 - name: 修改docker服务启动参数
   tags: upgrade_docker
   shell: 'sed -i "s/LimitNOFILE=infinity/LimitNOFILE=65535/g" /usr/lib/systemd/system/docker.service'
-  connection: local
 
 - name: 修改containerd服务启动参数
   tags: upgrade_docker
   shell: 'sed -i "s/LimitNOFILE=infinity/LimitNOFILE=65535/g" /usr/lib/systemd/system/containerd.service'
-  connection: local
 
 - name: 开启docker 服务
   shell: systemctl daemon-reload && systemctl restart docker
