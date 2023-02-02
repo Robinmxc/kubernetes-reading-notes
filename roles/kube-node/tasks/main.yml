@@ -1,5 +1,5 @@
 - name: 修改kubelet对应的cgroupDriver
-  shell: "grep "\--cgroup-driver=cgroupfs" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null \
+  shell: "grep "--cgroup-driver=cgroupfs" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null \
           if [ $? -ne 0 ]; then \
             sed -i "s#--kubeconfig=/etc/kubernetes/kubelet.conf#--kubeconfig=/etc/kubernetes/kubelet.conf --cgroup-driver=cgroupfs#g" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf \
           fi"
