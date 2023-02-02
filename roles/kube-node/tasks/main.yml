@@ -1,13 +1,11 @@
 - name: 修改kubelet对应的cgroupDriver
-  shell: 'grep "--cgroup-driver=cgroupfs" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null \
-          if [ $? -ne 0 ]; then \
-            sed -i "s#--kubeconfig=/etc/kubernetes/kubelet.conf#--kubeconfig=/etc/kubernetes/kubelet.conf --cgroup-driver=cgroupfs#g" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf \
-          fi'
-  ignore_errors: true
+  shell: 'grep "--cgroup-driver=cgroupfs" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null; \
+          if [ $? -ne 0 ];
+            then sed -i "s#--kubeconfig=/etc/kubernetes/kubelet.conf#--kubeconfig=/etc/kubernetes/kubelet.conf --cgroup-driver=cgroupfs#g" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf \
+          fi;'
 
 - name: node节点加入master节点
   shell: ''
-  ignore_errors: true
 
 # 批准 node 节点，首先轮询等待kubelet启动完成
 - name: 轮询等待kubelet启动
