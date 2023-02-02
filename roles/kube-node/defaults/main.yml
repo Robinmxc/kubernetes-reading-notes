@@ -16,3 +16,7 @@ KUBE_RESERVED: "cpu=200m,memory=500Mi,ephemeral-storage=1Gi"
 
 # 配置kubelet的hard eviction条件
 HARD_EVICTION: "memory.available<200Mi,nodefs.available<10%"
+
+
+# kubernetes版本号
+KUBERNETES_VERSION: 1.23.8
