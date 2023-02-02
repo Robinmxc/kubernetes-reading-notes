@@ -1,23 +1,23 @@
 - name: 修改kubelet对应的cgroupDriver
-  shell: "grep "--cgroup-driver=cgroupfs" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null \
+  shell: 'grep "--cgroup-driver=cgroupfs" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null \
           if [ $? -ne 0 ]; then \
             sed -i "s#--kubeconfig=/etc/kubernetes/kubelet.conf#--kubeconfig=/etc/kubernetes/kubelet.conf --cgroup-driver=cgroupfs#g" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf \
-          fi"
+          fi'
   ignore_errors: true
 
 - name: 加载kubernetes镜像包
-  shell: "path={{ base_dir }}/down/kubernetes-{{ KUBERNETES_VERSION }} \
+  shell: 'path={{ base_dir }}/down/kubernetes-{{ KUBERNETES_VERSION }} \
           files=$(ls $path) \
           for filename in $files \
           do \
             docker load -i $filename \
-          done"
+          done'
   ignore_errors: true
 
 - name: 通过kubeadm安装并启动kubernetes
-  shell: "kubeadm init --apiserver-advertise-address={{ groups.deploy[0] }} \
+  shell: 'kubeadm init --apiserver-advertise-address={{ groups.deploy[0] }} \
           --kubernetes-version={{ KUBERNETES_VERSION }} --image-repository registry.aliyuncs.com/google_containers \
-          --pod-network-cidr=196.200.192.0/20"
+          --pod-network-cidr=196.200.192.0/20'
   ignore_errors: true
   run_once: True
 
