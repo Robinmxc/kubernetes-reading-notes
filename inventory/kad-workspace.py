@@ -29,7 +29,7 @@ def is_port(s):
 
 def read_yml(file_path):
     file = open(file_path)
-    config = yaml.load(file)
+    config = yaml.load(file, Loader=yaml.FullLoader)
     file.close()
     return config
 

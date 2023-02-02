@@ -5,10 +5,8 @@
 #do
 # rpm -ivh /opt/kad/down/rpms/$loop/*.rpm  >/dev/null 2>&1
 #done
-if [  -d "/opt/kad/down/rpms" ]; then
-    yum install -y down/rpms/oniguruma*.rpm
-    yum install -y down/rpms/*.rpm
-fi
+cd /opt/kad/down/rpms
+./rpminstall.sh
 cd /opt/kad/down/ 
 tar -xvf /opt/kad/down/rarlinux-x64-5.3.0.tar.gz >/dev/null 2>&1
 cd /opt/kad/down/rar
