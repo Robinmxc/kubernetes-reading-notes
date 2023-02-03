@@ -1,5 +1,5 @@
-- name: 修改kubelet的cgroupDriver值
-  shell: "grep \"--cgroup-driver=cgroupfs\" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf"
+- name: 获取kubelet的cgroupDriver值
+  shell: "grep cgroup-driver=cgroupfs /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf"
   register: check_cgroup_driver
   tags: upgrade_k8s
 
