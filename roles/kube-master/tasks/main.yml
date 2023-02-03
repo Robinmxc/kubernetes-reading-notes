@@ -1,11 +1,8 @@
-- name: 获取kubelet的cgroupDriver值
-  shell: "grep cgroup-driver=cgroupfs /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf"
-  register: check_cgroup_driver
-  tags: upgrade_k8s
-
 - name: 修改kubelet对应的cgroupDriver
-  shell: "sed -i \"s#--kubeconfig=/etc/kubernetes/kubelet.conf#--kubeconfig=/etc/kubernetes/kubelet.conf --cgroup-driver=cgroupfs#g\" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf"
-  when: check_cgroup_driver == ""
+  shell: "grep --cgroup-driver=cgroupfs /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null; \
+          if [ $? -ne 0 ]; \
+          then sed -i \"s#--kubeconfig=/etc/kubernetes/kubelet.conf#--kubeconfig=/etc/kubernetes/kubelet.conf --cgroup-driver=cgroupfs#g\" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf; \
+          fi;"
   tags: upgrade_k8s
 
 - name: 加载kubernetes镜像包
