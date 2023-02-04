@@ -46,6 +46,15 @@ spec:
          - mountPath: /usr/local/etc/raddb/mods-available/eap
            name: eap
            subPath: eap
+        livenessProbe:
+          exec:
+            command:
+            - "/bin/sh"
+            - "-c"
+            - 'echo "Message-Authenticator = 0x00, FreeRADIUS-Statistics-Type = 1, Response-Packet-Type = Access-Accept" | radclient -r 1 -x localhost:18121 status adminsecret'
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 5
       imagePullSecrets:
       - name: regsecret
       volumes:
