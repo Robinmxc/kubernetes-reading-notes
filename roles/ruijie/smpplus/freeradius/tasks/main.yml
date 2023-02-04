@@ -3,8 +3,7 @@
     dest: "/opt/split.sh"
     content: |
       #!/bin/sh
-      # 拷贝日志文件到 昨天的log中 -b  split 可以进行文件切割，如果不需要文件的切割可以将 split -b 100k -d 换成 cp ，-b指定单个文件大小，-d 指定如果单个文件过
-      大，进行切割时文件的后缀为数字
+      # 拷贝日志文件到昨天的log中，split可以进行文件切割，-b指定单个文件大小，-d指定如果单个文件过大，进行切割时文件的后缀为数字
       split -b 10M -d -a 3 {{ config_base_dir }}/freeradius/log/radius.log {{ config_base_dir }}/freeradius/log/radius.`date -d yesterday +%Y%m%d`.log
       # 清空日志
       cat /dev/null > {{ config_base_dir }}/freeradius/log/radius.log
