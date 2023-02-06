@@ -5,14 +5,6 @@
           fi;"
   tags: upgrade_k8s
 
-- name: 获取kubeadm的token
-  shell: "kubeadm token create"
-  register: kubeadm_token
-
-- name: 获取kubeadm的token_ca_cert_hash
-  shell: "openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'"
-  register: kubeadm_token_ca_cert_hash
-
 - name: node节点加入master节点
   shell: "kubeadm join {{ groups.deploy[0] }}:6443 --token {{ kubeadm_token }} --discovery-token-ca-cert-hash sha256:{{ kubeadm_token_ca_cert_hash }}"
   run_once: True
