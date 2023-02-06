@@ -3,6 +3,15 @@
   with_items:
   - "{{ prometheus_default_dir }}/prometheus/pushgateway/script/"
 
+- name: 获取应用本体数据盘目录
+  tags:
+    - config
+  shell: "cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'"
+  register: app_data_dir
+  when: "KAD_APP_NAME == 'smpplus'"
+  run_once: true
+  connection: local
+
 - name: 准备时间监控脚本
   tags:
     - config
@@ -15,7 +24,7 @@
   with_items:
   - "system_date.sh"
 
-- name: 准备自定义监控脚本
+- name: 准备通用自定义监控脚本
   tags:
     - config
   vars:
@@ -27,17 +36,59 @@
   with_items:
   - "componentVersion.sh"
   - "kubectlCmd.sh"
-  - "httpsCertDate.sh"
 
-- name: 设置文件执行权限
+- name: 设置通用文件执行权限
   tags:
     - config
   file: name="{{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}" mode=0777
   with_items:
-  - "componentVersion.sh"
-  - "kubectlCmd.sh"
-  - "system_date.sh"
-  - "httpsCertDate.sh"
+    - "componentVersion.sh"
+    - "kubectlCmd.sh"
+    - "system_date.sh"
+
+- name: 准备自定义smpplus监控脚本
+  tags:
+    - config
+  vars:
+    file_name: "{{ item }}"
+    nodeip: "hostvars[inventory_hostname]['ansible_default_ipv4']['address']"
+    smpplus_data_dir: {{ app_data_dir }}
+  template:
+    src: "{{ file_name }}.j2"
+    dest: "{{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ file_name }}"
+  with_items:
+    - "oneAuthCertDate.sh"
+  when: "KAD_APP_NAME == 'smpplus'"
+
+- name: 设置自定义smpplus监控脚本文件执行权限
+  tags:
+    - config
+  file: name="{{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}" mode=0777
+  with_items:
+    - "oneAuthCertDate.sh"
+  when: "KAD_APP_NAME == 'smpplus'"
+
+- name: 准备自定义sourceid监控脚本
+  tags:
+    - config
+  vars:
+    file_name: "{{ item }}"
+    nodeip: "hostvars[inventory_hostname]['ansible_default_ipv4']['address']"
+  template:
+    src: "{{ file_name }}.j2"
+    dest: "{{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ file_name }}"
+  with_items:
+    - "httpsCertDate.sh"
+  when: "KAD_APP_NAME == 'sourceid'"
+
+- name: 设置自定义sourceid监控脚本文件执行权限
+  tags:
+    - config
+  file: name="{{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}" mode=0777
+  with_items:
+    - "httpsCertDate.sh"
+  when: "KAD_APP_NAME == 'sourceid'"
+
 
 - name: 准备文件
   file: name={{ item }} state=touch
@@ -51,21 +102,33 @@
   with_items:
   - "system_date.sh"
 
-- name: 配置自动执行
-  tags:
-    - config
-  shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/1 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}' >> /var/spool/cron/root"
-  with_items:
-  - "kubectlCmd.sh"
-  run_once: true
-  connection: local
-
-- name: 配置自动执行
+- name: 配置通用自动执行
   tags:
     - config
   shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/5 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}' >> /var/spool/cron/root"
   with_items:
   - "componentVersion.sh"
-  - "httpsCertDate.sh"
+  - "kubectlCmd.sh"
   run_once: true
   connection: local
+
+- name: 配置smpplus脚本自动执行
+  tags:
+    - config
+  shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/1 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}' >> /var/spool/cron/root"
+  with_items:
+    - "oneAuthCertDate.sh"
+  when: "KAD_APP_NAME == 'smpplus'"
+  run_once: true
+  connection: local
+
+- name: 配置sourceid脚本自动执行
+  tags:
+    - config
+  shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/1 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}' >> /var/spool/cron/root"
+  with_items:
+    - "httpsCertDate.sh"
+  when: "KAD_APP_NAME == 'sourceid'"
+  run_once: true
+  connection: local
+
