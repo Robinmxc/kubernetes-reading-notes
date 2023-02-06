@@ -8,7 +8,9 @@ NODE_WITH_MULTIPLE_NETWORKS: "true"
 #FLANNEL_BACKEND: "host-gw"
 FLANNEL_BACKEND: "vxlan"
 
-flanneld_image: "quay.io/coreos/flannel:v0.12.0"
+flanneld_image: "docker.io/rancher/mirrored-flannelcni-flannel:v0.20.2"
+flanneld_cni_image: "docker.io/rancher/mirrored-flannelcni-flannel-cni-plugin:v1.1.2"
 
 # 离线镜像tar包
-flannel_offline: "flannel-v0.12.0.tar"
+flannel_offline: "flannel-v0.20.2"
+flannel_cni_offline: "flannel-cni-plugin-v1.1.2"
