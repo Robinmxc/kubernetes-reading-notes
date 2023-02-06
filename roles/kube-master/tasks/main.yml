@@ -53,11 +53,3 @@
   delegate_to: "{{ groups.deploy[0] }}"
   run_once: true
   tags: restart_master
-
-- name: 获取kubeadm的token
-  shell: "kubeadm token create"
-  register: kubeadm_token
-
-- name: 获取kubeadm的token_ca_cert_hash
-  shell: "openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'"
-  register: kubeadm_token_ca_cert_hash
