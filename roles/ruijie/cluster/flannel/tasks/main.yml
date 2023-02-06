@@ -13,6 +13,11 @@
   connection: local
   run_once: true
 
+- name: 创建flannel cni 相关目录
+  file: name={{ item }} state=directory
+  with_items:
+  - /opt/kube/images
+
 # 【可选】推送离线docker 镜像，可以忽略执行错误
 - name: 尝试推送离线docker 镜像（若执行失败，可忽略）
   copy: src={{ base_dir }}/down/{{ item }} dest=/opt/kube/images/{{ item }}
