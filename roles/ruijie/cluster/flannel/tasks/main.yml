@@ -17,7 +17,7 @@
 
 # 只需单节点执行一次
 - name: 运行 flannel网络
-  shell: "/kubectl apply -f /opt/kube/kube-system/flannel/ && sleep 5"
+  shell: "kubectl apply -f /opt/kube/kube-system/flannel/ && sleep 5"
   delegate_to: "{{ groups.deploy[0] }}"
   run_once: true
 
