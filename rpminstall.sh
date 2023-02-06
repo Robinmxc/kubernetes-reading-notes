@@ -6,7 +6,7 @@ if [[ ${mode} == 1 || ${mode} == 3 ]];then
 	yum -y install yum-utils
 fi
 echo "参数1：仅下载用于制造离线包 2：仅安装用于现场  3:下载并安装（特定场景） 当前参数${mode}"
-rpms=(python38 sshpass python2 wget unzip tcpdump net-tools ipset ipvsadm tcl bash-completion jq rsyslog oniguruma polkit psmisc rsync socat compat-openssl10 make wntp nfs-utils restic)
+rpms=(tar git python39 sshpass  wget unzip tcpdump net-tools ipset ipvsadm tcl bash-completion jq rsyslog oniguruma polkit psmisc rsync socat compat-openssl10 make wntp nfs-utils restic)
 for var in ${rpms[@]};
 do
      if [[ ${mode} == 1 || ${mode} == 3 ]];then
@@ -45,21 +45,7 @@ if [[ ${mode} == 2 || ${mode} == 3 ]];then
 	rpm -ivh ./docker/*.rpm --force --nodeps
 	rpm -ivh ./kubernetes/*.rpm
 fi
-pips=(PyYAML ipaddress)
-for var in ${pips[@]};
-do
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
-		pip2 uninstall -y $var
-		rm -rf $var
-		pip2 download -d $var  $var
-	fi
-	if [[ ${mode} == 2 || ${mode} == 3 ]];then
-		pip2 install  ./$var/*.whl
-	fi	
-done
-if [[ ${mode} == 2 || ${mode} == 3 ]];then
-	ln -s /usr/bin/python2.7 /usr/bin/python
-fi
+
 pip3s=(ansible)
 for var in ${pip3s[@]};
 do
