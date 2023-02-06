@@ -15,6 +15,21 @@ function rpmOperator(){
 			rpm -ivh ./$var/*.rpm
 	fi	
 }
+function mongo_tool(){
+	var  mongodb-database-tools
+	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+		yum remove -y mongodb-database-tools
+		rm -rf   mongodb-database-tools
+		mkdir  mongodb-database-tools
+		cd mongodb-database-tools
+		wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-rhel80-x86_64-100.6.1.rpm
+		cd ..
+		yum install --allowerasing -y mongodb-database-tools-rhel80-x86_64-100.6.1.rpm --downloadonly  --downloaddir=./mongodb-database-tools
+	fi
+	if [[ ${mode} == 2 || ${mode} == 3 ]]; then
+			rpm -ivh ./mongodb-database-tools/*.rpm
+	fi	
+}
 function commonInstall(){
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
 		yum -y copr enable copart/restic
@@ -39,6 +54,7 @@ function commonInstall(){
 			pip3 install  ./$var/*.whl
 		fi	
 	done
+
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
@@ -91,6 +107,7 @@ function openEulerOs(){
 	kubernetes_process
 }
 commonInstall
+mongo_tool
 osname=(`uname -r`)
 result=$(echo $osname | grep ".oe2203.x86_64")
 if	[[ "$result" != "" ]];then
