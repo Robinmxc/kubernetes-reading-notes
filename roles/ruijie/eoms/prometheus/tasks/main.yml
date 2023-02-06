@@ -27,10 +27,6 @@
       - {regexp: "url:.*$", replace: "url: \"https://{{ groups.influxdb[0] }}:8086/api/v1/prom/write?db=prometheus\""}
     no_log: true
 
-  - name: 获取已下载的镜像文件信息
-    command: "ls {{ img_download_dir }}"
-    register: download_info
-
   - name: 获取prometheus镜像合集信息
     command: "ls {{ img_download_dir }}/eoms/"
     register: prometheus_dockerImages_info
