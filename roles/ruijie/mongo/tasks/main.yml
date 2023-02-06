@@ -256,20 +256,20 @@
 
 - name: 准备backup目录
   file: path="{{ mongodb_backup_dir }}" state=directory
-    
+
+- name: 准备backup目录mongodb-database-tools
+  file: path="{{ mongodb_backup_dir }}/mongodb-database-tools" state=directory    
     
 - name: 复制mongodb安装工具 rpms
   copy:
-    src: "{{ base_dir }}/down/rpms/{{ mongodb_tool }}"
-    dest: "{{ mongodb_backup_dir }}/{{ mongodb_tool }}"
+    src: "{{ base_dir }}/down/rpms/mongodb-database-tools/{{ mongodb_tool }}"
+    dest: "{{ mongodb_backup_dir }}/mongodb-database-tools/{{ mongodb_tool }}"
   
 - name: 安装mongodb工具 rpms
-  yum: name={{ mongodb_backup_dir }}/{{ mongodb_tool }} disable_gpg_check=Yes state=present
+  yum: name={{ mongodb_backup_dir }}/mongodb-database-tools/{{ mongodb_tool }} disable_gpg_check=Yes state=present
   
 - name: 删除 rpms 安装文件
-  shell: "rm -f {{ mongodb_backup_dir }}/{{ mongodb_tool }}"
-  args:
-    warn: no
+  shell: "rm -f {{ mongodb_backup_dir }}/mongodb-database-tools/{{ mongodb_tool }}"
     
 - name: 获取备份脚本文件名称
   command: "ls {{ KAD_PACKAGE_DIR }}"
