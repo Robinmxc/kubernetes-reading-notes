@@ -5,6 +5,8 @@
 #do
 # rpm -ivh /opt/kad/down/rpms/$loop/*.rpm  >/dev/null 2>&1
 #done
+chmod +777 ./rpminstall.sh
+cp -r ./rpminstall.sh /opt/kad/down/rpms
 cd /opt/kad/down/rpms
 ./rpminstall.sh
 cd /opt/kad/down/ 
