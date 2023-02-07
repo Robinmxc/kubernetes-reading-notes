@@ -1,6 +1,10 @@
 #!/bin/bash
+cp -r ./rpminstall.sh /opt/kad/down/rpms
 yum remove -y python3
 mode=${1:-3} 
+osname=(`uname -r`)
+mkdir -p /opt/kad/down/rpms/${osname}
+cd /opt/kad/down/rpms/${osname}
 function rpmOperator(){
 	var=${1} 
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
@@ -15,8 +19,19 @@ function rpmOperator(){
 			rpm -ivh ./$var/*.rpm
 	fi	
 }
+function pipOperator(){
+	var=${1} 
+	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+		pip3 uninstall -y $var
+		rm -rf $var
+		pip3 download -d $var  $var -i   https://pypi.douban.com/simple/
+	fi
+	if [[ ${mode} == 2 || ${mode} == 3 ]];then
+		pip3 install  ./$var/*.whl
+	fi	
+
+}
 function mongo_tool(){
-	var  mongodb-database-tools
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
 		yum remove -y mongodb-database-tools
 		rm -rf   mongodb-database-tools
@@ -41,18 +56,11 @@ function commonInstall(){
 	do
 		rpmOperator $var
 	done
-
+	cp -r /usr/bin/pip3 /usr/local/bin/pip3
 	pip3s=(ansible)
 	for var in ${pip3s[@]};
 	do
-		if [[ ${mode} == 1 || ${mode} == 3 ]];then
-			pip3 uninstall -y $var
-			rm -rf $var
-			pip3 download -d $var  $var -i   https://pypi.douban.com/simple/
-		fi
-		if [[ ${mode} == 2 || ${mode} == 3 ]];then
-			pip3 install  ./$var/*.whl
-		fi	
+		pipOperator $var
 	done
 
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo
@@ -82,7 +90,21 @@ function kubernetes_process(){
 		rpm -ivh ./kubernetes/*.rpm
 	fi	
 }
+function AnolisOS_python3_module(){
+	rpm -qa|grep python38|xargs rpm -ev --allmatches --nodeps
+    yum remove -y python2
+}
 function AnolisOS(){
+	AnolisOS_python3_module
+	commonInstall
+	rm -rf /usr/local/bin/pip3
+	cp -r /usr/bin/pip3 /usr/local/bin/pip3
+	pip3s=(pyyaml)
+	for var in ${pip3s[@]};
+	do
+		pipOperator $var
+	done
+	mongo_tool
 	rpms=(wntp)
 	for var in ${rpms[@]};
 	do
@@ -95,6 +117,8 @@ function AnolisOS(){
 	kubernetes_process
 }
 function openEulerOs(){
+	commonInstall
+	mongo_tool
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
 		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/OS/x86_64/
 		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/everything/x86_64/
@@ -106,9 +130,7 @@ function openEulerOs(){
 	done
 	kubernetes_process
 }
-commonInstall
-mongo_tool
-osname=(`uname -r`)
+
 result=$(echo $osname | grep ".oe2203.x86_64")
 if	[[ "$result" != "" ]];then
 	openEulerOs
