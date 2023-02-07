@@ -114,7 +114,7 @@
   connection: local
 
 - name: 准备离线k8s基础安装文件
-  when: '"allinone" != DEPLOY_MODE and not rpms_dir_stat.stat.exists and {{inventory_hostname}} not in {{groups.kube_master}}'
+  when: '"allinone" != DEPLOY_MODE and not rpms_dir_stat.stat.exists'
   ignore_errors: true
   block:  
   - name: 压缩rpm包
