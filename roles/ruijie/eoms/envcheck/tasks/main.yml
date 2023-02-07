@@ -3,7 +3,7 @@
   when: 'EOMS_ENABLE == "no"'
 
 - name: 更新加载所需基础rpm包
-  when: 'EOMS_ENABLE == "no"'
+  when: 'EOMS_ENABLE == "yes"'
   block:
     - name: 准备目录
       file: name={{ item }} state=directory
@@ -15,14 +15,13 @@
         src: "{{ EOMS_DOWN_PATH }}/rpm/"
         dest: "{{ DEST_FILE_PATH }}/rpm/"
 
-    - name: 安装文件
+    - name: 安装基础依赖文件
       vars:
-        rpm_file_name: "{{ item }}"
-      shell: "yum install -y {{ DEST_FILE_PATH }}/rpm/{{ rpm_file_name }}"
+        rpm_file_name: "fontconfig"
+      shell: "rpm -Uvh --force --nodeps {{ DEST_FILE_PATH }}/rpm/*.rpm "
+      when: 'rpm_file_name in rpm_copy_info.stdout'
       ignore_errors: true
-      with_items:
-        - "libseccomp-2.3.1-3.el7.x86_64.rpm"
-        - "chrony-3.4-1.el7.x86_64.rpm"
+
 
 
  
