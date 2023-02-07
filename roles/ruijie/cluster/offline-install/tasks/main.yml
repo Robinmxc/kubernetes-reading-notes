@@ -114,7 +114,7 @@
   connection: local
 
 - name: 准备离线k8s基础安装文件
-  when: '"allinone" != DEPLOY_MODE and not rpms_dir_stat.stat.exists'
+  when: '"allinone" != DEPLOY_MODE and not rpms_dir_stat.stat.exists and {{inventory_hostname}} not in {{groups.kube_master}}'
   ignore_errors: true
   block:  
   - name: 压缩rpm包
@@ -135,7 +135,8 @@
       dest: "{{ base_dir }}/down/rpms/"
       remote_src: yes
 
-- name: Oniguruma must be installed first
+- name: rpm install for node
+  when: '{{inventory_hostname}} not in {{groups.kube_master}}'
   shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2"
   no_log: true
   ignore_errors: true

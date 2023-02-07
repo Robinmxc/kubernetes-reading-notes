@@ -1,5 +1,7 @@
 #!/bin/bash
-cp -r ./rpminstall.sh /opt/kad/down/rpms
+if [ ! -f "./rpminstall.sh" ];then
+	cp -r ./rpminstall.sh /opt/kad/down/rpms
+fi
 yum remove -y python3
 mode=${1:-3} 
 osname=(`uname -r`)
