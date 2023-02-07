@@ -5,6 +5,14 @@
   - ruijie/eoms/envcheck
 
 - hosts:
+    - eoms
+  tags:
+    - eoms
+  any_errors_fatal: true
+  roles:
+    - ruijie/eoms/basicenvsetting
+
+- hosts:
   - eoms
   any_errors_fatal: true
   vars:
