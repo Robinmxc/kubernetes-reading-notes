@@ -74,7 +74,7 @@
 # to install flannel
 - hosts: 
   - kube_master
-  - kube-node
+  - kube_node
   any_errors_fatal: true
   roles:
   - ruijie/cluster/flannel
