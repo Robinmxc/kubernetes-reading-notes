@@ -1,17 +1,18 @@
 #!/bin/bash
-if [ ! -f "./rpminstall.sh" ];then
+if [  -f "./rpminstall.sh" ];then
 	cp -r ./rpminstall.sh /opt/kad/down/rpms
 fi
-yum remove -y python3
+yum remove -y python3  > /dev/null 2>&1
 mode=${1:-3} 
 osname=(`uname -r`)
 mkdir -p /opt/kad/down/rpms/${osname}
 cd /opt/kad/down/rpms/${osname}
 function rpmOperator(){
 	var=${1} 
+	echo "rpmOperator call ${var}"
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
-		yum remove -y $var
-		rm -rf  $var
+		yum remove -y $var > /dev/null 2>&1
+		rm -rf  $var 
 		mkdir $var
 		cd $var
 		dnf download $var --resolve
@@ -23,8 +24,9 @@ function rpmOperator(){
 }
 function pipOperator(){
 	var=${1} 
+	echo "pipOperator call ${var}"
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
-		pip3 uninstall -y $var
+		pip3 uninstall -y $var > /dev/null 2>&1
 		rm -rf $var
 		pip3 download -d $var  $var -i   https://pypi.douban.com/simple/
 	fi
@@ -34,26 +36,29 @@ function pipOperator(){
 
 }
 function mongo_tool(){
+	echo "mongo_tool call"
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
-		yum remove -y mongodb-database-tools
+		yum remove -y mongodb-database-tools > /dev/null 2>&1
 		rm -rf   mongodb-database-tools
 		mkdir  mongodb-database-tools
 		cd mongodb-database-tools
 		wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-rhel80-x86_64-100.6.1.rpm
 		cd ..
-		yum install --allowerasing -y mongodb-database-tools-rhel80-x86_64-100.6.1.rpm --downloadonly  --downloaddir=./mongodb-database-tools
+		yum install --allowerasing -y ./mongodb-database-tools/mongodb-database-tools-rhel80-x86_64-100.6.1.rpm --downloadonly  --downloaddir=./mongodb-database-tools
 	fi
 	if [[ ${mode} == 2 || ${mode} == 3 ]]; then
 			rpm -ivh ./mongodb-database-tools/*.rpm
 	fi	
 }
 function commonInstall(){
+	echo "commonInstall call"
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
-		yum -y copr enable copart/restic
-		yum -y install yum-utils
+		yum -y install yum-utils 
+		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+		#yum -y copr enable copart/restic 
 	fi
 	echo "参数1：仅下载用于制造离线包 2：仅安装用于现场  3:下载并安装（特定场景） 当前参数${mode}"
-	rpms=(tar git python39 sshpass  wget unzip tcpdump net-tools ipset ipvsadm tcl bash-completion jq rsyslog oniguruma polkit psmisc rsync socat  make  nfs-utils)
+	rpms=(tar git python39 sshpass  wget unzip tcpdump net-tools ipset ipvsadm tcl bash-completion jq rsyslog oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
@@ -76,11 +81,12 @@ gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors
 EOF
 }	
 function kubernetes_process(){
+	echo "kubernetes_process call"
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
 		rm -rf ./docker
 		rm -rf ./kubernetes
-		yum remove -y docker-ce-19.03.15-3.el8 docker-ce-cli-19.03.15-3.el8 containerd.io
-		yum remove -y kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64
+		yum remove -y docker-ce-19.03.15-3.el8 docker-ce-cli-19.03.15-3.el8 containerd.io > /dev/null 2>&1
+		yum remove -y kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
 		yum-config-manager --add-repo https://repo.huaweicloud.com/docker-ce/linux/centos/docker-ce.repo
 		sed -i 's/$releasever/8/g' /etc/yum.repos.d/docker-ce.repo
 		yum install --allowerasing -y docker-ce-19.03.15-3.el8 docker-ce-cli-19.03.15-3.el8 containerd.io --downloadonly  --downloaddir=./docker
@@ -93,10 +99,12 @@ function kubernetes_process(){
 	fi	
 }
 function AnolisOS_python3_module(){
-	rpm -qa|grep python38|xargs rpm -ev --allmatches --nodeps
-    yum remove -y python2
+	echo "AnolisOS_python3_module call"
+	rpm -qa|grep python38|xargs rpm -ev --allmatches --nodeps  > /dev/null 2>&1
+    yum remove -y python2 > /dev/null 2>&1
 }
 function AnolisOS(){
+	echo "AnolisOS call"
 	AnolisOS_python3_module
 	commonInstall
 	rm -rf /usr/local/bin/pip3
@@ -107,18 +115,20 @@ function AnolisOS(){
 		pipOperator $var
 	done
 	mongo_tool
+	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+	 	rpm -ivh http://mirrors.wlnmp.com/centos/wlnmp-release-centos.noarch.rpm
+		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+	fi
 	rpms=(wntp)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
 	done
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
-		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 
-	fi
 	kubernetes_process
 }
 function openEulerOs(){
+	echo "openEulerOs call"
 	commonInstall
 	mongo_tool
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
@@ -132,6 +142,7 @@ function openEulerOs(){
 	done
 	kubernetes_process
 }
+
 
 result=$(echo $osname | grep ".oe2203.x86_64")
 if	[[ "$result" != "" ]];then
