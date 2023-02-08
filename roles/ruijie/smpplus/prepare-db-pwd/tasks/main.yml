@@ -1,5 +1,5 @@
 - name: 获取secret数据
-  command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
+  command: "kubectl get secret -n {{ APP_NAMESPACE }}"
   register: secret_info
   connection: local
   run_once: true
@@ -7,7 +7,7 @@
 - name: 使用现有密码
   block:
   - name: 获取数据库密码
-    command: '{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }} smpplus-db-pwd -o ''go-template={{ "{{" }} index .data "pwd" {{ "}}" }}'''
+    command: 'kubectl get secret -n {{ APP_NAMESPACE }} smpplus-db-pwd -o ''go-template={{ "{{" }} index .data "pwd" {{ "}}" }}'''
     register: secret_result
   - name: 设置数据库密码为现有密码
     set_fact:
@@ -22,7 +22,7 @@
     shell: "openssl rand -hex 6"
     register: rand_result
   - name: 保存到secret
-    shell: "{{ bin_dir }}/kubectl create secret generic -n {{ APP_NAMESPACE }} smpplus-db-pwd --from-literal=pwd={{ rand_result.stdout }}"
+    shell: "kubectl create secret generic -n {{ APP_NAMESPACE }} smpplus-db-pwd --from-literal=pwd={{ rand_result.stdout }}"
   - name: 设置数据库密码为新密码
     set_fact:
       smpplus_db_pwd: '{{ rand_result.stdout }}'
@@ -37,7 +37,7 @@
   run_once: true
 
 - name: 获取mongo1 POD 名称
-  shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
+  shell: "kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
   register: shell_result
   connection: local
   run_once: true
@@ -45,7 +45,7 @@
 - name: 设置mongo shell
   set_fact:
     mongo_pod_name: "{{ shell_result.stdout }}"
-    mongo_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
-    mongo_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- mongo {{ mongo_auth_param }}"
+    mongo_pod_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
+    mongo_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- mongo {{ mongo_auth_param }}"
   connection: local
   run_once: true

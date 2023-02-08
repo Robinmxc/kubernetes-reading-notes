@@ -52,19 +52,19 @@
       shell: "cd /etc/kad/api/ssl && openssl pkcs8 -topk8 -inform PEM -in /etc/kad/api/ssl/kadapi-key.pem -outform PEM -nocrypt > /etc/kad/api/ssl/kadapi-smp-key.pem"
 
     - name: 获取configmap数据
-      command: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} get configmap"
+      command: "kubectl -n {{ APP_NAMESPACE }} get configmap"
       register: kadapi_config
       connection: local
       run_once: true
 
     - name: 删除 kadapi 模板文件的 configmap
-      command: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} delete configmap kadapi-cert"
+      command: "kubectl -n {{ APP_NAMESPACE }} delete configmap kadapi-cert"
       when: '"kadapi-cert" in kadapi_config.stdout'
       connection: local
       run_once: true
 
     - name: 创建 kadapi 模板文件的 configmap
-      shell: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} create configmap kadapi-cert --from-file=/etc/kad/api/ssl/"
+      shell: "kubectl -n {{ APP_NAMESPACE }} create configmap kadapi-cert --from-file=/etc/kad/api/ssl/"
       connection: local
       run_once: true
 

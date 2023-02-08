@@ -1,5 +1,5 @@
 - name: 获取pgsql POD 名称
-  shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep postgresql"
+  shell: "kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep postgresql"
   register: shell_result
   connection: local
   run_once: true
@@ -7,8 +7,8 @@
 - name: 设置pgsql shell
   set_fact:
     pgsql_pod_name: "{{ shell_result.stdout }}"
-    pgsql_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
-    pgsql_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- psql -U postgres "
+    pgsql_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
+    pgsql_pod_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- psql -U postgres "
   connection: local
   run_once: true
 

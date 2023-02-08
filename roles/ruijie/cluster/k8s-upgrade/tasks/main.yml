@@ -4,17 +4,17 @@
 
 - block:
   - name: 停止rocketmq服务
-    shell: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/rocketmq/"
+    shell: "kubectl delete -f {{ yaml_dir }}/rocketmq/"
     connection: local
     run_once: true
 
   - name: 停止mongo服务
-    shell: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/mongo/"
+    shell: "kubectl delete -f {{ yaml_dir }}/mongo/"
     connection: local
     run_once: true
 
   - name: 等待rocketmq结束运行
-    shell: "{{ bin_dir }}/kubectl get pod -A"
+    shell: "kubectl get pod -A"
     register: pod_info
     until: '"rocketmq" not in pod_info.stdout'
     retries: 30
@@ -22,7 +22,7 @@
     ignore_errors: true
 
   - name: 等待mongo结束运行
-    shell: "{{ bin_dir }}/kubectl get pod -A"
+    shell: "kubectl get pod -A"
     register: pod_info
     until: '"mongo" not in pod_info.stdout'
     retries: 30

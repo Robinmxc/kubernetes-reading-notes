@@ -12,7 +12,7 @@
     connection: local
 
   - name: 轮询等待mongodb运行
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} | grep 'mongo1' | awk '{print $3}'"
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'mongo1' | awk '{print $3}'"
     register: pod_status
     until: pod_status.stdout == "Running"
     connection: local
@@ -165,34 +165,34 @@
     ignore_errors: true
 
   - name: 获取所有已经创建的POD信息
-    command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     connection: local
 
   - name: 停止mongo1
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/mongo/mongo1.yml"
+    command: "kubectl delete -f {{ yaml_dir }}/mongo/mongo1.yml"
     when: '"mongo1" in pod_info.stdout'
     connection: local
   
   - name: 停止mongo2
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/mongo/mongo2.yml"
+    command: "kubectl delete -f {{ yaml_dir }}/mongo/mongo2.yml"
     when: '"mongo2" in pod_info.stdout'
     connection: local
 
   - name: 停止mongo3
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/mongo/mongo3.yml"
+    command: "kubectl delete -f {{ yaml_dir }}/mongo/mongo3.yml"
     when: '"mongo3" in pod_info.stdout'
     connection: local
 
   - name: 获取pgsql POD 名称
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep postgresql"
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep postgresql"
     register: shell_result
     connection: local
 
   - name: 设置pgsql shell
     set_fact:
-      pgsql_dump_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- pg_dump -U postgres "
-      pgsql_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- psql -U postgres "
+      pgsql_dump_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- pg_dump -U postgres "
+      pgsql_pod_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- psql -U postgres "
     connection: local
 
   - name: 查询pgsql 是否已初始化

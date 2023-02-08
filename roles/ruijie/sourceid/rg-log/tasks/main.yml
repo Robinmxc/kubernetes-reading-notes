@@ -48,7 +48,7 @@
   - name: 获取所有已经创建的POD信息
     tags:
       - deploy
-    command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     run_once: true
     connection: local
@@ -56,6 +56,6 @@
   - name: 执行部署
     tags:
       - deploy
-    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/rg-log/"
+    shell: "kubectl apply -f {{ yaml_dir }}/rg-log/"
     run_once: true
     connection: local

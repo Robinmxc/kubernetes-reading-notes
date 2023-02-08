@@ -26,12 +26,12 @@
 - hosts: deploy
   tasks:
   - name: 删除老IP地址的node
-    shell: "{{ bin_dir }}/kubectl get node |grep -v '{{ inventory_hostname }}'|awk '{print $1}' |xargs {{ bin_dir }}/kubectl delete node"
+    shell: "kubectl get node |grep -v '{{ inventory_hostname }}'|awk '{print $1}' |xargs kubectl delete node"
     ignore_errors: true
 
   - name: 删除原network插件部署
-    shell: "{{ bin_dir }}/kubectl delete -f /opt/kube/kube-system/{{ CLUSTER_NETWORK }}/ || \
-            {{ bin_dir }}/kubectl delete -f /root/local/kube-system/{{ CLUSTER_NETWORK }}/"
+    shell: "kubectl delete -f /opt/kube/kube-system/{{ CLUSTER_NETWORK }}/ || \
+            kubectl delete -f /root/local/kube-system/{{ CLUSTER_NETWORK }}/"
     ignore_errors: true
 
 - hosts: deploy

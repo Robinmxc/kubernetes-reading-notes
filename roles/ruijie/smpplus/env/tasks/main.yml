@@ -1,18 +1,18 @@
 - name: 获取namespace是否存在
-  command: "{{ bin_dir }}/kubectl get namespaces"
+  command: "kubectl get namespaces"
   register: namespaces_info
 
 - name: 创建namespace
-  shell: "{{ bin_dir }}/kubectl create namespace {{ APP_NAMESPACE }}"
+  shell: "kubectl create namespace {{ APP_NAMESPACE }}"
   when: 'APP_NAMESPACE not in namespaces_info.stdout'
 
 - name: 获取secret数据
-  command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
+  command: "kubectl get secret -n {{ APP_NAMESPACE }}"
   when: 'PRIVATE_REGISTRY_ENABLED == "yes"'
   register: secret_info
 
 - name: 创建regsecret
-  shell: "{{ bin_dir }}/kubectl create secret docker-registry regsecret --docker-server={{ PRIVATE_INSECURE_REGISTRY }} --docker-username={{ PRIVATE_REGISTRY_USER }} --docker-password={{ PRIVATE_REGISTRY_PWD }} --namespace={{ APP_NAMESPACE }}"
+  shell: "kubectl create secret docker-registry regsecret --docker-server={{ PRIVATE_INSECURE_REGISTRY }} --docker-username={{ PRIVATE_REGISTRY_USER }} --docker-password={{ PRIVATE_REGISTRY_PWD }} --namespace={{ APP_NAMESPACE }}"
   when: 'PRIVATE_REGISTRY_ENABLED == "yes" and "regsecret" not in secret_info.stdout'
 
 - name: 准备目录

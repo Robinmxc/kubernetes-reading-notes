@@ -1,6 +1,6 @@
 - block:
   - name: 轮询等待mongodb运行
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} | grep 'mongo1' | awk '{print $3}'"
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'mongo1' | awk '{print $3}'"
     register: pod_status
     until: pod_status.stdout == "Running"
     connection: local

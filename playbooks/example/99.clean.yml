@@ -54,7 +54,7 @@
   - kube_node
   tasks:
   - name: clean 'kube-router' stuff
-    shell: "{{ bin_dir }}/docker run --privileged --net=host cloudnativelabs/kube-router --cleanup-config"
+    shell: "docker run --privileged --net=host cloudnativelabs/kube-router --cleanup-config"
     ignore_errors: true
     when: "CLUSTER_NETWORK == 'kube-router'"
 

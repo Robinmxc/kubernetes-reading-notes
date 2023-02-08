@@ -5,7 +5,7 @@
   run_once: true
 
 - name: 获取所有已经创建的POD信息
-  command: "{{ bin_dir }}/kubectl get pod --all-namespaces"
+  command: "kubectl get pod --all-namespaces"
   register: pod_info
   run_once: true
   delegate_to: "{{ groups.deploy[0] }}"
@@ -23,14 +23,14 @@
       register: image_info
 
     - name: 导入 metrics-server的离线镜像（若执行失败，可忽略）
-      shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ item }}"
+      shell: "docker load -i /opt/kube/images/{{ item }}"
       when: 'metricsserver_offline in image_info.stdout'
       with_items:
         - "{{ metricsserver_offline }}"
         - "{{ addon_resizer_offline }}"
 
     - name: 创建 metrics-server部署
-      shell: "{{ bin_dir }}/kubectl apply -f {{ base_dir }}/manifests/ruijie/metrics-server"
+      shell: "kubectl apply -f {{ base_dir }}/manifests/ruijie/metrics-server"
       delegate_to: "{{ groups.deploy[0] }}"
       run_once: true
   when: '"metrics-server" not in pod_info.stdout and metricsserver_install == "yes"'

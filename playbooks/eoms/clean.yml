@@ -15,23 +15,23 @@
   tasks:
   - name: 获取所有已经创建的POD信息
     tags: always
-    command: "{{ bin_dir }}/kubectl get pod -n monitoring"
+    command: "kubectl get pod -n monitoring"
     register: pod_info
 
   - name: 停止prometheus pushgateway
-    command: "{{ bin_dir }}/kubectl delete -f {{ prometheus_default_dir }}/prometheus/pushgateway/"
+    command: "kubectl delete -f {{ prometheus_default_dir }}/prometheus/pushgateway/"
     when: '"prometheus" in pod_info.stdout'
 
   - name: 停止prometheus k8score-metrics
-    command: "{{ bin_dir }}/kubectl delete -f {{ prometheus_default_dir }}/prometheus/k8score-metrics/"
+    command: "kubectl delete -f {{ prometheus_default_dir }}/prometheus/k8score-metrics/"
     when: '"prometheus" in pod_info.stdout'
 
   - name: 停止prometheus manifests
-    command: "{{ bin_dir }}/kubectl delete -f {{ prometheus_default_dir }}/prometheus/manifests/"
+    command: "kubectl delete -f {{ prometheus_default_dir }}/prometheus/manifests/"
     when: '"prometheus" in pod_info.stdout'
 
   - name: 停止prometheus manifests setup
-    command: "{{ bin_dir }}/kubectl delete -f {{ prometheus_default_dir }}/prometheus/manifests/setup/"
+    command: "kubectl delete -f {{ prometheus_default_dir }}/prometheus/manifests/setup/"
     when: '"prometheus" in pod_info.stdout'
 
 - hosts:

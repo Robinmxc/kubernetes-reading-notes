@@ -207,7 +207,7 @@ WantedBy=multi-user.target
   # 禁止业务 pod调度到 master节点
   tasks:
   - name: 禁止业务 pod调度到 master节点
-    shell: "{{ bin_dir }}/kubectl cordon {{ inventory_hostname }} "
+    shell: "kubectl cordon {{ inventory_hostname }} "
     when: DEPLOY_MODE != "allinone"
     ignore_errors: true
 ```

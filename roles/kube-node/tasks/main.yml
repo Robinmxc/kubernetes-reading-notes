@@ -34,14 +34,14 @@
   delay: 2
 
 #- name: 获取csr 请求信息
-#  shell: "sleep 3 && {{ bin_dir }}/kubectl get csr"
+#  shell: "sleep 3 && kubectl get csr"
 #  delegate_to: "{{ groups.deploy[0] }}"
 #  register: csr_info
 #  run_once: true
 
 #- name: approve-kubelet-csr
-#  shell: "{{ bin_dir }}/kubectl get csr|grep 'Pending' | awk 'NR>0{print $1}'| \
-#        xargs {{ bin_dir }}/kubectl certificate approve"
+#  shell: "kubectl get csr|grep 'Pending' | awk 'NR>0{print $1}'| \
+#        xargs kubectl certificate approve"
 #  when: '"Pending" in csr_info.stdout'
 #  delegate_to: "{{ groups.deploy[0] }}"
 #  run_once: true

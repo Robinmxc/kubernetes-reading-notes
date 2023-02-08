@@ -5,7 +5,7 @@
   run_once: true
 
 - name: 获取所有已经创建的POD信息
-  command: "{{ bin_dir }}/kubectl get pod --all-namespaces"
+  command: "kubectl get pod --all-namespaces"
   register: pod_info
   run_once: true
   delegate_to: "{{ groups.deploy[0] }}"
@@ -25,16 +25,16 @@
       register: image_info
 
     - name: 导入 dashboard的离线镜像（若执行失败，可忽略）
-      shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ dashboard_offline }}"
+      shell: "docker load -i /opt/kube/images/{{ dashboard_offline }}"
       when: 'dashboard_offline in image_info.stdout'
 
     - name: 导入 heapster的离线镜像（若执行失败，可忽略）
-      shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ heapster_offline }}"
+      shell: "docker load -i /opt/kube/images/{{ heapster_offline }}"
       when: 'heapster_offline in image_info.stdout and heapster_install == "no"'
 
     - name: 创建 dashboard部署
-      shell: "{{ bin_dir }}/kubectl apply -f {{ base_dir }}/manifests/ruijie/dashboard && \
-	      {{ bin_dir }}/kubectl apply -f {{ base_dir }}/manifests/heapster/heapster-only"
+      shell: "kubectl apply -f {{ base_dir }}/manifests/ruijie/dashboard && \
+	      kubectl apply -f {{ base_dir }}/manifests/heapster/heapster-only"
       delegate_to: "{{ groups.deploy[0] }}"
       run_once: true
   when: '"kubernetes-dashboard" not in pod_info.stdout and dashboard_install == "yes"'

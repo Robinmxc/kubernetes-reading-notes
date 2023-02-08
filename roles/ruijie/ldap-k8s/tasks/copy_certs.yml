@@ -1,5 +1,5 @@
 - name: 获取Pod名称
-  shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap' | awk '{print $1}'"
+  shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap' | awk '{print $1}'"
   register: pod_status
   connection: local
   run_once: true
@@ -24,12 +24,12 @@
   when: '"openldap" in pod_status.stdout'
   block:
   - name: 复制LDAP证书文件1
-    shell: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} cp {{ ldap_pod_name }}:container/run/service/:ssl-tools/assets/default-ca/default-ca.pem {{ ldap_base_dir }}/certs/ca.crt"
+    shell: "kubectl -n {{ APP_NAMESPACE }} cp {{ ldap_pod_name }}:container/run/service/:ssl-tools/assets/default-ca/default-ca.pem {{ ldap_base_dir }}/certs/ca.crt"
     connection: local
     run_once: true
 
   - name: 复制LDAP证书文件2
-    shell: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} cp {{ ldap_pod_name }}:container/run/service/slapd/assets/certs/{{ item }} {{ ldap_base_dir }}/certs/{{ item }}"
+    shell: "kubectl -n {{ APP_NAMESPACE }} cp {{ ldap_pod_name }}:container/run/service/slapd/assets/certs/{{ item }} {{ ldap_base_dir }}/certs/{{ item }}"
     with_items:
       - "ldap.key"
       - "ldap.crt"
