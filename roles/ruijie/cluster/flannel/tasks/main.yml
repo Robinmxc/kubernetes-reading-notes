@@ -33,7 +33,7 @@
 
 # 导入flannel的离线镜像
 - name: 导入flannel的离线镜像（若执行失败，可忽略）
-  shell: "docker load -i {{ base_dir }}/down/{{ item }}"
+  shell: "docker load -i /opt/kube/images/{{ item }}"
   with_items:
   - "{{ flannel_offline }}"
   - "{{ flannel_cni_offline }}"
