@@ -136,8 +136,7 @@
       remote_src: yes
 
 - name: rpm install for node
-  when: '{{inventory_hostname}} not in {{groups.kube_master}}'
-  shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2"
+  shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2 {{inventory_hostname not in groups.kube_master}}"
   no_log: true
   ignore_errors: true
 

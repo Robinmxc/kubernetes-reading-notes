@@ -4,6 +4,7 @@ if [  -f "./rpminstall.sh" ];then
 fi
 yum remove -y python3  > /dev/null 2>&1
 mode=${1:-3} 
+needExec=${2:-"True"} 
 osname=(`uname -r`)
 mkdir -p /opt/kad/down/rpms/${osname}
 cd /opt/kad/down/rpms/${osname}
@@ -145,10 +146,10 @@ function openEulerOs(){
 
 
 result=$(echo $osname | grep ".oe2203.x86_64")
-if	[[ "$result" != "" ]];then
+if	[[ "$result" != "" ]] && [[ "True" == "$needExec" ]];then
 	openEulerOs
 fi
 result=$(echo $osname | grep ".an8.x86_64")
-if	[[ "$result" != "" ]];then
+if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
 	AnolisOS
 fi
