@@ -83,14 +83,15 @@
   with_items:
   - "/var/spool/cron/root"
 
-- name: 配置自动执行
+- name: 配置时间监控脚本自动执行
   tags:
     - config
   shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/1 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}' >> /var/spool/cron/root"
+  when: "KAD_APP_NAME == 'sourceid'"
   with_items:
   - "system_date.sh"
 
-- name: 配置通用自动执行
+- name: 配置通用脚本自动执行
   tags:
     - config
   shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/5 * * * * sh {{ prometheus_default_dir }}/prometheus/pushgateway/script/{{ item }}' >> /var/spool/cron/root"
