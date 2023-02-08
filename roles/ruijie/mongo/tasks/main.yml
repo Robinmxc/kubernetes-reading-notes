@@ -257,12 +257,12 @@
 - name: 准备backup目录
   file: path="{{ mongodb_backup_dir }}" state=directory
 
-- name: 准备backup目录mongodb-database-tools
-  file: path="{{ mongodb_backup_dir }}/{{ uname.stdout }}/mongodb-database-tools" state=directory   
-
 - name: 查询系统信息
   shell: "uname -r"
   register: uname
+
+- name: 准备backup目录mongodb-database-tools
+  file: path="{{ mongodb_backup_dir }}/{{ uname.stdout }}/mongodb-database-tools" state=directory   
 
 - name: 复制mongodb安装工具 rpms
   copy:
