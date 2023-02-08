@@ -72,7 +72,9 @@
   #  delegate_to: "{{ groups.deploy[0] }}"
 
 # to install flannel
-- hosts: kube_master
+- hosts: 
+  - kube_master
+  - kube-node
   any_errors_fatal: true
   roles:
   - ruijie/cluster/flannel
@@ -100,7 +102,7 @@
 #  - ruijie/cluster/ingress
 
 # to install ingress
-- hosts: kube_master
+- hosts: kube_node
   any_errors_fatal: true
   roles:
   - ruijie/cluster/ingress
