@@ -53,13 +53,8 @@ function mongo_tool(){
 }
 function commonInstall(){
 	echo "commonInstall call"
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
-		yum -y install yum-utils 
-		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-		#yum -y copr enable copart/restic 
-	fi
 	echo "参数1：仅下载用于制造离线包 2：仅安装用于现场  3:下载并安装（特定场景） 当前参数${mode}"
-	rpms=(tar git python39 sshpass  wget unzip tcpdump net-tools ipset ipvsadm tcl bash-completion jq rsyslog oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl epel-release)
+	rpms=(tar git python39 sshpass  wget unzip tcpdump net-tools ipset ipvsadm tcl bash-completion jq rsyslog oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
@@ -107,6 +102,11 @@ function AnolisOS_python3_module(){
 function AnolisOS(){
 	echo "AnolisOS call"
 	AnolisOS_python3_module
+	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+		yum -y install yum-utils 
+		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+		#yum -y copr enable copart/restic 
+	fi
 	commonInstall
 	rm -rf /usr/local/bin/pip3
 	cp -r /usr/bin/pip3 /usr/local/bin/pip3
@@ -120,7 +120,7 @@ function AnolisOS(){
 	 	rpm -ivh http://mirrors.wlnmp.com/centos/wlnmp-release-centos.noarch.rpm
 		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 	fi
-	rpms=(wntp)
+	rpms=(wntp epel-release)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
@@ -130,12 +130,15 @@ function AnolisOS(){
 }
 function openEulerOs(){
 	echo "openEulerOs call"
-	commonInstall
-	mongo_tool
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+		yum -y install yum-utils 
 		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/OS/x86_64/
 		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/everything/x86_64/
+		rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-openEuler
 	fi
+	commonInstall
+	mongo_tool
+
 	rpms=(ntp)
 	for var in ${rpms[@]};
 	do
