@@ -131,7 +131,6 @@ function AnolisOS(){
 function openEulerOs(){
 	echo "openEulerOs call"
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
-		yum -y install yum-utils 
 		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/OS/x86_64/
 		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/everything/x86_64/
 		rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-openEuler
