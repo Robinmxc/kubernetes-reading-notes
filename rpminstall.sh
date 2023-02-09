@@ -20,7 +20,7 @@ function rpmOperator(){
 		cd ..
 	fi
 	if [[ ${mode} == 2 || ${mode} == 3 ]]; then
-			rpm -ivh ./$var/*.rpm
+			rpm -ivh ./$var/*.rpm --force --nodeps
 	fi	
 }
 function pipOperator(){
@@ -96,7 +96,7 @@ function kubernetes_process(){
 
 	if [[ ${mode} == 2 || ${mode} == 3 ]];then
 		rpm -ivh ./docker/*.rpm --force --nodeps
-		rpm -ivh ./kubernetes/*.rpm
+		rpm -ivh ./kubernetes/*.rpm --force --nodeps
 	fi	
 }
 function AnolisOS_python3_module(){
