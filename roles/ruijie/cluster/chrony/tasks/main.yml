@@ -3,9 +3,6 @@
   when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 16
 
 
-- name: 安装 chrony
-  package: name=chrony state=present
-
 - block:
 
   - name: 配置 chrony server 
