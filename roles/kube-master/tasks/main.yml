@@ -6,13 +6,15 @@
   tags: upgrade_k8s
 
 - name: 加载kubernetes镜像包
-  shell: 'path={{ base_dir }}/down/kubernetes-{{ KUBERNETES_VERSION }}; \
-          files=$(ls $path); \
-          cd $path;
-          for filename in $files; \
-          do docker load -i $filename; \
-          done;'
-  tags: upgrade_k8s
+  shell: "docker load -i {{ base_dir }}/down/{{ item }}"
+  with_items:
+  - "{{ kube_apiserver }}"
+  - "{{ kube_proxy }}"
+  - "{{ kube_scheduler }}"
+  - "{{ kube_controller_manager }}"
+  - "{{ etcd }}"
+  - "{{ coredns }}"
+  - "{{ pause }}"
 
 - name: 重置kubeadm
   shell: 'kubeadm reset -f'

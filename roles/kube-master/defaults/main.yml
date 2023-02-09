@@ -22,5 +22,11 @@ BASIC_AUTH_PASS: '_pwd_'
 # https://github.com/coreos/flannel/issues/847
 NODE_CIDR_LEN: 24
 
-# kubernetes版本号
-KUBERNETES_VERSION: 1.23.8
+# 离线镜像tar包
+kube_apiserver: "kube-apiserver-v1.23.8.tar"
+kube_proxy: "kube-proxy-v1.23.8.tar"
+kube_scheduler: "kube-scheduler-v1.23.8.tar"
+kube_controller_manager: "kube-controller-manager-v1.23.8.tar"
+etcd: "etcd-3.5.1-0.tar"
+coredns: "coredns-v1.8.6.tar"
+pause: "pause-3.6.tar"
