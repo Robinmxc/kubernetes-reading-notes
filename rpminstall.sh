@@ -139,7 +139,7 @@ function openEulerOs(){
 	commonInstall
 	mongo_tool
 
-	rpms=(ntp)
+	rpms=(ntp  chrony.x86_64)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
