@@ -2,50 +2,29 @@
   apt: update_cache=yes cache_valid_time=72000
   when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 16
 
-- name: 确保已卸载ntp
-  package: name=ntp state=absent
-
-- name: 安装 chrony
-  package: name=chrony state=present
 
 - block:
-  - name: 配置 chrony server 
-    template: src=server-centos.conf.j2 dest=/etc/chrony.conf
-    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and (ansible_distribution_major_version == "7" or ansible_distribution_major_version == "8")
 
-  - name: 配置 chrony server
-    template: src=server-ubuntu.conf.j2 dest=/etc/chrony/chrony.conf
-    when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 16
+  - name: 配置 chrony server 
+    template: src=server-anolis.conf.j2 dest=/etc/chrony.conf
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
 
   - name: 启动 chrony server
     service: name=chronyd state=restarted enabled=yes
-    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and (ansible_distribution_major_version == "7" or ansible_distribution_major_version == "8")
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
   
-  - name: 启动 chrony server
-    service: name=chrony state=restarted enabled=yes
-    when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 16
-
   - name: 立即同步时间
     shell: "chronyc makestep"
   when: 'inventory_hostname == local_ntp_server'
 
 - block:
   - name: 配置 chrony client
-    template: src=client-centos.conf.j2 dest=/etc/chrony.conf
-    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and (ansible_distribution_major_version == "7" or ansible_distribution_major_version == "8")
+    template: src=client-anolis.conf.j2 dest=/etc/chrony.conf
 
-  - name: 配置 chrony client
-    template: src=client-ubuntu.conf.j2 dest=/etc/chrony/chrony.conf
-    when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 16
-
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
   - name: 启动 chrony client 
     service: name=chronyd state=restarted enabled=yes
-    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and (ansible_distribution_major_version == "7" or ansible_distribution_major_version == "8")
-
-  - name: 启动 chrony client
-    service: name=chrony state=restarted enabled=yes
-    when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 16
-
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
   - name: 立即同步时间
     shell: "chronyc makestep"
   when: 'inventory_hostname != local_ntp_server'
@@ -53,9 +32,10 @@
 - name: 设置时区、更新硬件时钟、重启时间变动会影响到的服务
   shell: "timedatectl set-timezone Asia/Shanghai
    && timedatectl set-local-rtc 0
-   && timedatectl set-ntp yes
    && hwclock --systohc
    && hwclock -w
+   && systemctl restart chronyd
+   && systemctl restart chronyd 
    && systemctl restart crond
    && systemctl restart rsyslog"
   ignore_errors: true

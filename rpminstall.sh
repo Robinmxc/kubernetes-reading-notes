@@ -59,7 +59,7 @@ function commonInstall(){
 		#yum -y copr enable copart/restic 
 	fi
 	echo "参数1：仅下载用于制造离线包 2：仅安装用于现场  3:下载并安装（特定场景） 当前参数${mode}"
-	rpms=(tar git python39 sshpass  wget unzip tcpdump net-tools ipset ipvsadm tcl bash-completion jq rsyslog oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl)
+	rpms=(tar git python39 sshpass  wget unzip tcpdump net-tools ipset ipvsadm tcl bash-completion jq rsyslog oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl epel-release)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
