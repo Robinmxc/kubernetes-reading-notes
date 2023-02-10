@@ -69,4 +69,5 @@
   - { role: ruijie/smpplus/flow, tags: ["flow"]}
   - { role: ruijie/smpplus/aiidentify, tags: ["aiidentify"]}  
   - { role: ruijie/smpplus/aitrain, tags: ["aitrain"]}
+  - { role: ruijie/smpplus/rg-log, tags: ["rg-log"]}
   - { role: ruijie/smpplus/maintenance-related, tags: ["maintenance-related"]}

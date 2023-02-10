@@ -50,7 +50,8 @@
     - "frontend-client"
     - "flow"
     - "aiidentify" 
-    - "aitrain" 
+    - "aitrain"
+    - "rg-log"
 - name: 获取autostart.sh状态
   stat: path="/etc/init.d/autostart.sh"
   register: data_dir_stat  

@@ -86,6 +86,7 @@
       - "license"
       - "operations"
       - "database-ops-history"
+      - "log"
     connection: local
 
   - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本

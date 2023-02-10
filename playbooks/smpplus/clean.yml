@@ -146,6 +146,13 @@
     when: '"aitrain" in pod_info.stdout'
     ignore_errors: true
 
+  - name: delete rg-log
+    tags:
+      - rg-log
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/rg-log/"
+    when: '"rg-log" in pod_info.stdout'
+    ignore_errors: true
+
   - name: 等待frontend-smp结束运行
     tags:
       - frontend-smp
@@ -343,6 +350,16 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"aitrain" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待rg-log结束运行
+    tags:
+      - rg-log
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-log" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
