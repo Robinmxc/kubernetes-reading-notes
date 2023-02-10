@@ -50,7 +50,7 @@
 
   - name: 设置系统日志自动滚动机制
     shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/syslog"
-    when: "'dateext' not in syslog_info.stdout"
+    when: ('dateext' not in syslog_info.stdout and ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")
     ignore_errors: true
     when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
 
@@ -63,9 +63,9 @@
 
   - name: 设置系统日志自动滚动机制
     shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/rsyslog"
-    when: "'dateext' not in syslog_info.stdout"
+    when: ('dateext' not in syslog_info.stdout and ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")
     ignore_errors: true
-    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
+
 # to set up 'kube_master' nodes
 - hosts: kube_master
   any_errors_fatal: true

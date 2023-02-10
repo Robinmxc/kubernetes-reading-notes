@@ -20,7 +20,7 @@
   register: pkg_dir_stat
   connection: local
 
-- name: 离线包软件安装
+- name: 离线包软件安装脚本拷贝
   copy: src={{ base_dir }}/rpminstall.sh dest={{ base_dir }}/down/rpms/
   with_items:
   - rpminstall.sh
