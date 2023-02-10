@@ -33,17 +33,25 @@
   - "rpminstall.sh"
 #  run_once: true
 
-- name: 系统依赖软件包安装
+- name: 查询系统信息
+  shell: "uname -r"
+  register: uname
+
+- name: 准备系统依赖软件tar安装目录
+  file: path="{{ base_dir }}/down/rpms/{{ uname.stdout }}" state=directory   
+  when: '"allinone" != DEPLOY_MODE '
+
+- name: 系统依赖软件tar拷贝
   when: '"allinone" != DEPLOY_MODE '
   ignore_errors: true
   block:  
   - name: 复制rpm包
     copy: 
-      src: "{{ base_dir }}/down/rpms" 
-      dest: "{{ base_dir }}/down/rpms"
+      src: "{{ base_dir }}/down/rpms/{{ uname.stdout }}/tar" 
+      dest: "{{ base_dir }}/down/rpms/{{ uname.stdout }}"
 
-- name: rpm install for node
-  shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2 {{inventory_hostname not in groups.kube_master}} | cat"
+- name: 系统依赖软件tar安装
+  shell: "rpm -ivh {{ base_dir }}/down/rpms/{{ uname.stdout }}/tar/*.rpm --force --nodeps"
   no_log: true
   ignore_errors: true
 
@@ -121,8 +129,38 @@
       shell: "rm -rf {{ offline_dir }}/down"
       when: 'offline_dir_down.stat.exists'
 
+- name: 读取目录状态
+  stat: 
+    path: "{{ base_dir }}/down/rpms.tgz"
+  register: rpms_dir_stat
+  connection: local
 
+- name: 准备离线k8s基础安装文件
+  when: '"allinone" != DEPLOY_MODE and not rpms_dir_stat.stat.exists'
+  ignore_errors: true
+  block:  
+  - name: 压缩rpm包
+    archive:
+      path: "{{ base_dir }}/down/rpms/"
+      dest: "{{ base_dir }}/down/rpms.tgz"
+    connection: local
+    run_once: true
 
+  - name: 复制rpm包
+    copy: 
+      src: "{{ base_dir }}/down/rpms.tgz" 
+      dest: "{{ base_dir }}/down/rpms.tgz"
+
+  - name: 解压rpm包
+    unarchive:
+      src: "{{ base_dir }}/down/rpms.tgz"
+      dest: "{{ base_dir }}/down/rpms/"
+      remote_src: yes
+
+- name: rpm install for node
+  shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2 {{inventory_hostname not in groups.kube_master}} | cat"
+  no_log: true
+  ignore_errors: true
 
 - name: 读取基础工具压缩包状态
   stat: 
