@@ -33,6 +33,20 @@
   - "rpminstall.sh"
 #  run_once: true
 
+- name: 系统依赖软件包安装
+  when: '"allinone" != DEPLOY_MODE and not rpms_dir_stat.stat.exists'
+  ignore_errors: true
+  block:  
+  - name: 复制rpm包
+    copy: 
+      src: "{{ base_dir }}/down/rpms" 
+      dest: "{{ base_dir }}/down/rpms"
+
+- name: rpm install for node
+  shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2 {{inventory_hostname not in groups.kube_master}} | cat"
+  no_log: true
+  ignore_errors: true
+
 - name: 准备k8s基础安装文件
   when: 'not pkg_dir_stat.stat.exists'
   run_once: true
@@ -113,32 +127,6 @@
   register: rpms_dir_stat
   connection: local
 
-- name: 准备离线k8s基础安装文件
-  when: '"allinone" != DEPLOY_MODE and not rpms_dir_stat.stat.exists'
-  ignore_errors: true
-  block:  
-  - name: 压缩rpm包
-    archive:
-      path: "{{ base_dir }}/down/rpms/"
-      dest: "{{ base_dir }}/down/rpms.tgz"
-    connection: local
-    run_once: true
-
-  - name: 复制rpm包
-    copy: 
-      src: "{{ base_dir }}/down/rpms.tgz" 
-      dest: "{{ base_dir }}/down/rpms.tgz"
-
-  - name: 解压rpm包
-    unarchive:
-      src: "{{ base_dir }}/down/rpms.tgz"
-      dest: "{{ base_dir }}/down/rpms/"
-      remote_src: yes
-
-- name: rpm install for node
-  shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2 {{inventory_hostname not in groups.kube_master}} | cat"
-  no_log: true
-  ignore_errors: true
 
 
 - name: 读取基础工具压缩包状态
