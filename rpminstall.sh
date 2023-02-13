@@ -65,6 +65,7 @@ function commonInstall(){
 	do
 		pipOperator $var
 	done
+	source /usr/share/bash-completion/bash_completion
 
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]

@@ -58,4 +58,4 @@
 
 # 支持kubectl命令自动补全
 - name: 支持kubectl命令自动补全
-  shell: 'source /usr/share/bash-completion/bash_completion;kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null'
+  shell: 'kubectl completion bash >/etc/bash_completion.d/kubectl'
