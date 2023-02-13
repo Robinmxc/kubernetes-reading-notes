@@ -80,5 +80,5 @@
 
 # 如果node节点也包括在master节点中,设置该节点可以调度pod
 - name: 设置node节点可以调度pod
-  shell: 'kubectl taint node k8s-master node-role.kubernetes.io/master-'
+  shell: 'kubectl taint nodes --all node-role.kubernetes.io/master-'
   when: "inventory_hostname in groups.kube_master"
