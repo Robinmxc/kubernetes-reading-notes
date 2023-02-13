@@ -1,6 +1,10 @@
 - name: 部署node节点
-  when: "inventory_hostname != groups.deploy[0]"
+  when: "inventory_hostname not in groups.kube_master"
   block: 
+    - name: 开机启用kubelet 服务
+      shell: systemctl enable kubelet
+      ignore_errors: true
+
     - name: 修改kubelet对应的cgroupDriver
       shell: "grep cgroup-driver=cgroupfs /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null; \
               if [ $? -ne 0 ]; \
@@ -73,3 +77,8 @@
       shell: "kubectl label node {{ inventory_hostname }} kubernetes.io/role=node --overwrite"
       ignore_errors: true
       delegate_to: "{{ groups.deploy[0] }}"
+
+# 如果node节点也包括在master节点中,设置该节点可以调度pod
+- name: 部署node节点
+  shell: 'kubectl taint node k8s-master node-role.kubernetes.io/master-'
+  when: "inventory_hostname in groups.kube_master"
