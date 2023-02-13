@@ -1,9 +1,5 @@
-- name: 轮询等待node达到Ready状态
-  shell: "kubectl get node {{ inventory_hostname }}|awk 'NR>1{print $2}'"
-  register: node_status
-  
-- name: 轮询等待node达到Ready状态
-  when: node_status.stdout != "Ready" and node_status.stdout != "Ready,SchedulingDisabled"
+- name: 部署node节点
+  when: "inventory_hostname != groups.deploy[0]"
   block: 
     - name: 修改kubelet对应的cgroupDriver
       shell: "grep cgroup-driver=cgroupfs /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null; \
