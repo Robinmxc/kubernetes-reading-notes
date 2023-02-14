@@ -1,10 +1,10 @@
-- name: 轮询等待node达到Ready状态
-  shell: "kubectl get node {{ inventory_hostname }}|awk 'NR>1{print $2}'"
-  register: node_status
-  
-- name: 轮询等待node达到Ready状态
-  when: node_status.stdout != "Ready" and node_status.stdout != "Ready,SchedulingDisabled"
+- name: 部署node节点
+  when: "inventory_hostname not in groups.kube_master"
   block: 
+    - name: 开机启用kubelet 服务
+      shell: systemctl enable kubelet
+      ignore_errors: true
+
     - name: 修改kubelet对应的cgroupDriver
       shell: "grep cgroup-driver=cgroupfs /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null; \
               if [ $? -ne 0 ]; \
@@ -77,3 +77,8 @@
       shell: "kubectl label node {{ inventory_hostname }} kubernetes.io/role=node --overwrite"
       ignore_errors: true
       delegate_to: "{{ groups.deploy[0] }}"
+
+# 如果node节点也包括在master节点中,设置该节点可以调度pod
+- name: 设置node节点可以调度pod
+  shell: 'kubectl taint nodes --all node-role.kubernetes.io/master-'
+  when: "inventory_hostname in groups.kube_master"
