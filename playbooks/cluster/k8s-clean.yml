@@ -27,10 +27,7 @@
     with_items:
     - "/var/lib/kubelet/"
     #- "/var/lib/kube-proxy/"
-    - "/usr/lib/systemd/system/kubelet.service.d./10-kubeadm.conf"
-    - "/usr/lib/systemd/system/kubelet.service.d./"
     - "/usr/lib/systemd/system/kubelet.service"
-    - "/etc/bash_completion.d/kubectl"
     #- "/etc/systemd/system/kube-proxy.service"
     #- "/opt/kube/kube-system/"
 
@@ -61,70 +58,70 @@
   - kube_master
   - kube_node
   tasks:
-  - name: 获取docker目录
-    shell: |-
-      docker info|grep 'Docker Root Dir'|awk -F ": " '{print $2}'
-    register: docker_home
+  #- name: 获取docker目录
+  #  shell: |-
+  #    docker info|grep 'Docker Root Dir'|awk -F ": " '{print $2}'
+  #  register: docker_home
 
-  - name: clean 'kube-router' stuff
-    shell: "docker run --privileged --net=host cloudnativelabs/kube-router --cleanup-config"
-    ignore_errors: true
-    when: "CLUSTER_NETWORK == 'kube-router'"
+  #- name: clean 'kube-router' stuff
+  #  shell: "docker run --privileged --net=host cloudnativelabs/kube-router --cleanup-config"
+  #  ignore_errors: true
+  #  when: "CLUSTER_NETWORK == 'kube-router'"
 
-  - name: 获取是否运行名为'kubeasz'的容器
-    shell: 'docker ps|grep kubeasz || echo "NOT FOUND"'
-    register: install_info
+  #- name: 获取是否运行名为'kubeasz'的容器
+  #  shell: 'docker ps|grep kubeasz || echo "NOT FOUND"'
+  #  register: install_info
 
-  - name: stop and disable docker service
-    service:
-      name: docker
-      state: stopped
-      enabled: no
-    ignore_errors: true
-    when: "'kubeasz' not in install_info.stdout"
+  #- name: stop and disable docker service
+  #  service:
+  #    name: docker
+  #    state: stopped
+  #    enabled: no
+  #  ignore_errors: true
+  #  when: "'kubeasz' not in install_info.stdout"
 
-  - name: stop and disable autostart service
-    shell: "systemctl disable autostart.sh && systemctl stop autostart"
-    ignore_errors: true
+  #- name: stop and disable autostart service
+  #  shell: "systemctl disable autostart.sh && systemctl stop autostart"
+  #  ignore_errors: true
 
   # as k8s-network-plugins use host-network, '/var/run/docker/netns/default' must be umounted
-  - name: unmount docker filesystem-1
-    mount: path=/var/run/docker/netns/default state=unmounted
-    when: "'kubeasz' not in install_info.stdout"
+  #- name: unmount docker filesystem-1
+  #  mount: path=/var/run/docker/netns/default state=unmounted
+  #  when: "'kubeasz' not in install_info.stdout"
 
-  - name: unmount docker filesystem-2
-    mount: path={{ docker_home.stdout }}/overlay2 state=unmounted
-    when: "'kubeasz' not in install_info.stdout"
+  #- name: unmount docker filesystem-2
+  #  mount: path={{ docker_home.stdout }}/overlay2 state=unmounted
+  #  when: "'kubeasz' not in install_info.stdout"
 
-  - name: remove files and dirs
-    file: name={{ item }} state=absent
-    with_items:
-    - "{{ docker_home.stdout }}"
-    - "/var/run/docker/"
-    - "/usr/lib/systemd/system/docker.service"
-    - "/usr/lib/systemd/system/containerd.service"
+  #- name: remove files and dirs
+  #  file: name={{ item }} state=absent
+  #  with_items:
+  #  - "{{ docker_home.stdout }}"
+  #  - "/var/run/docker/"
+  #  - "/usr/lib/systemd/system/docker.service"
+  #  - "/usr/lib/systemd/system/containerd.service"
     #- "/etc/systemd/system/docker.service.requires/"
     #- "/etc/systemd/system/docker.service.d/"
-    - "/etc/bash_completion.d/docker"
-    - "/usr/bin/docker"
-    when: "'kubeasz' not in install_info.stdout"
+  #  - "/etc/bash_completion.d/docker"
+  #  - "/usr/bin/docker"
+  #  when: "'kubeasz' not in install_info.stdout"
 
-  - name: remove files and dirs2
-    file: name={{ item }} state=absent
-    with_items:
-    - "/etc/cni/"
-    - "/run/flannel/"
-    - "/etc/calico/"
-    - "/var/run/calico/"
-    - "/var/lib/calico/"
-    - "/var/log/calico/"
-    - "/etc/cilium/"
-    - "/var/run/cilium/"
-    - "/sys/fs/bpf/tc/"
-    - "/var/lib/cni/"
+  #- name: remove files and dirs2
+  #  file: name={{ item }} state=absent
+  #  with_items:
+  #  - "/etc/cni/"
+  #  - "/run/flannel/"
+  #  - "/etc/calico/"
+  #  - "/var/run/calico/"
+  #  - "/var/lib/calico/"
+  #  - "/var/log/calico/"
+  #  - "/etc/cilium/"
+  #  - "/var/run/cilium/"
+  #  - "/sys/fs/bpf/tc/"
+  #  - "/var/lib/cni/"
     #- "/var/lib/kube-router/"
-    - "/opt/kube/kube-system/"
-    - "/etc/init.d/autostart.sh"
+  #  - "/opt/kube/kube-system/"
+  #  - "/etc/init.d/autostart.sh"
 
   - name: cleanup iptables
     shell: "iptables -F && iptables -X \
@@ -151,12 +148,12 @@
       - "cilium_vxlan"
     ignore_errors: true
 
-  - name: cleanup networks2
-    shell: "ip link del docker0; \
-	systemctl restart networking; \
-	systemctl restart network"
-    ignore_errors: true
-    when: "'kubeasz' not in install_info.stdout"
+  #- name: cleanup networks2
+  #  shell: "ip link del docker0; \
+	#systemctl restart networking; \
+	#systemctl restart network"
+  #  ignore_errors: true
+  #  when: "'kubeasz' not in install_info.stdout"
 
   - name: cleanup 'calico' routes
     shell: "for rt in `ip route|grep bird|sed 's/blackhole//'|awk '{print $1}'`;do ip route del $rt;done;"
@@ -164,8 +161,8 @@
     ignore_errors: true
 
 # to clean 'etcd' nodes
-- hosts: etcd
-  tasks:
+#- hosts: etcd
+  #tasks:
   #- name: stop and disable etcd service
   #  service:
   #    name: etcd
@@ -173,13 +170,13 @@
   #    enabled: no
   #  ignore_errors: true
 
-  - name: remove files and dirs
-    file: name={{ item }} state=absent
-    with_items:
-    - "/var/lib/etcd"
-    - "/etc/etcd/"
-    - "/backup/k8s"
-    #- "/etc/systemd/system/etcd.service"
+  #- name: remove files and dirs
+  #  file: name={{ item }} state=absent
+  #  with_items:
+  #  - "/var/lib/etcd"
+  #  - "/etc/etcd/"
+  #  - "/backup/k8s"
+  #  - "/etc/systemd/system/etcd.service"
 
 # to clean 'lb' nodes
 - hosts:
@@ -231,7 +228,7 @@
     - "/etc/kubernetes/"
     - "{{ ca_dir }}" 
     - "/root/.kube/config"
-    - "/etc/docker/"
+    #- "/etc/docker/"
 
   - name: clean 'ENV PATH'
     lineinfile:
