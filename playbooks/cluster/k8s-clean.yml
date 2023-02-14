@@ -10,45 +10,51 @@
     service: name={{ item }} state=stopped enabled=no
     with_items:
     - kubelet
-    - kube-proxy
+    #- kube-proxy
     ignore_errors: true
 
-  - name: umount kubelet filesystems
-    shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount"
-    args:
-      warn: false
-    ignore_errors: true
+  #- name: umount kubelet filesystems
+  #  shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount"
+  #  args:
+  #    warn: false
+  #  ignore_errors: true
+
+  - name: reset kubeadm
+    shell: 'kubeadm reset -f'
 
   - name: remove files and dirs of 'kube_node' nodes
     file: name={{ item }} state=absent
     with_items:
     - "/var/lib/kubelet/"
-    - "/var/lib/kube-proxy/"
-    - "/etc/systemd/system/kubelet.service"
-    - "/etc/systemd/system/kube-proxy.service"
-    - "/opt/kube/kube-system/"
+    #- "/var/lib/kube-proxy/"
+    - "/usr/lib/systemd/system/kubelet.service.d./10-kubeadm.conf"
+    - "/usr/lib/systemd/system/kubelet.service.d./"
+    - "/usr/lib/systemd/system/kubelet.service"
+    - "/etc/bash_completion.d/kubectl"
+    #- "/etc/systemd/system/kube-proxy.service"
+    #- "/opt/kube/kube-system/"
 
 # to clean 'kube_master' nodes
-- hosts:
-  - kube_master
-  tasks:
-  - name: stop and disable kube-master service
-    service: name={{ item }} state=stopped enabled=no
-    with_items:
-    - kube-apiserver
-    - kube-controller-manager
-    - kube-scheduler
-    - kadapi
-    ignore_errors: true
+#- hosts:
+#  - kube_master
+#  tasks:
+#  - name: stop and disable kube-master service
+#    service: name={{ item }} state=stopped enabled=no
+#    with_items:
+#    - kube-apiserver
+#    - kube-controller-manager
+#    - kube-scheduler
+#    - kadapi
+#    ignore_errors: true
 
-  - name: remove files and dirs of 'kube_master' nodes
-    file: name={{ item }} state=absent
-    with_items:
-    - "/var/run/kubernetes"
-    - "/etc/systemd/system/kube-apiserver.service"
-    - "/etc/systemd/system/kube-controller-manager.service"
-    - "/etc/systemd/system/kube-scheduler.service"
-    - "/etc/systemd/system/kadapi.service"
+#  - name: remove files and dirs of 'kube_master' nodes
+#    file: name={{ item }} state=absent
+#    with_items:
+#    - "/var/run/kubernetes"
+#    - "/etc/systemd/system/kube-apiserver.service"
+#    - "/etc/systemd/system/kube-controller-manager.service"
+#    - "/etc/systemd/system/kube-scheduler.service"
+#    - "/etc/systemd/system/kadapi.service"
 
 # to clean docker service and networking
 - hosts:
@@ -87,7 +93,7 @@
     when: "'kubeasz' not in install_info.stdout"
 
   - name: unmount docker filesystem-2
-    mount: path={{ docker_home.stdout }}/overlay state=unmounted
+    mount: path={{ docker_home.stdout }}/overlay2 state=unmounted
     when: "'kubeasz' not in install_info.stdout"
 
   - name: remove files and dirs
@@ -95,9 +101,10 @@
     with_items:
     - "{{ docker_home.stdout }}"
     - "/var/run/docker/"
-    - "/etc/systemd/system/docker.service"
-    - "/etc/systemd/system/docker.service.requires/"
-    - "/etc/systemd/system/docker.service.d/"
+    - "/usr/lib/systemd/system/docker.service"
+    - "/usr/lib/systemd/system/containerd.service"
+    #- "/etc/systemd/system/docker.service.requires/"
+    #- "/etc/systemd/system/docker.service.d/"
     - "/etc/bash_completion.d/docker"
     - "/usr/bin/docker"
     when: "'kubeasz' not in install_info.stdout"
@@ -115,7 +122,7 @@
     - "/var/run/cilium/"
     - "/sys/fs/bpf/tc/"
     - "/var/lib/cni/"
-    - "/var/lib/kube-router/"
+    #- "/var/lib/kube-router/"
     - "/opt/kube/kube-system/"
     - "/etc/init.d/autostart.sh"
 
@@ -159,12 +166,12 @@
 # to clean 'etcd' nodes
 - hosts: etcd
   tasks:
-  - name: stop and disable etcd service
-    service:
-      name: etcd
-      state: stopped
-      enabled: no
-    ignore_errors: true
+  #- name: stop and disable etcd service
+  #  service:
+  #    name: etcd
+  #    state: stopped
+  #    enabled: no
+  #  ignore_errors: true
 
   - name: remove files and dirs
     file: name={{ item }} state=absent
@@ -172,7 +179,7 @@
     - "/var/lib/etcd"
     - "/etc/etcd/"
     - "/backup/k8s"
-    - "/etc/systemd/system/etcd.service"
+    #- "/etc/systemd/system/etcd.service"
 
 # to clean 'lb' nodes
 - hosts:
@@ -210,9 +217,9 @@
   - name: 查询chronyd状态
     shell: "systemctl list-units *.service"
     register: svc_info
-    when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"
+    when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat" or ansible_distribution == "Anolis" or ansible_distribution == "openEuler"
 
-  - name: stop and disable chronyd in CentOS/RedHat
+  - name: stop and disable chronyd in CentOS/RedHat/Anolis/openEuler
     service: name=chronyd state=stopped enabled=no
     tags: rm_ntp
     when: '"chronyd" in svc_info.stdout'
