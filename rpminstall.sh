@@ -91,17 +91,17 @@ function kubernetes_process(){
 	echo "kubernetes_process call"
 	if [[ ${mode} == 4 ]];then
 		yum remove -y docker-ce-19.03.15-3.el8 docker-ce-cli-19.03.15-3.el8 containerd.io > /dev/null 2>&1
-		yum remove -y conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
+		yum remove -y  libbpf conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
 	fi	
 	if [[ ${mode} == 1 || ${mode} == 3 ]];then
 		rm -rf ./docker
 		rm -rf ./kubernetes
 		yum remove -y docker-ce-19.03.15-3.el8 docker-ce-cli-19.03.15-3.el8 containerd.io > /dev/null 2>&1
-		yum remove -y conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
+		yum remove -y  libbpf conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
 		yum-config-manager --add-repo https://repo.huaweicloud.com/docker-ce/linux/centos/docker-ce.repo
 		sed -i 's/$releasever/8/g' /etc/yum.repos.d/docker-ce.repo
 		yum install --allowerasing -y docker-ce-19.03.15-3.el8 docker-ce-cli-19.03.15-3.el8 containerd.io --downloadonly  --downloaddir=./docker
-		yum install -y kubernetes-cni-1.2.0-0 kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64  --downloadonly  --downloaddir=./kubernetes
+		yum install -y  libbpf kubernetes-cni-1.2.0-0 kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64  --downloadonly  --downloaddir=./kubernetes
 	fi
 
 	if [[ ${mode} == 2 || ${mode} == 3 ]];then

@@ -14,12 +14,6 @@
   - "{{ bin_dir }}"
   - "{{ ca_dir }}"
 
-- name: 分发证书工具 CFSSL
-  copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
-  with_items:
-  - cfssl
-  - cfssl-certinfo
-  - cfssljson
 
 - name: 本地设置 bin 目录权限
   file: path={{ base_dir }}/bin state=directory mode=0755 recurse=yes
