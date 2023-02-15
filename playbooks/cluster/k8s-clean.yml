@@ -26,7 +26,7 @@
 	&& iptables -F -t nat && iptables -X -t nat \
 	&& iptables -F -t raw && iptables -X -t raw \
 	&& iptables -F -t mangle && iptables -X -t mangle"
-    when: "'kubeasz' not in install_info.stdout"
+    #when: "'kubeasz' not in install_info.stdout"
 
   - name: 查询网卡信息
     shell: "ip link | grep mtu"
@@ -108,7 +108,7 @@
       state: absent
       regexp: '{{ item }}'
     with_items:
-    - 'kubeasz'
+    #- 'kubeasz'
     - 'helm'
     - 'kubectl completion'
     - 'HELM_TLS_ENABLE'
