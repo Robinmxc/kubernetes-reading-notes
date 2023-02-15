@@ -41,7 +41,11 @@
   - name: 启动 chrony client 
     service: name=chronyd state=restarted enabled=yes
     when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
-     
+
+  - name: 配置 rsyslog 
+    template: src=rsyslog.conf dest=/etc/rsyslog.conf
+    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
+
   - name: 立即同步时间
     shell: "chronyc makestep"
   when: 'inventory_hostname != local_ntp_server'
