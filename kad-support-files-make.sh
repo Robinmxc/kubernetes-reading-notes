@@ -19,4 +19,7 @@ for var in ${rpmsFile[@]};
 do
 	cp -r  /opt/kad/down/rpms/${var} ./kad-support-files-2.7.0-os/down/rpms
 done
-tar  -zcvf   kad-support-files-2.7.0-os.tar.gz   kad-support-files-2.7.0-os
+cd    kad-support-files-2.7.0-os
+tar  -zcvf   kad-support-files-2.7.0-os.tar.gz bin down
+cd ..
+mv kad-support-files-2.7.0-os/kad-support-files-2.7.0-os.tar.gz .
