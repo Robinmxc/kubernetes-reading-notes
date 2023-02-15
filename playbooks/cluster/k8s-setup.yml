@@ -5,10 +5,10 @@
   - ruijie/cluster/chrony
 
 # to create CA, kubeconfig, kube-proxy.kubeconfig etc. on 'deploy' node
-- hosts: deploy
-  any_errors_fatal: true
-  roles:
-  - deploy
+#- hosts: deploy
+#  any_errors_fatal: true
+#  roles:
+#  - deploy
 
 # prepare tasks for all nodes
 - hosts:
