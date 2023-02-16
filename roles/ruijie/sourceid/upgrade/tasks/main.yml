@@ -136,29 +136,6 @@
       - "sourceid/report"
     connection: local
 
-  - name: 准备https证书新目录
-    file: path={{ item }} state=directory
-    with_items: "{{ ingress_ca_dir }}"
-    ignore_errors: true
-
-  - name: 复制https证书到新目录
-    vars:
-      src_path: "{{ca_dir}}/{{ item }}-key.pem"
-      dest_path: "{{ ingress_ca_dir }}/{{ item }}-key.pem"
-    copy: src="{{ src_path }}" dest="{{ dest_path }}"
-    with_items: "{{ ingress_ssl_names }}"
-    connection: local
-    ignore_errors: true
-
-  - name: 复制https证书到新目录
-    vars:
-      src_path: "{{ca_dir}}/{{ item }}.pem"
-      dest_path: "{{ ingress_ca_dir }}/{{ item }}.pem"
-    copy: src="{{ src_path }}" dest="{{ dest_path }}"
-    with_items: "{{ ingress_ssl_names }}"
-    connection: local
-    ignore_errors: true
-
   - name: 获取所有已经创建的POD信息
     command: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
