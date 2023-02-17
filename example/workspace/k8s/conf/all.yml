@@ -118,3 +118,8 @@ HEALTH_CHECK: {
   groupview: false
 
 }
+
+HOSTS: {
+  "id.example.com": "172.17.8.93",
+  "idself.example.com": "172.17.8.93"
+}

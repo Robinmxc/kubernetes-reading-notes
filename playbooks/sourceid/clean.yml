@@ -5,7 +5,7 @@
   tasks:
   - name: 获取所有已经创建的POD信息
     tags: always
-    command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    command: "{{ bin_dir }}/kubectl get pod --all-namespaces"
     register: pod_info
 
   - name: 停止linkid
@@ -170,6 +170,12 @@
       - rocketmq
     command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/rocketmq/"
     when: '"rg-rocket" in pod_info.stdout'
+
+  - name: 停止 coredns
+    tags:
+      - coredns
+    command: "{{ bin_dir }}/kubectl delete -f /opt/kube/kube-system/{{ dns_backend }}"
+    when: '"coredns" in pod_info.stdout'
 
   - name: 等待linkid结束运行
     tags:
@@ -442,6 +448,16 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-rocket" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待coredns结束运行
+    tags:
+      - coredns
+    shell: "{{ bin_dir }}/kubectl get pod -n kube-system "
+    register: pod_info
+    until: '"coredns" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
