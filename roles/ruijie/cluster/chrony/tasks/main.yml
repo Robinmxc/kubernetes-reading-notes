@@ -6,6 +6,14 @@
 - block:
 
   - name: 配置 chrony server 
+    template: src=server-centos.conf.j2 dest=/etc/chrony.conf
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
+
+  - name: 启动 chrony server
+    service: name=chronyd state=restarted enabled=yes
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
+  
+  - name: 配置 chrony server 
     template: src=server-anolis.conf.j2 dest=/etc/chrony.conf
     when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
 
@@ -26,6 +34,15 @@
   when: 'inventory_hostname == local_ntp_server'
 
 - block:
+  - name: 配置 chrony client
+    template: src=client-centos.conf.j2 dest=/etc/chrony.conf
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
+
+
+  - name: 启动 chrony client 
+    service: name=chronyd state=restarted enabled=yes
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
+
   - name: 配置 chrony client
     template: src=client-anolis.conf.j2 dest=/etc/chrony.conf
     when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
@@ -48,6 +65,7 @@
 
   - name: 立即同步时间
     shell: "chronyc makestep"
+    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22") ||  (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8") || ((ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7")
   when: 'inventory_hostname != local_ntp_server'
 
 - name: 设置时区、更新硬件时钟、重启时间变动会影响到的服务
@@ -72,3 +90,15 @@
    && systemctl restart rsyslog"
   ignore_errors: true
   when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
+
+  
+- name: 设置时区、更新硬件时钟、重启时间变动会影响到的服务
+  shell: "timedatectl set-timezone Asia/Shanghai
+   && timedatectl set-local-rtc 0
+   && timedatectl set-ntp yes
+   && hwclock --systohc
+   && hwclock -w
+   && systemctl restart crond
+   && systemctl restart rsyslog"
+  ignore_errors: true
+  when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"

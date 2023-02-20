@@ -51,7 +51,7 @@
       dest: "{{ base_dir }}/down/rpms/{{ uname.stdout }}"
 
 - name: 系统依赖软件tar安装
-  shell: "rpm -ivh {{ base_dir }}/down/rpms/{{ uname.stdout }}/tar/*.rpm --force --nodeps"
+  shell: "rpm -ivh {{ base_dir }}/down/rpms/{{ uname.stdout }}/tar/*.rpm --force --nodeps > /dev/null 2>&1 | cat"
   no_log: true
   ignore_errors: true
 

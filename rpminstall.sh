@@ -2,12 +2,18 @@
 if [  -f "./rpminstall.sh" ];then
 	cp -r ./rpminstall.sh /opt/kad/down/rpms
 fi
-yum remove -y python3  > /dev/null 2>&1
+
 mode=${1:-3} 
 needExec=${2:-"True"} 
 osname=(`uname -r`)
 mkdir -p /opt/kad/down/rpms/${osname}
 cd /opt/kad/down/rpms/${osname}
+result=$(echo $osname | grep ".el7.x86_64")
+allowerasing="--allowerasing"
+if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
+ 	allowerasing=""
+	yum remove -y python3  > /dev/null 2>&1
+fi
 function rpmOperator(){
 	var=${1} 
 	echo "rpmOperator call ${var}"
@@ -19,10 +25,16 @@ function rpmOperator(){
 		rm -rf  $var 
 		mkdir $var
 		cd $var
-		dnf download $var --resolve
+		result=$(echo $osname | grep ".el7.x86_64")
+		if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
+			yum install $var --downloadonly  --downloaddir=.
+		else
+			dnf download $var --resolve
+		fi
 		cd ..
 	fi
-	if [[ ${mode} == 2 || ${mode} == 3 ]]; then
+	fileSize=`ls ./$var/ | wc -l`
+	if [[ ${mode} == 2 || ${mode} == 3 ]]  && [[ ${fileSize} > 0 ]]; then
 			rpm -ivh ./$var/*.rpm --force --nodeps
 	fi	
 }
@@ -54,7 +66,8 @@ function mongo_tool(){
 		cd mongodb-database-tools
 		wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-rhel80-x86_64-100.6.1.rpm
 		cd ..
-		yum install --allowerasing -y ./mongodb-database-tools/mongodb-database-tools-rhel80-x86_64-100.6.1.rpm --downloadonly  --downloaddir=./mongodb-database-tools
+		result=$(echo $osname | grep ".el7.x86_64")
+		yum install ${allowerasing} -y ./mongodb-database-tools/mongodb-database-tools-rhel80-x86_64-100.6.1.rpm --downloadonly  --downloaddir=./mongodb-database-tools
 	fi
 	if [[ ${mode} == 2 || ${mode} == 3 ]]; then
 			rpm -ivh ./mongodb-database-tools/*.rpm
@@ -63,18 +76,13 @@ function mongo_tool(){
 function commonInstall(){
 	echo "commonInstall call"
 	echo "参数1：仅下载用于制造离线包 2：仅安装用于现场  3:下载并安装（特定场景） 4:清理 当前参数${mode}"
-	rpms=(tar git python39 sshpass  wget unzip tcpdump net-tools iptables-services ipset-libs ipset ipvsadm tcl bash-completion jq rsyslog  \
+	rpms=(git  sshpass  wget unzip libpcap tcpdump net-tools iptables-services ipset-libs ipset ipvsadm tcl bash-completion  rsyslog  \
 		oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
 	done
-	cp -r /usr/bin/pip3 /usr/local/bin/pip3
-	pip3s=(ansible)
-	for var in ${pip3s[@]};
-	do
-		pipOperator $var
-	done
+	
 	source /usr/share/bash-completion/bash_completion
 
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo
@@ -87,6 +95,15 @@ repo_gpgcheck=1
 gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
 }	
+function ansibleInstall(){
+	cp -r /usr/bin/pip3 /usr/local/bin/pip3
+	pip3s=(ansible)
+	for var in ${pip3s[@]};
+	do
+		pipOperator $var
+	done
+}	
+
 function kubernetes_process(){
 	echo "kubernetes_process call"
 	if [[ ${mode} == 4 ]];then
@@ -98,10 +115,28 @@ function kubernetes_process(){
 		rm -rf ./kubernetes
 		yum remove -y docker-ce-19.03.15-3.el8 docker-ce-cli-19.03.15-3.el8 containerd.io > /dev/null 2>&1
 		yum remove -y  libbpf conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
-		yum-config-manager --add-repo https://repo.huaweicloud.com/docker-ce/linux/centos/docker-ce.repo
-		sed -i 's/$releasever/8/g' /etc/yum.repos.d/docker-ce.repo
-		yum install --allowerasing -y docker-ce-19.03.15-3.el8 docker-ce-cli-19.03.15-3.el8 containerd.io --downloadonly  --downloaddir=./docker
+		yum install ${allowerasing} -y docker-ce-19.03.15-3.el8 docker-ce-cli-19.03.15-3.el8 containerd.io --downloadonly  --downloaddir=./docker
 		yum install -y  libbpf kubernetes-cni-1.2.0-0 kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64  --downloadonly  --downloaddir=./kubernetes
+	fi
+
+	if [[ ${mode} == 2 || ${mode} == 3 ]];then
+		rpm -ivh ./docker/*.rpm --force --nodeps
+		rpm -ivh ./kubernetes/*.rpm --force --nodeps
+	fi	
+}
+function kubernetes_process_centos7(){
+	echo "kubernetes_process call"
+	if [[ ${mode} == 4 ]];then
+		yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
+		yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
+	fi	
+	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+		rm -rf ./docker
+		rm -rf ./kubernetes
+		yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
+		yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
+		yum install  -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io --downloadonly  --downloaddir=./docker
+		yum install -y   kubernetes-cni-1.2.0-0 kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64  --downloadonly  --downloaddir=./kubernetes
 	fi
 
 	if [[ ${mode} == 2 || ${mode} == 3 ]];then
@@ -123,6 +158,11 @@ function AnolisOS(){
 		#yum -y copr enable copart/restic 
 	fi
 	commonInstall
+	rpms=(tar jq python39 wntp epel-release)
+	for var in ${rpms[@]};
+	do
+		rpmOperator $var
+	done
 	rm -rf /usr/local/bin/pip3
 	cp -r /usr/bin/pip3 /usr/local/bin/pip3
 	pip3s=(pyyaml)
@@ -135,12 +175,7 @@ function AnolisOS(){
 	 	rpm -ivh http://mirrors.wlnmp.com/centos/wlnmp-release-centos.noarch.rpm
 		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 	fi
-	rpms=(wntp epel-release)
-	for var in ${rpms[@]};
-	do
-		rpmOperator $var
-	done
-
+	ansibleInstall
 	kubernetes_process
 }
 function openEulerOs(){
@@ -149,18 +184,37 @@ function openEulerOs(){
 		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/OS/x86_64/
 		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/everything/x86_64/
 		rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-openEuler
+		yum-config-manager --add-repo https://repo.huaweicloud.com/docker-ce/linux/centos/docker-ce.repo
+		sed -i 's/$releasever/8/g' /etc/yum.repos.d/docker-ce.repo
 	fi
 	commonInstall
-	mongo_tool
-
-	rpms=(ntp  chrony.x86_64)
+	rpms=(tar jq python39 ntp  chrony.x86_64)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
 	done
+	mongo_tool
+	ansibleInstall
 	kubernetes_process
 }
 
+function centos7(){
+	echo "centos7 call"
+	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+		yum -y install yum-utils 
+		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+		yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.119.1-1.c57a6f9.el7.noarch.rpm
+	fi
+	commonInstall
+	rpms=(python3 ntp  chrony.x86_64)
+	for var in ${rpms[@]};
+	do
+		rpmOperator $var
+	done
+	mongo_tool
+	ansibleInstall
+	kubernetes_process_centos7
+}
 
 result=$(echo $osname | grep ".oe2203.x86_64")
 if	[[ "$result" != "" ]] && [[ "True" == "$needExec" ]];then
@@ -169,4 +223,8 @@ fi
 result=$(echo $osname | grep ".an8.x86_64")
 if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
 	AnolisOS
+fi
+result=$(echo $osname | grep ".el7.x86_64")
+if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
+	centos7
 fi
