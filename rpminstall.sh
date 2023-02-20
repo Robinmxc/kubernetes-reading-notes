@@ -20,7 +20,7 @@ function rpmOperator(){
 	if [[ ${mode} == 4 ]];then
 		yum remove -y $var > /dev/null 2>&1
 	fi
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+	if [[ ${mode} == 3 ]];then
 		yum remove -y $var > /dev/null 2>&1
 		rm -rf  $var 
 		mkdir $var
@@ -44,7 +44,7 @@ function pipOperator(){
 	if [[ ${mode} == 4 ]];then
 		pip3 uninstall -y $var > /dev/null 2>&1
 	fi
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+	if [[ ${mode} == 3 ]];then
 		pip3 uninstall -y $var > /dev/null 2>&1
 		rm -rf $var
 		pip3 download -d $var  $var -i   https://pypi.douban.com/simple/
@@ -59,7 +59,7 @@ function mongo_tool(){
 	if [[ ${mode} == 4 ]];then
 		yum remove -y mongodb-database-tools > /dev/null 2>&1
 	fi
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+	if [[  ${mode} == 3 ]];then
 		yum remove -y mongodb-database-tools > /dev/null 2>&1
 		rm -rf   mongodb-database-tools
 		mkdir  mongodb-database-tools
@@ -75,7 +75,7 @@ function mongo_tool(){
 }
 function commonInstall(){
 	echo "commonInstall call"
-	echo "参数1：仅下载用于制造离线包 2：仅安装用于现场  3:下载并安装（特定场景） 4:清理 当前参数${mode}"
+	echo "参数 2：仅安装用于现场  3:下载并安装（特定场景） 4:清理 当前参数${mode}"
 	rpms=(git  sshpass  wget unzip libpcap tcpdump net-tools iptables-services ipset-libs ipset ipvsadm tcl bash-completion  rsyslog  \
 		oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl)
 	for var in ${rpms[@]};
@@ -102,15 +102,14 @@ function ansibleInstall(){
 	do
 		pipOperator $var
 	done
-}	
-
+}		
 function kubernetes_process(){
 	echo "kubernetes_process call"
 	if [[ ${mode} == 4 ]];then
 		yum remove -y docker-ce-19.03.15-3.el8 docker-ce-cli-19.03.15-3.el8 containerd.io > /dev/null 2>&1
 		yum remove -y  libbpf conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
 	fi	
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+	if [[ ${mode} == 3 ]];then
 		rm -rf ./docker
 		rm -rf ./kubernetes
 		yum remove -y docker-ce-19.03.15-3.el8 docker-ce-cli-19.03.15-3.el8 containerd.io > /dev/null 2>&1
@@ -130,7 +129,7 @@ function kubernetes_process_centos7(){
 		yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
 		yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
 	fi	
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+	if [[${mode} == 3 ]];then
 		rm -rf ./docker
 		rm -rf ./kubernetes
 		yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
@@ -152,7 +151,7 @@ function AnolisOS_python3_module(){
 function AnolisOS(){
 	echo "AnolisOS call"
 	AnolisOS_python3_module
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+	if [[ ${mode} == 3 ]];then
 		yum -y install yum-utils 
 		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 		#yum -y copr enable copart/restic 
@@ -171,7 +170,7 @@ function AnolisOS(){
 		pipOperator $var
 	done
 	mongo_tool
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+	if [[ ${mode} == 3 ]];then
 	 	rpm -ivh http://mirrors.wlnmp.com/centos/wlnmp-release-centos.noarch.rpm
 		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 	fi
@@ -180,7 +179,7 @@ function AnolisOS(){
 }
 function openEulerOs(){
 	echo "openEulerOs call"
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+	if [[ ${mode} == 3 ]];then
 		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/OS/x86_64/
 		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/everything/x86_64/
 		rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-openEuler
@@ -200,19 +199,21 @@ function openEulerOs(){
 
 function centos7(){
 	echo "centos7 call"
-	if [[ ${mode} == 1 || ${mode} == 3 ]];then
+	if [[ ${mode} == 3 ]];then
 		yum -y install yum-utils 
 		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 		yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.119.1-1.c57a6f9.el7.noarch.rpm
+		yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	fi
 	commonInstall
-	rpms=(python3 ntp  chrony.x86_64)
+
+	rpms=(python3 ntp  chrony.x86_64 ansible)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
 	done
 	mongo_tool
-	ansibleInstall
+	
 	kubernetes_process_centos7
 }
 
