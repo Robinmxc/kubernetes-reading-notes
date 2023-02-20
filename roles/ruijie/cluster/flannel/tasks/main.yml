@@ -49,5 +49,5 @@
   delegate_to: "{{ groups.deploy[0] }}"
   retries: 15
   delay: 8
-  ignore_errors: true
+
 
