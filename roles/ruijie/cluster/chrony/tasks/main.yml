@@ -65,7 +65,7 @@
 
   - name: 立即同步时间
     shell: "chronyc makestep"
-    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22") ||  (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8") || ((ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7")
+    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22") or  (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8") or ((ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7")
   when: 'inventory_hostname != local_ntp_server'
 
 - name: 设置时区、更新硬件时钟、重启时间变动会影响到的服务

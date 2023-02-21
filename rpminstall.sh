@@ -129,7 +129,7 @@ function kubernetes_process_centos7(){
 		yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
 		yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
 	fi	
-	if [[${mode} == 3 ]];then
+	if [[ ${mode} == 3 ]];then
 		rm -rf ./docker
 		rm -rf ./kubernetes
 		yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
@@ -212,8 +212,14 @@ function centos7(){
 	do
 		rpmOperator $var
 	done
-	mongo_tool
+
+	pip3s=(pyyaml)
+	for var in ${pip3s[@]};
+	do
+		pipOperator $var
+	done
 	
+	mongo_tool
 	kubernetes_process_centos7
 }
 
