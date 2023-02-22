@@ -165,6 +165,12 @@
     command: "kubectl delete -f {{ yaml_dir }}/report/"
     when: 'pod_info.stdout is search("rg-report-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 organization-center
+    tags:
+      - organization-center
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/organization-center/"
+    when: 'pod_info.stdout is search("rg-organization-center-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 rocketmq
     tags:
       - rocketmq
@@ -432,6 +438,16 @@
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: 'pod_info.stdout is not search("rg-report-[a-z0-9]*-[a-z0-9]*\s")'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待organization-center结束运行
+    tags:
+      - organization-center
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: 'pod_info.stdout is not search("rg-organization-center-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
     delay: 3
     ignore_errors: true

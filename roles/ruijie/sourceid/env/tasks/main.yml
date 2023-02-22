@@ -64,6 +64,7 @@
     - "sourceid/xxl-job"
     - "sourceid/portal"
     - "sourceid/report"
+    - "sourceid/organization-center"
   connection: local
   run_once: true
 

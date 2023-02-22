@@ -134,6 +134,7 @@
       - "sourceid/xxl-job"
       - "sourceid/portal"
       - "sourceid/report"
+      - "sourceid/organization-center"
     connection: local
 
   - name: 获取所有已经创建的POD信息

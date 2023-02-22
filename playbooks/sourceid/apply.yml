@@ -36,3 +36,4 @@
   - { role: ruijie/sourceid/xxl-job, tags: ["xxl-job"] }
   - { role: ruijie/sourceid/portal, tags: ["portal"] }
   - { role: ruijie/sourceid/report, tags: ["report"] }
+  - { role: ruijie/sourceid/organization-center, tags: ["organization-center"] }
