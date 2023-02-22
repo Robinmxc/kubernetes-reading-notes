@@ -16,7 +16,7 @@
     shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ ldap_file }} -C {{ DATA_DIR }}/slapd >/dev/null"
 
   - name: 安装slapd
-    shell: "yum install -y {{ DATA_DIR }}/slapd/*rpm"
+    shell: "yum install -y {{ DATA_DIR }}/slapd/*rpm --force --nodeps | cat"
     no_log: false
     ignore_errors: false
 
