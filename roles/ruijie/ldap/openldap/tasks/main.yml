@@ -16,7 +16,7 @@
     shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ ldap_file }} -C {{ DATA_DIR }}/slapd >/dev/null"
 
   - name: 安装slapd
-    shell: "yum install -y {{ DATA_DIR }}/slapd/*rpm --force --nodeps | cat"
+    shell: "yum install -y {{ DATA_DIR }}/slapd/*rpm"
     no_log: false
     ignore_errors: false
 
@@ -42,11 +42,13 @@
     with_items:
       - {regexp: "^CERT_VALID_MONTHS=.*$", replace: "CERT_VALID_MONTHS=240"}
     ignore_errors: true
+    no_log: true
 
   - name: 准备证书文件
     shell: "sh /usr/libexec/openldap/create-certdb.sh && sh /usr/libexec/openldap/generate-server-cert.sh"
     ignore_errors: true
-
+    no_log: true
+    
   - name: 准备配置文件
     tags:
       - config
