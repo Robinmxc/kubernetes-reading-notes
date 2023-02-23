@@ -42,21 +42,20 @@
   when: '"allinone" != DEPLOY_MODE '
 
 - name: 系统依赖软件tar拷贝
-  when: '"allinone" != DEPLOY_MODE '
+  when: '"allinone" != DEPLOY_MODE and  (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22") '
   ignore_errors: true
   block:  
   - name: 复制rpm包
     copy: 
       src: "{{ base_dir }}/down/rpms/{{ uname.stdout }}/tar" 
       dest: "{{ base_dir }}/down/rpms/{{ uname.stdout }}"
-  when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
 
 - name: 系统依赖软件tar安装
   shell: "rpm -ivh {{ base_dir }}/down/rpms/{{ uname.stdout }}/tar/*.rpm --force --nodeps > /dev/null 2>&1 | cat"
   no_log: true
   ignore_errors: true
   when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
-  
+
 - name: 读取目录状态
   stat: 
     path: "{{ base_dir }}/down/rpms.tgz"
