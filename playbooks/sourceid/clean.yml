@@ -445,7 +445,7 @@
   - name: 等待organization-center结束运行
     tags:
       - organization-center
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: 'pod_info.stdout is not search("rg-organization-center-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
