@@ -15,11 +15,11 @@ for var in ${downFiles[@]};
 do
 	cp -r /opt/kad/down/${var} ./kad-support-files-2.7.0-os/down
 done
-rpmsFile=(5.10.0-60.18.0.50.oe2203.x86_64 4.19.91-26.an8.x86_64)
+rpmsFile=(5.10.0-60.18.0.50.oe2203.x86_64 4.19.91-26.an8.x86_64 3.10.0-957.el7.x86_64)
 for var in ${rpmsFile[@]};
 do
 	mkdir ./kad-support-files-2.7.0-os/down/rpms/${var}
-	cp -r  /opt/kad/down/rpms/${var} ./kad-support-files-2.7.0-os/down/rpms/${var}
+	cp -r  /opt/kad/down/rpms/${var} ./kad-support-files-2.7.0-os/down/rpms/
 done
 cd    kad-support-files-2.7.0-os
 tar  -zcvf   kad-support-files-2.7.0-os.tar.gz bin down
