@@ -51,12 +51,12 @@
 - name: 修改kubernetes的端口范围
   shell: "grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml >> /dev/null; \
           if [ $? -ne 0 ]; \
-          then sed -i \"s#--allow-privileged=true#--allow-privileged=true  \\n    - --service-node-port-range=1-65535#g\" /etc/kubernetes/manifests/kube-apiserver.yaml; \
+          then sed -i \"s#--allow-privileged=true#--allow-privileged=true\\n    - --service-node-port-range=1-65535#g\" /etc/kubernetes/manifests/kube-apiserver.yaml; \
           fi;"
   tags: upgrade_k8s
 
 - name: 暂停15秒等待端口范围修改完毕
-    wait_for: timeout=15
+  wait_for: timeout=15
   
 - name: 配置{{ BASIC_AUTH_USER }}用户rbac权限
   template: src=basic-auth-rbac.yaml.j2 dest=/opt/kube/basic-auth-rbac.yaml
