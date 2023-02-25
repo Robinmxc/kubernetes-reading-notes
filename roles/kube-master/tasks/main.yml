@@ -39,7 +39,7 @@
 - name: 修改kubernetes的端口范围
   shell: "grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml >> /dev/null; \
           if [ $? -ne 0 ]; \
-          then sed -i \"s#--allow-privileged=true#--allow-privileged=true  \n    - --service-node-port-range=1-65535#g\" /etc/kubernetes/manifests/kube-apiserver.yaml; \
+          then sed -i \"s#--allow-privileged=true#--allow-privileged=true  \\n    - --service-node-port-range=1-65535#g\" /etc/kubernetes/manifests/kube-apiserver.yaml; \
           fi;"
   tags: upgrade_k8s
 
