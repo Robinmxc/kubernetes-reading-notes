@@ -35,10 +35,6 @@
       delegate_to: "{{ groups.deploy[0] }}"
       register: kubeadm_token_ca_cert_hash
 
-    - name: 重置kubeadm
-      shell: 'kubeadm reset -f'
-      tags: upgrade_k8s
-    
     - name: node节点加入master节点
       shell: "kubeadm join {{ groups.deploy[0] }}:6443 --token {{ kubeadm_token.stdout_lines[0] }} --discovery-token-ca-cert-hash sha256:{{ kubeadm_token_ca_cert_hash.stdout_lines[0] }}"
       tags: upgrade_k8s

@@ -20,11 +20,6 @@
   - "{{ coredns }}"
   - "{{ pause }}"
 
-- name: 重置kubeadm
-  shell: 'kubeadm reset -f'
-  run_once: True
-  tags: upgrade_k8s
-
 - name: 通过kubeadm安装并启动kubernetes
   shell: 'kubeadm init --apiserver-advertise-address={{ groups.deploy[0] }} \
           --kubernetes-version={{ KUBERNETES_VERSION }} --image-repository registry.aliyuncs.com/google_containers \
