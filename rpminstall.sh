@@ -140,7 +140,8 @@ function kubernetes_process_centos7(){
 
 	if [[ ${mode} == 2 || ${mode} == 3 ]];then
 		#解决重装时docker删除不干净问题
-		yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io 
+		yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
+		yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
 		rpm -ivh ./docker/*.rpm --force --nodeps
 		rpm -ivh ./kubernetes/*.rpm --force --nodeps
 	fi	
