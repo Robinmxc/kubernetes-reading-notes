@@ -235,6 +235,11 @@ if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
 	AnolisOS
 fi
 result=$(echo $osname | grep ".el7.x86_64")
-if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
-	centos7
+if	[[ "$result" != "" ]];then
+	if  [[ "True" == "$needExec" ]];then
+		centos7
+	else	
+		## 凡是安装必须重新走一下此保证清理和安装，主要升级场景kubelet服务不能删除
+		kubernetes_process_centos7
+	fi	
 fi
