@@ -32,7 +32,6 @@
   tags: upgrade_k8s
 
 
-
 - name: 以轮询的方式等待master服务启动完成
   command: "kubectl get node"
   register: result
@@ -43,7 +42,35 @@
   run_once: True
   tags: upgrade_k8s, restart_master
 
-  
+- name: 轮询等待apiserver处于running状态
+  shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'"
+  register: pod_status
+  until: pod_status.stdout == "Running"
+  connection: local
+  run_once: true
+  retries: 15
+  delay: 5
+  ignore_errors: true
+  tags: upgrade_k8s
+
+- name: 修改kubernetes的端口范围
+  shell: "grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml >> /dev/null; \
+          if [ $? -ne 0 ]; \
+          then sed -i \"s#--allow-privileged=true#--allow-privileged=true\\n    - --service-node-port-range=1-65535#g\" /etc/kubernetes/manifests/kube-apiserver.yaml; \
+          fi;"
+  tags: upgrade_k8s
+
+- name: 重置端口后,轮询等待apiserver处于running状态
+  shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'"
+  register: pod_status
+  until: pod_status.stdout == "Running"
+  connection: local
+  run_once: true
+  retries: 15
+  delay: 5
+  ignore_errors: true
+  tags: upgrade_k8s
+
 - name: 配置{{ BASIC_AUTH_USER }}用户rbac权限
   template: src=basic-auth-rbac.yaml.j2 dest=/opt/kube/basic-auth-rbac.yaml
   when: 'BASIC_AUTH_ENABLE == "yes"'
