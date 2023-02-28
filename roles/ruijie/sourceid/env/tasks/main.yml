@@ -65,6 +65,7 @@
     - "sourceid/portal"
     - "sourceid/report"
     - "sourceid/organization-center"
+    - "sourceid/rg-flow"
   connection: local
   run_once: true
 

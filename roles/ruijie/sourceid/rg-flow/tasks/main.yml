@@ -1,0 +1,53 @@
+- name: 部署rg-flow
+  when: 'XXL_JOB_ENABLE == "yes"'
+  block:
+  - name: 复制配置文件
+    tags:
+      - config
+    copy:
+      src: "{{ namespace_dir }}/conf/sourceid/rg-flow/"
+      dest: "{{ config_base_dir }}/sourceid/rg-flow/conf/"
+
+
+  - name: 自动配置
+    tags:
+      - config
+    replace: path="{{ config_base_dir }}/sourceid/rg-flow/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "spring.datasource.druid.master.username: .*$", replace: "spring.datasource.username: postgres"}
+      - {regexp: "spring.datasource.druid.master.password: .*$", replace: "spring.datasource.password: {{ PGSQL_ADMIN_PWD }}"}
+    no_log: true
+
+
+  - name: 准备部署文件目录
+    tags:
+      - config
+    file: path={{ item }} state=directory
+    with_items:
+      - "{{ yaml_dir }}/rg-flow"
+    run_once: true
+    connection: local
+
+  - name: 准备部署文件
+    tags:
+      - config
+    vars:
+      deploy_conf: '{{ rg_flow_deploy_conf }}'
+    template: src='{{ rg_flow_templates_path }}rg-flow.yaml.j2' dest={{ yaml_dir }}/rg-flow/rg-flow.yml
+    run_once: true
+    connection: local
+
+  - name: 获取所有已经创建的POD信息
+    tags:
+      - deploy
+    command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    run_once: true
+    connection: local
+
+  - name: 执行部署
+    tags:
+      - deploy
+    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/rg-flow/"
+    run_once: true
+    connection: local

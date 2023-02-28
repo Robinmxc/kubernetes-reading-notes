@@ -140,6 +140,7 @@
       - "sourceid/portal"
       - "sourceid/report"
       - "sourceid/organization-center"
+      - "sourceid/rg-flow"
     connection: local
 
   - name: 准备https证书新目录
