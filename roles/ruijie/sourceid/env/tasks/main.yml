@@ -71,6 +71,7 @@
 - name: 获取autostart.sh状态
   stat: path="/etc/init.d/autostart.sh"
   register: data_dir_stat  
+  ignore_errors: true
 
 - name: 设置自动配置iptables脚本
   vars: 
