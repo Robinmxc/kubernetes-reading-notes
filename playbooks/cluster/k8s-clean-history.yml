@@ -45,6 +45,7 @@
     file: name={{ item }} state=absent
     with_items:
     - "/var/run/kubernetes"
+    - "/usr/bin/kubectl"    
     - "/etc/systemd/system/kube-apiserver.service"
     - "/etc/systemd/system/kube-controller-manager.service"
     - "/etc/systemd/system/kube-scheduler.service"
@@ -65,17 +66,12 @@
     ignore_errors: true
     when: "CLUSTER_NETWORK == 'kube-router'"
 
-  - name: 获取是否运行名为'kubeasz'的容器
-    shell: 'docker ps|grep kubeasz || echo "NOT FOUND"'
-    register: install_info
-
   - name: stop and disable docker service
     service:
       name: docker
       state: stopped
       enabled: no
     ignore_errors: true
-    when: "'kubeasz' not in install_info.stdout"
 
   - name: stop and disable autostart service
     shell: "systemctl disable autostart.sh && systemctl stop autostart"
@@ -84,11 +80,9 @@
   # as k8s-network-plugins use host-network, '/var/run/docker/netns/default' must be umounted
   - name: unmount docker filesystem-1
     mount: path=/var/run/docker/netns/default state=unmounted
-    when: "'kubeasz' not in install_info.stdout"
 
   - name: unmount docker filesystem-2
     mount: path={{ docker_home.stdout }}/overlay state=unmounted
-    when: "'kubeasz' not in install_info.stdout"
 
   - name: remove files and dirs
     file: name={{ item }} state=absent
@@ -96,11 +90,11 @@
     - "{{ docker_home.stdout }}"
     - "/var/run/docker/"
     - "/etc/systemd/system/docker.service"
+    - "/usr/bin/docker"
     - "/etc/systemd/system/docker.service.requires/"
     - "/etc/systemd/system/docker.service.d/"
     - "/etc/bash_completion.d/docker"
     - "/usr/bin/docker"
-    when: "'kubeasz' not in install_info.stdout"
 
   - name: remove files and dirs2
     file: name={{ item }} state=absent
@@ -124,7 +118,6 @@
 	&& iptables -F -t nat && iptables -X -t nat \
 	&& iptables -F -t raw && iptables -X -t raw \
 	&& iptables -F -t mangle && iptables -X -t mangle"
-    when: "'kubeasz' not in install_info.stdout"
 
   - name: 查询网卡信息
     shell: "ip link | grep mtu"
@@ -144,12 +137,6 @@
       - "cilium_vxlan"
     ignore_errors: true
 
-  - name: cleanup networks2
-    shell: "ip link del docker0; \
-	systemctl restart networking; \
-	systemctl restart network"
-    ignore_errors: true
-    when: "'kubeasz' not in install_info.stdout"
 
   - name: cleanup 'calico' routes
     shell: "for rt in `ip route|grep bird|sed 's/blackhole//'|awk '{print $1}'`;do ip route del $rt;done;"
@@ -201,12 +188,6 @@
   - etcd
   - lb
   tasks:
-  - name: stop and disable chrony in Ubuntu
-    service: name=chrony state=stopped enabled=no
-    ignore_errors: true
-    tags: rm_ntp 
-    when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
-
   - name: 查询chronyd状态
     shell: "systemctl list-units *.service"
     register: svc_info
@@ -232,7 +213,12 @@
       state: absent
       regexp: '{{ item }}'
     with_items:
-    - 'kubeasz'
     - 'helm'
+    - 'kubeasz'
     - 'kubectl completion'
     - 'HELM_TLS_ENABLE'
+
+  - name: 移除历史版本程序
+    file: name={{ item }} state=absent
+    with_items:
+    - "/opt/kube"    
