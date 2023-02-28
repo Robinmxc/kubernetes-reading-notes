@@ -92,6 +92,10 @@
 - name: 清理k8s
   when: '"v1.23.8" not in k8s_result.stdout'
   import_playbook: ../cluster/k8s-clean-history.yml
+  
+- name: 离线依赖包部署
+  when: '"v1.23.8" not in k8s_result.stdout'
+  import_playbook: ../cluster/offline-install.yml
 
 - name: 清理k8s
   when: '"v1.23.8" not in k8s_result.stdout'
