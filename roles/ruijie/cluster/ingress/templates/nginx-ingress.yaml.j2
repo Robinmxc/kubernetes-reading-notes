@@ -397,3 +397,27 @@ metadata:
   name: nginx
 spec:
   controller: k8s.io/ingress-nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ingress-service
+  namespace: kube-system
+  annotations:
+    prometheus.io/port: "10254"
+    prometheus.io/scrape: "true"
+  labels:
+    app.kubernetes.io/name: ingress-nginx
+spec:
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+  - name: https
+    port: 443
+    protocol: TCP
+  - name: health
+    port: 10254
+    protocol: TCP    
