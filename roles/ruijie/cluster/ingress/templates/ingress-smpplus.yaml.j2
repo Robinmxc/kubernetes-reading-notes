@@ -118,6 +118,10 @@ spec:
         backend:
           serviceName: rg-frontend-client
           servicePort: 3000
+      - path: /log
+        backend:
+          serviceName: rg-log
+          servicePort: 80
 {% if '' != SMPPLUS_SSO_DOMAIN %}
   - host: {{ SMPPLUS_SSO_DOMAIN }}
     http: *http_rules
