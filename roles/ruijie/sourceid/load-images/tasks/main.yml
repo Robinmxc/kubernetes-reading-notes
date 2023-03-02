@@ -52,12 +52,4 @@
   when: '"" != docker_version and img_id_ver not in imgages_info.stdout and ( "gateway" != item or SOURCEID_GATEWAY_DEPLOY_MODE == "k8s" )'
   with_items: "{{ SOURCEID_DOCKERS.keys() }}"
 
-- name: 删除镜像文件
-  vars:
-    comp_name: "{{ item }}"
-    docker_version: "{{ SOURCEID_DOCKERS[comp_name].version }}"
-    img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
-  file: path="{{ img_dir }}/{{ img_file_name }}" state=absent
-  when: '"gateway" != item or SOURCEID_GATEWAY_DEPLOY_MODE == "k8s"'
-  with_items: "{{ SOURCEID_DOCKERS.keys() }}"
 
