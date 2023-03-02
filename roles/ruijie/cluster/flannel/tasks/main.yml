@@ -43,7 +43,7 @@
 
 # 等待网络插件部署成功，视下载镜像速度而定
 - name: 轮询等待flannel 运行，视下载镜像速度而定
-  shell: "kubectl get pod -n kube-flannel -o wide|grep 'flannel'|grep ' {{ groups.deploy[0] }} '|awk '{print $3}'"
+  shell: "kubectl get pod -n kube-system -o wide|grep 'flannel'|grep ' {{ groups.deploy[0] }} '|awk '{print $3}'"
   register: pod_status
   until: pod_status.stdout == "Running"
   delegate_to: "{{ groups.deploy[0] }}"
