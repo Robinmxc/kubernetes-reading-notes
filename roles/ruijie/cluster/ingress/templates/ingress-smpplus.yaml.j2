@@ -126,6 +126,11 @@ spec:
   - host: {{ SMPPLUS_SSO_DOMAIN }}
     http: *http_rules
 {% endif %}
+{% if '' != SMPPLUS_PORTAL_DOMAIN %}
+  - host: {{ SMPPLUS_PORTAL_DOMAIN }}
+    http: *http_rules
+{% endif %}
+
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -153,5 +158,9 @@ spec:
           servicePort: 8089
 {% if '' != SMPPLUS_SSO_DOMAIN %}
   - host: {{ SMPPLUS_SSO_DOMAIN }}
+    http: *http_rules
+{% endif %}
+{% if '' != SMPPLUS_PORTAL_DOMAIN %}
+  - host: {{ SMPPLUS_PORTAL_DOMAIN }}
     http: *http_rules
 {% endif %}
