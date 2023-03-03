@@ -81,5 +81,5 @@
     docker_version: "{{ SOURCEID_DOCKERS[comp_name].version }}"
     img_id_ver: "{{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS[comp_name].name }}:{{ docker_version }}"
     img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
-  shell: "cd {{ img_download_dir }};for i in `ls {{ comp_name }}*.tar`;do if [ \"$i\" != {{ img_file_name }} ];then rm -rf $i;fi;done;"
+  shell: "cd {{ img_download_dir }};for i in `ls {{ comp_name }}*.tar`;do reg='^{{ comp_name }}-([0-9]|-|\\.)*.tar$';if [ \"$i\" != {{ img_file_name }} ] && [[ \"$i\" =~ $reg ]];then  rm -rf $i;fi;done;"
   with_items: "{{ SOURCEID_DOCKERS.keys() }}"
