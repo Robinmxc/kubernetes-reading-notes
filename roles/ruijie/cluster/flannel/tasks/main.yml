@@ -35,13 +35,22 @@
   - "{{ flannel_cni_offline }}"
   ignore_errors: true
 
+- name: 运行 flannel网络前确保kubectl可用
+  shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'"
+  register: pod_status
+  until: pod_status.stdout == "Running"
+  connection: local
+  run_once: true
+  retries: 15
+  delay: 5
+  ignore_errors: true
+  tags: upgrade_k8s
+
 # 只需单节点执行一次
 - name: 运行 flannel网络
   shell: "kubectl apply -f /opt/kube/kube-system/flannel/ && sleep 5"
   delegate_to: "{{ groups.deploy[0] }}"
   run_once: true
-  retries: 15
-  delay: 8
   
 # 等待网络插件部署成功，视下载镜像速度而定
 - name: 轮询等待flannel 运行，视下载镜像速度而定
