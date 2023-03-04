@@ -85,9 +85,7 @@
   when: '"traefik" in ingress_result.stdout'
   import_playbook: ../cluster/ingress.yml
 
-- hosts: 
-  - kube_master
-  - kube_node
+- hosts: all
   tasks:
   - name: 获取当前k8s版本
     shell: "kubectl version --short"
