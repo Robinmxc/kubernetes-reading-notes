@@ -5,6 +5,7 @@ fi
 
 mode=${1:-3} 
 needExec=${2:-"True"} 
+skipKubernetes=${3:-"False"} 
 osname=(`uname -r`)
 mkdir -p /opt/kad/down/rpms/${osname}
 cd /opt/kad/down/rpms/${osname}
@@ -124,27 +125,31 @@ function kubernetes_process(){
 	fi	
 }
 function kubernetes_process_centos7(){
-	echo "kubernetes_process call"
-	if [[ ${mode} == 4 ]];then
-		yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
-		yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
-	fi	
-	if [[ ${mode} == 3 ]];then
-		rm -rf ./docker
-		rm -rf ./kubernetes
-		yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
-		yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
-		yum install  -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io --downloadonly  --downloaddir=./docker
-		yum install -y   kubernetes-cni-1.2.0-0 kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64  --downloadonly  --downloaddir=./kubernetes
-	fi
+	if [[ "${skipKubernetes}" != "True" ]];then
+		echo "kubernetes_process call"
+		if [[ ${mode} == 4 ]];then
+			yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
+			yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
+		fi	
+		if [[ ${mode} == 3 ]];then
+			rm -rf ./docker
+			rm -rf ./kubernetes
+			yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
+			yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
+			yum install  -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io --downloadonly  --downloaddir=./docker
+			yum install -y   kubernetes-cni-1.2.0-0 kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64  --downloadonly  --downloaddir=./kubernetes
+		fi
 
-	if [[ ${mode} == 2 || ${mode} == 3 ]];then
-		#解决重装时docker删除不干净问题
-		yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
-		yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
-		rpm -ivh ./docker/*.rpm --force --nodeps
-		rpm -ivh ./kubernetes/*.rpm --force --nodeps
+		if [[ ${mode} == 2 || ${mode} == 3 ]];then
+			#解决重装时docker删除不干净问题
+			yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
+			yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
+			rpm -ivh ./docker/*.rpm --force --nodeps
+			rpm -ivh ./kubernetes/*.rpm --force --nodeps
+		fi
+
 	fi	
+	
 }
 function AnolisOS_python3_module(){
 	echo "AnolisOS_python3_module call"
