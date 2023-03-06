@@ -18,13 +18,14 @@
       with_items:
       - "{{ kube_proxy }}"
       - "{{ pause }}"
-    
+      - "{{ coredns }}"
     - name: 加载kubernetes镜像包
       shell: "docker load -i /opt/kube/images/{{ item }}"
       with_items:
       - "{{ kube_proxy }}"
       - "{{ pause }}"
-    
+      - "{{ coredns }}"
+      
     - name: 获取kubeadm的token
       shell: "kubeadm token create"
       delegate_to: "{{ groups.deploy[0] }}"

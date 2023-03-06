@@ -114,7 +114,18 @@
 #  - ruijie/cluster/ingress
 
 # to install ingress
+
+- hosts: kube_node
+  tasks:
+  - name: 重启coreDns,触发CoreDns漂移
+    shell: "kubectl delete pod -l k8s-app=kube-dns -n kube-system"
+    connection: local
+    run_once: true
+    tags: upgrade_k8s
+  
 - hosts: kube_node
   any_errors_fatal: true
   roles:
   - ruijie/cluster/ingress
+
+
