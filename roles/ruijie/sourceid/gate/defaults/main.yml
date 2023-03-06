@@ -28,3 +28,4 @@ deploy_conf_defaults:
         memory: 512Mi
 
 gate_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+CUSTOMIZE_SUFFIX: "cas"
