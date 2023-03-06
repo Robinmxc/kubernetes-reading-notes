@@ -246,7 +246,7 @@ metadata:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
     app.kubernetes.io/version: 1.5.1
-  name: ingress-nginx-controller
+  name: nginx-ingress
   namespace: kube-system
 ---
 apiVersion: v1
@@ -258,7 +258,7 @@ metadata:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
     app.kubernetes.io/version: 1.5.1
-  name: ingress-nginx-controller
+  name: nginx-ingress
   namespace: kube-system
 spec:
   ipFamilies:
@@ -289,7 +289,7 @@ metadata:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
     app.kubernetes.io/version: 1.5.1
-  name: ingress-nginx-controller
+  name: nginx-ingress
   namespace: kube-system
 spec:
   minReadySeconds: 0
@@ -314,7 +314,7 @@ spec:
         - --election-id=ingress-nginx-leader
         - --controller-class=k8s.io/ingress-nginx
         - --ingress-class=nginx
-        - --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
+        - --configmap=$(POD_NAMESPACE)/nginx-ingress
         env:
         - name: POD_NAME
           valueFrom:
