@@ -150,6 +150,10 @@ kind: Ingress
 metadata:
   name: rg-sso-ingress
   namespace: {{ APP_NAMESPACE }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^/{{ CUSTOMIZE_SUFFIX }}/(.*)$ /$1;
 spec:
   ingressClassName: nginx
 {% if 'https' == ingress_mode %}
