@@ -1,11 +1,11 @@
 - name: 部署rg-flow
-  when: 'XXL_JOB_ENABLE == "yes"'
+  when: 'RG_FLOW_ENABLE == "yes"'
   block:
   - name: 复制配置文件
     tags:
       - config
     copy:
-      src: "{{ namespace_dir }}/conf/sourceid/rg-flow/"
+      src: "{{ namespace_dir }}/conf/sourceid/rg-flow/conf/"
       dest: "{{ config_base_dir }}/sourceid/rg-flow/conf/"
 
 
