@@ -16,6 +16,7 @@
     with_items:
       - {regexp: "spring.datasource.druid.master.username: .*$", replace: "spring.datasource.username: postgres"}
       - {regexp: "spring.datasource.druid.master.password: .*$", replace: "spring.datasource.password: {{ PGSQL_ADMIN_PWD }}"}
+      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
     no_log: true
 
 
