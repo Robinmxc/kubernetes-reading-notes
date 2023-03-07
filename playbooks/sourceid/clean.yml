@@ -156,7 +156,7 @@
   - name: 停止 rg-flow
     tags:
       - rg-flow
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/rg-flow/"
+    command: "kubectl delete -f {{ yaml_dir }}/rg-flow/"
     when: 'pod_info.stdout is search("rg-flow-[a-z0-9]*-[a-z0-9]*\s")'
 
   - name: 停止 portal
@@ -174,7 +174,7 @@
   - name: 停止 organization-center
     tags:
       - organization-center
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/organization-center/"
+    command: "kubectl delete -f {{ yaml_dir }}/organization-center/"
     when: 'pod_info.stdout is search("rg-organization-center-[a-z0-9]*-[a-z0-9]*\s")'
 
   - name: 停止 rocketmq
@@ -431,7 +431,7 @@
   - name: 等待rg-flow结束运行
     tags:
       - rg-flow
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: 'pod_info.stdout is not search("rg-flow-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
