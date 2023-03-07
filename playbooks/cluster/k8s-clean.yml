@@ -88,6 +88,8 @@
     with_items:
     - "/etc/haproxy"
     - "/etc/keepalived"
+    - "/var/lib/etcd"
+    
 
 # to clean ntp, certs and keys, env path
 - hosts:
@@ -120,6 +122,7 @@
     - "/etc/kubernetes/"
     - "{{ ca_dir }}" 
     - "/root/.kube/config"
+    - "/var/lib/etcd"
 
   - name: clean 'ENV PATH'
     lineinfile:
