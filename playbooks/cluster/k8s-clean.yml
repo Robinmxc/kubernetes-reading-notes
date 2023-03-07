@@ -11,20 +11,35 @@
     with_items:
     - kubelet
     ignore_errors: true
+    no_log: true
+
+  - name: 查看是否安装docker
+    shell: "systemctl status docker.service|grep Active"
+    register: docker_status_first
+    ignore_errors: true
+    no_log: true
+
 
   - name: 重启docker 服务
     shell: systemctl restart docker
+    when: '"running" in docker_status_first.stdout'
+    ignore_errors: true
+    no_log: true
 
   - name: 轮询等待docker服务重启完毕
     shell: "systemctl status docker.service|grep Active"
     register: docker_status
     until: '"running" in docker_status.stdout'
+    when: '"running" in docker_status_first.stdout'    
     retries: 8
     delay: 2
+    ignore_errors: true
+    no_log: true
 
   - name: reset kubeadm
     shell: 'kubeadm reset -f'
-
+    ignore_errors: true
+    no_log: true
 
   - name: cleanup iptables
     shell: "iptables -F && iptables -X \
