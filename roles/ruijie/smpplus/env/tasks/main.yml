@@ -45,7 +45,7 @@
     - "operations"
     - "authentication-api"
     - "nodeconnector"
-    - "pcap-scan"
+#    - "pcap-scan"
     - "linkage-devices"
     - "frontend-client"
     - "flow"
