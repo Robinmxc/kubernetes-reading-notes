@@ -28,6 +28,3 @@ deploy_conf_defaults:
         memory: 512Mi
 
 gate_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
-
-#自定义路径，前后不要加‘/’
-CUSTOMIZE_SUFFIX: "cas"

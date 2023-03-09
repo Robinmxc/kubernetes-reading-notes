@@ -46,4 +46,6 @@ DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}
 
 DOCKER_STORAGE_DIR: "{{ DATA_DIR }}/docker"
 
+#自定义路径，前后不要加‘/’
+CUSTOMIZE_SUFFIX: ""
 

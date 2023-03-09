@@ -32,6 +32,3 @@ sso_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
 # 二次认证网关参数默认值
 SOURCEID_GATEWAY_COOKIE_DOMAIN: ""
 SOURCEID_GATEWAY_URL: "http://gateway.example.com"
-
-#自定义路径，前后不要加‘/’
-CUSTOMIZE_SUFFIX: "cas"
