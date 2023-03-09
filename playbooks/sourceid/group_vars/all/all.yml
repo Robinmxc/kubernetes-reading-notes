@@ -174,3 +174,6 @@ HEALTH_CHECK: {
   groupview: false
 
 }
+
+#自定义路径，前后不要加‘/’
+CUSTOMIZE_SUFFIX: ""
