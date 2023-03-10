@@ -103,6 +103,16 @@
       connection: local
       when: "'https' == ingress_mode"
 
+    - name: 创建nginx-configmap文件
+      template: src=nginx-configmap.yaml.j2 dest={{ nginx_temp_dir }}/nginx-configmap.yaml
+      run_once: true
+      delegate_to: "{{ groups.deploy[0] }}"
+      
+    - name: 部署nginx-configmap
+      shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/nginx-configmap.yaml"
+      connection: local
+      run_once: true
+      
       
 - name: 创建nginx部署文件
   template: src=nginx-ingress.yaml.j2 dest={{ nginx_temp_dir }}/nginx-ingress.yaml
