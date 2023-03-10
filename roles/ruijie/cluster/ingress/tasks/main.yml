@@ -109,7 +109,7 @@
       delegate_to: "{{ groups.deploy[0] }}"
       
     - name: 部署nginx-configmap
-      shell: "{{ bin_dir }}/kubectl apply -f {{ nginx_temp_dir }}/nginx-configmap.yaml"
+      shell: "kubectl apply -f {{ nginx_temp_dir }}/nginx-configmap.yaml"
       connection: local
       run_once: true
       
