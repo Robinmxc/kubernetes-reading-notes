@@ -112,15 +112,13 @@
       shell: "kubectl apply -f {{ nginx_temp_dir }}/nginx-configmap.yaml"
       connection: local
       run_once: true
+    - name: 创建nginx部署文件
+      template: src=nginx-ingress.yaml.j2 dest={{ nginx_temp_dir }}/nginx-ingress.yaml
+      run_once: true
+      delegate_to: "{{ groups.deploy[0] }}"
       
-      
-- name: 创建nginx部署文件
-  template: src=nginx-ingress.yaml.j2 dest={{ nginx_temp_dir }}/nginx-ingress.yaml
-  run_once: true
-  delegate_to: "{{ groups.deploy[0] }}"
-  
-- name: 部署nginx
-  shell: "kubectl apply -f {{ nginx_temp_dir }}/nginx-ingress.yaml"
-  connection: local
-  run_once: true
+    - name: 部署nginx
+      shell: "kubectl apply -f {{ nginx_temp_dir }}/nginx-ingress.yaml"
+      connection: local
+      run_once: true
 
