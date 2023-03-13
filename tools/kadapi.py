@@ -8,6 +8,7 @@ import ssl
 import flask, json
 import time
 import yaml
+import pexpect
 from IPy import IP
 from flask import Flask, jsonify, request
 from threading import Thread
@@ -221,6 +222,40 @@ def get_freeradius_status():
         result["message"] = 'get_freeradius_status exception'
         return result
     return result
+
+
+@server.route('/kadapi/systemConfig/networkConfig/serverPwdCheck', methods=['get', 'post'])
+def server_pwd_check():
+    result = {
+        "code": 200,
+        "message": "ok",
+        "result": True,
+        "data": {
+        }
+    }
+
+    data = json.loads(request.get_data(as_text=True))
+    logging.debug("server_pwd_check request parameter:" + str(data))
+    keys = ['serverUser', "serverPwd", 'hostIp', ]
+    if all(t not in data.keys() for t in keys):
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'Parameter illegal'
+        return result
+
+    serverUser = str(data["serverUser"])
+    result["serverUser"] = serverUser
+    serverPwd = str(data["serverPwd"])
+    hostIp = str(data["hostIp"])
+    result["hostIp"] = hostIp
+    if not pwd_verify_new(hostIp, serverUser, serverPwd):
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'pwd_verify_new is fail.'
+        return result
+
+    return result
+
 
 
 @server.route('/kadapi/systemConfig/networkConfig/ipAddrCheck', methods=['get', 'post'])
@@ -466,6 +501,32 @@ def is_ip(str):
         IP(str)
         return True
     except Exception as e:
+        return False
+
+
+def pwd_verify_new(host_ip, username, password):
+    try:
+        command = 'date'
+        child = pexpect.spawn('ssh -l %s %s %s' % (username, host_ip, command), timeout=3)
+        ret = child.expect([pexpect.TIMEOUT, 'Are you sure you want to continue connecting', 'assword:'])
+        if ret == 0:
+            logging.info('[-] Error Connecting')
+            return False
+        if ret == 1:
+            child.sendline('yes')
+            ret = child.expect([pexpect.TIMEOUT, 'assword:'])
+            if ret == 0:
+                logging.info('[-] Error Connecting')
+                return False
+            if ret == 1:
+                child.sendline(password)
+        if ret == 2:
+            child.sendline(password)
+        child.expect(pexpect.EOF)
+        logging.info("pwd verify success. " + str(child.before))
+        return True
+    except Exception as e:
+        logging.error("Exception: pwd verify failed.", exc_info=True)
         return False
 
 
