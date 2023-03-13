@@ -23,7 +23,8 @@
 - name: 通过kubeadm安装并启动kubernetes
   shell: 'kubeadm init --apiserver-advertise-address={{ groups.deploy[0] }} \
           --kubernetes-version={{ KUBERNETES_VERSION }} --image-repository registry.aliyuncs.com/google_containers \
-          --pod-network-cidr=196.200.192.0/20; \
+          --service-cidr=196.200.207.0/20 \
+          --pod-network-cidr={{CLUSTER_CIDR}}; \
           mkdir -p $HOME/.kube; \
           sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config; \
           sudo chown $(id -u):$(id -g) $HOME/.kube/config; \
