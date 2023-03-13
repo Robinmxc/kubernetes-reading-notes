@@ -5,6 +5,13 @@
     src: "{{ namespace_dir }}/conf/frontend-client/conf/"
     dest: "{{ config_base_dir }}/frontend-client/conf/"
 
+- name: 复制浏览器文件
+  tags:
+    - config
+  copy:
+    src: "{{ namespace_dir }}/conf/frontend-client/plugin/"
+    dest: "{{ config_base_dir }}/frontend-client/plugin/"
+
 #- name: 自动配置
 #  tags:
 #    - config

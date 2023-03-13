@@ -5,6 +5,13 @@
     src: "{{ namespace_dir }}/conf/frontend-smp/conf/"
     dest: "{{ config_base_dir }}/frontend-smp/conf/"
 
+- name: 复制浏览器文件
+  tags:
+    - config
+  copy:
+    src: "{{ namespace_dir }}/conf/frontend-smp/plugin/"
+    dest: "{{ config_base_dir }}/frontend-smp/plugin/"
+
 
 - name: 自动配置
   tags:
