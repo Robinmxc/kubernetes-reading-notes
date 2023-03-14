@@ -139,6 +139,7 @@
       - "kube-bridge"
       - "dummy0"
       - "cilium_net"
+      - "kube-ipvs0"
       - "cilium_vxlan"
     ignore_errors: true
 
