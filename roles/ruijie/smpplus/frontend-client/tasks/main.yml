@@ -5,13 +5,20 @@
     src: "{{ namespace_dir }}/conf/frontend-client/conf/"
     dest: "{{ config_base_dir }}/frontend-client/conf/"
 
-- name: 自动配置
+- name: 复制浏览器文件
   tags:
     - config
-  replace: path="{{ config_base_dir }}/frontend-client/conf/client_config.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
-  with_items:
-    - {regexp: "ip.*$", replace: "ip: \"{{groups['kube_node'][0]}}\","}
-    - {regexp: "smpdomain.*$", replace: "smpdomain: \"http://{{groups['kube_node'][0]}}\","}
+  copy:
+    src: "{{ namespace_dir }}/conf/frontend-client/plugin/"
+    dest: "{{ config_base_dir }}/frontend-client/plugin/"
+
+#- name: 自动配置
+#  tags:
+#    - config
+#  replace: path="{{ config_base_dir }}/frontend-client/conf/client_config.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+#  with_items:
+#    - {regexp: "ip.*$", replace: "ip: \"{{groups['kube_node'][0]}}\","}
+#    - {regexp: "smpdomain.*$", replace: "smpdomain: \"http://{{groups['kube_node'][0]}}\","}
 
 
 - name: 准备部署文件目录
