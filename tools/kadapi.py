@@ -65,7 +65,9 @@ def get_expiry_date():
         return result
 
     expiry_dates = {}
-    data_dir = str(os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline()).replace(" ", "").replace("\n", "")
+    data_dir = str(os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline()).replace(" ",
+                                                                                                               "").replace(
+        "\n", "")
     logging.debug("data_dir:" + data_dir)
     if len(data_dir) < 1:
         result["result"] = False
@@ -114,7 +116,9 @@ def certs_enabled():
         result["code"] = 204
         result["message"] = 'Parameter illegal'
         return result
-    data_dir = str(os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline().replace(" ", "").replace("\n", ""))
+    data_dir = str(
+        os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline().replace(" ", "").replace(
+            "\n", ""))
     logging.debug("data_dir:" + data_dir)
     if len(data_dir) < 1:
         result["result"] = False
@@ -130,8 +134,10 @@ def certs_enabled():
     old_cert_private_key_pwd = data["oldCertPriKeyPWD"]
     certs_path = data_dir + "/ruijie/ruijie-smpplus/share/certs/" + cert_name
     logging.debug("prepare to copy cert. certs_path:" + certs_path)
-    copy_result_1 = int(os.system("\\cp -f " + certs_path + "  /opt/kad/workspace/ruijie-smpplus/conf/freeradius/certs/" + cert_name))
-    copy_result_2 = int(os.system("\\cp -f " + certs_path + "  " + data_dir + "/ruijie/ruijie-smpplus/freeradius/certs/" + cert_name))
+    copy_result_1 = int(
+        os.system("\\cp -f " + certs_path + "  /opt/kad/workspace/ruijie-smpplus/conf/freeradius/certs/" + cert_name))
+    copy_result_2 = int(
+        os.system("\\cp -f " + certs_path + "  " + data_dir + "/ruijie/ruijie-smpplus/freeradius/certs/" + cert_name))
     if not copy_result_1 == 0 or not copy_result_2 == 0:
         result["result"] = False
         result["code"] = 204
@@ -144,19 +150,29 @@ def certs_enabled():
     freeradius_yml_file = "/opt/kad/workspace/ruijie-smpplus/yaml/freeradius/freeradius.yml"
     freeradius_yml_role_file = "/opt/kad/roles/ruijie/smpplus/freeradius/templates/freeradius.yaml.j2"
 
-    effect_result_pwd = int(os.system("sed -i '/^.*private_key_password = /s/" + old_cert_private_key_pwd + "/" + cert_private_key_pwd + "/' " + effect_certs_config_file))
-    effect_result_file_1 = int(os.system("sed -i '/^.*private_key_file = /s/" + old_cert_name + "/" + cert_name + "/' " + effect_certs_config_file))
-    effect_result_file_2 = int(os.system("sed -i '/^.*certificate_file = /s/" + old_cert_name + "/" + cert_name + "/' " + effect_certs_config_file))
+    effect_result_pwd = int(os.system(
+        "sed -i '/^.*private_key_password = /s/" + old_cert_private_key_pwd + "/" + cert_private_key_pwd + "/' " + effect_certs_config_file))
+    effect_result_file_1 = int(os.system(
+        "sed -i '/^.*private_key_file = /s/" + old_cert_name + "/" + cert_name + "/' " + effect_certs_config_file))
+    effect_result_file_2 = int(os.system(
+        "sed -i '/^.*certificate_file = /s/" + old_cert_name + "/" + cert_name + "/' " + effect_certs_config_file))
 
-    kad_result_pwd = int(os.system("sed -i '/^.*private_key_password = /s/" + old_cert_private_key_pwd + "/" + cert_private_key_pwd + "/' " + kad_certs_config_file))
-    kad_result_file_1 = int(os.system("sed -i '/^.*private_key_file = /s/" + old_cert_name + "/" + cert_name + "/' " + kad_certs_config_file))
-    kad_result_file_2 = int(os.system("sed -i '/^.*certificate_file = /s/" + old_cert_name + "/" + cert_name + "/' " + kad_certs_config_file))
+    kad_result_pwd = int(os.system(
+        "sed -i '/^.*private_key_password = /s/" + old_cert_private_key_pwd + "/" + cert_private_key_pwd + "/' " + kad_certs_config_file))
+    kad_result_file_1 = int(os.system(
+        "sed -i '/^.*private_key_file = /s/" + old_cert_name + "/" + cert_name + "/' " + kad_certs_config_file))
+    kad_result_file_2 = int(os.system(
+        "sed -i '/^.*certificate_file = /s/" + old_cert_name + "/" + cert_name + "/' " + kad_certs_config_file))
 
-    freeradius_yml_result_1 = int(os.system("sed -i '/^.*mountPath: \/usr\/local\/etc\/raddb\/certs/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_file))
-    freeradius_yml_result_2 = int(os.system("sed -i '/^.*subPath:/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_file))
+    freeradius_yml_result_1 = int(os.system(
+        "sed -i '/^.*mountPath: \/usr\/local\/etc\/raddb\/certs/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_file))
+    freeradius_yml_result_2 = int(
+        os.system("sed -i '/^.*subPath:/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_file))
 
-    freeradius_yml_role_result_1 = int(os.system("sed -i '/^.*mountPath: \/usr\/local\/etc\/raddb\/certs/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_role_file))
-    freeradius_yml_role_result_2 = int(os.system("sed -i '/^.*subPath:/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_role_file))
+    freeradius_yml_role_result_1 = int(os.system(
+        "sed -i '/^.*mountPath: \/usr\/local\/etc\/raddb\/certs/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_role_file))
+    freeradius_yml_role_result_2 = int(
+        os.system("sed -i '/^.*subPath:/s/" + old_cert_name + "/" + cert_name + "/' " + freeradius_yml_role_file))
 
     if not effect_result_pwd == 0 or not effect_result_file_1 == 0 or not effect_result_file_2 == 0:
         result["result"] = False
@@ -183,8 +199,9 @@ def certs_enabled():
         return result
 
     logging.debug("replace file and args success, preparing to restart freeradius")
-    restart_pod = int(os.system("cd /opt/kad/workspace/ruijie-smpplus/yaml/freeradius;kubectl delete -f freeradius.yml && "
-                           "kubectl create -f freeradius.yml"))
+    restart_pod = int(
+        os.system("cd /opt/kad/workspace/ruijie-smpplus/yaml/freeradius;kubectl delete -f freeradius.yml && "
+                  "kubectl create -f freeradius.yml"))
     if not restart_pod == 0:
         result["result"] = False
         result["code"] = 204
@@ -257,7 +274,6 @@ def server_pwd_check():
     return result
 
 
-
 @server.route('/kadapi/systemConfig/networkConfig/ipAddrCheck', methods=['get', 'post'])
 def idaddr_check():
     result = {
@@ -307,6 +323,14 @@ def save_ip():
         result["code"] = 204
         result["message"] = 'Parameter illegal'
         return result
+
+    keys = ['accessMode', 'certName', 'certKeyName', 'adminDomainName', 'portalDomainName', 'serverUser', 'serverPwd', ]
+    if all(t not in data.keys() for t in keys):
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'access mode Parameter illegal'
+        return result
+
     if not is_ip(data['ipAddress']) or not is_ip(data['firstDnsServer']) or not is_ip(data['subnetMask']):
         result["result"] = False
         result["code"] = 204
@@ -327,7 +351,8 @@ def save_ip():
 
 
 def changeip_thread(data):
-    old_ip = prase_netfile()["date"]["ipAddress"]
+    current_net_info = prase_netfile()
+    old_ip = current_net_info["date"]["ipAddress"]
     new_ip = data["ipAddress"]
 
     edit_netfile(data)
@@ -356,7 +381,8 @@ def changeip_thread(data):
     if os.path.isfile(maintenance_shell_script_path):
         logging.info("changeip:start stop maintenance-related shell script")
         stop_script_status_code = int(os.system("sed -i '/" + maintenance_shell_script + "/d' /var/spool/cron/root"))
-        logging.info("changeip:end stop maintenance-related shell script" + "execution return status code-->" + str(stop_script_status_code))
+        logging.info("changeip:end stop maintenance-related shell script" + "execution return status code-->" + str(
+            stop_script_status_code))
 
     logging.info("changeip: start changeip.sh")
     os.system('sh /etc/kad/api/changeip.sh ' + old_ip + ' ' + new_ip)
@@ -395,8 +421,10 @@ def changeip_thread(data):
 
     if os.path.isfile(maintenance_shell_script_path):
         logging.info("changeip: start startup maintenance-related shell script")
-        stop_script_status_code = int(os.system("echo '*/1 * * * * sh " + maintenance_shell_script_path + " >/dev/null 2>&1'  >> /var/spool/cron/root"))
-        logging.info("changeip: end startup maintenance-related shell script" + "execution return status code-->" + str(stop_script_status_code))
+        stop_script_status_code = int(os.system(
+            "echo '*/1 * * * * sh " + maintenance_shell_script_path + " >/dev/null 2>&1'  >> /var/spool/cron/root"))
+        logging.info("changeip: end startup maintenance-related shell script" + "execution return status code-->" + str(
+            stop_script_status_code))
 
     logging.info("changeip: task executed successfully")
 
@@ -416,9 +444,21 @@ def prase_netfile():
             "defaultGateway": "",
             "firstDnsServer": "",
             "spareDnsServer": "",
-            "ipParagraphPrompt": ""
+            "ipParagraphPrompt": "",
+            "accessMode": "1",
+            "certName": "",
+            "certKeyName": "",
+            "adminDomainName": "",
+            "portalDomainName": ""
         }
     }
+    # 获取访问模式及其相关数据
+    access_mode_related_template = access_mode_data()
+    result["date"]["accessMode"] = access_mode_related_template.get("accessMode", "1")
+    result["date"]["certName"] = access_mode_related_template.get("certName", "")
+    result["date"]["certKeyName"] = access_mode_related_template.get("certKeyName", "")
+    result["date"]["adminDomainName"] = access_mode_related_template.get("adminDomainName", "")
+    result["date"]["portalDomainName"] = access_mode_related_template.get("portalDomainName", "")
     try:
         eth0_data = {}
         file = open(api_config['networkfile'])
@@ -504,10 +544,100 @@ def is_ip(str):
         return False
 
 
+def access_mode_data():
+    access_mode_related_template = {
+        "accessMode": "1",
+        "certName": "",
+        "certKeyName": "",
+        "adminDomainName": "",
+        "portalDomainName": ""
+    }
+
+    admin_domain = str(os.popen(
+        "cat /opt/kad/workspace/ruijie-smpplus/conf/all.yml | grep SMPPLUS_SSO_DOMAIN |awk -F ': ' '{print $2}'|tr -d '\"'").readline().replace(
+        " ", "").replace("\n", ""))
+    portal_domain = str(os.popen(
+        "cat /opt/kad/workspace/ruijie-smpplus/conf/all.yml | grep SMPPLUS_PORTAL_DOMAIN |awk -F ': ' '{print $2}'|tr -d '\"'").readline().replace(
+        " ", "").replace("\n", ""))
+    ingress_mode_comment = str(os.popen(
+        "cat /opt/kad/workspace/k8s/conf/all.yml | grep ingress_mode |awk -F ': ' '{print $1}' ").readline().replace(
+        " ", "").replace("\n", ""))
+    ingress_mode = str(os.popen(
+        "cat /opt/kad/workspace/k8s/conf/all.yml | grep ingress_mode |awk -F ': ' '{print $2}'|tr -d '\"'").readline().replace(
+        " ", "").replace("\n", ""))
+    ingress_ssl_names = str(os.popen(
+        "cat /opt/kad/workspace/k8s/conf/all.yml | grep ingress_ssl_names |awk -F ': ' '{print $2}'|tr -d '['| tr -d ']'|tr -d '\"'").readline().replace(
+        " ", "").replace("\n", ""))
+
+    if str_is_empty(admin_domain):
+        admin_domain = ""
+    if str_is_empty(portal_domain):
+        portal_domain = ""
+    if str_is_empty(ingress_mode_comment):
+        ingress_mode_comment = ""
+    if str_is_empty(ingress_mode):
+        ingress_mode = ""
+    if str_is_empty(ingress_ssl_names):
+        ingress_ssl_names = ""
+    accessMode = "1"
+    domain_flag = False
+    if admin_domain == "" and portal_domain == "":
+        domain_flag = False
+    else:
+        domain_flag = True
+
+    logging.info("admin_domain or portal_domain is: " + str(domain_flag))
+    if ingress_mode_comment == "" or ingress_mode_comment.find("#") > -1:
+        #不存在ingress mode 只需要判断 http域名  ip
+        #存在ingress mode 但是被注释掉了，只需要判断 http域名  ip
+        logging.info("ingress_mode does not exist or is commented out.")
+        if not domain_flag:
+            accessMode = "1"
+        else:
+            accessMode = "2"
+    else:
+        #存在ingress mode，需要判断是 https  还是http  http情况需要考虑ip 或域名
+        logging.info("ingress_mode exist.")
+        if ingress_mode != "" and ingress_mode.find("https") > -1:
+            accessMode = "3"
+        else:
+            if not domain_flag:
+                accessMode = "1"
+            else:
+                accessMode = "2"
+
+    certName = ""
+    certKeyName = ""
+    if accessMode == "3":
+        if not str_is_empty(ingress_ssl_names):
+            certName = ingress_ssl_names + ".pem"
+        if not str_is_empty(ingress_ssl_names):
+            certKeyName = ingress_ssl_names + "-key.pem"
+
+    access_mode_related_template['accessMode'] = accessMode
+    access_mode_related_template['certName'] = certName
+    access_mode_related_template['certKeyName'] = certKeyName
+    access_mode_related_template['adminDomainName'] = admin_domain
+    access_mode_related_template['portalDomainName'] = portal_domain
+
+    return access_mode_related_template
+
+
+def str_is_empty(str1):
+    if str1 is None or len(str1) == 0:
+        return True
+    else:
+        return False
+
+
 def pwd_verify_new(host_ip, username, password):
     try:
-        command = 'date'
-        child = pexpect.spawn('ssh -l %s %s %s' % (username, host_ip, command), timeout=3)
+        output = os.popen('/usr/bin/which ssh')
+        # ssh_command_path = str(output.readline().replace(" ", "").replace("\n", ""))
+        # logging.info("ssh_command_path" + ssh_command_path)
+        ssh_command_path = "/usr/local/openssh/bin/ssh"
+        command = 'ls /etc/kad/'
+        child = pexpect.spawn(ssh_command_path + ' -l %s %s %s' % (username, host_ip, command), timeout=2)
         ret = child.expect([pexpect.TIMEOUT, 'Are you sure you want to continue connecting', 'assword:'])
         if ret == 0:
             logging.info('[-] Error Connecting')
@@ -528,6 +658,10 @@ def pwd_verify_new(host_ip, username, password):
     except Exception as e:
         logging.error("Exception: pwd verify failed.", exc_info=True)
         return False
+
+#def access_mode_change(current_info, change_info):
+
+
 
 
 def main():
