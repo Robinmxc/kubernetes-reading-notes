@@ -38,9 +38,6 @@
     - "/opt/kube/kube-system/nginx-ingress/nginx.tmpl"
     - "/opt/kube/kube-system/nginx-ingress/ingress-smpplus.yaml"
 
-  - name: 等待修改的 ip 生效
-    shell: 'sleep 10'
-
   - name: 获取maintenance-related script
     tags:
       - maintenance-related
