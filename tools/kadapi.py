@@ -355,6 +355,10 @@ def changeip_thread(data):
     old_ip = current_net_info["date"]["ipAddress"]
     new_ip = data["ipAddress"]
 
+    #模式切换对应的操作
+    access_mode_change(current_net_info, data)
+    logging.info("changeip: The access_mode_change conversion operation is complete.")
+
     edit_netfile(data)
     if (old_ip == new_ip):
         logging.info("changeip: old_ip equals new_ip, only restart network")
@@ -452,14 +456,15 @@ def prase_netfile():
             "portalDomainName": ""
         }
     }
-    # 获取访问模式及其相关数据
-    access_mode_related_template = access_mode_data()
-    result["date"]["accessMode"] = access_mode_related_template.get("accessMode", "1")
-    result["date"]["certName"] = access_mode_related_template.get("certName", "")
-    result["date"]["certKeyName"] = access_mode_related_template.get("certKeyName", "")
-    result["date"]["adminDomainName"] = access_mode_related_template.get("adminDomainName", "")
-    result["date"]["portalDomainName"] = access_mode_related_template.get("portalDomainName", "")
+
     try:
+        # 获取访问模式及其相关数据
+        access_mode_related_template = access_mode_data()
+        result["date"]["accessMode"] = access_mode_related_template.get("accessMode", "1")
+        result["date"]["certName"] = access_mode_related_template.get("certName", "")
+        result["date"]["certKeyName"] = access_mode_related_template.get("certKeyName", "")
+        result["date"]["adminDomainName"] = access_mode_related_template.get("adminDomainName", "")
+        result["date"]["portalDomainName"] = access_mode_related_template.get("portalDomainName", "")
         eth0_data = {}
         file = open(api_config['networkfile'])
         for line in file:
@@ -633,9 +638,10 @@ def str_is_empty(str1):
 def pwd_verify_new(host_ip, username, password):
     try:
         output = os.popen('/usr/bin/which ssh')
-        # ssh_command_path = str(output.readline().replace(" ", "").replace("\n", ""))
-        # logging.info("ssh_command_path" + ssh_command_path)
-        ssh_command_path = "/usr/local/openssh/bin/ssh"
+        ssh_command_path = str(output.readline().replace(" ", "").replace("\n", ""))
+        logging.info("pwd_verify_new: ssh_command_path---> " + ssh_command_path)
+        #ssh_command_path = "/usr/local/openssh/bin/ssh"
+        host_ip = "127.0.0.1"
         command = 'ls /etc/kad/'
         child = pexpect.spawn(ssh_command_path + ' -l %s %s %s' % (username, host_ip, command), timeout=2)
         ret = child.expect([pexpect.TIMEOUT, 'Are you sure you want to continue connecting', 'assword:'])
@@ -659,9 +665,213 @@ def pwd_verify_new(host_ip, username, password):
         logging.error("Exception: pwd verify failed.", exc_info=True)
         return False
 
-#def access_mode_change(current_info, change_info):
+
+def access_mode_change(current_info, submit_info):
+    try:
+        logging.debug("access_mode_change is start.")
+        data_dir = str(os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline()).replace(" ","").replace("\n", "")
+        logging.debug("access_mode_change: data_dir:" + data_dir)
+        if len(data_dir) < 1:
+            logging.error("access_mode_change: data_dir is empty....")
+            return
+
+        #current_info 读取现有配置，change_info页面传递来的参数
+        current_accessMode = current_info["date"]["accessMode"]
+        current_certName = current_info["date"]["certName"]
+        current_certKeyName = current_info["date"]["certKeyName"]
+        current_adminDomainName = current_info["date"]["adminDomainName"]
+        current_portalDomainName = current_info["date"]["portalDomainName"]
+
+        submit_accessMode = submit_info["accessMode"]
+        submit_certName = submit_info["certName"]
+        submit_certKeyName = submit_info["certKeyName"]
+        submit_adminDomainName = submit_info["adminDomainName"]
+        submit_portalDomainName = submit_info["portalDomainName"]
+
+        logging.info("access_mode_change: The current access mode is " + current_accessMode + " , The submit access mode is " + submit_accessMode)
+        #若模式存在切换则需要更新，
+        #若模式未切换，则需要根据对应的模式进行配置：http域名模式，需要判断域名是否变化，变化则需要；https 如果证书不一致或域名不一致则变化
+        if submit_accessMode == current_accessMode:
+            if submit_accessMode == "1":
+                logging.info("access_mode_change: The current accessMode is the same as the commit accessMode, and they are both mode 1 and do not need to do anything")
+                return
+            if submit_accessMode == "2":
+                logging.info("access_mode_change: The current accessMode is the same as the commit accessMode, and they are both mode 2 and do need to do change")
+                smpplus_all_change(submit_adminDomainName, submit_portalDomainName)
+            if submit_accessMode == "3":
+                logging.info("access_mode_change: The current accessMode is the same as the commit accessMode, and they are both mode 3 and do need to do change")
+                k8s_all_change(current_accessMode, submit_accessMode, submit_certName, submit_certKeyName)
+                smpplus_all_change(submit_adminDomainName, submit_portalDomainName)
+                ingress_ssl_certs_change(data_dir, current_certName, current_certKeyName, submit_certName, submit_certKeyName)
+        else:
+            logging.info("access_mode_change: The current accessMode is different from the commit accessMode in that the submit_accessMode  is " + submit_accessMode)
+            k8s_all_change(current_accessMode, submit_accessMode, submit_certName, submit_certKeyName)
+            smpplus_all_change(submit_adminDomainName, submit_portalDomainName)
+            ingress_ssl_certs_change(data_dir, current_certName, current_certKeyName, submit_certName, submit_certKeyName)
+
+        #进行重启相关操作：ingress reconfig
+        logging.info("access_mode_change: start restart ingress.")
+        #serverUser = submit_info['serverUser']
+        serverPwd = submit_info['serverPwd']
+        #current_ipAddress = current_info["date"]["ipAddress"]
+        restart_ingress(serverPwd)
+        logging.info("access_mode_change: start restart business component.")
+        restart_component(serverPwd)
+        time.sleep(3)
+    except Exception as e:
+        logging.error("Exception: access_mode_change failed.", exc_info=True)
+    return
 
 
+def k8s_all_change(current_accessMode, submit_accessMode, submit_certName, submit_certKeyName):
+    try:
+        #logging.info("0. k8s_all_change: current_accessMode: " + current_accessMode + " ,submit_accessMode: " + submit_accessMode)
+        ingress_params_1 = str(os.popen('cat /opt/kad/workspace/k8s/conf/all.yml |grep "ingress_mode" | cat ').readline()).replace(" ", "").replace("\n", "")
+        ingress_params_2 = str(os.popen('cat /opt/kad/workspace/k8s/conf/all.yml |grep "ingress_ssl_names" | cat ').readline()).replace(" ", "").replace("\n", "")
+        ingress_params_flag = True
+        if str_is_empty(ingress_params_1) and str_is_empty(ingress_params_2):
+            ingress_params_flag = False
+        logging.info("0.k8s_all_change: Whether the ingress parameter exists: " + str(ingress_params_flag))
+
+        ingress_mode_status_code = int(os.system("sed -i '/^.*ingress_mode/d' /opt/kad/workspace/k8s/conf/all.yml"))
+        logging.info("1.k8s_all_change: k8s_all_change: delete ingress_mode shell script execution return status code-->" + str(ingress_mode_status_code))
+        ingress_ssl_names_status_code = int(os.system("sed -i '/^.*ingress_ssl_names/d' /opt/kad/workspace/k8s/conf/all.yml"))
+        logging.info("2.k8s_all_change: k8s_all_change: delete ingress_ssl_names shell script execution return status code-->" + str(ingress_ssl_names_status_code))
+
+        if submit_accessMode == "3":
+            ssl_names = submit_certName.replace(".pem", "")
+            ingress_mode_status_code_2 = int(os.system("sed -i '$a ingress_mode: \"https\"' /opt/kad/workspace/k8s/conf/all.yml"))
+            logging.info("3.k8s_all_change: k8s_all_change: add ingress_mode shell script execution return status code-->" + str(ingress_mode_status_code_2))
+            ingress_ssl_names_status_code_2 = int(os.system("sed -i '$a ingress_ssl_names: [\"" + ssl_names + "\"]' /opt/kad/workspace/k8s/conf/all.yml"))
+            logging.info("4.k8s_all_change: k8s_all_change: add ingress_ssl_names shell script execution return status code-->" + str(ingress_ssl_names_status_code_2))
+    except Exception as e:
+        logging.error("Exception: k8s_all_change failed.", exc_info=True)
+    return
+
+
+def smpplus_all_change(submit_adminDomainName, submit_portalDomainName):
+    try:
+        adminDomain_status_code = int(os.system("sed -i '/^.*SMPPLUS_SSO_DOMAIN/s/.*/SMPPLUS_SSO_DOMAIN: \"" + submit_adminDomainName + "\"/g' /opt/kad/workspace/ruijie-smpplus/conf/all.yml"))
+        logging.info("smpplus_all_change: replace adminDomainName shell script execution return status code-->" + str(adminDomain_status_code))
+        portalDomain_status_code = int(os.system("sed -i '/^.*SMPPLUS_PORTAL_DOMAIN/s/.*/SMPPLUS_PORTAL_DOMAIN: \"" + submit_portalDomainName + "\"/g' /opt/kad/workspace/ruijie-smpplus/conf/all.yml"))
+        logging.info("smpplus_all_change: replace portalDomainName shell script execution return status code-->" + str(portalDomain_status_code))
+    except Exception as e:
+        logging.error("Exception: smpplus_all_change failed.", exc_info=True)
+    return
+
+
+def ingress_ssl_certs_change(data_dir, current_certName, current_certKeyName, submit_certName, submit_certKeyName):
+    try:
+        #判断ssl路径是否存在,不存在创建
+        logging.info("/etc/kad/ssl/ exists info: " + str(os.path.exists("/etc/kad/ssl/")))
+        if os.path.exists("/etc/kad/ssl/"):
+            if str_is_empty(current_certName) or str_is_empty(current_certKeyName):
+                logging.info("ingress_ssl_certs_change: 1.current_certName or current_certKeyName is empty. No deletion operation is required")
+            else:
+                #删除证书
+                logging.debug("ingress_ssl_certs_change: 2.preparing to delete current_cert. current_certName:" + current_certName + " ,  current_certKeyName" + current_certKeyName)
+                os.system("rm -rf /etc/kad/ssl/" + current_certName)
+                os.system("rm -rf /etc/kad/ssl/" + current_certKeyName)
+                logging.debug("ingress_ssl_certs_change: 3.delete current_cert end")
+        else:
+            logging.info("ingress_ssl_certs_change: 4.ssl path is not exist, create it")
+            os.makedirs("/etc/kad/ssl/")
+
+        if str_is_empty(submit_certName) or str_is_empty(submit_certKeyName):
+            logging.info("ingress_ssl_certs_change: 5.submit_certName or submit_certKeyName is empty. No copy operation is required")
+        else:
+            #拷贝证书
+            certs_path = data_dir + "/ruijie/ruijie-smpplus/share/network/" + submit_certName
+            certKey_path = data_dir + "/ruijie/ruijie-smpplus/share/network/" + submit_certKeyName
+            logging.debug("ingress_ssl_certs_change: 6.prepare to copy cert. certs_path:" + certs_path)
+            copy_result_1 = int(os.system("\\cp -f " + certs_path + "  /etc/kad/ssl/" + submit_certName))
+            copy_result_2 = int(os.system("\\cp -f " + certKey_path + "  /etc/kad/ssl/" + submit_certKeyName))
+            logging.debug("ingress_ssl_certs_change: 7.copy cert result: " + str(copy_result_1) + " ,copy certKey result: " + str(copy_result_2))
+    except Exception as e:
+        logging.error("Exception: ingress_ssl_certs_change failed.", exc_info=True)
+    return
+
+
+def restart_ingress(serverPwd):
+    try:
+        #只重启ingress组件
+        logging.debug("restart_ingress: restart_ingress is start.")
+        password = serverPwd
+        output = os.popen("kubectl delete -f /opt/kube/kube-system/nginx-ingress/")
+        #删除执行后k8s调度存在时间差，可能会导致后续判断删除的跳过
+        time.sleep(5)
+        while not pod_running_check():
+            logging.debug("restart_ingress:Failed to check all pod running. Wait 5 seconds and check again")
+            time.sleep(5)
+        logging.debug("restart_ingress: nginx-ingress delete success.")
+
+        # spawn启动reconfig程序
+        shell_cmd = 'cd /opt/kad;kad-play playbooks/cluster/ingress.yml'
+        process = pexpect.spawn('/bin/bash', ['-c', shell_cmd])
+        # expect方法等待scp产生的输出，判断是否匹配指定的字符串Password:
+        process.expect('password:')
+        # 若匹配，则发送密码响应
+        process.sendline(password)
+        process.expect(pexpect.EOF, timeout=None)
+        logging.info("restart_ingress: reconfig command is executed")
+        time.sleep(2)
+        logging.debug("restart_ingress: restart_ingress is end.")
+    except Exception as e:
+        logging.error("Exception: restart_ingress failed.", exc_info=True)
+    return
+
+
+def restart_component(serverPwd):
+    try:
+        logging.debug("restart_component: restart_component is start.")
+        #只重启业务组件
+        password = serverPwd
+        # spawn启动reconfig程序
+        shell_cmd = 'cd /opt/kad;kad-play playbooks/smpplus/update-pod.yml'
+        process = pexpect.spawn('/bin/bash', ['-c', shell_cmd])
+        # expect方法等待scp产生的输出，判断是否匹配指定的字符串Password:
+        process.expect('password:')
+        # 若匹配，则发送密码响应
+        process.sendline(password)
+        process.expect(pexpect.EOF, timeout=None)
+        logging.info("restart_component: reconfig command is executed")
+        time.sleep(2)
+        logging.debug("restart_component: restart_component is start end .")
+    except Exception as e:
+        logging.error("Exception: restart_component failed.", exc_info=True)
+    return
+
+
+#检测到没在运行的就返回false， 检测到都运行返回true
+def pod_running_check():
+    flag = False
+    try:
+        output = os.popen('kubectl get pod -A')
+        pod_count = len(output.readlines()) - 1
+        num = 0
+        logging.debug("1.kubectl get pod -A count: " + str(pod_count))
+        output = os.popen('kubectl get pod -A')
+        for line in output.readlines():
+            if ('NAMESPACE' in line and 'RESTARTS' in line):
+                logging.debug("2.This line does not contain pod")
+                continue
+            if ('Running' not in line):
+                logging.debug("pod_running_check: not Running pod name-->: " + line)
+                #只要有一行不是则直接结束
+                break
+            else:
+                num += 1
+        logging.debug("3.The number of Pods running is: " + str(num))
+        if num == pod_count:
+            flag = True
+            logging.debug("4.1pod is all running")
+        else:
+            flag = False
+            logging.debug("4.2pod is not all running")
+    except Exception as e:
+        logging.error(e)
+        return False
+    return flag
 
 
 def main():
