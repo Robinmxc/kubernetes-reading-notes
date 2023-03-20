@@ -17,7 +17,7 @@ import logging
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-    filename='/var/log/messages'
+    filename='/var/log/kadapi.log'
 )
 
 server = flask.Flask(__name__)  # 把app.python文件当做一个server
@@ -351,6 +351,7 @@ def save_ip():
 
 
 def changeip_thread(data):
+    logging.info("changeip: start changeip_thread.")
     current_net_info = prase_netfile()
     old_ip = current_net_info["date"]["ipAddress"]
     new_ip = data["ipAddress"]
