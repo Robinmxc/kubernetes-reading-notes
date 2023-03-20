@@ -433,6 +433,8 @@ def changeip_thread(data):
 
     logging.info("changeip: task executed successfully")
 
+    logging.info("changeip: start restart the kadapi service. This operation will affect the kadapi service.")
+    os.system('systemctl daemon-reload && systemctl restart kadapi')
 
 @server.route('/kadapi/systemConfig/networkConfig/get', methods=['get', 'post'])
 def get_network_config():

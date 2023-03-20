@@ -90,8 +90,3 @@ kubectl apply -f /opt/kad/workspace/ruijie-smpplus/yaml/rocketmq/rocketmq.yml
 kubectl apply -f /opt/kube/kube-system/nginx-ingress/ingress-smpplus.yaml
 
 logger "changeip: end startup the k8s component"
-
-logger "changeip: start restart the kadapi service"
-systemctl daemon-reload && systemctl restart kadapi
-
-logger "changeip: end the changeip execution"
