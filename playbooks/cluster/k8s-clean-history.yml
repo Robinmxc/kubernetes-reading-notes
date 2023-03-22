@@ -100,7 +100,9 @@
     - "/etc/systemd/system/docker.service.d/"
     - "/etc/bash_completion.d/docker"
     - "/usr/bin/docker"
-
+    ignore_errors: true
+    no_log: true
+    
   - name: remove files and dirs2
     file: name={{ item }} state=absent
     with_items:
