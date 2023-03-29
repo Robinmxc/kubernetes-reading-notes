@@ -17,7 +17,7 @@
       - {regexp: "^.*https-enabled.*$", replace: "https-enabled = true"}
       - {regexp: "^.*https-certificate.*$", replace: "https-certificate = \"/etc/ssl/influxdb-selfsigned.crt\""}
       - {regexp: "^.*https-private-key.*$", replace: "https-private-key = \"/etc/ssl/influxdb-selfsigned.key\""}
-      - {regexp: "# pprof-enabled.*$", replace: "https-enabled = false"}
+      - {regexp: "# pprof-enabled.*$", replace: "pprof-enabled = false"}
       - {regexp: "/var/lib/influxdb", replace: "{{ DATA_DIR }}/influxdb"}
     no_log: true
   
