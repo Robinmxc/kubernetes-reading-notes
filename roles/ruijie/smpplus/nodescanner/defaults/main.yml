@@ -22,4 +22,4 @@ deploy_conf_defaults:
         cpu: 1
         memory: 1Gi
         
-pcap_scan_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+nodescanner_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
