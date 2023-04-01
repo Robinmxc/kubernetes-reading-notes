@@ -146,6 +146,13 @@
     when: '"aitrain" in pod_info.stdout'
     ignore_errors: true
 
+  - name: delete nodescanner
+    tags:
+      - nodescanner
+    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodescanner/"
+    when: '"nodescanner" in pod_info.stdout'
+    ignore_errors: true
+
   - name: delete rg-log
     tags:
       - rg-log
@@ -350,6 +357,16 @@
     shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"aitrain" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待nodescanner结束运行
+    tags:
+      - nodescanner
+    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"nodescanner" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
