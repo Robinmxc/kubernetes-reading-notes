@@ -30,8 +30,8 @@
   tags:
   - config
   vars:
-    deploy_conf: '{{pcap_scan_deploy_conf}}'
-    JAVA_OPT_EXT: '{{pcap_scan_java_opt}}'
+    deploy_conf: '{{nodescanner_deploy_conf}}'
+    JAVA_OPT_EXT: '{{nodescanner_java_opt}}'
     comp_name: 'nodescanner'
   template: src='nodescanner.yaml.j2' dest={{ yaml_dir }}/nodescanner/nodescanner.yaml
   run_once: true
