@@ -79,7 +79,7 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: JAVA_OPT_EXT
-          value: "{{ JAVA_OPT_EXT}}"
+          value: "{{ JAVA_AUTHENTICATION_API_OPT_EXT }}"
         ports:
         - containerPort: 9887
         volumeMounts:
@@ -89,11 +89,11 @@ spec:
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
-            cpu: {{ deploy_conf.resources.limits.cpu }}
-            memory: {{ deploy_conf.resources.limits.memory }}
+            cpu: 1
+            memory: 2Gi
           requests:
-            cpu: {{ deploy_conf.resources.requests.cpu }}
-            memory: {{ deploy_conf.resources.requests.memory }}
+            cpu: 1
+            memory: 2Gi
 {% endif %}
       imagePullSecrets:
       - name: regsecret
