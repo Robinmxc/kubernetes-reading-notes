@@ -15,7 +15,7 @@ spec:
       labels:
         k8s-app: rg-{{ comp_name }}
     spec:
-      containrs:
+      containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
         imagePullPolicy: IfNotPresent
