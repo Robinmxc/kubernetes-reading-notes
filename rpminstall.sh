@@ -172,7 +172,7 @@ function AnolisOS(){
 	done
 	rm -rf /usr/local/bin/pip3
 	cp -r /usr/bin/pip3 /usr/local/bin/pip3
-	pip3s=(pyyaml)
+	pip3s=(pyyaml simplejson)
 	for var in ${pip3s[@]};
 	do
 		pipOperator $var
