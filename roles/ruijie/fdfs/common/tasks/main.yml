@@ -29,6 +29,10 @@
     regexp: "^SELINUX="
     line: "SELINUX=disabled"
 
+- name: 查询系统信息
+  shell: "uname -r"
+  register: uname
+
 - name: 准备目录
   file: name={{ item }} state=directory
   with_items:
@@ -47,7 +51,7 @@
   when: 'tgz_file is exists and src_dir is not exists'
 
 - name: 安装 rpm
-  shell: "yum install -y {{ base_dir }}/down/rpms/fastdfs/*rpm"
+  shell: "yum install -y {{ base_dir }}/down/rpms/fastdfs/{{ uname.stdout }}/*rpm"
   no_log: true
   ignore_errors: true
 
