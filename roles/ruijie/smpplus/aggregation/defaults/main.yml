@@ -1,5 +1,5 @@
 aggregation_java_opt:  "-Xms2048m -Xmx8196m"
-authentication_api_java_opt:  "-Xm1024sm -Xmx1024m"
+authentication_api_java_opt:  "-Xm1024m -Xmx1024m"
 
 aggregation_configs: []
 
