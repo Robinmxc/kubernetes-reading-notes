@@ -1,4 +1,4 @@
-nodecompliance_java_opt:  ""-Xms2048m -Xmx5120m"
+nodecompliance_java_opt:  "-Xms2048m -Xmx5120m"
 
 deploy_conf_defaults:
   small:
