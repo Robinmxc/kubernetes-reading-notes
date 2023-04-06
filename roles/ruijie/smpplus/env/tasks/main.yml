@@ -52,6 +52,7 @@
     - "aiidentify" 
     - "aitrain"
     - "nodescanner"
+    - "nodecompliance"    
     - "rg-log"
 - name: 获取autostart.sh状态
   stat: path="/etc/init.d/autostart.sh"

@@ -28,4 +28,5 @@
     - { role: ruijie/smpplus/aiidentify, tags: ["aiidentify"]}
     - { role: ruijie/smpplus/aitrain, tags: ["aitrain"]}
     - { role: ruijie/smpplus/nodescanner, tags: ["nodescanner"]}
+    - { role: ruijie/smpplus/nodecompliance, tags: ["nodecompliance"]}    
     - { role: ruijie/smpplus/maintenance-related, tags: ["maintenance-related"]}

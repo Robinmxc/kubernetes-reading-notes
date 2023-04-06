@@ -11,7 +11,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 0    
+      maxUnavailable: 0  
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
@@ -37,9 +37,9 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
-        - containerPort: 8111
+        - containerPort: 9889
         volumeMounts:
-        - mountPath: /ruijie/nodescanner
+        - mountPath: /ruijie/nodecompliance
           name: conf
       imagePullSecrets:
       - name: regsecret
@@ -55,9 +55,10 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
+  externalTrafficPolicy: Local
   selector:
     k8s-app: rg-{{comp_name}}
   ports:
-  - port: 8111
-    targetPort: 8111
+  - port: 9889
+    targetPort: 9889
 
