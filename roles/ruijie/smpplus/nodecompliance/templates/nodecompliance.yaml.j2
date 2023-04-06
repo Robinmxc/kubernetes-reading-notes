@@ -58,7 +58,9 @@ spec:
   externalTrafficPolicy: Local
   selector:
     k8s-app: rg-{{comp_name}}
+  type: NodePort
   ports:
   - port: 9889
     targetPort: 9889
+    nodePort: 9889
 
