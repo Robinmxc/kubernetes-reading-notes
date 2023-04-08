@@ -154,6 +154,7 @@ function kubernetes_process_centos7(){
 function AnolisOS_python3_module(){
 	echo "AnolisOS_python3_module call"
 	rpm -qa|grep python38|xargs rpm -ev --allmatches --nodeps  > /dev/null 2>&1
+	rpm -qa|grep python36|xargs rpm -ev --allmatches --nodeps  > /dev/null 2>&1
     yum remove -y python2 > /dev/null 2>&1
 }
 function AnolisOS(){
@@ -165,7 +166,7 @@ function AnolisOS(){
 		#yum -y copr enable copart/restic 
 	fi
 	commonInstall
-	rpms=(tar jq python39 wntp epel-release)
+	rpms=(tar jq python39 wntp epel-release unzip)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
