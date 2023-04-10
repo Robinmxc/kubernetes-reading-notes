@@ -15,7 +15,7 @@ deploy_conf_defaults:
         cpu: 4
         memory: 10Gi
       requests:
-        cpu: 2
+        cpu: 1
         memory: 4Gi
   single:
     replicas: 1
@@ -24,7 +24,7 @@ deploy_conf_defaults:
         cpu: 4
         memory: 10Gi
       requests:
-        cpu: 2
+        cpu: 1
         memory: 4Gi
 
 aggregation_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

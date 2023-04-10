@@ -21,7 +21,7 @@ deploy_conf_defaults:
         cpu: 8
         memory: 6Gi
       requests:
-        cpu: 2
+        cpu: 1
         memory: 3Gi
   single:
     replicas: 1
@@ -30,7 +30,7 @@ deploy_conf_defaults:
         cpu: 8
         memory: 6Gi
       requests:
-        cpu: 2
+        cpu: 1
         memory: 3Gi
 
 authentication_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
