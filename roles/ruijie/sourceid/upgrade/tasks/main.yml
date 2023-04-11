@@ -141,6 +141,7 @@
       - "sourceid/report"
       - "sourceid/organization-center"
       - "sourceid/rg-flow"
+      - "sourceid/address-book"
     connection: local
 
   - name: 准备https证书新目录
