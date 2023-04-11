@@ -45,9 +45,6 @@ spec:
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
-        - mountPath: /ruijie/{{comp_name}}/complianceSoftware
-          name: share
-          readOnly: true
         - mountPath: /ruijie/{{comp_name}}/kadapitls
           name: kadapi-tls
         startupProbe:
@@ -86,9 +83,6 @@ spec:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}
-        - name: share
-          hostPath:
-            path: {{ config_base_dir }}/share
         - name: kadapi-tls
           configMap:
             name: kadapi-cert
