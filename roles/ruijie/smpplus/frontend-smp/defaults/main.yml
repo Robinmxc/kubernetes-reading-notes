@@ -10,7 +10,7 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 0.5
+        cpu: 1
         memory: 512Mi
       requests:
         cpu: 200m
@@ -19,7 +19,7 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 0.5
+        cpu: 1
         memory: 512Mi
       requests:
         cpu: 200m

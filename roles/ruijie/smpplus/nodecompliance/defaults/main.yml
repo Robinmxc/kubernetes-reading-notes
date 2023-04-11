@@ -10,7 +10,7 @@ deploy_conf_defaults:
         cpu: 6
         memory: 6Gi
       requests:
-        cpu: 2
+        cpu: 1
         memory: 2Gi
   single:
     replicas: 1
@@ -19,7 +19,7 @@ deploy_conf_defaults:
         cpu: 6
         memory: 6Gi
       requests:
-        cpu: 2
+        cpu: 1
         memory: 2Gi
         
 nodecompliance_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
