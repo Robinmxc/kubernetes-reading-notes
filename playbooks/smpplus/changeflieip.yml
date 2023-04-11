@@ -35,6 +35,7 @@
     - "/home/ruijie/ruijie-smpplus/aggregation/conf/application-prd.yml"
     - "/home/ruijie/ruijie-smpplus/component/conf/application-prd.properties"
     - "/home/ruijie/ruijie-smpplus/frontend-client/conf/client_config.js"
+    - "/home/ruijie/ruijie-smpplus/nodecompliance/conf/application-prd.yml"
     - "/opt/kube/kube-system/nginx-ingress/nginx.tmpl"
     - "/opt/kube/kube-system/nginx-ingress/ingress-smpplus.yaml"
 
