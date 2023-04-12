@@ -61,7 +61,7 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
-        - containerPort: 9000
+        - containerPort: 8902
         volumeMounts:
         - mountPath: /ruijie/sourceid/address-book/conf
           name: conf
@@ -74,8 +74,8 @@ spec:
         startupProbe:
           failureThreshold: 20
           httpGet:
-            path: /center/liveProbe
-            port: 9000
+            path: /addressbook/liveProbe
+            port: 8902
             scheme: HTTP
           periodSeconds: 5
           successThreshold: 1
@@ -84,8 +84,8 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /center/liveProbe
-            port: 9000
+            path: /addressbook/liveProbe
+            port: 8902
             scheme: HTTP
           periodSeconds: 5
           successThreshold: 1
@@ -94,8 +94,8 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /center/liveProbe
-            port: 9000
+            path: /addressbook/liveProbe
+            port: 8902
             scheme: HTTP
           periodSeconds: 30
           successThreshold: 1
@@ -125,4 +125,4 @@ spec:
     k8s-app: rg-address-book
   ports:
   - port: 80
-    targetPort: 9000
+    targetPort: 8902
