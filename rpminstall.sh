@@ -151,30 +151,6 @@ function kubernetes_process_centos7(){
 	fi	
 	
 }
-function restic(){
-	if [[ ${mode} == 4 ]];then
-		yum remove -y restic > /dev/null 2>&1
-	fi
-	if [[ ${mode} == 3 ]];then
-		yum install -y yum-plugin-copr
-		yum  -y copr enable copart/restic
-		yum remove -y restic > /dev/null 2>&1
-		rm -rf  restic 
-		mkdir restic
-		cd restic
-		result=$(echo $osname | grep ".el7.x86_64")
-		if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
-			yum install restic --downloadonly  --downloaddir=.
-		else
-			dnf download restic --resolve
-		fi
-		cd ..
-	fi
-	fileSize=`ls ./restic/ | wc -l`
-	if [[ ${mode} == 2 || ${mode} == 3 ]]  && [[ ${fileSize} > 0 ]]; then
-			rpm -ivh ./restic/*.rpm --force --nodeps
-	fi	
-}
 function AnolisOS_python3_module(){
 	echo "AnolisOS_python3_module call"
 	rpm -qa|grep python38|xargs rpm -ev --allmatches --nodeps  > /dev/null 2>&1
@@ -190,7 +166,6 @@ function AnolisOS(){
 		#yum -y copr enable copart/restic 
 	fi
 	commonInstall
-	restic
 	rpms=(tar jq python39 wntp epel-release unzip)
 	for var in ${rpms[@]};
 	do
@@ -221,7 +196,6 @@ function openEulerOs(){
 		sed -i 's/$releasever/8/g' /etc/yum.repos.d/docker-ce.repo
 	fi
 	commonInstall
-	restic
 	rpms=(tar jq python39 ntp  chrony.x86_64)
 	for var in ${rpms[@]};
 	do
@@ -241,7 +215,6 @@ function centos7(){
 		yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	fi
 	commonInstall
-	restic
 	rpms=(python3 ntp  chrony.x86_64 ansible)
 	for var in ${rpms[@]};
 	do
