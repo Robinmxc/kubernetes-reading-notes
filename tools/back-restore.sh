@@ -2,6 +2,9 @@
 # 配置项目
 remote_ip=${1}
 remote_passowrd=${2} 
+back_enable=${3:-true} 
+restore_enable=${4:-false} 
+echo "备份开启标志:${back_enable},恢复开启标志:${restore_enable}"
 # 关键自动读取的参数
 remoute_mongo_user=""
 remoute_mongo_password=""
@@ -15,7 +18,7 @@ remoute_fdfs_ip=""
 local_fdfs_ip=""
 remoute_fdfs_dir=""
 local_fdfs_dir=""
-
+local_fdfs_all=()
 # 配置文件读取的配置项目
 remote_max_dir=""
 local_max_dir=""
@@ -54,15 +57,17 @@ function config_local_process(){
 	local_fdfs_dir="${local_max_dir}/ruijie/fdfs/storage/data"
 	
 	fdfs_nodes=(`cat ${k8s_config_file} | grep FDFS_STORAGE_HOSTS |awk -F : '{printf $2}' `)
+
 	fdfs_nodes=${fdfs_nodes//]/}
 	fdfs_nodes=${fdfs_nodes//[/}
+	fdfs_nodes=${fdfs_nodes//\"/}
 	node_fdfs_hosts=(${fdfs_nodes//\,/ })
 	if [[ ${#node_fdfs_hosts[*]} == 1 ]];then
 		local_fdfs_ip=${node_fdfs_hosts[0]};
 	elif [[ ${#node_hosts[*]} > 1 ]];then
 		local_fdfs_ip=${node_fdfs_hosts[1]};
 	fi
-	local_fdfs_ip=${local_fdfs_ip//\"/}
+	local_fdfs_all=(${node_fdfs_hosts[@]}) 
 }
 function config_remote_process(){
 	echo "自动获取远程配置"
@@ -95,13 +100,13 @@ function config_remote_process(){
 	fdfs_nodes=(`cat ${k8s_config_file} | grep FDFS_STORAGE_HOSTS |awk -F : '{printf $2}' `)
 	fdfs_nodes=${fdfs_nodes//]/}
 	fdfs_nodes=${fdfs_nodes//[/}
+	fdfs_nodes=${fdfs_nodes//\"/}
 	node_fdfs_hosts=(${fdfs_nodes//\,/ })
 	if [[ ${#node_fdfs_hosts[*]} == 1 ]];then
 		remoute_fdfs_ip=${node_fdfs_hosts[0]};
 	elif [[ ${#node_hosts[*]} > 1 ]];then
 		remoute_fdfs_ip=${node_fdfs_hosts[1]};
 	fi
-	remoute_fdfs_ip=${remoute_fdfs_ip//\"/}
 	
 }
 config_local_process
@@ -127,13 +132,12 @@ function fdfs_back(){
 function mongo_back(){
  if [[ ${remoute_mongo_ip} != "" ]];then
   	echo "mongo数据库开始备份"
-
   	iptables_command="iptables -F";
-  	echo "sshpass -p ${remote_passowrd}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${remoute_mongo_ip} \"${iptables_command};\"  "
+  	
 	sshpass -p ${remote_passowrd}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${remoute_mongo_ip} "${iptables_command};"  
-	
  	rm -rf ${local_back_dir}/mongodb
  	mkdir -p ${local_back_dir}/mongodb
+ 	echo "执行mongo数据库备份命令:mongodump -h ${remoute_mongo_ip} -u ${remoute_mongo_user} -p ${remoute_mongo_password} --authenticationDatabase 'admin' -o ${local_back_dir}/mongodb > /dev/null 2>&1 "
  	mongodump -h ${remoute_mongo_ip} -u ${remoute_mongo_user} -p ${remoute_mongo_password} --authenticationDatabase 'admin' -o ${local_back_dir}/mongodb > /dev/null 2>&1
  fi
 }
@@ -142,21 +146,58 @@ function pg_back(){
   del_command="rm -rf ${remote_back_dir}/init.sql > /dev/null 2>&1"
   dir_create="mkdir -p ${remote_back_dir}";
   back_command="kubectl exec -n ruijie-sourceid postgresql-0 -- pg_dump -U postgres  quartz > ${remote_back_dir}/init.sql";
-  sshpass -p ${fdfs_password}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${remote_ip} "${del_command};${dir_create};${back_command};" 
+  echo "执行postgres数据库备份命令:sshpass -p ${remote_passowrd}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${remote_ip} \"${del_command};${dir_create};${back_command};\" "
+  sshpass -p ${remote_passowrd}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${remote_ip} "${del_command};${dir_create};${back_command};" 
   rm -rf ${local_back_dir}/init.sql  > /dev/null 2>&1
   mkdir -p ${local_back_dir}
-  echo "sshpass -p ${fdfs_password}  scp root@${remote_ip}:${remote_back_dir}/init.sql ${local_back_dir}"
-  sshpass -p ${fdfs_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${remote_ip}:${remote_back_dir}/init.sql ${local_back_dir}
+  sshpass -p ${remote_passowrd}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${remote_ip}:${remote_back_dir}/init.sql ${local_back_dir}
   
 }
-
-if [[ ${enable_mongo} == true ]];then
+if [[ ${enable_mongo} == true ]] && [[ "$back_enable" == true  ]];then
 	mongo_back
 fi
-if [[ ${enable_pg} == true ]];then
+if [[ ${enable_pg} == true ]] && [[ "$back_enable" == true  ]];then
 	pg_back
 fi
-if [[ ${enable_fdfs} == true ]];then
+if [[ ${enable_fdfs} == true ]] && [[ "$back_enable" == true  ]];then
 	fdfs_back
 fi
-echo "备份完毕"
+if [[ "$back_enable" == true  ]];then
+	echo "备份完毕"
+	
+fi
+function mongo_restore(){
+  echo "mongo数据库开始恢复,恢复命令: mongorestore -h ${remoute_mongo_ip} -u ${remoute_mongo_user} -p ${remoute_mongo_password} --authenticationDatabase 'admin' --drop ${local_back_dir}/mongodb > /dev/null 2>&1"
+  mongorestore -h ${remoute_mongo_ip} -u ${remoute_mongo_user} -p ${remoute_mongo_password} --authenticationDatabase 'admin' --drop ${local_back_dir}/mongodb > /dev/null 2>&1
+}
+function pg_restore(){
+  echo "pg数据库开始恢复，执行命令:kubectl exec -n ruijie-sourceid postgresql-0 -- psql -U postgres -d quartz -f ${local_back_dir}/init.sql"
+  kubectl cp ${local_back_dir}/init.sql -n ruijie-sourceid  -c  postgresql  postgresql-0:/
+  kubectl exec -n ruijie-sourceid postgresql-0 -- psql -U postgres -d quartz -f /init.sql > /dev/null 2>&1
+}
+function fdfs_restore(){
+	echo "fdfs数据库开始恢复"
+	for var in ${local_fdfs_all[@]};
+	do
+		
+		del_command="rm -rf ${local_back_dir}/fdfs_data_back.tar > /dev/null 2>&1"
+	     dir_create="mkdir -p ${local_back_dir}";
+		sshpass -p ${fdfs_password}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${var} "${del_command};${dir_create};"  
+		sshpass -p ${fdfs_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${local_back_dir}/fdfs_data_back.tar root@${var}:${local_back_dir} 
+		restore_command="systemctl stop fdfs_storaged;rm -rf ${local_fdfs_dir}; tar -xvf ${local_back_dir}/fdfs_data_back.tar -C ${local_back_dir};systemctl start fdfs_storaged;";
+		echo "fdfs数据库${var}开始恢复，恢复命令:sshpass -p ${fdfs_password}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${var} "${restore_command}"   > /dev/null 2>&1"	
+		sshpass -p ${fdfs_password}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${var} "${restore_command}"   > /dev/null 2>&1
+	done
+}
+if [[ ${enable_mongo} == true ]] && [[ "$restore_enable" == true  ]];then
+	mongo_restore
+fi
+if [[ ${enable_pg} == true ]] && [[ "$restore_enable" == true  ]];then
+	pg_restore
+fi
+if [[ ${enable_fdfs} == true ]] && [[ "$restore_enable" == true  ]];then
+	fdfs_restore
+fi
+if [[ "$restore_enable" == true  ]];then
+	echo "还原完毕"
+fi
