@@ -1,6 +1,6 @@
 MDM_ENABLE: "{% if SOURCEID_DOCKERS['mdm'] is defined and (SOURCEID_DOCKERS['mdm'].enable is not defined or SOURCEID_DOCKERS['mdm'].enable) %}yes{% else %}no{% endif %}"
 
-mdm_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1024m -Xmx1024m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx1024m{% else %}-Xms256m -Xmx512m{% endif %}"
+mdm_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'single' %}-Xms1792m -Xmx1792m{% else %}-Xms1792m -Xmx1792m{% endif %}"
 
 mdm_configs: []
 
@@ -22,7 +22,7 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 2
+        cpu: 4
         memory: 2560Mi
       requests:
         cpu: 500m
