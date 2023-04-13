@@ -19,7 +19,7 @@ def python3_rpm(ip):
   try:
     if ".an8.x86_64" in output_uname  :
       try:
-        version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \" python3 --version > /dev/null 2>&1;\" "
+        version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \" python3 --version;\" "
         version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
       except Exception :
         print("远程安装python3:服务器IP="+ip+"")
