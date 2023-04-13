@@ -18,14 +18,15 @@ def python3_rpm(ip):
   output_uname=output_uname.replace(" ","")
   try:
     if ".an8.x86_64" in output_uname  :
-      print("远程安装python3:服务器IP="+ip+"")
-      version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \" python3 --version > /dev/null 2>&1;\" "
-      version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
-      print(version_command_output)
-      copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/python39 root@"+ip+":/tmp/python39 > /dev/null 2>&1"
-      install_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"rpm -ivh  /tmp/python39/*.rpm --force --nodeps > /dev/null 2>&1;\" "
-      copy_command_output = subprocess.check_output(copy_command, shell=True)
-      install_command_output = subprocess.check_output(install_command, shell=True)
+      try:
+        version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \" python3 --version > /dev/null 2>&1;\" "
+        version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
+      except Exception :
+        print("远程安装python3:服务器IP="+ip+"")
+        copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/python39 root@"+ip+":/tmp/python39 > /dev/null 2>&1"
+        install_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"rpm -ivh  /tmp/python39/*.rpm --force --nodeps > /dev/null 2>&1;\" "
+        copy_command_output = subprocess.check_output(copy_command, shell=True)
+        install_command_output = subprocess.check_output(install_command, shell=True)
   except Exception :
         raise NameError("远程安装python3失败,请保证"+ip+"远程可用")
   
