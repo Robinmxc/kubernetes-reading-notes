@@ -8,7 +8,7 @@ local_back_dir="/back_append_store"
 enable_fdfs=true
 enable_mongo=true
 enable_pg=true
-to_append_dir="back_append_store"
+to_append_dir="restore_append_store"
 mkdir -p ${local_back_dir}
 # 关键自动读取的参数，无需配置
 to_mongo_user=""
@@ -44,7 +44,7 @@ function config_to_process(){
 	if [[ ${#node_hosts[*]} == 1 ]];then
 		to_mongo_ip=${node_hosts[0]};
 	elif [[ ${#node_hosts[*]} > 1 ]];then
-		to_mongo_ip=${node_hosts[1]};
+		to_mongo_ip=${node_hosts[0]};
 	fi
 	to_mongo_ip=${to_mongo_ip//\"/}
 	fdfs_nodes=`cat ${k8s_config_file}  | grep FDFS_STORAGE_HOSTS |awk -F : '{printf $2}' `
@@ -64,14 +64,14 @@ function fdfs_restore(){
     fdfs_storage_file=${local_back_dir}/to/storage.conf
 	
 	sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${to_fdfs_ip}:/etc/fdfs/storage.conf ${fdfs_storage_file}
-	dirs_result=`cat ${fdfs_storage_file} | grep store_path0`
-	dirs=(${dirs_result//\// })
-	max_dir=dir[0]
+    dirs_result=`cat ${fdfs_storage_file} | grep store_path0 |awk -F = '{printf $2}'`
+    dirs=(${dirs_result//\// })
+    max_dir=${dirs[0]}
     if [[ ${max_dir} == "ruijie" ]];then
 		max_dir=""
-	else
+    else
 		max_dir="/${max_dir}"
-	fi
+    fi
 	remote_back_dir="${max_dir}/${to_append_dir}"
 
 
@@ -79,7 +79,6 @@ function fdfs_restore(){
     dir_create="mkdir -p ${remote_back_dir}";
     remote_ssh_command ${to_fdfs_ip} ${to_fdfs_password} "${del_command};${dir_create};systemctl stop fdfs_storaged;" 
 	sshpass -p ${to_fdfs_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${local_back_dir}/fdfs_data_back.tar root@${to_fdfs_ip}:${remote_back_dir}
-    echo "#######ar  -xvf ${remote_back_dir}/fdfs_data_back.tar -C ${dirs_result}/data> /dev/null 2>&1"
 	restore_command="tar  -xvf ${remote_back_dir}/fdfs_data_back.tar -C ${dirs_result}/data> /dev/null 2>&1";
 	remote_ssh_command ${to_fdfs_ip} ${to_fdfs_password} "${restore_command};${del_command};systemctl start fdfs_storaged;" 
   done
