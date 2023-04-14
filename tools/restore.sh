@@ -79,7 +79,7 @@ function fdfs_restore(){
     dir_create="mkdir -p ${remote_back_dir}";
     remote_ssh_command ${to_fdfs_ip} ${to_fdfs_password} "${del_command};${dir_create};systemctl stop fdfs_storaged;" 
 	sshpass -p ${to_fdfs_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${local_back_dir}/fdfs_data_back.tar root@${to_fdfs_ip}:${remote_back_dir}
-	restore_command="tar  -xvf ${remote_back_dir}/fdfs_data_back.tar -C ${dirs_result}/data> /dev/null 2>&1";
+	restore_command=""rm -rf  ${dirs_result}/data/*;tar  -xvf ${remote_back_dir}/fdfs_data_back.tar -C ${dirs_result}/data> /dev/null 2>&1";
 	remote_ssh_command ${to_fdfs_ip} ${to_fdfs_password} "${restore_command};${del_command};systemctl start fdfs_storaged;" 
   done
 }
@@ -100,7 +100,7 @@ function mongo_restore(){
 	sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${local_back_dir}/mongodb.tar root@${to_mongo_ip}:${remote_back_dir}
 	
 	tar_command="tar  -xvf ${remote_back_dir}/mongodb.tar -C ${remote_back_dir}/mongodb > /dev/null 2>&1";
-	restore_command="mongorestore -h ${to_mongo_ip} -u ${to_mongo_user} -p ${to_mongo_password} --authenticationDatabase 'admin' --drop ${remote_back_dir}/mongodb > /dev/null 2>&1"
+	restore_command="mongorestore -h ${to_mongo_ip} -u ${to_mongo_user} -p ${to_mongo_password} --authenticationDatabase 'admin' --drop ${remote_back_dir}/mongodb"
 	remote_ssh_command ${to_mongo_ip} ${to_password} "${tar_command};${restore_command};${del_command};" 
  fi
 }
