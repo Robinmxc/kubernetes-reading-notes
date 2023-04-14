@@ -29,13 +29,31 @@ def python3_rpm(ip):
         install_command_output = subprocess.check_output(install_command, shell=True)
   except Exception :
         raise NameError("远程安装python3失败,请保证"+ip+"远程可用")
-  
+
+def rsyslog_rpm(ip):
+  output_uname= subprocess.check_output("uname -r", shell=True).decode("utf-8")
+  output_uname=output_uname.replace("\n","")
+  output_uname=output_uname.replace(" ","")
+  try:
+    if ".an8.x86_64" in output_uname  :
+      try:
+        version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"   /usr/sbin/rsyslogd -n\" "
+        version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
+      except Exception :
+        print("远程安装rsyslog:服务器IP="+ip+"")
+        copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/rsyslog root@"+ip+":/tmp/rsyslog > /dev/null 2>&1"
+        install_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"rpm -ivh  /tmp/rsyslog/*.rpm --force --nodeps > /dev/null 2>&1;\" "
+        copy_command_output = subprocess.check_output(copy_command, shell=True)
+        install_command_output = subprocess.check_output(install_command, shell=True)
+  except Exception :
+        raise NameError("远程安装python3失败,请保证"+ip+"远程可用")  
 
 def k8sProcess():
   if json_object["all"]["vars"]["KUBE_NODE_HOSTS"]:
     kube_nodes=json_object["all"]["vars"]["KUBE_NODE_HOSTS"]
     for item in kube_nodes:
       python3_rpm(item)
+      rsyslog_rpm(item)
             
 def ldapProcess():
   if json_object["all"]["vars"]["LDAP"]:
@@ -45,6 +63,7 @@ def ldapProcess():
     if ldap_mode == "standalone" and ldap_enable:
       for item in ldap_nodes:
         python3_rpm(item)
+        rsyslog_rpm(item)
 
 def fdfsProcess():
   if json_object["all"]["vars"]["FDFS_MODE"]:
@@ -53,6 +72,7 @@ def fdfsProcess():
       fdfs_nodes=json_object["all"]["vars"]["FDFS_STORAGE_HOSTS"]
       for item in fdfs_nodes:
         python3_rpm(item)
+        rsyslog_rpm(item)
 
 def eomsProcess():
   if json_object["all"]["vars"]["EOMS"]:
@@ -61,6 +81,7 @@ def eomsProcess():
       eoms_nodes=json_object["all"]["vars"]["EOMS"]["EOMS_STORAGE_HOST"]
       for item in eoms_nodes:
         python3_rpm(item)
+        rsyslog_rpm(item)        
 def main():
     if Py_version < (3, 0):
         reload(sys)
