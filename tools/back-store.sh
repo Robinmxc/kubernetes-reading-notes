@@ -22,7 +22,7 @@ function remote_ssh_command(){
 	password=${2}
 	command=${3}
 	sshpass -p ${password}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${ip} "${command}"
-	echo "执行命令：sshpass -p ${password}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${ip} \"${command}\""
+	# echo "执行命令：sshpass -p ${password}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${ip} \"${command}\""
 }
 # 全局固定配置
 function config_from_process(){
@@ -66,19 +66,20 @@ function fdfs_back(){
     echo "fastDfs数据库开始备份"
     mkdir -p ${local_back_dir}/from
     fdfs_storage_file=${local_back_dir}/from/storage.conf
-	sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${from_ip}:/etc/fdfs/storage.conf ${config_file}
-	dirs_result=`cat ${fdfs_storage_file} | grep store_path0`
-	dirs=(${dirs_result//\// })
-	max_dir=dir[0]
+    sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${from_fdfs_ip}:/etc/fdfs/storage.conf ${fdfs_storage_file}
+    dirs_result=`cat ${fdfs_storage_file} | grep store_path0 |awk -F = '{printf $2}'`
+    dirs=(${dirs_result//\// })
+    max_dir=${dirs[0]}
     if [[ ${max_dir} == "ruijie" ]];then
 		max_dir=""
-	else
+    else
 		max_dir="/${max_dir}"
-	fi
-	remote_back_dir="${max_dir}/${from_append_dir}"
-    del_command="rm -rf ${remote_back_dir}/${from_append_dir}/fdfs_data_back.tar > /dev/null 2>&1"
-    dir_create="mkdir -p ${remote_back_dir}/${from_append_dir}";
-    back_command="tar  -zcvf ${remote_back_dir}/fdfs_data_back.tar ${remoute_fdfs_dir}> /dev/null 2>&1";
+    fi
+
+    remote_back_dir="${max_dir}/${from_append_dir}"
+    del_command="rm -rf ${remote_back_dir}}/fdfs_data_back.tar > /dev/null 2>&1"
+    dir_create="mkdir -p ${remote_back_dir}";
+    back_command="tar  -zcvf ${remote_back_dir}/fdfs_data_back.tar ${dirs_result}/data> /dev/null 2>&1";
     remote_ssh_command ${from_fdfs_ip} ${from_fdfs_password} "${del_command};${dir_create};${back_command};" 
     ## 远程拷贝到本地目录，然后清空远程备份
     rm -r ${local_back_dir}/fdfs_data_back.tar  > /dev/null 2>&1
