@@ -62,25 +62,29 @@ function fdfs_restore(){
     echo "fdfs数据库开始恢复,服务器IP:${to_fdfs_ip}"
     mkdir -p ${local_back_dir}/to
     fdfs_storage_file=${local_back_dir}/to/storage.conf
-	
-	sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${to_fdfs_ip}:/etc/fdfs/storage.conf ${fdfs_storage_file}
-    dirs_result=`cat ${fdfs_storage_file} | grep store_path0 |awk -F = '{printf $2}'`
-    dirs=(${dirs_result//\// })
-    max_dir=${dirs[0]}
-    if [[ ${max_dir} == "ruijie" ]];then
-		max_dir=""
-    else
-		max_dir="/${max_dir}"
-    fi
-	remote_back_dir="${max_dir}/${to_append_dir}"
+	sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${to_fdfs_ip}:/etc/fdfs/storage.conf ${fdfs_storage_file}  > /dev/null 2>&1
+	if [[ -f "$fdfs_storage_file" ]] && [[  -f "${local_back_dir}/fdfs_data_back.tar" ]]; then
+		dirs_result=`cat ${fdfs_storage_file} | grep store_path0 |awk -F = '{printf $2}'`
+		dirs=(${dirs_result//\// })
+		max_dir=${dirs[0]}
+		if [[ ${max_dir} == "ruijie" ]];then
+			max_dir=""
+		else
+			max_dir="/${max_dir}"
+		fi
+		remote_back_dir="${max_dir}/${to_append_dir}"
 
 
-    del_command="rm -rf ${remote_back_dir}/fdfs_data_back.tar > /dev/null 2>&1"
-    dir_create="mkdir -p ${remote_back_dir}";
-    remote_ssh_command ${to_fdfs_ip} ${to_fdfs_password} "${del_command};${dir_create};systemctl stop fdfs_storaged;" 
-	sshpass -p ${to_fdfs_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${local_back_dir}/fdfs_data_back.tar root@${to_fdfs_ip}:${remote_back_dir}
-	restore_command="rm -rf  ${dirs_result}/data/*;tar  -xvf ${remote_back_dir}/fdfs_data_back.tar -C ${dirs_result}/data> /dev/null 2>&1";
-	remote_ssh_command ${to_fdfs_ip} ${to_fdfs_password} "${restore_command};${del_command};systemctl start fdfs_storaged;" 
+		del_command="rm -rf ${remote_back_dir}/fdfs_data_back.tar > /dev/null 2>&1"
+		dir_create="mkdir -p ${remote_back_dir}";
+		remote_ssh_command ${to_fdfs_ip} ${to_fdfs_password} "${del_command};${dir_create};systemctl stop fdfs_storaged;" 
+		sshpass -p ${to_fdfs_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${local_back_dir}/fdfs_data_back.tar root@${to_fdfs_ip}:${remote_back_dir}
+		restore_command="rm -rf  ${dirs_result}/data/*;tar  -xvf ${remote_back_dir}/fdfs_data_back.tar -C ${dirs_result}/data> /dev/null 2>&1";
+		remote_ssh_command ${to_fdfs_ip} ${to_fdfs_password} "${restore_command};${del_command};systemctl start fdfs_storaged;" 
+	else
+	     echo "fdfs未配置，不进行还原,服务器IP:${to_fdfs_ip}"
+	fi
+
   done
 }
 
