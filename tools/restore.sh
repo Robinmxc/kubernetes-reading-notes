@@ -25,6 +25,7 @@ function remote_ssh_command(){
 }
 # 全局固定配置
 function config_to_process(){
+	rm -rf ${local_back_dir}/to
 	mkdir -p ${local_back_dir}/to
 
 	sid_config_file=${local_back_dir}/to/souceid-all.yml
@@ -82,7 +83,7 @@ function fdfs_restore(){
 		restore_command="rm -rf  ${dirs_result}/data/*;tar  -xvf ${remote_back_dir}/fdfs_data_back.tar -C ${dirs_result}/data> /dev/null 2>&1";
 		remote_ssh_command ${to_fdfs_ip} ${to_fdfs_password} "${restore_command};${del_command};systemctl start fdfs_storaged;" 
 	else
-	     echo "fdfs未配置，不进行还原,服务器IP:${to_fdfs_ip}"
+		echo -e "\033[31m fdfs未配置，不进行还原,服务器IP:${to_fdfs_ip} \033[0m" 
 	fi
 
   done

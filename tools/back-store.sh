@@ -26,6 +26,7 @@ function remote_ssh_command(){
 }
 # 全局固定配置
 function config_from_process(){
+	rm -rf ${local_back_dir}/from
 	mkdir -p ${local_back_dir}/from
 
 	sid_config_file=${local_back_dir}/from/souceid-all.yml
@@ -66,7 +67,7 @@ function fdfs_back(){
     echo "fastDfs数据库开始备份,服务器IP:${from_fdfs_ip}"
     mkdir -p ${local_back_dir}/from
     fdfs_storage_file=${local_back_dir}/from/storage.conf
-	sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${from_fdfs_ip}:/etc/fdfs/storage.conf ${fdfs_storage_file}
+	sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${from_fdfs_ip}:/etc/fdfs/storage.conf ${fdfs_storage_file} > /dev/null 2>&1
 	if [  -f "$fdfs_storage_file" ]; then
 		dirs_result=`cat ${fdfs_storage_file} | grep store_path0 |awk -F = '{printf $2}'`
 		dirs=(${dirs_result//\// })
@@ -88,7 +89,7 @@ function fdfs_back(){
 		sshpass -p ${from_fdfs_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${from_fdfs_ip}:${remote_back_dir}/fdfs_data_back.tar ${local_back_dir}
 		remote_ssh_command ${from_fdfs_ip} ${from_fdfs_password} "${del_command};" 
 	else
-	     echo "fdfs未配置，不进行备份,服务器IP:${to_fdfs_ip},配置文件:${fdfs_storage_file}"
+		echo -e "\033[31m fdfs未配置，不进行备份,服务器IP:${from_fdfs_ip} \033[0m" 
 	fi
 
  fi
