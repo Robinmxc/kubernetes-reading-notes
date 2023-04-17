@@ -37,7 +37,7 @@ def rsyslog_rpm(ip):
   try:
     if ".an8.x86_64" in output_uname  :
       try:
-        version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"   /usr/sbin/rsyslogd -n\" "
+        version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"  ls /usr/sbin/rsyslogd \" "
         version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
       except Exception :
         print("远程安装rsyslog:服务器IP="+ip+"")
