@@ -1,20 +1,76 @@
 #!/bin/bash
 # 配置项目
-from_ip=${1}
-from_password=${2} 
+from_ip=""
+from_password=""
 local_back_dir="/back_append_store"
 
-# 默认的配置参数非特殊无需修改
-enable_fdfs=true
-enable_mongo=true
-enable_pg=true
-from_append_dir="back_append_store"
-mkdir -p ${local_back_dir}
 # 关键自动读取的参数，无需配置
 from_mongo_user=""
 from_mongo_password=""
 from_mongo_ip=""
+from_append_dir="back_append_store"
+# 默认的配置参数非特殊无需修改
+enable_fdfs=false
+enable_mongo=false
+enable_pg=false
+stores_str=""
+funcHelp() {
+    echo "Usage:"
+    echo "back-store.sh [-h 服务器IP] [-p 服务器密码]  [-l 本地备份目录]  [-d 备份内容逗号分割，例如：fdfs,mongo,pg]"
+}
+while getopts :h:p:d:l: opt
+do
+    case "$opt" in
+        h) 
+        		from_ip="$OPTARG" ;;
+        p)
+        		from_password="$OPTARG" ;;
+        l) 
+    	   		local_back_dir="$OPTARG/back_append_store" ;;
+	   d) 
+	   		stores_str="$OPTARG"
+			stores=(${stores_str//\,/ })
+			for store in ${stores[@]};
+  			do
+
+				if [[ $store == "fdfs" ]];then
+				  	echo "开启fdfs备份"
+					enable_fdfs=true
+				fi
+				if [[ $store == "mongo" ]];then
+					echo "开启mongo备份"
+					enable_mongo=true
+				fi
+				if [[ $store == "pg" ]];then
+					echo "开启pg备份"
+					enable_pg=true
+				fi				
+			done
+			;;
+        :) 
+            echo "没有为需要参数的选项指定参数 -$OPTARG "
+            exit 1 ;;
+        ?) 
+            echo "-$OPTARG 是无效的参数"
+            exit 2 ;;
+    esac
+done
+if [[ ${from_ip} == "" || ${from_password} == "" ]];then
+	 echo -e "\033[31m 服务器IP和服务器密码必须填写 \033[0m" 
+	 funcHelp
+	 exit 1 
+fi
+if [[ ${stores_str} == "" ]];then
+	echo "默认开启fdfs备份"
+	echo "默认开启mongo备份"
+	echo "默认开启pg备份"
+	enable_fdfs=true
+	enable_mongo=true
+	enable_pg=true
+fi
+mkdir -p ${local_back_dir}
 from_fdfs_password=${from_password}
+
 from_fdfs_ip=""
 
 function remote_ssh_command(){
@@ -107,12 +163,13 @@ function mongo_back(){
 
  	del_command="rm -rf ${remote_back_dir}/mongodb* > /dev/null 2>&1"
     dir_create="mkdir -p ${remote_back_dir}/mongodb";
-	back_command="mongodump -h ${from_mongo_ip} -u ${from_mongo_user} -p ${from_mongo_password} --authenticationDatabase 'admin'  -o ${remote_back_dir}/mongodb"
+	back_command="mongodump -h ${from_mongo_ip} -u ${from_mongo_user} -p ${from_mongo_password} --authenticationDatabase 'admin'  -o ${remote_back_dir}/mongodb > /dev/null 2>&1"
 	tar_command="cd ${remote_back_dir}/mongodb;tar  -zcvf ${remote_back_dir}/mongodb.tar * > /dev/null 2>&1";
 	remote_ssh_command ${from_mongo_ip} ${from_password} "${del_command};${dir_create};${back_command};${tar_command};" 
 	
 	rm -rf  ${local_back_dir}/mongodb.tar > /dev/null 2>&1
 	mkdir -p ${local_back_dir}
+	echo "sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${from_mongo_ip}:${remote_back_dir}/mongodb.tar ${local_back_dir}"
 	sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${from_mongo_ip}:${remote_back_dir}/mongodb.tar ${local_back_dir}
 	remote_ssh_command ${from_mongo_ip} ${from_password} "${del_command};" 
  fi

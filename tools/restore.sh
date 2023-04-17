@@ -1,21 +1,79 @@
 #!/bin/bash
 # 配置项目
-to_ip=${1}
-to_password=${2} 
+to_ip=""
+to_password="" 
 local_back_dir="/back_append_store"
 
 # 默认的配置参数非特殊无需修改
-enable_fdfs=true
-enable_mongo=true
-enable_pg=true
+enable_fdfs=false
+enable_mongo=false
+enable_pg=false
 to_append_dir="restore_append_store"
-mkdir -p ${local_back_dir}
+
 # 关键自动读取的参数，无需配置
 to_mongo_user=""
 to_mongo_password=""
 to_mongo_ip=""
-to_fdfs_password=${to_password}
 to_fdfs_ip=""
+
+stores_str=""
+funcHelp() {
+    echo "Usage:"
+    echo "back-store.sh [-h 服务器IP] [-p 服务器密码]  [-l 本地备份目录]  [-d 还原内容逗号分割，例如：fdfs,mongo,pg]"
+}
+while getopts :h:p:d:l: opt
+do
+    case "$opt" in
+        h) 
+        		to_ip="$OPTARG" ;;
+        p)
+        		to_password="$OPTARG" ;;
+        l) 
+    	   		local_back_dir="$OPTARG/back_append_store" ;;
+	   d) 
+	   		stores_str="$OPTARG"
+			stores=(${stores_str//\,/ })
+			for store in ${stores[@]};
+  			do
+
+				if [[ $store == "fdfs" ]];then
+				  	echo "开启fdfs恢复"
+					enable_fdfs=true
+				fi
+				if [[ $store == "mongo" ]];then
+					echo "开启mongo恢复"
+					enable_mongo=true
+				fi
+				if [[ $store == "pg" ]];then
+					echo "开启pg恢复"
+					enable_pg=true
+				fi				
+			done
+			;;
+        :) 
+            echo "没有为需要参数的选项指定参数 -$OPTARG "
+            exit 1 ;;
+        ?) 
+            echo "-$OPTARG 是无效的参数"
+            exit 2 ;;
+    esac
+done
+if [[ ${to_ip} == "" || ${to_password} == "" ]];then
+	 echo -e "\033[31m 服务器IP和服务器密码必须填写 \033[0m" 
+	 funcHelp
+	 exit 1 
+fi
+if [[ ${stores_str} == "" ]];then
+	echo "默认开启fdfs恢复"
+	echo "默认开启mongo恢复"
+	echo "默认开启pg恢复"
+	enable_fdfs=true
+	enable_mongo=true
+	enable_pg=true
+fi
+
+mkdir -p ${local_back_dir}
+to_fdfs_password=${to_password}
 
 function remote_ssh_command(){
 	ip=${1} 
