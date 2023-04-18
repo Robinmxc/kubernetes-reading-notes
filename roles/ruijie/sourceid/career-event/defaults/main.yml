@@ -1,7 +1,7 @@
 
 CAREER_EVENT_ENABLE: "{% if SOURCEID_DOCKERS['career'] is defined and (SOURCEID_DOCKERS['career'].enable is not defined or SOURCEID_DOCKERS['career'].enable) %}yes{% else %}no{% endif %}"
 
-career_event_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms256m -Xmx840m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx840m{% else %}-Xms256m -Xmx840m{% endif %}"
+career_event_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms717m -Xmx717m{% elif CLUSTER_SCALE == 'single' %}-Xms717m -Xmx717m{% else %}-Xms717m -Xmx717m{% endif %}"
 
 career_event_configs: []
 

@@ -1,6 +1,6 @@
 RG_FLOW_ENABLE: "{% if SOURCEID_DOCKERS['rg-flow'] is defined and (SOURCEID_DOCKERS['rg-flow'].enable is not defined or SOURCEID_DOCKERS['rg-flow'].enable) %}yes{% else %}no{% endif %}"
 
-rg_flow_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms128m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms128m -Xmx512m{% else %}-Xms128m -Xmx512m{% endif %}"
+rg_flow_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms717m -Xmx717m{% elif CLUSTER_SCALE == 'single' %}-Xms717m -Xmx717m{% else %}-Xms717m -Xmx717m{% endif %}"
 
 rg_flow_configs: []
 
@@ -14,7 +14,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 512m
-        memory: 512Mi
+        memory: 1Gi
       requests:
         cpu: 512m
         memory: 512Mi
@@ -23,7 +23,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 512m
-        memory: 512Mi
+        memory: 1Gi
       requests:
         cpu: 512m
         memory: 512Mi
