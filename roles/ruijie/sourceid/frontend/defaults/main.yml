@@ -7,10 +7,10 @@ deploy_conf_defaults:
   small:
     replicas: 1
   normal:
-    replicas: 2
+    replicas: 1
     resources:
       limits:
-        cpu: 2
+        cpu: 1
         memory: 512Mi
       requests:
         cpu: 1
@@ -19,7 +19,7 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 2
+        cpu: 1
         memory: 512Mi
       requests:
         cpu: 500m
