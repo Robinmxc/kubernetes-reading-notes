@@ -1,7 +1,7 @@
 
 linkid_license_check: "{% if 'yes' == SOURCEID_LICENSE_ENABLED %}true{% else %}false{% endif %}"
 
-linkid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms2048m -Xmx4096m{% else %}-Xms256m -Xmx512m{% endif %}"
+linkid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms3584m -Xmx3584m{% elif CLUSTER_SCALE == 'single' %}-Xms3584m -Xmx3584m{% else %}-Xms3584m -Xmx3584m{% endif %}"
 
 linkid_configs: []
 
@@ -23,7 +23,7 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 6
+        cpu: 4
         memory: 5Gi
       requests:
         cpu: 1

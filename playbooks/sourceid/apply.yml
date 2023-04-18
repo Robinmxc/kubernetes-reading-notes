@@ -38,3 +38,4 @@
   - { role: ruijie/sourceid/report, tags: ["report"] }
   - { role: ruijie/sourceid/organization-center, tags: ["organization-center"] }
   - { role: ruijie/sourceid/rg-flow, tags: ["rg-flow"] }
+  - { role: ruijie/sourceid/address-book, tags: ["address-book"] }

@@ -177,6 +177,12 @@
     command: "kubectl delete -f {{ yaml_dir }}/organization-center/"
     when: 'pod_info.stdout is search("rg-organization-center-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 address-book
+    tags:
+      - address-book
+    command: "kubectl delete -f {{ yaml_dir }}/address-book/"
+    when: 'pod_info.stdout is search("rg-address-book-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 rocketmq
     tags:
       - rocketmq
@@ -464,6 +470,16 @@
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: 'pod_info.stdout is not search("rg-organization-center-[a-z0-9]*-[a-z0-9]*\s")'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待address-book结束运行
+    tags:
+      - address-book
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: 'pod_info.stdout is not search("rg-address-book-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
     delay: 3
     ignore_errors: true

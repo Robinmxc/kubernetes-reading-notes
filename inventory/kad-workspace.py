@@ -382,7 +382,8 @@ def parse_eoms_config(host_data):
                 raise Exception(ip + u"不是有效的IP地址")
         host_data["groups"]["influxdb"] = eoms_hosts
         host_data["groups"]["eoms"] = eoms_hosts
-
+        host_vars = host_data["host_vars"]
+        host_vars[ip]={}
 
 # 处理SourceData配置参数
 def parse_sourcedata_config(host_data):
