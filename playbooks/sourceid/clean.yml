@@ -180,7 +180,7 @@
   - name: 停止 address-book
     tags:
       - address-book
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/address-book/"
+    command: "kubectl delete -f {{ yaml_dir }}/address-book/"
     when: 'pod_info.stdout is search("rg-address-book-[a-z0-9]*-[a-z0-9]*\s")'
 
   - name: 停止 rocketmq
@@ -477,7 +477,7 @@
   - name: 等待address-book结束运行
     tags:
       - address-book
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: 'pod_info.stdout is not search("rg-address-book-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
