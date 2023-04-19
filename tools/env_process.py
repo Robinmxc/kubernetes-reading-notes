@@ -90,9 +90,14 @@ def main():
         importlib.reload(sys)
     global ssh_password
     ssh_password=sys.argv[1];  
-    k8sProcess()	
-    ldapProcess()	
-    eomsProcess()
-    fdfsProcess()
+    input=sys.argv[2];  
+    if "ldap" in input:
+      ldapProcess()
+    elif "eoms" in input:
+      eomsProcess()   
+    elif "fdfs" in input:
+      fdfsProcess()    
+    else:
+       k8sProcess()	
 if __name__ == '__main__':
     main()
