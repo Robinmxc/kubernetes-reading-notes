@@ -44,6 +44,10 @@
   - name: openldap证书处理
     shell: "openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj '/CN=localhost'  -keyout /etc/pki/tls/ldapserver.key -out /etc/pki/tls/ldapserver.crt"
     when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")  
+  
+  - name: tls加密文件配置
+    template: src='add-tls.ldif.anolis.j2' dest='/etc/openldap/add-tls.ldif'
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
 
   - name: 修改ldap参数
     template: src='ldap.anolis.conf.j2' dest='/etc/openldap/ldap.conf'
@@ -231,9 +235,17 @@
 - name: 取消只读账号最大读取500条记录限制
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/limits.ldif
 
+
+- name: tls加密开启
+  shell: chmod 644 /etc/pki/tls/ldapserver*
+  when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+
+- name: tls加密开启
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/add-tls.ldif
+  when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+
 - name: 设置ldap默认的ssl加密算法
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/tls1.2.ldif
-  when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
 
 - name: 设置定时清理Berkeley DB Logs 
   file: 
