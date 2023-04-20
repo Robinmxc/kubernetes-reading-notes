@@ -1,4 +1,4 @@
-dn: olcDatabase={2}hdb,cn=config
+dn: olcDatabase={2}{{ ldap_db_type }},cn=config
 changetype:modify
 add:olcDbIndex
 olcDbIndex: uid pres,eq,sub
