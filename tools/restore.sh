@@ -8,6 +8,7 @@ local_back_dir="/back_append_store"
 enable_fdfs=false
 enable_mongo=false
 enable_pg=false
+enable_ldap=false
 to_append_dir="restore_append_store"
 
 # 关键自动读取的参数，无需配置
@@ -47,6 +48,10 @@ do
 				if [[ $store == "pg" ]];then
 					echo "开启pg恢复"
 					enable_pg=true
+				fi	
+				if [[ $store == "ldap" ]];then
+					echo "开启ldap恢复"
+					enable_ldap=true
 				fi				
 			done
 			;;
@@ -70,6 +75,7 @@ if [[ ${stores_str} == "" ]];then
 	enable_fdfs=true
 	enable_mongo=true
 	enable_pg=true
+	enable_ldap=true
 fi
 
 mkdir -p ${local_back_dir}
@@ -80,6 +86,7 @@ function remote_ssh_command(){
 	password=${2}
 	command=${3}
 	sshpass -p ${password}  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${ip} "${command}"
+
 }
 # 全局固定配置
 function config_to_process(){
@@ -111,6 +118,12 @@ function config_to_process(){
 	fdfs_nodes=${fdfs_nodes//[/}
 	fdfs_nodes=${fdfs_nodes//\"/}
 	node_fdfs_hosts=(${fdfs_nodes//\,/ })
+
+	ldap_nodes=`cat ${k8s_config_file}  | grep LDAP_HOST |awk -F : '{printf $2}' `
+	ldap_nodes=${ldap_nodes//]/}
+	ldap_nodes=${ldap_nodes//[/}
+	ldap_nodes=${ldap_nodes//\"/}
+	node_ldap_nodes=(${ldap_nodes//\,/ })
 }
 config_to_process
 
@@ -158,7 +171,7 @@ function mongo_restore(){
   	remote_back_dir="${max_dir}/${to_append_dir}"
 
  	del_command="rm -rf ${remote_back_dir}/mongodb* > /dev/null 2>&1"
-    dir_create="mkdir -p ${remote_back_dir}/mongodb";
+     dir_create="mkdir -p ${remote_back_dir}/mongodb";
 	remote_ssh_command ${to_mongo_ip} ${to_password} "${del_command};${dir_create};" 
 	sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${local_back_dir}/mongodb.tar root@${to_mongo_ip}:${remote_back_dir}
 	
@@ -184,6 +197,24 @@ function pg_restore(){
   	  restore_command="kubectl exec -n ruijie-sourceid postgresql-0 -- psql -U postgres -d quartz -f /init.sql > /dev/null 2>&1"
 	  remote_ssh_command ${to_ip} ${to_password} "${kube_cp};${restore_command};${del_command};" 
 }
+function ldap_restore(){
+
+  for to_ldap_ip in ${node_ldap_nodes[@]};
+  do
+     echo "fdfs数据库开始恢复,服务器IP:${to_ldap_ip}"
+	remote_back_dir="/${to_append_dir}"
+	del_command="rm -rf ${remote_back_dir} > /dev/null 2>&1"
+	dir_create="mkdir -p ${remote_back_dir}";
+	remote_ssh_command ${to_ldap_ip} ${to_password} "${del_command};${dir_create};" 
+	echo "sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  ${local_back_dir}/ldap_back.ldif root@${to_ldap_ip}:${remote_back_dir}"
+     sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  ${local_back_dir}/ldap_back.ldif root@${to_ldap_ip}:${remote_back_dir}
+     command_del_data="rm -rf  /var/lib/ldap/*";
+	command_restart="systemctl restart slapd.service";
+	command_restore="slapadd -l ${remote_back_dir}/ldap_back.ldif > /dev/null 2>&1";
+	remote_ssh_command ${to_ldap_ip} ${to_password} "${command_del_data};${command_restart};${command_restore};" 
+	remote_ssh_command ${to_ldap_ip} ${to_password} "${del_command};" 
+  done
+}
 if [[ ${enable_mongo} == true ]] ;then
 	mongo_restore
 fi
@@ -192,6 +223,9 @@ if [[ ${enable_pg} == true ]] ;then
 fi
 if [[ ${enable_fdfs} == true ]] ;then
 	fdfs_restore
+fi
+if [[ ${enable_ldap} == true ]] ;then
+	ldap_restore
 fi
 if [[ "$back_enable" == true  ]];then
 	echo "恢复完毕"

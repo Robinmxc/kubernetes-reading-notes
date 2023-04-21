@@ -9,10 +9,12 @@ from_mongo_user=""
 from_mongo_password=""
 from_mongo_ip=""
 from_append_dir="back_append_store"
+from_ldap_ip=""
 # 默认的配置参数非特殊无需修改
 enable_fdfs=false
 enable_mongo=false
 enable_pg=false
+enable_ldap=false
 stores_str=""
 funcHelp() {
     echo "Usage:"
@@ -44,6 +46,10 @@ do
 				if [[ $store == "pg" ]];then
 					echo "开启pg备份"
 					enable_pg=true
+				fi	
+				if [[ $store == "ldap" ]];then
+					echo "开启ldap备份"
+					enable_ldap=true
 				fi				
 			done
 			;;
@@ -115,14 +121,26 @@ function config_from_process(){
 	elif [[ ${#node_hosts[*]} > 1 ]];then
 		from_fdfs_ip=${node_fdfs_hosts[0]};
 	fi
+
+	ldap_nodes=`cat ${k8s_config_file}  | grep LDAP_HOST |awk -F : '{printf $2}' `
+	ldap_nodes=${ldap_nodes//]/}
+	ldap_nodes=${ldap_nodes//[/}
+	ldap_nodes=${ldap_nodes//\"/}
+	node_ldap_nodes=(${ldap_nodes//\,/ })
+	if [[ ${#node_ldap_nodes[*]} == 1 ]];then
+		from_ldap_ip=${node_ldap_nodes[0]};
+	elif [[ ${#node_ldap_nodes[*]} > 1 ]];then
+		from_ldap_ip=${node_ldap_nodes[0]};
+	fi
+
 }
 config_from_process
 
 function fdfs_back(){
  if [[ ${from_fdfs_ip} != "" ]];then
-    echo "fastDfs数据库开始备份,服务器IP:${from_fdfs_ip}"
-    mkdir -p ${local_back_dir}/from
-    fdfs_storage_file=${local_back_dir}/from/storage.conf
+     echo "fastDfs数据库开始备份,服务器IP:${from_fdfs_ip}"
+     mkdir -p ${local_back_dir}/from
+     fdfs_storage_file=${local_back_dir}/from/storage.conf
 	sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${from_fdfs_ip}:/etc/fdfs/storage.conf ${fdfs_storage_file} > /dev/null 2>&1
 	if [  -f "$fdfs_storage_file" ]; then
 		dirs_result=`cat ${fdfs_storage_file} | grep store_path0 |awk -F = '{printf $2}'`
@@ -133,7 +151,7 @@ function fdfs_back(){
 		else
 			max_dir="/${max_dir}"
 		fi
-
+		echo "fdfs远程备份临时目录:${max_dir}"
 		remote_back_dir="${max_dir}/${from_append_dir}"
 		del_command="rm -rf ${remote_back_dir}}/fdfs_data_back.tar > /dev/null 2>&1"
 		dir_create="mkdir -p ${remote_back_dir}";
@@ -160,7 +178,7 @@ function mongo_back(){
 	max_dir_command=(`cat ${config_file} | grep DATA_DIR |awk -F : '{printf $2}' `)
 	max_dir=${max_dir//\"/}
   	remote_back_dir="${max_dir}/${from_append_dir}"
-
+	echo "mongo远程备份临时目录:${max_dir}"
  	del_command="rm -rf ${remote_back_dir}/mongodb* > /dev/null 2>&1"
     dir_create="mkdir -p ${remote_back_dir}/mongodb";
 	back_command="mongodump -h ${from_mongo_ip} -u ${from_mongo_user} -p ${from_mongo_password} --authenticationDatabase 'admin'  -o ${remote_back_dir}/mongodb > /dev/null 2>&1"
@@ -174,6 +192,7 @@ function mongo_back(){
 	remote_ssh_command ${from_mongo_ip} ${from_password} "${del_command};" 
  fi
 }
+
 function pg_back(){
 	  echo "postgres数据库开始备份,服务器IP:${from_ip}"
   	  config_file=${local_back_dir}/from/pg-config.yml
@@ -181,7 +200,7 @@ function pg_back(){
 	  max_dir_command=(`cat ${config_file} | grep DATA_DIR |awk -F : '{printf $2}' `)
 	  max_dir=${max_dir//\"/}
   	  remote_back_dir="${max_dir}/${from_append_dir}"
-  	  
+  	  echo "postgres远程备份临时目录:${max_dir}"
 	  del_command="rm -rf ${remote_back_dir}/init.sql > /dev/null 2>&1"
 	  dir_create="mkdir -p ${remote_back_dir}";
 	  back_command="kubectl exec -n ruijie-sourceid postgresql-0 -- pg_dump -U postgres  quartz > ${remote_back_dir}/init.sql";
@@ -191,6 +210,51 @@ function pg_back(){
 	  sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${from_ip}:${remote_back_dir}/init.sql ${local_back_dir}
 	  remote_ssh_command ${from_ip} ${from_password} "${del_command};" 
 }
+function ldap_back(){
+
+	from_ldap_password=`cat ${k8s_config_file}  | grep LDAP_ADMIN_PWD |awk -F : '{printf $2}' `
+	from_ldap_password=${from_ldap_password// /}
+	from_ldap_password=${from_ldap_password//,/}
+	from_ldap_password=${from_ldap_password//\"/}
+	from_ldap_domain_str=`cat ${k8s_config_file}  | grep LDAP_DOMAIN |awk -F : '{printf $2}' `
+	from_ldap_domain_str=${from_ldap_domain_str// /}
+	from_ldap_domain_str=${from_ldap_domain_str//,/}
+	from_ldap_domain_str=${from_ldap_domain_str//\"/}
+	from_ldap_domain_str=${from_ldap_domain_str//\"/}
+	domains_b=(${from_ldap_domain_str//\./ })
+	domains=()
+	for domain in ${domains_b[@]}; do
+		domains=(${domains[@]} "dc=$domain")
+  	done
+	from_ldap_domain=$(IFS=,; echo "${domains[*]}")
+	remote_back_dir="/${from_append_dir}"
+  	echo "ldap远程备份临时目录:/"
+	from_ldap_port=`cat ${k8s_config_file}  | grep LDAP_PORT |awk -F : '{printf $2}' `
+	from_ldap_port=${from_ldap_port// /}
+	from_ldap_port=${from_ldap_port//,/}
+	from_ldap_port=${from_ldap_port//\"/}
+	if [[ $from_ldap_port == "" ]];then
+		from_ldap_port=389
+	else
+		from_ldap_port=${from_ldap_port//\"/}
+	fi
+	echo "ldap开始备份,服务器IP：${from_ldap_ip}"
+	del_command="rm -rf ${remote_back_dir}/ldap_back.ldif > /dev/null 2>&1"
+	dir_create="mkdir -p ${remote_back_dir}";
+	back_command="ldapsearch -x -h ${from_ldap_ip} -p ${from_ldap_port} -b ${from_ldap_domain} -D \"cn=admin,${from_ldap_domain}\" -w ${from_ldap_password} >${remote_back_dir}/ldap_back.ldif"
+	
+	fail=false
+	remote_ssh_command ${from_ldap_ip} ${from_password} "${del_command};${dir_create};${back_command};" || fail=true
+	if [[ ${fail} == true ]] ;then
+		 echo -e "\033[31m ldap备份失败,服务器IP:${from_ldap_ip} \033[0m" 
+	else
+	 	rm -rf ${local_back_dir}/ldap_back.ldif  > /dev/null 2>&1
+		mkdir -p ${local_back_dir}
+		sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${from_ldap_ip}:${remote_back_dir}/ldap_back.ldif ${local_back_dir}
+		remote_ssh_command ${from_ldap_ip} ${from_password} "${del_command};"
+	fi 
+ 
+}
 if [[ ${enable_mongo} == true ]] ;then
 	mongo_back
 fi
@@ -199,6 +263,9 @@ if [[ ${enable_pg} == true ]] ;then
 fi
 if [[ ${enable_fdfs} == true ]] ;then
 	fdfs_back
+fi
+if [[ ${enable_ldap} == true ]] ;then
+	ldap_back
 fi
 if [[ "$back_enable" == true  ]];then
 	echo "备份完毕"
