@@ -98,6 +98,9 @@ def main():
     elif "fdfs" in input:
       fdfsProcess()    
     else:
-       k8sProcess()	
+      ldapProcess()
+      eomsProcess()
+      fdfsProcess()
+      k8sProcess()	
 if __name__ == '__main__':
     main()
