@@ -20,7 +20,7 @@ to_fdfs_ip=""
 stores_str=""
 funcHelp() {
     echo "Usage:"
-    echo "back-store.sh [-h 服务器IP] [-p 服务器密码]  [-l 本地备份目录]  [-d 还原内容逗号分割，例如：fdfs,mongo,pg]"
+    echo "restore.sh [-h 服务器IP] [-p 服务器密码]  [-l 本地备份目录]  [-d 还原内容逗号分割，例如：fdfs,mongo,pg]"
 }
 while getopts :h:p:d:l: opt
 do
