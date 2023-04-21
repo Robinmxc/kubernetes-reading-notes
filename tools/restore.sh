@@ -166,7 +166,7 @@ function mongo_restore(){
   	mkdir -p ${local_back_dir}/to
   	config_file=${local_back_dir}/to/mongo-config.yml
 	sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${to_mongo_ip}:/etc/kad/config.yml ${config_file}
-	max_dir_command=(`cat ${config_file} | grep DATA_DIR |awk -F : '{printf $2}' `)
+	max_dir=(`cat ${config_file} | grep DATA_DIR |awk -F : '{printf $2}' `)
 	max_dir=${max_dir//\"/}
   	remote_back_dir="${max_dir}/${to_append_dir}"
 
@@ -184,7 +184,7 @@ function pg_restore(){
 	  echo "postgres数据库开始恢复,服务器IP:${to_ip}"
   	  config_file=${local_back_dir}/to/pg-config.yml
 	  sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${to_ip}:/etc/kad/config.yml ${config_file}
-	  max_dir_command=(`cat ${config_file} | grep DATA_DIR |awk -F : '{printf $2}' `)
+	  max_dir=(`cat ${config_file} | grep DATA_DIR |awk -F : '{printf $2}' `)
 	  max_dir=${max_dir//\"/}
   	  remote_back_dir="${max_dir}/${to_append_dir}"
 
@@ -201,12 +201,11 @@ function ldap_restore(){
 
   for to_ldap_ip in ${node_ldap_nodes[@]};
   do
-     echo "fdfs数据库开始恢复,服务器IP:${to_ldap_ip}"
+     echo "ldap数据库开始恢复,服务器IP:${to_ldap_ip}"
 	remote_back_dir="/${to_append_dir}"
 	del_command="rm -rf ${remote_back_dir} > /dev/null 2>&1"
 	dir_create="mkdir -p ${remote_back_dir}";
 	remote_ssh_command ${to_ldap_ip} ${to_password} "${del_command};${dir_create};" 
-	echo "sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  ${local_back_dir}/ldap_back.ldif root@${to_ldap_ip}:${remote_back_dir}"
      sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  ${local_back_dir}/ldap_back.ldif root@${to_ldap_ip}:${remote_back_dir}
      command_del_data="rm -rf  /var/lib/ldap/*";
 	command_restart="systemctl restart slapd.service";

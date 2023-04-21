@@ -73,6 +73,7 @@ if [[ ${stores_str} == "" ]];then
 	enable_fdfs=true
 	enable_mongo=true
 	enable_pg=true
+	enable_ldap=true
 fi
 mkdir -p ${local_back_dir}
 from_fdfs_password=${from_password}
@@ -175,7 +176,7 @@ function mongo_back(){
   	mkdir -p ${local_back_dir}/from
   	config_file=${local_back_dir}/from/mongo-config.yml
 	sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${from_ip}:/etc/kad/config.yml ${config_file}
-	max_dir_command=(`cat ${config_file} | grep DATA_DIR |awk -F : '{printf $2}' `)
+	max_dir=(`cat ${config_file} | grep DATA_DIR |awk -F : '{printf $2}' `)
 	max_dir=${max_dir//\"/}
   	remote_back_dir="${max_dir}/${from_append_dir}"
 	echo "mongo远程备份临时目录:${max_dir}"
@@ -197,7 +198,7 @@ function pg_back(){
 	  echo "postgres数据库开始备份,服务器IP:${from_ip}"
   	  config_file=${local_back_dir}/from/pg-config.yml
 	  sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${from_ip}:/etc/kad/config.yml ${config_file}
-	  max_dir_command=(`cat ${config_file} | grep DATA_DIR |awk -F : '{printf $2}' `)
+	  max_dir=(`cat ${config_file} | grep DATA_DIR |awk -F : '{printf $2}' `)
 	  max_dir=${max_dir//\"/}
   	  remote_back_dir="${max_dir}/${from_append_dir}"
   	  echo "postgres远程备份临时目录:${max_dir}"
