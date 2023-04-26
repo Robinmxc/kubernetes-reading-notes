@@ -139,9 +139,11 @@ kind: Ingress
 metadata:
   name: rg-gate-ingress
   namespace: {{ APP_NAMESPACE }}
+{% if '' != CUSTOMIZE_SUFFIX %}
   annotations:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       rewrite ^/{{ CUSTOMIZE_SUFFIX }}/(.*)$ /$1;
+{% endif %}
 spec:
   ingressClassName: nginx
 {% if 'https' == ingress_mode %}

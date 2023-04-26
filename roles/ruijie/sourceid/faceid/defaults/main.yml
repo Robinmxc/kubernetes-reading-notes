@@ -1,7 +1,7 @@
 
 FACEID_ENABLE: "{% if SOURCEID_DOCKERS.faceid is defined and (SOURCEID_DOCKERS.faceid.enable is not defined or SOURCEID_DOCKERS.faceid.enable) %}yes{% else %}no{% endif %}"
 
-faceid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1024m -Xmx3072m{% elif CLUSTER_SCALE == 'single' %}-Xms1024m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
+faceid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms2867m -Xmx2867m{% elif CLUSTER_SCALE == 'single' %}-Xms2867m -Xmx2867m{% else %}-Xms2867m -Xmx2867m{% endif %}"
 
 faceid_configs: []
 
@@ -23,8 +23,8 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 2
-        memory: 3Gi
+        cpu: 4
+        memory: 4Gi
       requests:
         cpu: 1
         memory: 2Gi

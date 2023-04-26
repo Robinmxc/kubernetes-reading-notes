@@ -6,3 +6,8 @@ cd /ruijie/init/sourceid/rg-upgrade-db
 {% if "xxl-job" in DB_VERSION %}
 ./upgrade_pg.sh {{current_db_version}} {{DB_VERSION["xxl-job"]["version"]}} xxl_job {{DB_VERSION["xxl-job"]["name"]}} sourceid
 {% endif %}
+
+# rg-flow组件数据库版本记录
+{% if "rg-flow" in DB_VERSION %}
+./upgrade_pg.sh {{current_db_version}} {{DB_VERSION["rg-flow"]["version"]}} flowable {{DB_VERSION["rg-flow"]["name"]}} sourceid
+{% endif %}
