@@ -25,7 +25,7 @@ deploy_conf_defaults:
         cpu: 512m
         memory: 512Mi
       requests:
-        cpu: 512m
+        cpu: 256m
         memory: 512Mi
 
 xxl_job_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

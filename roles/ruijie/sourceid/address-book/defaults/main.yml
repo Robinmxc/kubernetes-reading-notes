@@ -13,19 +13,19 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 1
+        cpu: 512m
         memory: 512Mi
       requests:
-        cpu: 1
+        cpu: 256m
         memory: 512Mi
   single:
     replicas: 1
     resources:
       limits:
-        cpu: 1
+        cpu: 512m
         memory: 512Mi
       requests:
-        cpu: 500m
+        cpu: 256m
         memory: 512Mi
 
 address_book_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
