@@ -29,14 +29,6 @@
     service: name=chronyd state=restarted enabled=yes
     when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
 
-  - name: 配置 chrony server 
-    template: src=server-kylin.conf.j2 dest=/etc/chrony.conf
-    when: (ansible_distribution == "RedHat" and ansible_distribution_major_version == "V10")
-
-  - name: 启动 chrony server
-    service: name=chronyd state=restarted enabled=yes
-    when: (ansible_distribution == "RedHat" and ansible_distribution_major_version == "V10")
-
   - name: 立即同步时间
     shell: "chronyc makestep"
   when: 'inventory_hostname == local_ntp_server'
@@ -71,17 +63,9 @@
     template: src=rsyslog.conf dest=/etc/rsyslog.conf
     when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
 
-  - name: 配置 chrony client
-    template: src=client-kylin.conf.j2 dest=/etc/chrony.conf
-    when: (ansible_distribution == "RedHat" and ansible_distribution_major_version == "V10")
-
-  - name: 启动 chrony client 
-    service: name=chronyd state=restarted enabled=yes
-    when: (ansible_distribution == "RedHat" and ansible_distribution_major_version == "V10")
-
   - name: 立即同步时间
     shell: "chronyc makestep"
-    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22") or  (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8") or ((ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7") or ((ansible_distribution == "RedHat" and ansible_distribution_major_version == "V10")
+    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22") or  (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8") or ((ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7")
   when: 'inventory_hostname != local_ntp_server'
 
 - name: 设置时区、更新硬件时钟、重启时间变动会影响到的服务

@@ -3,7 +3,6 @@
     name:
       - unzip
     state: present
-    use_backend: yum
 
 - name: 读取目录状态
   stat: path="{{ KAD_PACKAGE_DIR }}"
