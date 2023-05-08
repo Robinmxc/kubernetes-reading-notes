@@ -11,7 +11,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 0  
+      maxUnavailable: 0
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
@@ -44,6 +44,37 @@ spec:
         - mountPath: /ruijie/{{comp_name}}/complianceSoftware
           name: share
           readOnly: true
+
+        startupProbe:
+          failureThreshold: 15
+          httpGet:
+            path: /liveProbe/nodecompliance
+            port: 9889
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /liveProbe/nodecompliance
+            port: 9889
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /liveProbe/nodecompliance
+            port: 9889
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+
       imagePullSecrets:
       - name: regsecret
       volumes:
