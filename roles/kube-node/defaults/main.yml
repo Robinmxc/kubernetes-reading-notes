@@ -16,3 +16,13 @@ KUBE_RESERVED: "cpu=200m,memory=500Mi,ephemeral-storage=1Gi"
 
 # 配置kubelet的hard eviction条件
 HARD_EVICTION: "memory.available<200Mi,nodefs.available<10%"
+
+
+# 离线镜像tar包
+kube_apiserver: "kube-apiserver-v1.23.8.tar"
+kube_proxy: "kube-proxy-v1.23.8.tar"
+kube_scheduler: "kube-scheduler-v1.23.8.tar"
+kube_controller_manager: "kube-controller-manager-v1.23.8.tar"
+etcd: "etcd-3.5.1-0.tar"
+coredns: "coredns-v1.8.6.tar"
+pause: "pause-3.6.tar"

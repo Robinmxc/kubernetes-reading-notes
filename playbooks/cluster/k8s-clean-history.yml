@@ -1,0 +1,235 @@
+# WARNING: This playbook will erase the entire k8s-cluster, include PODs, ETCD data etc.
+# Make sure you know what you are doing.
+
+# to clean 'kube_node' nodes
+- hosts:
+  - kube_master
+  - kube_node
+  tasks:
+  - name: stop and disable kube_node service
+    service: name={{ item }} state=stopped enabled=no
+    with_items:
+    - kubelet
+    - kube-proxy
+    ignore_errors: true
+    no_log: true
+
+  - name: umount kubelet filesystems
+    shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount"
+    args:
+      warn: false
+    ignore_errors: true
+    no_log: true
+
+  - name: remove files and dirs of 'kube_node' nodes
+    file: name={{ item }} state=absent
+    with_items:
+    - "/var/lib/kubelet/"
+    - "/var/lib/kube-proxy/"
+    - "/etc/systemd/system/kubelet.service"
+    - "/etc/systemd/system/kube-proxy.service"
+    - "/opt/kube/kube-system/"
+
+# to clean 'kube_master' nodes
+- hosts:
+  - kube_master
+  tasks:
+  - name: stop and disable kube-master service
+    service: name={{ item }} state=stopped enabled=no
+    with_items:
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+    - kadapi
+    ignore_errors: true
+    no_log: true
+
+  - name: remove files and dirs of 'kube_master' nodes
+    file: name={{ item }} state=absent
+    with_items:
+    - "/var/run/kubernetes"
+    - "/usr/bin/kubectl"    
+    - "/etc/systemd/system/kube-apiserver.service"
+    - "/etc/systemd/system/kube-controller-manager.service"
+    - "/etc/systemd/system/kube-scheduler.service"
+    - "/etc/systemd/system/kadapi.service"
+
+# to clean docker service and networking
+- hosts:
+  - kube_master
+  - kube_node
+  tasks:
+  - name: 获取docker目录
+    shell: |-
+      docker info|grep 'Docker Root Dir'|awk -F ": " '{print $2}'
+    register: docker_home
+
+  - name: clean 'kube-router' stuff
+    shell: "{{ bin_dir }}/docker run --privileged --net=host cloudnativelabs/kube-router --cleanup-config"
+    ignore_errors: true
+    when: "CLUSTER_NETWORK == 'kube-router'"
+    no_log: true
+    
+  - name: stop and disable docker service
+    service:
+      name: docker
+      state: stopped
+      enabled: no
+    ignore_errors: true
+    no_log: true
+  - name: stop and disable autostart service
+    shell: "systemctl disable autostart.sh && systemctl stop autostart"
+    ignore_errors: true
+    no_log: true
+
+  # as k8s-network-plugins use host-network, '/var/run/docker/netns/default' must be umounted
+  - name: unmount docker filesystem-1
+    mount: path=/var/run/docker/netns/default state=unmounted
+
+  - name: unmount docker filesystem-2
+    mount: path={{ docker_home.stdout }}/overlay state=unmounted
+
+  - name: remove files and dirs
+    file: name={{ item }} state=absent
+    with_items:
+    - "{{ docker_home.stdout }}"
+    - "/var/run/docker/"
+    - "/etc/systemd/system/docker.service"
+    - "/usr/bin/docker"
+    - "/etc/systemd/system/docker.service.requires/"
+    - "/etc/systemd/system/docker.service.d/"
+    - "/etc/bash_completion.d/docker"
+    - "/usr/bin/docker"
+    ignore_errors: true
+    no_log: true
+    
+  - name: remove files and dirs2
+    file: name={{ item }} state=absent
+    with_items:
+    - "/etc/cni/"
+    - "/run/flannel/"
+    - "/etc/calico/"
+    - "/var/run/calico/"
+    - "/var/lib/calico/"
+    - "/var/log/calico/"
+    - "/etc/cilium/"
+    - "/var/run/cilium/"
+    - "/sys/fs/bpf/tc/"
+    - "/var/lib/cni/"
+    - "/var/lib/kube-router/"
+    - "/opt/kube/kube-system/"
+    - "/etc/init.d/autostart.sh"
+
+  - name: cleanup iptables
+    shell: "iptables -F && iptables -X \
+	&& iptables -F -t nat && iptables -X -t nat \
+	&& iptables -F -t raw && iptables -X -t raw \
+	&& iptables -F -t mangle && iptables -X -t mangle"
+
+  - name: 查询网卡信息
+    shell: "ip link | grep mtu"
+    register: ip_link_info
+
+  - name: cleanup networks1
+    shell: "ip link del {{ item }}"
+    when: 'item in ip_link_info.stdout'
+    with_items:
+      - "tunl0"
+      - "flannel.1"
+      - "cni0"
+      - "mynet0"
+      - "kube-bridge"
+      - "dummy0"
+      - "cilium_net"
+      - "kube-ipvs0"
+      - "cilium_vxlan"
+    ignore_errors: true
+
+
+  - name: cleanup 'calico' routes
+    shell: "for rt in `ip route|grep bird|sed 's/blackhole//'|awk '{print $1}'`;do ip route del $rt;done;"
+    when: "CLUSTER_NETWORK == 'calico'"
+    ignore_errors: true
+
+# to clean 'etcd' nodes
+- hosts: etcd
+  tasks:
+  - name: stop and disable etcd service
+    service:
+      name: etcd
+      state: stopped
+      enabled: no
+    ignore_errors: true
+
+  - name: remove files and dirs
+    file: name={{ item }} state=absent
+    with_items:
+    - "/var/lib/etcd"
+    - "/etc/etcd/"
+    - "/backup/k8s"
+    - "/etc/systemd/system/etcd.service"
+
+# to clean 'lb' nodes
+- hosts:
+  - lb
+  - ex-lb
+  tasks:
+  - name: stop keepalived service
+    shell: systemctl disable keepalived && systemctl stop keepalived
+    ignore_errors: true
+
+  - name: stop haproxy service
+    shell: systemctl disable haproxy && systemctl stop haproxy
+    ignore_errors: true
+
+  - name: remove files and dirs
+    file: name={{ item }} state=absent
+    with_items:
+    - "/etc/haproxy"
+    - "/etc/keepalived"
+
+# to clean ntp, certs and keys, env path
+- hosts:
+  - kube_master
+  - kube_node
+  - deploy
+  - etcd
+  - lb
+  tasks:
+  - name: 查询chronyd状态
+    shell: "systemctl list-units *.service"
+    register: svc_info
+    when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"
+
+  - name: stop and disable chronyd in CentOS/RedHat
+    service: name=chronyd state=stopped enabled=no
+    tags: rm_ntp
+    when: '"chronyd" in svc_info.stdout'
+    ignore_errors: true
+
+  - name: clean certs and keys
+    file: name={{ item }} state=absent
+    with_items:
+    - "/etc/kubernetes/"
+    - "{{ ca_dir }}" 
+    - "/root/.kube/config"
+    - "/etc/docker/"
+
+  - name: clean 'ENV PATH'
+    lineinfile:
+      dest: ~/.bashrc
+      state: absent
+      regexp: '{{ item }}'
+    with_items:
+    - 'helm'
+    - 'kubeasz'
+    - 'kubectl completion'
+    - 'HELM_TLS_ENABLE'
+
+  - name: 刷新环境变量
+    shell: source ~/.bashrc
+
+  - name: 移除历史版本程序
+    file: name={{ item }} state=absent
+    with_items:
+    - "/opt/kube"    

@@ -52,7 +52,7 @@
 - name: 检查keyfile
   tags:
   - config
-  command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
+  command: "kubectl get secret -n {{ APP_NAMESPACE }}"
   when: 'mongodb_auth_mode == "yes"'
   register: secret_info
   connection: local
@@ -70,7 +70,7 @@
       mongo_key: "{{ ssl_result.stdout }}"
     template: src=keyfile.yaml.j2 dest={{ yaml_dir }}/mongo/keyfile.yml
   - name: 创建keyfile
-    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/keyfile.yml"
+    shell: "kubectl apply -f {{ yaml_dir }}/mongo/keyfile.yml"
   when: 'mongodb_auth_mode == "yes" and "mongo-key" not in secret_info.stdout'
   connection: local
   run_once: true
@@ -82,7 +82,7 @@
   - name: 准备configmap部署文件
     template: src=mongo-conf.yaml.j2 dest={{ yaml_dir }}/mongo/mongo-conf.yml
   - name: 创建configmap
-    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo-conf.yml"
+    shell: "kubectl apply -f {{ yaml_dir }}/mongo/mongo-conf.yml"
   connection: local
   run_once: true
 
@@ -156,7 +156,7 @@
   run_once: true
 
 - name: 获取所有已经创建的POD信息
-  command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+  command: "kubectl get pod -n {{ APP_NAMESPACE }}"
   register: pod_info
   run_once: true
   connection: local
@@ -177,27 +177,27 @@
       vars:
         img_dir: '{% if "allinone" == DEPLOY_MODE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'
         mongoversion: "mongo:{{ mongodb_version }}"
-      shell: "{{ bin_dir }}/docker load -i {{ img_dir }}/{{ mongodb_offline }}"
+      shell: "docker load -i {{ img_dir }}/{{ mongodb_offline }}"
 
     - name: 部署第1个mongodb
-      shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo1.yml"
+      shell: "kubectl apply -f {{ yaml_dir }}/mongo/mongo1.yml"
       connection: local
       run_once: true
 
     - name: 部署第2个mongodb
-      shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo2.yml"
+      shell: "kubectl apply -f {{ yaml_dir }}/mongo/mongo2.yml"
       connection: local
       run_once: true
       when: 'mongodb_deploy_mode == "3"'
 
     - name: 部署第3个mongodb
-      shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo3.yml"
+      shell: "kubectl apply -f {{ yaml_dir }}/mongo/mongo3.yml"
       connection: local
       run_once: true
       when: 'mongodb_deploy_mode == "3"'
 
     - name: 轮询等待mongodb运行
-      shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} | grep 'mongo1' | awk '{print $3}'"
+      shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'mongo1' | awk '{print $3}'"
       register: pod_status
       until: pod_status.stdout == "Running"
       connection: local
@@ -207,7 +207,7 @@
       ignore_errors: true
 
     - name: 获取mongo1 POD 名称
-      shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
+      shell: "kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
       register: shell_result
       connection: local
       run_once: true
@@ -215,7 +215,7 @@
     - name: set vars
       set_fact:
         mongo_pod_name: "{{ shell_result.stdout }}"
-        mongo_pod_shell: "{{ bin_dir }}/kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
+        mongo_pod_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
       connection: local
       run_once: true
 
@@ -249,27 +249,31 @@
   - name: 准备MongoDB NodePort部署文件
     template: src=mongo-nodeport.yaml.j2 dest={{ yaml_dir }}/mongo/mongo-nodeport.yaml
   - name: 部署MongoDB NodePort
-    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/mongo/mongo-nodeport.yaml"
+    shell: "kubectl apply -f {{ yaml_dir }}/mongo/mongo-nodeport.yaml"
   when: '"" != MONGODB_NODEPORT and "mongo-node" not in pod_info.stdout'
   run_once: true
   connection: local
 
 - name: 准备backup目录
   file: path="{{ mongodb_backup_dir }}" state=directory
-    
-    
+
+- name: 查询系统信息
+  shell: "uname -r"
+  register: uname
+
+- name: 准备backup目录mongodb-database-tools
+  file: path="{{ mongodb_backup_dir }}/{{ uname.stdout }}/mongodb-database-tools" state=directory   
+
 - name: 复制mongodb安装工具 rpms
   copy:
-    src: "{{ base_dir }}/down/rpms/{{ mongodb_tool }}"
-    dest: "{{ mongodb_backup_dir }}/{{ mongodb_tool }}"
+    src: "{{ base_dir }}/down/rpms/{{ uname.stdout }}/mongodb-database-tools/{{ mongodb_tool }}"
+    dest: "{{ mongodb_backup_dir }}/{{ uname.stdout }}/mongodb-database-tools/{{ mongodb_tool }}"
   
-- name: 安装mongodb工具 rpms
-  yum: name={{ mongodb_backup_dir }}/{{ mongodb_tool }} disable_gpg_check=Yes state=present
+#- name: 安装mongodb工具 rpms
+#  yum: name={{ mongodb_backup_dir }}/{{ uname.stdout }}/mongodb-database-tools/{{ mongodb_tool }} disable_gpg_check=Yes state=present
   
 - name: 删除 rpms 安装文件
-  shell: "rm -f {{ mongodb_backup_dir }}/{{ mongodb_tool }}"
-  args:
-    warn: no
+  shell: "rm -f {{ mongodb_backup_dir }}/{{ uname.stdout }}/mongodb-database-tools/{{ mongodb_tool }}"
     
 - name: 获取备份脚本文件名称
   command: "ls {{ KAD_PACKAGE_DIR }}"

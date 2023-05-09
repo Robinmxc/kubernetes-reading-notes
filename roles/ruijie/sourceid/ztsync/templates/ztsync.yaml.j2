@@ -110,6 +110,7 @@ metadata:
   name: rg-ztsync-ingress
   namespace: {{ APP_NAMESPACE }}
 spec:
+ ingressClassName: nginx
 {% if 'https' == ingress_mode %}
   tls:
     - hosts:
@@ -121,6 +122,9 @@ spec:
       http:
         paths:
         - path: /sync
+          pathType: Prefix
           backend:
-            serviceName: rg-ztsync
-            servicePort: 80
+            service:
+              name: rg-ztsync
+              port:
+                number: 80                  

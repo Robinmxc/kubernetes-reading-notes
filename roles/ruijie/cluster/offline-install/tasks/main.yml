@@ -20,80 +20,41 @@
   register: pkg_dir_stat
   connection: local
 
-#  run_once: true
-- name: 准备k8s基础安装文件
-  when: 'not pkg_dir_stat.stat.exists'
-  run_once: true
-  ignore_errors: true
-  block:
-    - name: 读取压缩包状态
-      stat: path="{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-      register: tgz_info
-    - name: 下载k8s基础文件
-      get_url:
-        url: "{{ KAD_FILES_REPO }}/kad/support/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-        dest: "{{base_dir}}/down/"
-      when: 'not tgz_info.stat.exists'
-    - name: 读取压缩包状态
-      stat: path="{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-      register: tgz_info
-    - name: 解压k8s基础文件
-      unarchive:
-        src: "{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-        dest: "{{base_dir}}/"
-      when: 'tgz_info.stat.exists'
-
-- name: 准备离线下载目录
-  file: path={{ item }} state=directory
+- name: 离线包软件安装脚本拷贝
+  copy: src={{ base_dir }}/rpminstall.sh dest={{ base_dir }}/down/rpms/
   with_items:
-    - "{{ offline_dir }}"
+  - rpminstall.sh
 
-- name: 读取离线安装标识
-  stat: path="{{ offline_dir }}/offline-install.ok"
-  register: offline_install_stat
+- name: 设置离线包文件执行权限
+  tags:
+    - config
+  file: name="{{ base_dir }}/down/rpms/{{ item }}" mode=0777
+  with_items:
+  - "rpminstall.sh"
+#  run_once: true
 
-- name: 读取离线压缩包状态
-  stat: path="{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-  register: offline_tgz_info
-  run_once: true
+- name: 查询系统信息
+  shell: "uname -r"
+  register: uname
 
+- name: 准备系统依赖软件tar安装目录
+  file: path="{{ base_dir }}/down/rpms/{{ uname.stdout }}" state=directory   
+  when: '"allinone" != DEPLOY_MODE '
 
-- name: 准备离线k8s基础安装文件
-  when: '"allinone" != DEPLOY_MODE and not offline_install_stat.stat.exists and offline_tgz_info.stat.exists'
+- name: 系统依赖软件tar拷贝
+  when: '"allinone" != DEPLOY_MODE and  (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22") '
   ignore_errors: true
-  block:
-    - name: 设置下载标识
-      file:
-        path: "{{ offline_dir }}/offline-install.ok"
-        state: touch
-    - name: 复制压缩包到离线安装目录
-      copy: src="{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz" dest="{{ offline_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-      when: 'offline_tgz_info.stat.exists'
-    - name: 读取离线目录压缩包状态
-      stat: path="{{ offline_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-      register: offline_dir_tgz_info
-    - name: 解压离线压缩包
-      unarchive:
-        src: "{{ offline_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-        dest: "{{ offline_dir }}/"
-      when: 'offline_dir_tgz_info.stat.exists'
+  block:  
+  - name: 复制rpm包
+    copy: 
+      src: "{{ base_dir }}/down/rpms/{{ uname.stdout }}/tar" 
+      dest: "{{ base_dir }}/down/rpms/{{ uname.stdout }}"
 
-    - name: 删除离线安装包
-      file:
-        path: "{{ offline_dir }}/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-        state: absent
-    - name: 读取离线目录bin目录状态
-      stat: path="{{ offline_dir }}/bin"
-      register: offline_dir_bin
-    - name: 删除离线bin目录
-      shell: "rm -rf {{ offline_dir }}/bin"
-      when: 'offline_dir_bin.stat.exists'
-    - name: 读取离线目录down目录状态
-      stat: path="{{ offline_dir }}/down"
-      register: offline_dir_down
-    - name: 删除离线down目录
-      shell: "rm -rf {{ offline_dir }}/down"
-      when: 'offline_dir_down.stat.exists'
+- name: 系统依赖软件tar安装
+  shell: "rpm -ivh {{ base_dir }}/down/rpms/{{ uname.stdout }}/tar/*.rpm --force --nodeps > /dev/null 2>&1 | cat"
+  no_log: true
+  ignore_errors: true
+  when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
 
 - name: 读取目录状态
   stat: 
@@ -101,7 +62,7 @@
   register: rpms_dir_stat
   connection: local
 
-- name: 准备离线k8s基础安装文件
+- name: 准备离线基础安装包文件
   when: '"allinone" != DEPLOY_MODE and not rpms_dir_stat.stat.exists'
   ignore_errors: true
   block:  
@@ -123,26 +84,7 @@
       dest: "{{ base_dir }}/down/rpms/"
       remote_src: yes
 
-- name: Oniguruma must be installed first
-  shell: "yum install -y {{ base_dir }}/down/rpms/oniguruma*rpm"
+- name: rpm install for node
+  shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2 {{inventory_hostname not in groups.kube_master}} | cat"
   no_log: true
   ignore_errors: true
-
-- name: install offline rpm package
-  shell: "yum install -y {{ base_dir }}/down/rpms/*rpm"
-  no_log: true
-  ignore_errors: true
-
-- name: 读取基础工具压缩包状态
-  stat: 
-    path: "{{base_dir}}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-  register: tgz_tools_info
-  connection: local
-  run_once: true
-- name: 删除压缩包
-  file:
-    path: "{{ base_dir }}/down/kad-support-files-{{ kad_support_files_version }}.tar.gz"
-    state: absent
-  when: 'tgz_tools_info.stat.exists'
-  connection: local
-  run_once: true

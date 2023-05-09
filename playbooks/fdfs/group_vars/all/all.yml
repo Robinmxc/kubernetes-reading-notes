@@ -1,7 +1,7 @@
 max_space_dir: "{{
     hostvars[groups['fdfs_storage'][0]].ansible_mounts
     | selectattr('mount', 'match', '^(?!/var/lib/).*')
-    | sort('size_available' | int)
+    | sort(attribute='size_available')
     | map(attribute='mount')
     | list
     | last }}"

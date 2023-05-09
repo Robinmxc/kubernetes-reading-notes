@@ -13,15 +13,15 @@
       - coredns
 
     - name: 获取所有已经创建的POD信息
-      command: "{{ bin_dir }}/kubectl get pod --all-namespaces"
+      command: "kubectl get pod --all-namespaces"
       register: pod_info
     
     - name: 停止coredns组件
-      command: "{{ bin_dir }}/kubectl delete -f /opt/kube/kube-system/{{ dns_backend }}"
+      command: "kubectl delete -f /opt/kube/kube-system/{{ dns_backend }}"
       when: '"coredns" in pod_info.stdout'
     
     - name: 等待coredns结束运行
-      shell: "{{ bin_dir }}/kubectl get pod -n kube-system"
+      shell: "kubectl get pod -n kube-system"
       register: pod_info
       until: '"coredns" not in pod_info.stdout'
       retries: 30
@@ -48,11 +48,11 @@
       register: image_info
 
     - name: 导入{{ dns_backend }}的离线镜像（若执行失败，可忽略）
-      shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ dns_offline }}"
+      shell: "docker load -i /opt/kube/images/{{ dns_offline }}"
       when: 'dns_offline in image_info.stdout'
 
     - name: 创建{{ dns_backend }}部署
-      shell: "{{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/{{ dns_backend }}"
+      shell: "kubectl apply -f /opt/kube/kube-system/{{ dns_backend }}"
       run_once: true
       delegate_to: "{{ groups.deploy[0] }}"
   when:

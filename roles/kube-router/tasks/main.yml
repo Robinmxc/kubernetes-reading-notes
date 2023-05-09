@@ -59,7 +59,7 @@
 
 # 如果目录下有离线镜像，就把它导入到node节点上
 - name: 导入 kube-router的离线镜像（若执行失败，可忽略）
-  shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ item }}"
+  shell: "docker load -i /opt/kube/images/{{ item }}"
   when: 'item in image_info.stdout'
   with_items:
   - "pause_3.1.tar"
@@ -69,7 +69,7 @@
 
 # 只需单节点执行一次
 - name: 运行 kube-router DaemonSet
-  shell: "{{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/kube-router/ && sleep 5"
+  shell: "kubectl apply -f /opt/kube/kube-system/kube-router/ && sleep 5"
   delegate_to: "{{ groups.deploy[0] }}"
   run_once: true
 
@@ -79,7 +79,7 @@
 
 # 等待网络插件部署成功，视下载镜像速度而定
 - name: 轮询等待kube-router 运行，视下载镜像速度而定
-  shell: "{{ bin_dir }}/kubectl get pod -n kube-system -o wide|grep 'kube-router'|grep ' {{ inventory_hostname }} '|awk '{print $3}'"
+  shell: "kubectl get pod -n kube-system -o wide|grep 'kube-router'|grep ' {{ inventory_hostname }} '|awk '{print $3}'"
   register: pod_status
   until: pod_status.stdout == "Running"
   delegate_to: "{{ groups.deploy[0] }}"

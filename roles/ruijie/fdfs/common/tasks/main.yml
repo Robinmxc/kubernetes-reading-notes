@@ -48,8 +48,8 @@
 
 - name: 安装 rpm
   shell: "yum install -y {{ base_dir }}/down/rpms/fastdfs/*rpm"
-  no_log: false
-  ignore_errors: false
+  no_log: true
+  ignore_errors: true
 
 
 - name: 下载libfastcommon源码

@@ -7,6 +7,6 @@ db_pwd_checklist: [
   ]
 
 db_script_version: "2"
-
+INDUSTRY_TYPE: "university"
 tmp_list: "{% for h in DB_VERSION.keys() %}{{ DB_VERSION[h]['name'] }},{% endfor %}"
 db_list: "{{ tmp_list.rstrip(',').split(',') }}"

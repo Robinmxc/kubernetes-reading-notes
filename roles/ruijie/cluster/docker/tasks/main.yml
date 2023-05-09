@@ -1,63 +1,63 @@
-- name: 获取docker安装状态
-  stat: path=/etc/systemd/system/docker.service
-  register: stat_result
+- name: 准备docker相关目录
+  file: name={{ item }} state=directory
+  with_items:
+  #- "{{ bin_dir }}"
+  - /etc/docker
 
-- name: 安装docker
-  when: "not stat_result.stat.exists"
-  block:
-    - name: 准备docker相关目录
-      file: name={{ item }} state=directory
-      with_items:
-      - "{{ bin_dir }}"
-      - /etc/docker
-    
-    - name: 复制Docker相关文件
-      copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
-      with_items:
-      - containerd
-      - containerd-shim
-      - docker-init
-      - runc
-      - docker
-      - ctr
-      - dockerd
-      - docker-proxy
+#- name: 复制Docker相关文件
+#  copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
+#  with_items:
+#  - containerd
+#  - containerd-shim
+#  - docker-init
+#  - runc
+#  - docker
+#  - ctr
+#  - dockerd
+#  - docker-proxy
 
-    - name: docker命令自动补全
-      copy: src=docker dest=/etc/bash_completion.d/docker mode=0644
-    
-    - name: docker国内镜像加速
-      template: src=daemon.json.j2 dest=/etc/docker/daemon.json
-    
-    - name: flush-iptables
-      shell: "iptables -P INPUT ACCEPT \
-            && iptables -F && iptables -X \
-            && iptables -F -t nat && iptables -X -t nat \
-            && iptables -F -t raw && iptables -X -t raw \
-            && iptables -F -t mangle && iptables -X -t mangle"
-    
-    - name: 创建docker的systemd unit文件
-      template: src=docker.service.j2 dest=/etc/systemd/system/docker.service
-      tags: upgrade_docker, download_docker
-    
-    - name: 开机启用docker 服务
-      shell: systemctl enable docker
-      ignore_errors: true
-    
-    - name: 开启docker 服务
-      shell: systemctl daemon-reload && systemctl restart docker
-      tags: upgrade_docker
-    
-    - name: 轮询等待docker服务运行
-      shell: "systemctl status docker.service|grep Active"
-      register: docker_status
-      until: '"running" in docker_status.stdout'
-      retries: 8
-      delay: 2
-      tags: upgrade_docker
+- name: docker命令自动补全
+  copy: src=docker dest=/etc/bash_completion.d/docker mode=0644
 
-    # 配置 docker 命令软链接，方便单独安装 docker
-    - name: 配置 docker 命令软链接
-      file: src={{ bin_dir }}/docker dest=/usr/bin/docker state=link
-      ignore_errors: true
+- name: docker国内镜像加速
+  template: src=daemon.json.j2 dest=/etc/docker/daemon.json
 
+- name: flush-iptables
+  shell: "iptables -P INPUT ACCEPT \
+        && iptables -F && iptables -X \
+        && iptables -F -t nat && iptables -X -t nat \
+        && iptables -F -t raw && iptables -X -t raw \
+        && iptables -F -t mangle && iptables -X -t mangle"
+
+#- name: 创建docker的systemd unit文件
+#  template: src=docker.service.j2 dest=/etc/systemd/system/docker.service
+#  tags: upgrade_docker, download_docker
+
+- name: 开机启用docker 服务
+  shell: systemctl enable docker
+  ignore_errors: true
+
+- name: 修改docker服务启动参数
+  tags: upgrade_docker
+  shell: 'sed -i "s/LimitNOFILE=infinity/LimitNOFILE=65535/g" /usr/lib/systemd/system/docker.service'
+
+- name: 修改containerd服务启动参数
+  tags: upgrade_docker
+  shell: 'sed -i "s/LimitNOFILE=infinity/LimitNOFILE=65535/g" /usr/lib/systemd/system/containerd.service'
+
+- name: 开启docker 服务
+  shell: systemctl daemon-reload && systemctl restart docker
+  tags: upgrade_docker
+
+- name: 轮询等待docker服务运行
+  shell: "systemctl status docker.service|grep Active"
+  register: docker_status
+  until: '"running" in docker_status.stdout'
+  retries: 8
+  delay: 2
+  tags: upgrade_docker
+
+# 配置 docker 命令软链接，方便单独安装 docker
+#- name: 配置 docker 命令软链接
+#  file: src=docker dest=/usr/bin/docker state=link
+#  ignore_errors: true

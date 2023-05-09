@@ -1,5 +1,5 @@
 
-security_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms256m -Xmx256m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx256m{% else %}-Xms256m -Xmx256m{% endif %}"
+security_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms358m -Xmx358m{% elif CLUSTER_SCALE == 'single' %}-Xms358m -Xmx358m{% else %}-Xms358m -Xmx358m{% endif %}"
 
 deploy_conf_defaults:
   small:
@@ -17,10 +17,10 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 1
+        cpu: 500m
         memory: 512Mi
       requests:
-        cpu: 500m
+        cpu: 256m
         memory: 512Mi
 
 security_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

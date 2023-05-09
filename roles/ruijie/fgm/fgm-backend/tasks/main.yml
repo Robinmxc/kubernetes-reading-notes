@@ -41,7 +41,7 @@
   - name: 获取所有已经创建的POD信息
     tags:
       - deploy
-    command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     run_once: true
     connection: local
@@ -49,7 +49,7 @@
   - name: 执行部署
     tags:
       - deploy
-    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/fgm-backend/"
+    shell: "kubectl apply -f {{ yaml_dir }}/fgm-backend/"
     when: 'pod_info.stdout is not search("rg-fgm-backend-[a-z0-9]*-[a-z0-9]*\s*[0-9]*/[0-9]*\s*Running")'
     run_once: true
     connection: local

@@ -121,7 +121,7 @@ WantedBy=multi-user.target
 ### 批准kubelet 的 TLS 证书请求
 
 ``` bash
-sleep 15 && {{ bin_dir }}/kubectl get csr|grep 'Pending' | awk 'NR>0{print $1}'| xargs {{ bin_dir }}/kubectl certificate approve
+sleep 15 && kubectl get csr|grep 'Pending' | awk 'NR>0{print $1}'| xargs kubectl certificate approve
 ```
 + 增加15秒延时等待kubelet启动
 + `kubectl get csr |grep 'Pending'` 找出待批准的 TLS请求

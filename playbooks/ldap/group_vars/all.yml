@@ -5,7 +5,7 @@ bin_dir: "/opt/kube/bin"
 max_space_dir: "{{
     hostvars[groups['ldap'][0]].ansible_mounts
     | selectattr('mount', 'match', '^(?!/var/lib/).*')
-    | sort('size_available' | int)
+    | sort(attribute='size_available')
     | map(attribute='mount')
     | list
     | last }}"
@@ -35,3 +35,8 @@ nginx_file: "nginx-1.20.1.tar.gz"
 keepalived_file: "keepalived.tar.gz"
 
 LDAP_READONLY_USER_USERNAME: "readonly"
+
+PRIVATE_REGISTRY_ENABLED: "no"
+PRIVATE_INSECURE_REGISTRY: "172.17.8.20:8082"
+PRIVATE_REGISTRY_USER: ""
+PRIVATE_REGISTRY_PWD: ""

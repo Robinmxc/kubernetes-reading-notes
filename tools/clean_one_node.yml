@@ -20,7 +20,7 @@
     when: "groups['kube_master']|length < 2 and NODE_TO_DEL in groups['kube_master']"
 
   - name: 执行kubectl drain(节点可能是kube_node节点)
-    shell: "{{ bin_dir }}/kubectl drain {{ NODE_TO_DEL }} --ignore-daemonsets --delete-local-data"
+    shell: "kubectl drain {{ NODE_TO_DEL }} --ignore-daemonsets --delete-local-data"
     ignore_errors: true
 
   - block:
@@ -66,7 +66,7 @@
   
     # 清理集群docker服务、网络相关
     - name: 清理kube-router相关
-      shell: "{{ bin_dir }}/docker run --privileged --net=host cloudnativelabs/kube-router --cleanup-config"
+      shell: "docker run --privileged --net=host cloudnativelabs/kube-router --cleanup-config"
       ignore_errors: true
       when: "CLUSTER_NETWORK == 'kube-router'"
   
@@ -215,7 +215,7 @@
 
   # 执行kubectl delete(节点可能是kube_node节点)
   - name: 执行kubectl delete(节点可能是kube_node节点)
-    shell: "{{ bin_dir }}/kubectl delete node {{ NODE_TO_DEL }}"
+    shell: "kubectl delete node {{ NODE_TO_DEL }}"
     ignore_errors: true
 
   # 删除 ansible hosts 中节点配置

@@ -1,5 +1,5 @@
 # ingress 自动安装
-nginx_offline: "nginx-0.46.0.tar"
+nginx_offline: "nginx-ingress-1.5.1.tar"
 
 # http or https
 ingress_mode: "http"

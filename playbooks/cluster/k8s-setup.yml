@@ -5,10 +5,10 @@
   - ruijie/cluster/chrony
 
 # to create CA, kubeconfig, kube-proxy.kubeconfig etc. on 'deploy' node
-- hosts: deploy
-  any_errors_fatal: true
-  roles:
-  - deploy
+#- hosts: deploy
+#  any_errors_fatal: true
+#  roles:
+#  - deploy
 
 # prepare tasks for all nodes
 - hosts:
@@ -28,10 +28,10 @@
   - lb
 
 # to install etcd cluster
-- hosts: etcd
-  any_errors_fatal: true
-  roles:
-  - etcd
+#- hosts: etcd
+#  any_errors_fatal: true
+#  roles:
+#  - etcd
 
 # to install docker service
 - hosts:
@@ -46,10 +46,22 @@
     shell: "cat /etc/logrotate.d/syslog"
     register: syslog_info
     ignore_errors: true
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
 
   - name: 设置系统日志自动滚动机制
     shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/syslog"
-    when: "'dateext' not in syslog_info.stdout"
+    when: ("'dateext' not in syslog_info.stdout" and ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+    ignore_errors: true
+
+  - name: 查询系统日志自动滚动机制
+    shell: "cat /etc/logrotate.d/rsyslog"
+    register: syslog_info
+    ignore_errors: true
+    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
+
+  - name: 设置系统日志自动滚动机制
+    shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/rsyslog"
+    when: ("'dateext' not in syslog_info.stdout" and ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")
     ignore_errors: true
 
 # to set up 'kube_master' nodes
@@ -57,38 +69,63 @@
   any_errors_fatal: true
   roles:
   - kube-master
-  - kube-node
+  #- kube-node
   #
-  tasks:
-  - name: Making master nodes SchedulingDisabled
-    shell: "{{ bin_dir }}/kubectl cordon {{ inventory_hostname }} "
-    delegate_to: "{{ groups.deploy[0] }}"
-    when: DEPLOY_MODE != "allinone"
-    ignore_errors: true
+  #tasks:
+  #- name: Making master nodes SchedulingDisabled
+  #  shell: "kubectl cordon {{ inventory_hostname }} "
+  #  delegate_to: "{{ groups.deploy[0] }}"
+  #  when: DEPLOY_MODE != "allinone"
+  #  ignore_errors: true
 
-  - name: Setting master role name
-    shell: "{{ bin_dir }}/kubectl label node {{ inventory_hostname }} kubernetes.io/role=master --overwrite"
-    ignore_errors: true
-    delegate_to: "{{ groups.deploy[0] }}"
+  #- name: Setting master role name
+  #  shell: "kubectl label node {{ inventory_hostname }} kubernetes.io/role=master --overwrite"
+  #  ignore_errors: true
+  #  delegate_to: "{{ groups.deploy[0] }}"
 
-# to set up 'kube_node' nodes
-- hosts: kube_node
-  any_errors_fatal: true
-  roles:
-  - { role: kube-node, when: "DEPLOY_MODE != 'allinone'" }
-
-# to install network plugin, only one can be choosen
-- hosts:
+# to install flannel
+- hosts: 
   - kube_master
   - kube_node
   any_errors_fatal: true
   roles:
   - ruijie/cluster/flannel
 
-# to install clust-addons
-- hosts:
-  - kube_node
+# to set up 'kube_node' nodes
+- hosts: kube_node
   any_errors_fatal: true
   roles:
-  - ruijie/cluster/kube-dns
+  - kube-node
+
+# to install network plugin, only one can be choosen
+#- hosts:
+#  - kube_master
+#  - kube_node
+#  any_errors_fatal: true
+#  roles:
+#  - ruijie/cluster/flannel
+
+# to install clust-addons
+#- hosts:
+#  - kube_node
+#  any_errors_fatal: true
+#  roles:
+#  - ruijie/cluster/kube-dns
+#  - ruijie/cluster/ingress
+
+# to install ingress
+
+- hosts: kube_node
+  tasks:
+  - name: 重启coreDns,触发CoreDns漂移
+    shell: "kubectl delete pod -l k8s-app=kube-dns -n kube-system"
+    connection: local
+    run_once: true
+    tags: upgrade_k8s
+  
+- hosts: kube_node
+  any_errors_fatal: true
+  roles:
   - ruijie/cluster/ingress
+
+

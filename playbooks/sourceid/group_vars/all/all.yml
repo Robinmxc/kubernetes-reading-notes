@@ -16,7 +16,7 @@ yaml_dir: "{{ namespace_dir }}/yaml"
 max_space_dir: "{{
     hostvars[groups['kube_node'][0]].ansible_mounts
     | selectattr('mount', 'match', '^(?!/var/lib/).*')
-    | sort('size_available' | int)
+    | sort(attribute='size_available')
     | map(attribute='mount')
     | list
     | last }}"
@@ -56,7 +56,7 @@ SOURCEID_DOCKERS: {
 }
 
 PRIVATE_REGISTRY_ENABLED: "no"
-PRIVATE_INSECURE_REGISTRY: "registry.cn-shanghai.aliyuncs.com"
+PRIVATE_INSECURE_REGISTRY: "172.17.8.20:8082"
 PRIVATE_REGISTRY_USER: ""
 PRIVATE_REGISTRY_PWD: ""
 
@@ -196,3 +196,6 @@ MGOB: {
   MGOB_SFTP_PWD: "shyfzx@163",
   MGOB_SFTP_DIR: "/home/mongodbBackUP"
 }
+
+#自定义路径，前后不要加‘/’
+CUSTOMIZE_SUFFIX: ""

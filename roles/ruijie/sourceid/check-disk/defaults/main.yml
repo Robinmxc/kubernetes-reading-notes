@@ -8,5 +8,5 @@ disk_required:
     master: 10
     node: 400
   single:
-    master: 400
-    node: 400
+    master: 10
+    node: 10

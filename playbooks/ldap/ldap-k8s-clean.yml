@@ -6,15 +6,15 @@
 
   tasks:
     - name: 获取所有部署的Pod信息
-      command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+      command: "kubectl get pod -n {{ APP_NAMESPACE }}"
       register: pod_info
 
     - name: 停止openldap
-      command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/openldap/"
+      command: "kubectl delete -f {{ yaml_dir }}/openldap/"
       when: '"openldap" in pod_info.stdout'
 
     - name: 等待openldap结束运行
-      shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+      shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
       register: pod_info
       until: '"openldap" not in pod_info.stdout'
       retries: 30
@@ -26,5 +26,5 @@
       ignore_errors: true
 
     - name: delete secret
-      shell: "{{ bin_dir }}/kubectl delete secrets ldap-pwds -n {{ APP_NAMESPACE }} --ignore-not-found"
+      shell: "kubectl delete secrets ldap-pwds -n {{ APP_NAMESPACE }} --ignore-not-found"
       ignore_errors: true

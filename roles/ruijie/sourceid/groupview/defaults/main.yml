@@ -1,6 +1,6 @@
 GROUP_VIEW_ENABLE: "{% if SOURCEID_DOCKERS['groupview'] is defined and (SOURCEID_DOCKERS['groupview'].enable is not defined or SOURCEID_DOCKERS['groupview'].enable) %}yes{% else %}no{% endif %}"
 
-groupview_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4096m -Xmx4096m{% elif CLUSTER_SCALE == 'single' %}-Xms2048m -Xmx4096m{% else %}-Xms256m -Xmx512m{% endif %}"
+groupview_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4301m -Xmx4301m{% elif CLUSTER_SCALE == 'single' %}-Xms2150m -Xmx2150m{% else %}-Xms2150m -Xmx2150m{% endif %}"
 
 groupview_configs: []
 
@@ -22,8 +22,8 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 4
-        memory: 5Gi
+        cpu: 2
+        memory: 3Gi
       requests:
         cpu: 1
         memory: 1Gi

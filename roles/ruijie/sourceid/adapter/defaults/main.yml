@@ -1,6 +1,6 @@
 ADAPTER_ENABLE: "{% if SOURCEID_DOCKERS['adapter'] is defined and (SOURCEID_DOCKERS['adapter'].enable is not defined or SOURCEID_DOCKERS['adapter'].enable) %}yes{% else %}no{% endif %}"
 
-adapter_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms256m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
+adapter_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms358m -Xmx358m{% elif CLUSTER_SCALE == 'single' %}-Xms358m -Xmx358m{% else %}-Xms358m -Xmx358m{% endif %}"
 
 adapter_configs: []
 

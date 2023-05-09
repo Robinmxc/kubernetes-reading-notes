@@ -1,24 +1,24 @@
 - name: 获取namespace是否存在
-  command: "{{ bin_dir }}/kubectl get namespaces"
+  command: "kubectl get namespaces"
   register: namespaces_info
   connection: local
   run_once: true
 
 - name: 创建namespace
-  shell: "{{ bin_dir }}/kubectl create namespace {{ APP_NAMESPACE }}"
+  shell: "kubectl create namespace {{ APP_NAMESPACE }}"
   when: 'APP_NAMESPACE not in namespaces_info.stdout'
   connection: local
   run_once: true
 
 - name: 获取secret数据
-  command: "{{ bin_dir }}/kubectl get secret -n {{ APP_NAMESPACE }}"
+  command: "kubectl get secret -n {{ APP_NAMESPACE }}"
   when: 'PRIVATE_REGISTRY_ENABLED == "yes"'
   register: secret_info
   connection: local
   run_once: true
 
 - name: 创建regsecret
-  shell: "{{ bin_dir }}/kubectl create secret docker-registry regsecret --docker-server={{ PRIVATE_INSECURE_REGISTRY }} --docker-username={{ PRIVATE_REGISTRY_USER }} --docker-password={{ PRIVATE_REGISTRY_PWD }} --namespace={{ APP_NAMESPACE }}"
+  shell: "kubectl create secret docker-registry regsecret --docker-server={{ PRIVATE_INSECURE_REGISTRY }} --docker-username={{ PRIVATE_REGISTRY_USER }} --docker-password={{ PRIVATE_REGISTRY_PWD }} --namespace={{ APP_NAMESPACE }}"
   when: 'PRIVATE_REGISTRY_ENABLED == "yes" and "regsecret" not in secret_info.stdout'
   connection: local
   run_once: true
@@ -64,12 +64,16 @@
     - "sourceid/xxl-job"
     - "sourceid/portal"
     - "sourceid/report"
+    - "sourceid/organization-center"
+    - "sourceid/rg-flow"
+    - "sourceid/address-book"
   connection: local
   run_once: true
 
 - name: 获取autostart.sh状态
   stat: path="/etc/init.d/autostart.sh"
   register: data_dir_stat  
+  ignore_errors: true
 
 - name: 设置自动配置iptables脚本
   vars: 
@@ -93,27 +97,10 @@
 - name: 初次执行autostart.sh脚本
   shell: iptables -F && sh /etc/init.d/autostart.sh
 
-- name: 准备etcd证书
-  fetch:
-    src: /etc/etcd/ssl/{{ item }}
-    dest: /etc/etcd/ssl/
-    flat: yes
-  with_items:
-  - "etcd.csr"
-  - "etcd-csr.json"
-  - "etcd-key.pem"
-  - "etcd.pem"
-  run_once: true
-
 
 - name: 获取configmap数据
-  command: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} get configmap"
+  command: "kubectl -n {{ APP_NAMESPACE }} get configmap"
   register: etcd_tls
   connection: local
   run_once: true
 
-- name: 创建 etcd 证书configmap
-  shell: "{{ bin_dir }}/kubectl -n {{ APP_NAMESPACE }} create configmap  tls-for-etcd --from-file=/etc/etcd/ssl"
-  when: '"tls-for-etcd" not in etcd_tls.stdout'
-  connection: local
-  run_once: true

@@ -42,11 +42,13 @@
     with_items:
       - {regexp: "^CERT_VALID_MONTHS=.*$", replace: "CERT_VALID_MONTHS=240"}
     ignore_errors: true
+    no_log: true
 
   - name: 准备证书文件
     shell: "sh /usr/libexec/openldap/create-certdb.sh && sh /usr/libexec/openldap/generate-server-cert.sh"
     ignore_errors: true
-
+    no_log: true
+    
   - name: 准备配置文件
     tags:
       - config

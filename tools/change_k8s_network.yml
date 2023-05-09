@@ -4,13 +4,13 @@
   - kube_node
   tasks:
   - name: 获取所有已经创建的POD信息
-    command: "{{ bin_dir }}/kubectl get daemonset -n kube-system"
+    command: "kubectl get daemonset -n kube-system"
     register: pod_info
     delegate_to: "{{ groups.deploy[0] }}"
     run_once: true
 
   - name: 删除原network插件部署
-    shell: "{{ bin_dir }}/kubectl delete -f /opt/kube/kube-system/{{ item }}/"
+    shell: "kubectl delete -f /opt/kube/kube-system/{{ item }}/"
     with_items:
     - calico
     - cilium
@@ -22,7 +22,7 @@
     ignore_errors: true
 
   - name: 清理kube-router相关
-    shell: "{{ bin_dir }}/docker run --privileged --net=host cloudnativelabs/kube-router --cleanup-config"
+    shell: "docker run --privileged --net=host cloudnativelabs/kube-router --cleanup-config"
     ignore_errors: true
     when: '"kube-router" in pod_info.stdout'
 
@@ -86,7 +86,7 @@
     service: name=keepalived state=restarted
  
   - name: 轮询等待apiserver服务恢复
-    command: "{{ bin_dir }}/kubectl get node"
+    command: "kubectl get node"
     register: result
     until:    result.rc == 0
     retries:  5
@@ -108,8 +108,8 @@
   tasks:
   # 删除所有运行pod，由controller自动重建
   - name: 重启所有pod
-    shell: "for NS in $({{ bin_dir }}/kubectl get ns|awk 'NR>1{print $1}'); \
-                do {{ bin_dir }}/kubectl delete pod --all -n $NS; done;"
+    shell: "for NS in $(kubectl get ns|awk 'NR>1{print $1}'); \
+                do kubectl delete pod --all -n $NS; done;"
     ignore_errors: true
     run_once: true
 

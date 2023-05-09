@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
 import json
@@ -29,7 +29,7 @@ def is_port(s):
 
 def read_yml(file_path):
     file = open(file_path)
-    config = yaml.load(file)
+    config = yaml.load(file, Loader=yaml.FullLoader)
     file.close()
     return config
 
@@ -158,13 +158,13 @@ def parse_host_data(workspace_dir):
 
     # 计算服务网段
     if "SERVICE_CIDR" in k8s_config:
-        config_value = k8s_config["SERVICE_CIDR"].decode("iso-8859-1")
+        config_value = k8s_config["SERVICE_CIDR"].encode("iso-8859-1").decode("iso-8859-1")
         try:
             service_cidr = IPv4Network(config_value)
         except ValueError:
             raise Exception(config_value + u"不是有效的网络地址")
     else:
-        config_value = k8s_config["CLUSTER_CIDR"].decode("iso-8859-1")
+        config_value = k8s_config["CLUSTER_CIDR"].encode("iso-8859-1").decode("iso-8859-1")
         try:
             cluster_cidr = IPv4Network(config_value)
         except ValueError:
@@ -229,19 +229,19 @@ def parse_host_data(workspace_dir):
     # 设置ETCD节点名称
     idx = 1
     for ip in node_hosts:
-        host_vars[ip]["NODE_NAME"] = "etcd" + bytes(idx)
+        host_vars[ip]["NODE_NAME"] = "etcd" + str(idx)
         idx = idx + 1
 
     # 设置mongodb节点名称
     idx = 1
     for ip in result["groups"]["mongodb"]["hosts"]:
-        host_vars[ip]["MONGO_NODE_NAME"] = "mongo" + bytes(idx)
+        host_vars[ip]["MONGO_NODE_NAME"] = "mongo" + str(idx)
         idx = idx + 1
 
     # 设置pgsql节点名称
     idx = 0
     for ip in result["groups"]["pgsql"]["hosts"]:
-        host_vars[ip]["PG_NODE_NAME"] = "postgresql-" + bytes(idx)
+        host_vars[ip]["PG_NODE_NAME"] = "postgresql-" + str(idx)
         idx = idx + 1
 
     if  group_all_vars["KAD_APP_VERSION"] < "1.9.1":
@@ -382,7 +382,8 @@ def parse_eoms_config(host_data):
                 raise Exception(ip + u"不是有效的IP地址")
         host_data["groups"]["influxdb"] = eoms_hosts
         host_data["groups"]["eoms"] = eoms_hosts
-
+        host_vars = host_data["host_vars"]
+        host_vars[ip]={}
 
 # 处理SourceData配置参数
 def parse_sourcedata_config(host_data):

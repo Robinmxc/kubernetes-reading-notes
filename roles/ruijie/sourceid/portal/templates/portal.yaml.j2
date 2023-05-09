@@ -128,12 +128,13 @@ spec:
     targetPort: 9879
 
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: rg-portal-ingress
   namespace: {{ APP_NAMESPACE }}
 spec:
+  ingressClassName: nginx
 {% if 'https' == ingress_mode %}
   tls:
     - hosts:
@@ -145,6 +146,9 @@ spec:
       http:
         paths:
         - path: /
+          pathType: Prefix
           backend:
-            serviceName: rg-portal
-            servicePort: 80
+            service:
+              name: rg-portal
+              port:
+                number: 80            

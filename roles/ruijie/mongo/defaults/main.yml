@@ -3,7 +3,7 @@ mongodb_offline: "mongo-4.0.24.tar"
 mongodb_port: 27017
 mongodb_deploy_mode: "{{ groups['mongodb'] | length }}"
 mongodb_auth_mode: "no"
-mongodb_tool: "mongodb-org-tools-4.0.13-1.el7.x86_64.rpm"
+mongodb_tool: "mongodb-database-tools-rhel80-x86_64-100.6.1.rpm"
 
 mongodb_check_data_dir: "no"
 

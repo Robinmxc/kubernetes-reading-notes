@@ -3,7 +3,7 @@ EOMS_ENABLE: "{% if EOMS is defined and EOMS['enable'] %}yes{% else %}no{% endif
 max_space_dir: "{{
     hostvars[groups['eoms'][0]].ansible_mounts
     | selectattr('mount', 'match', '^(?!/var/lib/).*')
-    | sort('size_available' | int)
+    | sort(attribute='size_available')
     | map(attribute='mount')
     | list
     | last }}"

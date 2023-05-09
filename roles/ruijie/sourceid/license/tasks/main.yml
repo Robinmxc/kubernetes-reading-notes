@@ -50,7 +50,7 @@
       - deploy
     run_once: true
     connection: local
-    command: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
 
   - name: 执行部署
@@ -58,4 +58,4 @@
       - deploy
     run_once: true
     connection: local
-    shell: "{{ bin_dir }}/kubectl apply -f {{ yaml_dir }}/license/"
+    shell: "kubectl apply -f {{ yaml_dir }}/license/"

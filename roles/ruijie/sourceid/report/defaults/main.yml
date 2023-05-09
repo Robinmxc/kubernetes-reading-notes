@@ -1,6 +1,6 @@
 REPORT_ENABLE: "{% if CLUSTER_SCALE == 'normal' and SOURCEID_DOCKERS['report'] is defined and (SOURCEID_DOCKERS['report'].enable is not defined or SOURCEID_DOCKERS['report'].enable) %}yes{% else %}no{% endif %}"
 
-report_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms256m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx512m{% else %}-Xms256m -Xmx512m{% endif %}"
+report_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms717m -Xmx717m{% elif CLUSTER_SCALE == 'single' %}-Xms717m -Xmx717m{% else %}-Xms717m -Xmx717m{% endif %}"
 
 report_configs: []
 

@@ -37,7 +37,7 @@ PRIVATE_REGISTRY_PWD: ""
 max_space_dir: "{{
     hostvars[groups['kube_node'][0]].ansible_mounts
     | selectattr('mount', 'match', '^(?!/var/lib/).*')
-    | sort('size_available' | int)
+    | sort(attribute='size_available')
     | map(attribute='mount')
     | list
     | last }}"
@@ -45,5 +45,6 @@ max_space_dir: "{{
 DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}"
 
 DOCKER_STORAGE_DIR: "{{ DATA_DIR }}/docker"
+
 
 

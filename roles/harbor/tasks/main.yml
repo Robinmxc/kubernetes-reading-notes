@@ -11,7 +11,7 @@
 
 - block:
     - name: 下发docker compose二进制文件
-      copy: src={{ base_dir }}/bin/docker-compose dest={{ bin_dir }}/docker-compose mode=0755
+      copy: src={{ base_dir }}/bin/docker-compose dest=docker-compose mode=0755
 
     - name: 下发harbor离线安装包
       copy:
@@ -22,7 +22,7 @@
       shell: "cd /data && tar zxf harbor-offline-installer-{{ HARBOR_VER }}.tgz"
 
     - name: 导入harbor所需 docker images
-      shell: "{{ bin_dir }}/docker load -i /data/harbor/harbor.{{ HARBOR_VER }}.tar.gz"
+      shell: "docker load -i /data/harbor/harbor.{{ HARBOR_VER }}.tar.gz"
     
     - name: 分发证书相关
       copy: src={{ ca_dir }}/{{ item }} dest={{ ca_dir }}/{{ item }}

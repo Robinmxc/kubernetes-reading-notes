@@ -145,12 +145,18 @@ spec:
     targetPort: 80
 
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: rg-sso-ingress
   namespace: {{ APP_NAMESPACE }}
+{% if '' != CUSTOMIZE_SUFFIX %}
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^/{{ CUSTOMIZE_SUFFIX }}/(.*)$ /$1;
+{% endif %}
 spec:
+  ingressClassName: nginx
 {% if 'https' == ingress_mode %}
   tls:
     - hosts:
@@ -162,18 +168,30 @@ spec:
     http:
       paths:
       - path: /v2/api-docs
+        pathType: Prefix
         backend:
-          serviceName: rg-frontend
-          servicePort: 80
+          service:
+            name: rg-frontend
+            port:
+              number: 80
       - path: /public
+        pathType: Prefix
         backend:
-          serviceName: rg-gate
-          servicePort: 80
+          service:
+            name: rg-gate
+            port:
+              number: 80
       - path: /linkid
+        pathType: Prefix
         backend:
-          serviceName: rg-gate
-          servicePort: 80
+          service:
+            name: rg-gate
+            port:
+              number: 80
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: rg-sso
-          servicePort: 80
+          service:
+            name: rg-sso
+            port:
+              number: 80

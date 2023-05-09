@@ -13,7 +13,7 @@
       - coredns
     
     - name: 获取所有已经创建的POD信息
-      command: "{{ bin_dir }}/kubectl get pod --all-namespaces"
+      command: "kubectl get pod --all-namespaces"
       register: pod_info
   delegate_to: "{{ groups.deploy[0] }}"
   run_once: true
@@ -34,11 +34,11 @@
       register: image_info     
  
     - name: 导入{{ dns_backend }}的离线镜像（若执行失败，可忽略）
-      shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ dns_offline }}"
+      shell: "docker load -i /opt/kube/images/{{ dns_offline }}"
       when: 'dns_offline in image_info.stdout'
     
     - name: 创建{{ dns_backend }}部署
-      shell: "{{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/{{ dns_backend }}"
+      shell: "kubectl apply -f /opt/kube/kube-system/{{ dns_backend }}"
       run_once: true
       delegate_to: "{{ groups.deploy[0] }}"
   when: 
@@ -57,11 +57,11 @@
       register: image_info     
  
     - name: 导入 metrics-server的离线镜像（若执行失败，可忽略）
-      shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ metricsserver_offline }}"
+      shell: "docker load -i /opt/kube/images/{{ metricsserver_offline }}"
       when: 'metricsserver_offline in image_info.stdout'
     
     - name: 创建 metrics-server部署
-      shell: "{{ bin_dir }}/kubectl apply -f {{ base_dir }}/manifests/metrics-server"
+      shell: "kubectl apply -f {{ base_dir }}/manifests/metrics-server"
       delegate_to: "{{ groups.deploy[0] }}"
       run_once: true
   when: '"metrics-server" not in pod_info.stdout and metricsserver_install == "yes"'
@@ -78,12 +78,12 @@
       register: image_info     
       
     - name: 导入 dashboard的离线镜像（若执行失败，可忽略）
-      shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ dashboard_offline }}"
+      shell: "docker load -i /opt/kube/images/{{ dashboard_offline }}"
       when: 'dashboard_offline in image_info.stdout'
       
     - name: 创建 dashboard部署
-      shell: "{{ bin_dir }}/kubectl apply -f {{ base_dir }}/manifests/dashboard && \
-	      {{ bin_dir }}/kubectl apply -f {{ base_dir }}/manifests/heapster/heapster-only"
+      shell: "kubectl apply -f {{ base_dir }}/manifests/dashboard && \
+	      kubectl apply -f {{ base_dir }}/manifests/heapster/heapster-only"
       delegate_to: "{{ groups.deploy[0] }}"
       run_once: true
   when: '"kubernetes-dashboard" not in pod_info.stdout and dashboard_install == "yes"'
@@ -102,11 +102,11 @@
       register: image_info     
       
     - name: 导入 heapster的离线镜像（若执行失败，可忽略）
-      shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ heapster_offline }}"
+      shell: "docker load -i /opt/kube/images/{{ heapster_offline }}"
       when: 'heapster_offline in image_info.stdout'
       
     - name: 创建 heapster部署
-      shell: "{{ bin_dir }}/kubectl apply -f {{ base_dir }}/manifests/heapster/heapster.yaml"
+      shell: "kubectl apply -f {{ base_dir }}/manifests/heapster/heapster.yaml"
       delegate_to: "{{ groups.deploy[0] }}"
       run_once: true
   when: '"heapster" not in pod_info.stdout and heapster_install == "yes"'
@@ -122,7 +122,7 @@
       register: image_info     
       
     - name: 导入 metallb的离线镜像（若执行失败，可忽略）
-      shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ metallb_offline }}"
+      shell: "docker load -i /opt/kube/images/{{ metallb_offline }}"
       when: 'metallb_offline in image_info.stdout'
 
     - name: 生成 metallb 相关 manifests
@@ -134,12 +134,12 @@
       run_once: true
 
     - name: 创建 metallb controller 部署
-      shell: "{{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/metallb.yaml"
+      shell: "kubectl apply -f /opt/kube/kube-system/metallb.yaml"
       delegate_to: "{{ groups.deploy[0] }}"
       run_once: true
 
     - name: 创建 metallb configmap
-      shell: "{{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/{{ metallb_protocol }}.yaml"
+      shell: "kubectl apply -f /opt/kube/kube-system/{{ metallb_protocol }}.yaml"
       delegate_to: "{{ groups.deploy[0] }}"
       run_once: true
   when: '"metallb" not in pod_info.stdout and metallb_install == "yes"'
