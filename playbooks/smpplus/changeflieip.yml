@@ -1,0 +1,61 @@
+- hosts:
+  - localhost
+  ignore_errors: true
+  tasks:
+  - name: 获取smpplus数据盘位置
+    shell: "cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'"
+    register: actual_data_path_info
+
+  - name: change files ip
+    vars:
+      actual_data_path: '{{ actual_data_path_info.stdout }}'
+    shell: 'sed -i "s/{{ old_ip }}/{{ new_ip }}/g" {{ item }}'
+    with_items:
+    - "/etc/init.d/autostart.sh"
+    - "/etc/systemd/system/etcd.service"
+    - "/etc/systemd/system/kube-apiserver.service"
+    - "/etc/systemd/system/kube-controller-manager.service"
+    - "/etc/systemd/system/kubelet.service"
+    - "/etc/systemd/system/kube-proxy.service"
+    - "/etc/systemd/system/kube-scheduler.service"
+    - "/etc/etcd/ssl/etcd-csr.json"
+    - "/etc/kubernetes/ssl/kubelet-csr.json"
+    - "/etc/kubernetes/ssl/kubernetes-csr.json"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/frontend-smp/conf/Environment.js"
+    - "/opt/kube/kube-system/flannel/kube-flannel.yaml"
+    - "/opt/kad/workspace/ruijie-smpplus/yaml/mongo/mongo1.yml"
+    - "/opt/kad/workspace/ruijie-smpplus/yaml/rocketmq/rocketmq.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/rocketmq/conf/broker.conf"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/authentication/conf/application-prd.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/linkid/conf/application-prd.properties"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/eportal/conf/application-prd.properties"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/nodeidentify/conf/application-prd.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/linkage-devices/conf/application-prd.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/nodeconnector/conf/application-prd.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/nodeconnector/conf/application-prd.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/license/conf/application-prd.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/nodemanager-scan/conf/application-prd.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/operations/conf/application-prd.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/pcap-scan/conf/application-prd.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/sms-middleware/conf/application-prd.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/aggregation/conf/application-prd.yml"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/component/conf/application-prd.properties"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/frontend-client/conf/client_config.js"
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/nodecompliance/conf/application-prd.yml"
+    - "/opt/kube/kube-system/nginx-ingress/nginx.tmpl"
+    - "/opt/kube/kube-system/nginx-ingress/ingress-smpplus.yaml"
+
+  - name: 获取maintenance-related script
+    tags:
+      - maintenance-related
+    shell: "grep 'smpplus-oper.sh'  /var/spool/cron/root | cat"
+    register: maintenance_script_status
+
+  - name: delete maintenance-related
+    tags:
+      - maintenance-related
+    shell: "sed -i '/{{ item }}/d' /var/spool/cron/root"
+    with_items:
+      - "smpplus-oper.sh"
+    when: '"smpplus-oper.sh"  in maintenance_script_status.stdout'
+

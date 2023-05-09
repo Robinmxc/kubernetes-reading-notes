@@ -1,0 +1,179 @@
+﻿#!/bin/bash
+#确保网卡正常
+netCards=(cni0)
+for netCard in  ${netCards[@]}
+do
+	netCardInfo=$(/usr/sbin/ip addr 2>&1 | grep "${netCard}:" )
+	result=$?
+	if [ $result == 0 ]
+	then
+		if [[ "$netCardInfo" =~ " state UP" ]]
+		then
+			logger "$netCard 网卡正常"
+		else
+        		logger "$netCard 网卡异常"
+			cmdInfo=$(/usr/sbin/ifconfig $netCard up 2>&1)
+			result=$?
+			if [ $result == 0 ]
+			then
+				logger "$netCard重启成功"
+			else
+				logger "$netCard重启失败"
+			fi
+		fi
+	fi
+done
+
+#确保kubernets各个服务正常
+services=(docker kubelet.service kube-scheduler.service kube-proxy.service kube-controller-manager.service  etcd.service kube-apiserver.service)
+for service in  ${services[@]}
+do
+	serviceInfo=$(systemctl status $service  2>&1 | grep Active)
+	result=$?
+	if [ $result == 0 ]
+	then
+		if [[ "$serviceInfo" =~ "running" ]]
+		then
+			logger "$service 服务正常"
+		else
+			logger "$service 服务异常"
+			cmdInfo=$(systemctl restart $service 2>&1)
+			result=$?
+			if [ $result == 0 ]
+			then
+				logger "$service重启成功"
+			else
+				logger "$service重启失败"
+			fi
+		fi
+	else
+		logger "$service执行shell失败"
+	fi
+done
+#通过重启kublet服务，解决kubelet特定状态无法自愈问题
+nodeInfo=$(kubectl get nodes 2>&1)
+result=$?
+if [ $result == 0 ]
+then
+	nodeArray=($nodeInfo)
+	nodeStatus=${nodeArray[6]}
+	if [ "$nodeStatus" == "Ready" ];then
+		logger "node(kubectl 检测)状态正常"
+	else
+		logger "node状态异常,开始重启kubelet服务"
+		kubeRestartInfo=$(systemctl restart kubelet 2>&1)
+		result=$?
+		if [ $result == 0 ]
+		then
+			logger "node状态异常,重启kubelet服务完成"
+		else
+			logger "node状态异常,重启kubelet服务失败，原因:$kubeRestartInfo"
+
+		fi
+	fi
+else
+	kubeRestartInfo=$(systemctl restart kubelet 2>&1)
+	result=$?
+	if [ $result == 0 ]
+	then
+		logger "node状态shell异常,重启kubelet服务完成"
+	else
+		logger "node状态shell异常,重启kubelet服务失败，原因:$kubeRestartInfo"
+	fi
+fi
+
+#通过重启docker服务，解决docker特定状态无法自愈问题
+dockerInfo=$(docker version 2>&1)
+result=$?
+if [ $result == 0 ]
+then
+    dockerInfo_result=$(echo $dockerInfo | grep "Client: Docker Engine")
+	if [ -n "$dockerInfo_result" ];then
+		logger "node(docker 检测)状态正常"
+	else
+		logger "node状态异常,开始重启docker服务"
+		kubeRestartInfo=$(systemctl restart kubelet 2>&1)
+		result=$?
+		if [ $result == 0 ]
+		then
+			logger "node状态异常,重启kubelet服务完成"
+		else
+			logger "node状态异常,重启kubelet服务失败，原因:$kubeRestartInfo"
+
+		fi
+	fi
+else
+	kubeRestartInfo=$(systemctl restart kubelet 2>&1)
+	result=$?
+	if [ $result == 0 ]
+	then
+		logger "node状态shell异常,重启docker服务完成"
+	else
+		logger "node状态shell异常,重启docker服务失败，原因:$kubeRestartInfo"
+	fi
+fi
+
+
+# 解决内网pod不通，通过iptable -F清理防火墙
+podInfo=$(kubectl get pods -A -o wide 2>&1 | grep coredns )
+result=$?
+iptableClean=0
+if [ $result == 0 ]
+then
+	podArray=($podInfo)
+	podIp=${podArray[6]}
+	pingPodInfo=$( ping -c 2  $podIp  2>&1  | grep  "packet loss")
+	result=$?
+	if [ $result == 0 ]
+	then
+		if [[ "$pingPodInfo" =~ ", 0% packet loss" ]]
+		then
+			logger "内网pod:$podIp访问正常"
+		else
+			cmdInfo=$(iptables -F 2>&1)
+			result=$?
+			if [ $result == 0 ]
+			then
+				iptableClean=1
+				logger "dns不通，iptables -F执行成功"
+			else
+				logger "dns不通，iptables -F执行失败"
+			fi
+
+		fi
+	else
+		cmdInfo=$(iptables -F 2>&1)
+		result=$?
+		if [ $result == 0 ]
+		then
+			iptableClean=1
+			logger "dns不通，iptables -F执行成功"
+		else
+			logger "dns不通，iptables -F执行失败"
+		fi
+	fi
+else
+	cmdInfo=$(iptables -F 2>&1)
+	result=$?
+	if [ $result == 0 ]
+	then
+		iptableClean=1
+		logger "dns shell不通，iptables -F执行成功"
+	else
+		logger "dns shell不通，iptables -F执行失败"
+	fi
+fi
+# iptable -F要恢复kad的默认安全策略
+if [ $iptableClean == 1 ]
+then
+ 	cmdInfo=$(/etc/init.d/autostart.sh 2>&1)
+	result=$?
+	if [ $result == 0 ]
+	then
+		iptableClean=1
+		logger "恢复kad的默认安全策略执行成功"
+	else
+		logger "恢复kad的默认安全策略执行失败"
+	fi
+fi
+

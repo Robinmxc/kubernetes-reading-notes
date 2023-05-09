@@ -12,6 +12,7 @@ ExecStop=/bin/kill -s QUIT $MAINPID
 Restart=always
 RestartSec=5
 StartLimitInterval=0
+Environment="PATH=/opt/kube/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin:/usr/local/openssh/bin"
 
 [Install]
 WantedBy=multi-user.target

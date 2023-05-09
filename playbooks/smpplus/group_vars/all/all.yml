@@ -65,13 +65,13 @@ CLUSTER_DNS_DOMAIN: "cluster.local."
 SMPPLUS_SMS_MIDDLEWARE_ENABLED: "{% if SMPPLUS_DOCKERS['sms-middleware'] is defined %}yes{% else %}no{% endif %}"
 
 PRIVATE_REGISTRY_ENABLED: "no"
-PRIVATE_INSECURE_REGISTRY: "registry.cn-shanghai.aliyuncs.com"
+PRIVATE_INSECURE_REGISTRY: "172.17.8.20:8082"
 PRIVATE_REGISTRY_USER: ""
 PRIVATE_REGISTRY_PWD: ""
 
 nginx_port:
   TCP: ["9888","9788"]
-  UDP: ["52580","1812","1813"]
+  UDP: ["1812","1813"]
 
 KADAPI_DOWN_PATH: "/opt/kad/down/api"
 

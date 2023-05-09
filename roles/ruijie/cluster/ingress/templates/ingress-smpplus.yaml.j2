@@ -74,10 +74,6 @@ spec:
         backend:
           serviceName: rg-operations
           servicePort: 10000
-      - path: /api/pcapscan
-        backend:
-          serviceName: rg-pcap-scan
-          servicePort: 10002
       - path: /linkid
         backend:
           serviceName: rg-linkid
@@ -118,10 +114,19 @@ spec:
         backend:
           serviceName: rg-frontend-client
           servicePort: 3000
+      - path: /log
+        backend:
+          serviceName: rg-log
+          servicePort: 80
 {% if '' != SMPPLUS_SSO_DOMAIN %}
   - host: {{ SMPPLUS_SSO_DOMAIN }}
     http: *http_rules
 {% endif %}
+{% if '' != SMPPLUS_PORTAL_DOMAIN %}
+  - host: {{ SMPPLUS_PORTAL_DOMAIN }}
+    http: *http_rules
+{% endif %}
+
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -149,5 +154,9 @@ spec:
           servicePort: 8089
 {% if '' != SMPPLUS_SSO_DOMAIN %}
   - host: {{ SMPPLUS_SSO_DOMAIN }}
+    http: *http_rules
+{% endif %}
+{% if '' != SMPPLUS_PORTAL_DOMAIN %}
+  - host: {{ SMPPLUS_PORTAL_DOMAIN }}
     http: *http_rules
 {% endif %}

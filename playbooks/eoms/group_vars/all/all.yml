@@ -30,3 +30,8 @@ SOURCEID_HTTPS_MODE: "{% if 'https' == ingress_mode %}normal{% else %}none{% end
 
 #默认二进制文件目录
 bin_dir: "/opt/kube/bin"
+
+
+app_max_space_dir: "{{hostvars[groups['kube_node'][0]].ansible_mounts | selectattr('mount', 'match', '^(?!/var/lib/).*') | sort('size_available' | int) | map(attribute='mount') | list | last }}"
+
+APP_DATA_DIR: "{% if '/' == app_max_space_dir %}{% else %}{{ app_max_space_dir }}{% endif %}"

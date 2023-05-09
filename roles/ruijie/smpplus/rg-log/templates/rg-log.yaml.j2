@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rg-log
+  namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-log
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      k8s-app: rg-log
+  template:
+    metadata:
+      labels:
+        k8s-app: rg-log
+    spec:
+      containers:
+      - name: rg-log
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS["rg-log"].name }}:{{ SMPPLUS_DOCKERS["rg-log"].version }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_OPT_EXT
+          value: "{{ rg_log_java_opt }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 8908
+        volumeMounts:
+        - mountPath: /ruijie/sourceid/rg-log/conf
+          name: conf
+        - mountPath: /logs
+          name: logpath
+        - mountPath: /skywalking/agent
+          name: agent
+
+        startupProbe:
+          failureThreshold: 20
+          httpGet:
+            path: /log/liveProbe
+            port: 8908
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /log/liveProbe
+            port: 8908
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+          
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /log/liveProbe
+            port: 8908
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/rg-log/conf
+        - name: logpath
+          hostPath:
+            path: {{ config_base_dir }}/logs
+        - name: agent
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-log
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    k8s-app: rg-log
+  ports:
+  - port: 80
+    targetPort: 8908

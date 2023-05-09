@@ -22,6 +22,16 @@
     shell: "{{ mongo_shell_init_rs }} /ruijie/init/init-repl-set.js"
     when: '"0" == rs_status.stdout'
 
+  # 修改ip时的使用,不影响正常功能
+  - name: 准备修改ip初始化文件
+    template: src="smpplus-update-repl-changeip.js.j2" dest="{{ mongodb_init_dir }}/smpplus-update-repl-changeip.js"
+    when: 'inventory_hostname == groups.mongodb[0] and KAD_APP_NAME == "smpplus" and ischangeip is defined'
+
+  # 修改ip时的使用,不影响正常功能
+  - name: 修改复制集ip
+    shell: "{{ mongo_shell_init_rs }} /ruijie/init/smpplus-update-repl-changeip.js"
+    when: 'inventory_hostname == groups.mongodb[0] and KAD_APP_NAME == "smpplus" and ischangeip is defined'
+
   - name: 暂停20秒等待复制集初始化完成
     wait_for: timeout=20
 

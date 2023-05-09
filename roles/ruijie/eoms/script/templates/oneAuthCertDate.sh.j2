@@ -1,0 +1,11 @@
+#!/bin/bash
+
+certDate=$(echo |openssl x509 -in {{ smpplus_data_dir }}/ruijie/ruijie-smpplus/freeradius/certs/server.pem -noout -dates |grep notAfter | awk -F '=' '{print $2}')
+#certTime=$(date -d "${certDate}" +'%Y-%m-%d %H:%M:%S')
+certTime=$(date -d "${certDate}" +'%s')
+
+
+cat <<EOF | curl --data-binary @- http://{{ KUBE_MASTER_HOSTS[0] }}:39091/metrics/job/certdate/instance/cert
+# TYPE certdate_metric counter
+certdate_metric{date="hour"} ${certTime}
+EOF

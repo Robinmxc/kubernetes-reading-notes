@@ -64,5 +64,12 @@
 #  - { role: ruijie/smpplus/cron-mongo-backup, tags: ["cron-mongo-backup"] }
   - { role: ruijie/smpplus/mgob, tags: ["mgob"] }
   - { role: ruijie/smpplus/nodeconnector, tags: ["nodeconnector"]}
-  - { role: ruijie/smpplus/pcap-scan, tags: ["pcap-scan"]}
+#  - { role: ruijie/smpplus/pcap-scan, tags: ["pcap-scan"]}
   - { role: ruijie/smpplus/linkage-devices, tags: ["linkage-devices"]}
+  - { role: ruijie/smpplus/flow, tags: ["flow"]}
+  - { role: ruijie/smpplus/aiidentify, tags: ["aiidentify"]}  
+  - { role: ruijie/smpplus/aitrain, tags: ["aitrain"]}
+  - { role: ruijie/smpplus/nodescanner, tags: ["nodescanner"]}
+  - { role: ruijie/smpplus/nodecompliance, tags: ["nodecompliance"]}
+  - { role: ruijie/smpplus/rg-log, tags: ["rg-log"]}
+  - { role: ruijie/smpplus/maintenance-related, tags: ["maintenance-related"]}

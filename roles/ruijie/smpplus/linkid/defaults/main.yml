@@ -1,4 +1,4 @@
-linkid_java_opt: "-Xms512m -Xmx1024m"
+linkid_java_opt: "-Xms512m -Xmx1536m"
 
 linkid_configs: []
 
@@ -11,7 +11,7 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 1
+        cpu: 3
         memory: 2Gi
       requests:
         cpu: 0.5
@@ -20,7 +20,7 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 1
+        cpu: 3
         memory: 2Gi
       requests:
         cpu: 0.5

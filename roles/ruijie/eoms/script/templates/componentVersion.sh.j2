@@ -1,6 +1,6 @@
 #!/bin/bash
 c=0
-for str in `kubectl get pods -n ruijie-sourceid -o jsonpath="{.items[*].spec.containers[*].image}"    |tr -s '[[:space:]]' '\n' |sort`
+for str in `kubectl get pods -n ruijie-{{ KAD_APP_NAME }} -o jsonpath="{.items[*].spec.containers[*].image}"    |tr -s '[[:space:]]' '\n' |sort`
 do
   strlist[$c]="$str"
   ((c++))
@@ -23,7 +23,7 @@ EOF
 done
 
 #获取kad版本信息
-kad_app=$(cat /opt/kad/workspace/ruijie-sourceid/conf/all.yml |grep KAD_APP_VERSION)
+kad_app=$(cat /opt/kad/workspace/ruijie-{{ KAD_APP_NAME }}/conf/all.yml |grep KAD_APP_VERSION)
 # component_info_metric 默认值为1,
 cat <<EOF | curl --data-binary @- http://{{ KUBE_MASTER_HOSTS[0] }}:39091/metrics/job/component-info/instance/kad_app
 # HELP component_info_metric Information about the sid component version.

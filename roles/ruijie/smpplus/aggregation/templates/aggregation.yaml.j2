@@ -7,6 +7,11 @@ metadata:
     k8s-app: rg-{{ comp_name }}
 spec:
   replicas: {{ deploy_conf.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
@@ -40,12 +45,41 @@ spec:
             cpu: {{ deploy_conf.resources.requests.cpu }}
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
+        startupProbe:
+          failureThreshold: 15
+          httpGet:
+            path: /liveProbe/aggregation
+            port: 9999
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /liveProbe/aggregation
+            port: 9999
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /liveProbe/aggregation
+            port: 9999
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
       - name: rg-{{ comp_api_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_api_name].name }}:{{ SMPPLUS_DOCKERS[comp_api_name].version }}
         imagePullPolicy: IfNotPresent
         env:
         - name: JAVA_OPT_EXT
-          value: "{{ JAVA_OPT_EXT}}"
+          value: "{{ JAVA_AUTHENTICATION_API_OPT_EXT }}"
         ports:
         - containerPort: 9887
         volumeMounts:
@@ -55,11 +89,11 @@ spec:
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
-            cpu: {{ deploy_conf.resources.limits.cpu }}
-            memory: {{ deploy_conf.resources.limits.memory }}
+            cpu: 1
+            memory: 2Gi
           requests:
-            cpu: {{ deploy_conf.resources.requests.cpu }}
-            memory: {{ deploy_conf.resources.requests.memory }}
+            cpu: 500m
+            memory: 1.5Gi
 {% endif %}
       imagePullSecrets:
       - name: regsecret
