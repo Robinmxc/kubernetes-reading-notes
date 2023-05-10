@@ -91,20 +91,8 @@
 - name: 支持kubectl命令自动补全
   shell: 'kubectl completion bash >/etc/bash_completion.d/kubectl'
 
-- name: 读取定时任务状态
-  stat: 
-    path: "/var/spool/cron/root"
-  register: cron_file_stat
-  connection: local
-
 - name: 配置db端口挂载请权利自动执行
-  when: 'cron_file_stat.stat.exists'
-  shell: "chmod +777 /opt/kad/tools/db-port-clean.sh && sed -i '/db-port-clean.sh/d' /var/spool/cron/root && echo '40 2 * * *  sh /opt/kad/tools/db-port-clean.sh' >> /var/spool/cron/root"
-  run_once: true
-  tags: restart_master
 
-- name: 配置db端口挂载请权利自动执行(新建任务)
-  when: 'not cron_file_stat.stat.exists'
-  shell: "chmod +777 /opt/kad/tools/db-port-clean.sh && touch /var/spool/cron/root && echo '40 2 * * *  sh /opt/kad/tools/db-port-clean.sh' >> /var/spool/cron/root"
+  shell: "chmod +777 /opt/kad/tools/db-port-clean.sh && touch /var/spool/cron/root && sed -i '/db-port-clean.sh/d' /var/spool/cron/root && echo '40 2 * * *  sh /opt/kad/tools/db-port-clean.sh' >> /var/spool/cron/root"
   run_once: true
   tags: restart_master  
