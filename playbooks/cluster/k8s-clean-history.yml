@@ -143,6 +143,7 @@
       - "cilium_net"
       - "kube-ipvs0"
       - "cilium_vxlan"
+      - "kube-ipvs0"      
     ignore_errors: true
 
 
