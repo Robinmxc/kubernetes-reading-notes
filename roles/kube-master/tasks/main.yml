@@ -91,8 +91,7 @@
 - name: 支持kubectl命令自动补全
   shell: 'kubectl completion bash >/etc/bash_completion.d/kubectl'
 
-- name: 配置db端口挂载请权利自动执行
-
+- name: 配置db端口挂载清理任务
   shell: "chmod +777 /opt/kad/tools/db-port-clean.sh && touch /var/spool/cron/root && sed -i '/db-port-clean.sh/d' /var/spool/cron/root && echo '40 2 * * *  sh /opt/kad/tools/db-port-clean.sh' >> /var/spool/cron/root"
   run_once: true
   tags: restart_master  
