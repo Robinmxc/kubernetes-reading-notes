@@ -1,7 +1,8 @@
 ---
 - import_playbook: ../cluster/env-check.yml
 - import_playbook: env-check.yml
+- import_playbook: ../cluster/k8s-clean.yml
 - import_playbook: ../cluster/offline-install.yml
-#- import_playbook: ../cluster/k8s-setup.yml
+- import_playbook: ../cluster/k8s-setup.yml
 - import_playbook: prepare.yml
 - import_playbook: setup.yml
