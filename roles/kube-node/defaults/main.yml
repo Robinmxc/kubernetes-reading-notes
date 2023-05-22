@@ -1,5 +1,5 @@
 # 默认使用kube-proxy的 'iptables' 模式，可选 'ipvs' 模式(experimental)
-PROXY_MODE: "{% if APP_NAMESPACE == 'ruijie-smpplus' %}iptables{% else %}ipvs{% endif %}"
+PROXY_MODE: "{% if APP_NAMESPACE == 'ruijie-smpplus' %}ipvs{% else %}ipvs{% endif %}"
 
 # 基础容器镜像
 SANDBOX_IMAGE: "mirrorgooglecontainers/pause-amd64:3.1"
