@@ -134,3 +134,21 @@
     - 'helm'
     - 'kubectl completion'
     - 'HELM_TLS_ENABLE'
+
+#clean kadapi service
+- hosts:
+    - kube_master
+  tasks:
+  - name: stop and disable kadapi service
+    service: name={{ item }} state=stopped enabled=no
+    when: 'KAD_APP_NAME == "smpplus" '
+    with_items:
+      - kadapi
+    ignore_errors: true
+
+  - name: remove files and dirs of 'kadapi' nodes
+    file: name={{ item }} state=absent
+    with_items:
+      - "/etc/systemd/system/kadapi.service"
+    ignore_errors: true
+    when: 'KAD_APP_NAME == "smpplus" '
