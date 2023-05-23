@@ -63,6 +63,7 @@
       - "dummy0"
       - "cilium_net"
       - "cilium_vxlan"
+      - "kube-ipvs0"
     ignore_errors: true
 
   - name: cleanup 'calico' routes
