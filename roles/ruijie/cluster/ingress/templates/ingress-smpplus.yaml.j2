@@ -4,7 +4,6 @@ metadata:
   name: ingress-https
   namespace: ruijie-smpplus
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/use-regex: "true"
     #nginx.ingress.kubernetes.io/app-root: /admin/
     nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -185,13 +184,12 @@ spec:
 {% endif %}
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-license
   namespace: ruijie-smpplus
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
