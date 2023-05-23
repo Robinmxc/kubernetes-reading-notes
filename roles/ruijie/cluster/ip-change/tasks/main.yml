@@ -24,6 +24,13 @@
         chdir: "/etc/sysconfig/network-scripts"
       register: find_ifcfg
 
+    - name: 下载证书工具 CFSSL
+      copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
+      with_items:
+        - cfssl
+        - cfssl-certinfo
+        - cfssljson
+
     - name: 准备创建证书所需文件
       copy: src={{ item }} dest=/etc/kad/api/ssl/{{ item }}
       with_items:
