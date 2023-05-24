@@ -153,3 +153,11 @@
       - "/etc/systemd/system/kadapi.service"
     ignore_errors: true
     when: 'KAD_APP_NAME == "smpplus" '
+
+  - name: stop and disable autostart service
+    shell: "systemctl disable autostart.sh && systemctl stop autostart"
+    ignore_errors: true
+  - name: remove autostart service files and dirs2
+    file: name={{ item }} state=absent
+    with_items:
+      - "/etc/init.d/autostart.sh"
