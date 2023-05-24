@@ -135,35 +135,35 @@
   - name: delete aiidentify
     tags:
       - aiidentify
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aiidentify/"
+    command: "kubectl delete -f {{ yaml_dir }}/aiidentify/"
     when: '"aiidentify" in pod_info.stdout'
     ignore_errors: true
 
   - name: delete aitrain
     tags:
       - aitrain
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/aitrain/"
+    command: "kubectl delete -f {{ yaml_dir }}/aitrain/"
     when: '"aitrain" in pod_info.stdout'
     ignore_errors: true
 
   - name: delete nodescanner
     tags:
       - nodescanner
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodescanner/"
+    command: "kubectl delete -f {{ yaml_dir }}/nodescanner/"
     when: '"nodescanner" in pod_info.stdout'
     ignore_errors: true
 
   - name: delete nodecompliance
     tags:
       - nodecompliance
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/nodecompliance/"
+    command: "kubectl delete -f {{ yaml_dir }}/nodecompliance/"
     when: '"nodecompliance" in pod_info.stdout'
     ignore_errors: true
 
   - name: delete rg-log
     tags:
       - rg-log
-    command: "{{ bin_dir }}/kubectl delete -f {{ yaml_dir }}/rg-log/"
+    command: "kubectl delete -f {{ yaml_dir }}/rg-log/"
     when: '"rg-log" in pod_info.stdout'
     ignore_errors: true
 
@@ -351,7 +351,7 @@
   - name: 等待aiidentify结束运行
     tags:
       - aiidentify
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"aiidentify" not in pod_info.stdout'
     retries: 30
@@ -361,7 +361,7 @@
   - name: 等待aitrain结束运行
     tags:
       - aitrain
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"aitrain" not in pod_info.stdout'
     retries: 30
@@ -371,7 +371,7 @@
   - name: 等待nodescanner结束运行
     tags:
       - nodescanner
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"nodescanner" not in pod_info.stdout'
     retries: 30
@@ -381,7 +381,7 @@
   - name: 等待nodecompliance结束运行
     tags:
       - nodecompliance
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"nodecompliance" not in pod_info.stdout'
     retries: 30
@@ -391,7 +391,7 @@
   - name: 等待rg-log结束运行
     tags:
       - rg-log
-    shell: "{{ bin_dir }}/kubectl get pod -n {{ APP_NAMESPACE }}"
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-log" not in pod_info.stdout'
     retries: 30

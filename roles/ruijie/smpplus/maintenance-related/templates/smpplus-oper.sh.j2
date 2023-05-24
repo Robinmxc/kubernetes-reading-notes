@@ -24,8 +24,8 @@ do
 	fi
 done
 
-#确保kubernets各个服务正常
-services=(docker kubelet.service kube-scheduler.service kube-proxy.service kube-controller-manager.service  etcd.service kube-apiserver.service)
+#确保kubernets各个服务正常#升级后核心服务容器化不再检测
+services=(docker kubelet.service)
 for service in  ${services[@]}
 do
 	serviceInfo=$(systemctl status $service  2>&1 | grep Active)
