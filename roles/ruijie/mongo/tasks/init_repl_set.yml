@@ -25,8 +25,9 @@
     # 修改ip时的使用，解决查询复制集状态失败影响修改ip功能,不影响正常功能
   - name: 修改ip阶段再次查询复制集状态
     shell: "{{ mongo_shell_init_rs }} --quiet --eval 'r1=rs.status(); r2=(r1.ok==0 && r1.code==94) ? 0 : 1;'"
+    register: changeIp_rs_status
     when: '"0" == rs_status.stdout and KAD_APP_NAME == "smpplus" and ischangeip is defined'
-    until: '"0" != rs_status.stdout'
+    until: '"0" != changeIp_rs_status.stdout'
     ignore_errors: true
     retries: 5
     delay: 5
