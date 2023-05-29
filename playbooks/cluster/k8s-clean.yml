@@ -35,6 +35,13 @@
     ignore_errors: true
     no_log: true
 
+  - name: umount kubelet filesystems
+    shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount"
+    args:
+      warn: false
+    ignore_errors: true
+
+
   - name: 查看是否安装docker
     shell: "systemctl status docker.service  2>&1|grep Active|cat"
     register: docker_status_first
