@@ -18,6 +18,27 @@
     shell: "{{ mongo_shell_init_rs }} --quiet --eval 'r1=rs.status(); r2=(r1.ok==0 && r1.code==94) ? 0 : 1;'"
     register: rs_status
 
+  - name: 展示复制集状态查询结果
+    debug:
+      msg: " {{ rs_status }} "
+    when: '"0" == rs_status.stdout and KAD_APP_NAME == "smpplus" and ischangeip is defined'
+
+    # 修改ip时的使用，解决查询复制集状态失败影响修改ip功能,不影响正常功能
+  - name: 修改ip阶段再次查询复制集状态
+    shell: "{{ mongo_shell_init_rs }} --quiet --eval 'r1=rs.status(); r2=(r1.ok==0 && r1.code==94) ? 0 : 1;'"
+    when: '"0" == rs_status.stdout and KAD_APP_NAME == "smpplus" and ischangeip is defined'
+    until: '"0" != rs_status.stdout'
+    connection: local
+    run_once: true
+    ignore_errors: true
+    retries: 5
+    delay: 5
+
+  - name: 修改ip阶段获取最终复制集状态
+    shell: "{{ mongo_shell_init_rs }} --quiet --eval 'r1=rs.status(); r2=(r1.ok==0 && r1.code==94) ? 0 : 1;'"
+    register: rs_status
+    when: '"0" == rs_status.stdout and KAD_APP_NAME == "smpplus" and ischangeip is defined'
+
   - name: 初始化复制集
     shell: "{{ mongo_shell_init_rs }} /ruijie/init/init-repl-set.js"
     when: '"0" == rs_status.stdout'
