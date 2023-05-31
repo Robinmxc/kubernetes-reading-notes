@@ -634,7 +634,7 @@ def access_mode_data():
     access_mode_related_template['certKeyName'] = certKeyName
     access_mode_related_template['adminDomainName'] = admin_domain
     access_mode_related_template['portalDomainName'] = portal_domain
-
+    logging.info("access_mode_data:access mode is --->" + str(accessMode))
     return access_mode_related_template
 
 
@@ -899,7 +899,7 @@ def shell_change_ip(serverPwd, old_ip, new_ip):
         process.expect(pexpect.EOF, timeout=None)
         logging.info("shell_change_ip: shell_change_ip command is executed")
         time.sleep(2)
-        logging.debug("shell_change_ip: shell_change_ip is start end .")
+        logging.debug("shell_change_ip: shell_change_ip is end.")
     except Exception as e:
         logging.error("Exception: shell_change_ip failed.", exc_info=True)
     return

@@ -4,7 +4,7 @@
   register: stat_result
 
 - name: 安装kadapi
-  when: "not stat_result.stat.exists  and iswebchangeip is undefined"
+  when: "not stat_result.stat.exists and iswebchangeip is undefined"
   block:
     - name: 准备kadapi相关目录
       file: name={{ item }} state=directory
@@ -112,3 +112,23 @@
       until: '"running" in kadapi_restart_status.stdout'
       retries: 8
       delay: 8
+
+- name: web修改ip重新创建kadapi 模板文件的 configmap
+  when: "stat_result.stat.exists and iswebchangeip is defined"
+  block:
+    - name: 获取configmap数据
+      command: "kubectl -n {{ APP_NAMESPACE }} get configmap"
+      register: kadapi_config
+      connection: local
+      run_once: true
+
+    - name: 删除 kadapi 模板文件的 configmap
+      command: "kubectl -n {{ APP_NAMESPACE }} delete configmap kadapi-cert"
+      when: '"kadapi-cert" in kadapi_config.stdout'
+      connection: local
+      run_once: true
+
+    - name: 创建 kadapi 模板文件的 configmap
+      shell: "kubectl -n {{ APP_NAMESPACE }} create configmap kadapi-cert --from-file=/etc/kad/api/ssl/"
+      connection: local
+      run_once: true
