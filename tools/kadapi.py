@@ -374,12 +374,17 @@ def changeip_thread(data):
         status_code = int(os.system('sed -i "s/' + old_ip + '/' + new_ip + '/g" ' + filepath))
         logging.info("changeip:end change file-->" + filepath + "execution return status code-->" + str(status_code))
 
-    logging.info("changeip: start replacing mongofile")
-    filepath = api_config['mongofile']
-
-    os.system('cp ' + filepath + ' ' + filepath + 'temp')
-    os.system('sed -i "s/oldIp/' + old_ip + '/g" ' + filepath)
-    os.system('sed -i "s/newIp/' + new_ip + '/g" ' + filepath)
+    # logging.info("changeip: start replacing mongofile")
+    # filepath = api_config['mongofile']
+    #
+    # os.system('cp ' + filepath + ' ' + filepath + 'temp')
+    # os.system('sed -i "s/oldIp/' + old_ip + '/g" ' + filepath)
+    # os.system('sed -i "s/newIp/' + new_ip + '/g" ' + filepath)
+    logging.info("changeip: restart network start.")
+    restart_network_status_code = int(os.system('systemctl restart network'))
+    logging.info("changeip: restart_network_status_code ---->" + str(restart_network_status_code))
+    logging.info("changeip: restart network end.")
+    time.sleep(5)
 
     maintenance_shell_script = "smpplus-oper.sh"
     maintenance_shell_script_path = "/opt/kube/maintenance/script/smpplus-oper.sh"
@@ -388,48 +393,50 @@ def changeip_thread(data):
         stop_script_status_code = int(os.system("sed -i '/" + maintenance_shell_script + "/d' /var/spool/cron/root"))
         logging.info("changeip:end stop maintenance-related shell script" + "execution return status code-->" + str(
             stop_script_status_code))
-
-    logging.info("changeip: start changeip.sh")
-    os.system('sh /etc/kad/api/changeip.sh ' + old_ip + ' ' + new_ip)
-    logging.info("changeip: end changeip.sh")
-    change_mongoip = True
-    while change_mongoip:
-        try:
-            output = os.popen('kubectl get pod -A')
-            for line in output.readlines():
-                if ('mongo1-0' in line and 'Running' in line):
-                    change_mongoip = False
-                    break
-        except Exception as e:
-            time.sleep(5)
-            logging.error(e)
-
-    change_mongoip = True
-    while change_mongoip:
-        try:
-            change_mongoip = False
-            output = os.popen('kubectl exec -n ruijie-smpplus mongo1-0 -- mongo -u admin -p ' + smp_config[
-                'MONGODB_ADMIN_PWD'] + '  --authenticationDatabase admin  /ruijie/init/smpplus/rg-init-db/update-replset.js')
-            for line in output.readlines():
-                if ('fail' in line):
-                    change_mongoip = True
-                    logging.error("update mongo fail: " + line)
-                    time.sleep(0.5)
-                    break
-        except Exception as e:
-            change_mongoip = True
-            time.sleep(0.5)
-            logging.error(e)
-
-    os.system('mv -f ' + filepath + 'temp ' + filepath)
-    logging.info("changeip: success update mongo")
-
-    if os.path.isfile(maintenance_shell_script_path):
-        logging.info("changeip: start startup maintenance-related shell script")
-        stop_script_status_code = int(os.system(
-            "echo '*/1 * * * * sh " + maintenance_shell_script_path + " >/dev/null 2>&1'  >> /var/spool/cron/root"))
-        logging.info("changeip: end startup maintenance-related shell script" + "execution return status code-->" + str(
-            stop_script_status_code))
+    #serverUser = submit_info['serverUser']
+    serverPwd = data['serverPwd']
+    logging.info("changeip: start shell_change_ip.")
+    #os.system('sh /etc/kad/api/changeip.sh ' + old_ip + ' ' + new_ip)
+    shell_change_ip(serverPwd, old_ip, new_ip)
+    logging.info("changeip: end shell_change_ip.")
+    # change_mongoip = True
+    # while change_mongoip:
+    #     try:
+    #         output = os.popen('kubectl get pod -A')
+    #         for line in output.readlines():
+    #             if ('mongo1-0' in line and 'Running' in line):
+    #                 change_mongoip = False
+    #                 break
+    #     except Exception as e:
+    #         time.sleep(5)
+    #         logging.error(e)
+    #
+    # change_mongoip = True
+    # while change_mongoip:
+    #     try:
+    #         change_mongoip = False
+    #         output = os.popen('kubectl exec -n ruijie-smpplus mongo1-0 -- mongo -u admin -p ' + smp_config[
+    #             'MONGODB_ADMIN_PWD'] + '  --authenticationDatabase admin  /ruijie/init/smpplus/rg-init-db/update-replset.js')
+    #         for line in output.readlines():
+    #             if ('fail' in line):
+    #                 change_mongoip = True
+    #                 logging.error("update mongo fail: " + line)
+    #                 time.sleep(0.5)
+    #                 break
+    #     except Exception as e:
+    #         change_mongoip = True
+    #         time.sleep(0.5)
+    #         logging.error(e)
+    #
+    # os.system('mv -f ' + filepath + 'temp ' + filepath)
+    # logging.info("changeip: success update mongo")
+    #
+    # if os.path.isfile(maintenance_shell_script_path):
+    #     logging.info("changeip: start startup maintenance-related shell script")
+    #     stop_script_status_code = int(os.system(
+    #         "echo '*/1 * * * * sh " + maintenance_shell_script_path + " >/dev/null 2>&1'  >> /var/spool/cron/root"))
+    #     logging.info("changeip: end startup maintenance-related shell script" + "execution return status code-->" + str(
+    #         stop_script_status_code))
 
     logging.info("changeip: task executed successfully")
 
@@ -875,6 +882,27 @@ def pod_running_check():
         logging.error(e)
         return False
     return flag
+
+
+def shell_change_ip(serverPwd, old_ip, new_ip):
+    try:
+        logging.debug("shell_change_ip: shell_change_ip is start.")
+        #只重启业务组件
+        password = serverPwd
+        # spawn启动reconfig程序
+        shell_cmd = 'sh /opt/kad/changeip.sh ' + old_ip + ' ' + new_ip + ' Web_changeIp'
+        process = pexpect.spawn('/bin/bash', ['-c', shell_cmd])
+        # expect方法等待scp产生的输出，判断是否匹配指定的字符串Password:
+        process.expect('password:')
+        # 若匹配，则发送密码响应
+        process.sendline(password)
+        process.expect(pexpect.EOF, timeout=None)
+        logging.info("shell_change_ip: shell_change_ip command is executed")
+        time.sleep(2)
+        logging.debug("shell_change_ip: shell_change_ip is start end .")
+    except Exception as e:
+        logging.error("Exception: shell_change_ip failed.", exc_info=True)
+    return
 
 
 def main():

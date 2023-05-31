@@ -171,7 +171,7 @@
   tasks:
   - name: stop and disable kadapi service
     service: name={{ item }} state=stopped enabled=no
-    when: 'KAD_APP_NAME == "smpplus" '
+    when: 'KAD_APP_NAME == "smpplus" and iswebchangeip is undefined'
     with_items:
       - kadapi
     ignore_errors: true
@@ -181,7 +181,7 @@
     with_items:
       - "/etc/systemd/system/kadapi.service"
     ignore_errors: true
-    when: 'KAD_APP_NAME == "smpplus" '
+    when: 'KAD_APP_NAME == "smpplus" and iswebchangeip is undefined'
 
   - name: stop and disable autostart service
     shell: "systemctl disable autostart.sh && systemctl stop autostart"
