@@ -94,3 +94,14 @@
     connection: local
     run_once: true
   when: 'inventory_hostname == groups.kube_master[0]'
+
+
+  - name: 获取所有已经创建的POD信息
+    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    connection: local
+
+  - name: 停止mongo1
+    command: "kubectl delete -f {{ yaml_dir }}/mongo/mongo1.yml"
+    when: '"mongo1" in pod_info.stdout'
+    connection: local
