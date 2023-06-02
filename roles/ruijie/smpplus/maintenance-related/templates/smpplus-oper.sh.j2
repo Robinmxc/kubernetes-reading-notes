@@ -138,6 +138,7 @@ result=$?
 iptableClean=0
 if [ $result == 0 ]
 then
+    {% raw %}
     podArray=($podInfo)
     podIp="127.0.0.1"
     for(( i=5;i<${#podArray[@]};i++))
@@ -152,6 +153,7 @@ then
             break
       fi
     done;
+    {% endraw %}
     #echo "--->$podIp"
 	pingPodInfo=$( ping -c 2  $podIp  2>&1  | grep  "packet loss")
 	result=$?
