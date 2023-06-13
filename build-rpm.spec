@@ -4,7 +4,7 @@
 #
 
 Name:     kad
-Version:  2.7.0
+Version:  2.9.0
 Release:  2022.06.22
 Summary:  KAD RPM package
 License:  GPLv2

@@ -34,4 +34,3 @@ fi
 export KAD_APP_NAMESPACE=ruijie-sourceid
 cd /opt/kad
 ./kad-play.sh playbooks/sourceid/0-all.yml
-

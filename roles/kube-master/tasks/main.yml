@@ -1,4 +1,4 @@
-- name: 开机启用kubelet 服务
+﻿- name: 开机启用kubelet 服务
   shell: systemctl enable kubelet
   ignore_errors: true
 
@@ -20,18 +20,19 @@
   - "{{ coredns }}"
   - "{{ pause }}"
 
+- name: 配置 kubeadm文件 
+  template: src=kubeadm.yaml.j2 dest=/etc/kubeadm.yaml
+  run_once: true
+  tags: restart_master
+
 - name: 通过kubeadm安装并启动kubernetes
-  shell: 'kubeadm init --apiserver-advertise-address={{ groups.deploy[0] }} \
-          --kubernetes-version={{ KUBERNETES_VERSION }} --image-repository registry.aliyuncs.com/google_containers \
-          --service-cidr=196.200.207.0/24 \
-          --pod-network-cidr={{CLUSTER_CIDR}}; \
+  shell: 'kubeadm init  --config=/etc/kubeadm.yaml; \
           mkdir -p $HOME/.kube; \
           sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config; \
           sudo chown $(id -u):$(id -g) $HOME/.kube/config; \
           export KUBECONFIG=/etc/kubernetes/admin.conf'
   run_once: True
   tags: upgrade_k8s
-
 
 - name: 以轮询的方式等待master服务启动完成
   command: "kubectl get node"
@@ -89,3 +90,8 @@
 # 支持kubectl命令自动补全
 - name: 支持kubectl命令自动补全
   shell: 'kubectl completion bash >/etc/bash_completion.d/kubectl'
+
+- name: 配置db端口挂载清理任务
+  shell: "chmod +777 /opt/kad/tools/db-port-clean.sh && touch /var/spool/cron/root && sed -i '/db-port-clean.sh/d' /var/spool/cron/root && echo '40 2 * * *  sh /opt/kad/tools/db-port-clean.sh' >> /var/spool/cron/root"
+  run_once: true
+  tags: restart_master  
