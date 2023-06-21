@@ -37,8 +37,6 @@
 
   - name: umount kubelet filesystems
     shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount"
-    args:
-      warn: false
     ignore_errors: true
 
 
