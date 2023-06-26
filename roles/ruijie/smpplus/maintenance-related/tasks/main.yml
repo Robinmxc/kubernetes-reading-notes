@@ -36,3 +36,47 @@
   - "smpplus-oper.sh"
   run_once: true
   connection: local
+
+- name: 获取db-port-clean script
+  tags:
+    - maintenance-related
+  shell: "grep 'db-port-clean.sh'  /var/spool/cron/root | cat"
+  register: db_port_clean_script_status
+
+- name: repair delete pg db-port-clean script
+  tags:
+    - maintenance-related
+  shell: "sed -i '/{{ item }}/d' /opt/kad/tools/db-port-clean.sh"
+  with_items:
+    - "rg-pg-node"
+  when: '"db-port-clean.sh"  in db_port_clean_script_status.stdout'
+  ignore_errors: true
+
+- name: repair replace db-port-clean script
+  tags:
+    - maintenance-related
+  vars:
+    db_port_clean_name: "smpplus"
+  shell: "sed -i 's/{{ item }}/{{ db_port_clean_name }}/g' /opt/kad/tools/db-port-clean.sh"
+  with_items:
+    - "sourceid"
+  when: '"db-port-clean.sh"  in db_port_clean_script_status.stdout'
+  ignore_errors: true
+
+  #mongo-nodeport 替换
+- name: Check that the mongo-nodeport exists
+  stat:
+    path: /opt/kad/tools
+  register: mongo_nodeport_file_status
+
+- name: Check that if the file devnet.md exists
+  vars:
+    mongo_nodeport_name: "smpplus"
+  shell: "sed -i 's/{{ item }}/{{ mongo_nodeport_name }}/g' /opt/kad/tools/mongo-nodeport.yml"
+  with_items:
+    - "sourceid"
+  when: mongo_nodeport_file_status.stat.exists == True
+  ignore_errors: true
+
+
+
