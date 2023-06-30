@@ -66,7 +66,7 @@
   #mongo-nodeport 替换
 - name: Check that the mongo-nodeport exists
   stat:
-    path: /opt/kad/tools
+    path: /opt/kad/tools/mongo-nodeport.yml
   register: mongo_nodeport_file_status
 
 - name: Check that if the file devnet.md exists
