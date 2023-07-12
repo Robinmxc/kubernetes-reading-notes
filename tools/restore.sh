@@ -192,10 +192,16 @@ function pg_restore(){
 	  dir_create="mkdir -p ${remote_back_dir}";
 	  remote_ssh_command ${to_ip} ${to_password} "${del_command};${dir_create};" 
 	  sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${local_back_dir}/init.sql root@${to_ip}:${remote_back_dir}
+ 	  sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${local_back_dir}/xxl_job.sql root@${to_ip}:${remote_back_dir}
+ 	  sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${local_back_dir}/flowable.sql root@${to_ip}:${remote_back_dir}
  	  
 	  kube_cp="kubectl cp ${remote_back_dir}/init.sql -n ruijie-sourceid  -c  postgresql  postgresql-0:/"
+	  kube_cp_2="kubectl cp ${remote_back_dir}/xxl_job.sql -n ruijie-sourceid  -c  postgresql  postgresql-0:/"
+	  kube_cp_3="kubectl cp ${remote_back_dir}/flowable.sql -n ruijie-sourceid  -c  postgresql  postgresql-0:/"
   	  restore_command="kubectl exec -n ruijie-sourceid postgresql-0 -- psql -U postgres -d quartz -f /init.sql > /dev/null 2>&1"
-	  remote_ssh_command ${to_ip} ${to_password} "${kube_cp};${restore_command};${del_command};" 
+	  restore_command_2="kubectl exec -n ruijie-sourceid postgresql-0 -- psql -U postgres -d xxl_job -f /xxl_job.sql > /dev/null 2>&1"
+	  restore_command_3="kubectl exec -n ruijie-sourceid postgresql-0 -- psql -U postgres -d flowable -f /flowable.sql > /dev/null 2>&1"
+	  remote_ssh_command ${to_ip} ${to_password} "${kube_cp};${kube_cp_2};${kube_cp_3};${restore_command};${restore_command_2};${restore_command_3};${del_command};" 
 }
 function ldap_restore(){
 
