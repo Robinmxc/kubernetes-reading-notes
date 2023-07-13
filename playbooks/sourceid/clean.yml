@@ -161,7 +161,7 @@
 
   - name: 停止 freeradius
     tags:
-      - rg-freeradius
+      - freeradius
     command: "kubectl delete -f {{ yaml_dir }}/freeradius/"
     when: 'pod_info.stdout is search("rg-freeradius-[a-z0-9]*-[a-z0-9]*\s")'
 
@@ -461,7 +461,7 @@
       - freeradius
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
-    until: 'pod_info.stdout is not search("freeradius-[a-z0-9]*-[a-z0-9]*\s")'
+    until: 'pod_info.stdout is not search("rg-freeradius-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
     delay: 3
     ignore_errors: true
