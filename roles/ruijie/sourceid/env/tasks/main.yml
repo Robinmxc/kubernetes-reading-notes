@@ -67,6 +67,7 @@
     - "sourceid/organization-center"
     - "sourceid/rg-flow"
     - "sourceid/address-book"
+    - "sourceid/freeradius"
   connection: local
   run_once: true
 
