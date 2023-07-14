@@ -188,7 +188,7 @@ function pg_restore(){
 	  max_dir=${max_dir//\"/}
   	  remote_back_dir="${max_dir}/${to_append_dir}"
 
-	  del_command="rm -rf ${remote_back_dir}/init.sql > /dev/null 2>&1"
+	  del_command="rm -rf ${remote_back_dir}/*.sql > /dev/null 2>&1"
 	  dir_create="mkdir -p ${remote_back_dir}";
 	  remote_ssh_command ${to_ip} ${to_password} "${del_command};${dir_create};" 
 	  sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${local_back_dir}/init.sql root@${to_ip}:${remote_back_dir}
