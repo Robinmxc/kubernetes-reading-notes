@@ -202,13 +202,20 @@ function pg_back(){
 	  max_dir=${max_dir//\"/}
   	  remote_back_dir="${max_dir}/${from_append_dir}"
   	  echo "postgres远程备份临时目录:${max_dir}"
-	  del_command="rm -rf ${remote_back_dir}/init.sql > /dev/null 2>&1"
+	  del_command="rm -rf ${remote_back_dir}/*.sql > /dev/null 2>&1"
 	  dir_create="mkdir -p ${remote_back_dir}";
+	  remote_ssh_command ${from_ip} ${from_password} "${del_command};${dir_create};" 
 	  back_command="kubectl exec -n ruijie-sourceid postgresql-0 -- pg_dump -U postgres  quartz > ${remote_back_dir}/init.sql";
-	  remote_ssh_command ${from_ip} ${from_password} "${del_command};${dir_create};${back_command};" 
-	  rm -rf ${local_back_dir}/init.sql  > /dev/null 2>&1
+	  remote_ssh_command ${from_ip} ${from_password} "${back_command};" 
+	  back_command="kubectl exec -n ruijie-sourceid postgresql-0 -- pg_dump -U postgres  xxl_job > ${remote_back_dir}/xxl_job.sql";
+	  remote_ssh_command ${from_ip} ${from_password} "${back_command};" 
+	  back_command="kubectl exec -n ruijie-sourceid postgresql-0 -- pg_dump -U postgres  flowable > ${remote_back_dir}/flowable.sql";
+	  remote_ssh_command ${from_ip} ${from_password} "${back_command};" 
+	  rm -rf ${local_back_dir}/*.sql  > /dev/null 2>&1
 	  mkdir -p ${local_back_dir}
 	  sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${from_ip}:${remote_back_dir}/init.sql ${local_back_dir}
+	  sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${from_ip}:${remote_back_dir}/xxl_job.sql ${local_back_dir}
+	  sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${from_ip}:${remote_back_dir}/flowable.sql ${local_back_dir}
 	  remote_ssh_command ${from_ip} ${from_password} "${del_command};" 
 }
 function ldap_back(){

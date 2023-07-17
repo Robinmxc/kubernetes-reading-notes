@@ -21,8 +21,21 @@
 
   - name: 安装slapd
     shell: "yum install -y {{ DATA_DIR }}/slapd/ldap/{{ uname.stdout }}/*rpm"
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"        
     no_log: false
     ignore_errors: false
+
+  - name: 安装slapd
+    shell: "rpm -ivh  {{ DATA_DIR }}/slapd/ldap/{{ uname.stdout }}/*rpm --force --nodeps  | cat"
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+    no_log: false
+    ignore_errors: false
+
+  - name: 安装slapd
+    shell: "rpm -ivh  {{ DATA_DIR }}/slapd/ldap/{{ uname.stdout }}/*rpm --force --nodeps  | cat"
+    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")     
+    no_log: false
+    ignore_errors: false    
 
   - name: 注册ldap数据库类型
     set_fact:

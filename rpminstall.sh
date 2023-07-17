@@ -13,7 +13,7 @@ result=$(echo $osname | grep ".el7.x86_64")
 allowerasing="--allowerasing"
 if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
  	allowerasing=""
-	yum remove -y python3  > /dev/null 2>&1
+	rpm -e --nodeps python3  > /dev/null 2>&1
 fi
 function rpmOperator(){
 	var=${1} 
