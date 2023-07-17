@@ -237,7 +237,6 @@ function ldap_back(){
 	from_ldap_domain_str=${from_ldap_domain_str//\"/}
 	from_ldap_domain_str=${from_ldap_domain_str//\"/}
 	if [[ $from_ldap_domain_str == "" ]];then
-		from_ldap_password=${sso_domain}
 		domains_a=(${sso_domain//\./ })
 		for domain in ${domains_a[@]:1}; do
 			from_ldap_domain_str="${from_ldap_domain_str}.${domain}"
