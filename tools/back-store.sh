@@ -7,6 +7,7 @@ local_back_dir="/back_append_store"
 # 关键自动读取的参数，无需配置
 from_mongo_user=""
 from_mongo_password=""
+sso_domain=""
 from_mongo_ip=""
 from_append_dir="back_append_store"
 from_ldap_ip=""
@@ -101,6 +102,9 @@ function config_from_process(){
 	from_mongo_user=${from_mongo_user//\"/}
 	from_mongo_password=`cat ${sid_config_file} | grep MONGODB_ADMIN_PWD |awk -F : '{printf $2}' `
 	from_mongo_password=${from_mongo_password//\"/}
+	
+	sso_domain=`cat ${sid_config_file} | grep SOURCEID_SSO_DOMAIN |awk -F : '{printf $2}' `
+	sso_domain=${sso_domain//\"/}
 	
 	kube_node_hosts=`cat ${k8s_config_file} | grep KUBE_NODE_HOSTS |awk -F : '{printf $2}' `
 	kube_node_hosts=${kube_node_hosts//]/}
@@ -224,11 +228,21 @@ function ldap_back(){
 	from_ldap_password=${from_ldap_password// /}
 	from_ldap_password=${from_ldap_password//,/}
 	from_ldap_password=${from_ldap_password//\"/}
+	if [[ $from_ldap_password == "" ]];then
+		from_ldap_password=${from_mongo_password}
+	fi
 	from_ldap_domain_str=`cat ${k8s_config_file}  | grep LDAP_DOMAIN |awk -F : '{printf $2}' `
 	from_ldap_domain_str=${from_ldap_domain_str// /}
 	from_ldap_domain_str=${from_ldap_domain_str//,/}
 	from_ldap_domain_str=${from_ldap_domain_str//\"/}
 	from_ldap_domain_str=${from_ldap_domain_str//\"/}
+	if [[ $from_ldap_domain_str == "" ]];then
+		from_ldap_password=${sso_domain}
+		domains_a=(${sso_domain//\./ })
+		for domain in ${domains_a[@]:1}; do
+			from_ldap_domain_str="${from_ldap_domain_str}.${domain}"
+		done
+	fi
 	domains_b=(${from_ldap_domain_str//\./ })
 	domains=()
 	for domain in ${domains_b[@]}; do
@@ -250,7 +264,7 @@ function ldap_back(){
 	del_command="rm -rf ${remote_back_dir}/ldap_back.ldif > /dev/null 2>&1"
 	dir_create="mkdir -p ${remote_back_dir}";
 	back_command="ldapsearch -x -h ${from_ldap_ip} -p ${from_ldap_port} -b ${from_ldap_domain} -D \"cn=admin,${from_ldap_domain}\" -w ${from_ldap_password} >${remote_back_dir}/ldap_back.ldif"
-	
+	echo "备份命令:${back_command}"
 	fail=false
 	remote_ssh_command ${from_ldap_ip} ${from_password} "${del_command};${dir_create};${back_command};" || fail=true
 	if [[ ${fail} == true ]] ;then
