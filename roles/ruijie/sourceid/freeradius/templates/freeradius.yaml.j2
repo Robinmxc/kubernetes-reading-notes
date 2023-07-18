@@ -35,32 +35,8 @@ spec:
           protocol: UDP
         - containerPort: 1813
           protocol: UDP
-        volumeMounts:
-         - mountPath: /usr/local/var/log/radius
-           name: log
-         - mountPath: /ruijie/{{comp_name}}
-           name: conf
-         - mountPath: /usr/local/etc/raddb/certs/server.pem
-           name: certs
-           subPath: server.pem
-         - mountPath: /usr/local/etc/raddb/mods-available/eap
-           name: eap
-           subPath: eap
       imagePullSecrets:
       - name: regsecret
-      volumes:
-        - name: log
-          hostPath:
-            path: {{ config_base_dir }}/logs
-        - name: conf
-          hostPath:
-            path: {{ config_base_dir }}/sourceid/{{comp_name}}
-        - name: certs
-          hostPath:
-            path: {{ config_base_dir }}/sourceid/{{comp_name}}/certs/
-        - name: eap
-          hostPath:
-            path: {{ config_base_dir }}/sourceid/{{comp_name}}/mods-available/
 
 ---
 apiVersion: v1
