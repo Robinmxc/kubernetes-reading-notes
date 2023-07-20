@@ -1,4 +1,34 @@
 - block:
+  - name: 获取所有已经创建的POD信息
+    tags: always
+    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    
+  - name: 部署第1个mongodb
+    shell: "kubectl apply -f {{ yaml_dir }}/mongo/mongo1.yml"
+    when: '"mongo1" not in pod_info.stdout'
+    connection: local
+
+  - name: 部署第2个mongodb
+    shell: "kubectl apply -f {{ yaml_dir }}/mongo/mongo2.yml"
+    connection: local
+    when: '"mongo2" not in pod_info.stdout and mongodb_deploy_mode == "3"'
+    
+  - name: 部署第3个mongodb
+    shell: "kubectl apply -f {{ yaml_dir }}/mongo/mongo3.yml"
+    connection: local
+    when: '"mongo3" not in pod_info.stdout and mongodb_deploy_mode == "3"'
+
+  - name: 暂停15秒等待mongo启动完成
+    wait_for: timeout=15
+    when: '"mongo1" not in pod_info.stdout'
+
+  - name: 尝试查询复制集状态
+    shell: "{{ mongo_pod_shell }} mongo --quiet --eval 'rs.status()'"
+    register: rs_status
+    connection: local
+    when: '"mongo1" not in pod_info.stdout'
+
   - name: 获取mongo1 POD 名称
     shell: "kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
     register: shell_result
