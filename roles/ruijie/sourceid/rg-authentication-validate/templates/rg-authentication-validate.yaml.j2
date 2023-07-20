@@ -19,7 +19,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: rg-auth-extend
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/auth-extend:{{ SOURCEID_DOCKERS["auth-extend"].version }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["auth-extend"].name }}:{{ SOURCEID_DOCKERS["auth-extend"].version }}
         imagePullPolicy: IfNotPresent
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
