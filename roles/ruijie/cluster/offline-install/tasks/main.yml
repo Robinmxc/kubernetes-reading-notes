@@ -87,4 +87,4 @@
 - name: rpm install for node
   shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2 {{inventory_hostname not in groups.kube_master}} | cat"
   no_log: true
-  ignore_errors: true
+  ignore_errors: false
