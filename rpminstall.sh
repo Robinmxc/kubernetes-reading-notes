@@ -36,7 +36,9 @@ function rpmOperator(){
 	fi
 	fileSize=`ls ./$var/ | wc -l`
 	if [[ ${mode} == 2 || ${mode} == 3 ]]  && [[ ${fileSize} > 0 ]]; then
+			set -e
 			rpm -ivh ./$var/*.rpm --force --nodeps
+			set +e
 	fi	
 }
 function pipOperator(){
@@ -51,7 +53,9 @@ function pipOperator(){
 		pip3 download -d $var  $var -i   https://pypi.douban.com/simple/
 	fi
 	if [[ ${mode} == 2 || ${mode} == 3 ]];then
+	    set -e
 		pip3 install  ./$var/*.whl
+		set +e
 	fi	
 
 }
@@ -71,7 +75,9 @@ function mongo_tool(){
 		yum install ${allowerasing} -y ./mongodb-database-tools/mongodb-database-tools-rhel80-x86_64-100.6.1.rpm --downloadonly  --downloaddir=./mongodb-database-tools
 	fi
 	if [[ ${mode} == 2 || ${mode} == 3 ]]; then
-			rpm -ivh ./mongodb-database-tools/*.rpm
+			set -e
+			rpm -ivh ./mongodb-database-tools/*.rpm --force --nodeps
+			set +e
 	fi	
 }
 function commonInstall(){
@@ -120,8 +126,10 @@ function kubernetes_process(){
 	fi
 
 	if [[ ${mode} == 2 || ${mode} == 3 ]];then
+	    set -e
 		rpm -ivh ./docker/*.rpm --force --nodeps
 		rpm -ivh ./kubernetes/*.rpm --force --nodeps
+		set +e
 	fi	
 }
 function kubernetes_process_centos7(){
@@ -136,16 +144,20 @@ function kubernetes_process_centos7(){
 			rm -rf ./kubernetes
 			yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
 			yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
+			set -e
 			yum install  -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io --downloadonly  --downloaddir=./docker
 			yum install -y   kubernetes-cni-1.2.0-0 kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64  --downloadonly  --downloaddir=./kubernetes
+			set +e
 		fi
 
 		if [[ ${mode} == 2 || ${mode} == 3 ]];then
 			#解决重装时docker删除不干净问题
 			yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
 			yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
+			set -e
 			rpm -ivh ./docker/*.rpm --force --nodeps
 			rpm -ivh ./kubernetes/*.rpm --force --nodeps
+			set +e
 		fi
 
 	fi	
