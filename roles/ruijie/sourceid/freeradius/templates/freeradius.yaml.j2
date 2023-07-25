@@ -35,8 +35,15 @@ spec:
           protocol: UDP
         - containerPort: 1813
           protocol: UDP
+        volumeMounts:
+         - mountPath: /usr/local/var/log/radius
+           name: log
       imagePullSecrets:
       - name: regsecret
+      volumes:
+        - name: log
+          hostPath:
+            path: /home/ruijie/ruijie-smpplus/freeradius/log
 
 ---
 apiVersion: v1
