@@ -39,6 +39,29 @@ spec:
           name: ae-logpath
         - mountPath: /skywalking/agent
           name: ae-agent
+      - name: rg-ess
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["ess"].name }}:{{ SOURCEID_DOCKERS["ess"].version }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 17082
+        env:
+        - name: PGSQL_ADDRESS
+          value: jdbc:postgresql://10.110.13.166:25432/
+        - name: PGSQL_DB_NAME
+          value: essdb
+        - name: PGSQL_USERNAME
+          value: ruijie_essdb
+        - name: PGSQL_PASSWORD
+          value: ruijie_essdb_1008
+        - name: ESS_PORT_80_REL
+          value: "80"
+        - name: ESS_PORT_8080_REL
+          value: "8080"
+        - name: ESS_PORT_443_REL
+          value: "443"
+        - name: ESS_PORT_8443_REL
+          value: "8443"
+
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -63,4 +86,9 @@ spec:
     k8s-app: rg-authentication-validate
   ports:
   - port: 80
+    name: rg-auth-extend
     targetPort: 8888
+  - port: 17082
+    name: rg-ess
+    targetPort: 17082
+
