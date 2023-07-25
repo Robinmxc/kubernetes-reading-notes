@@ -32,9 +32,26 @@ spec:
 {% endif %}
         ports:
         - containerPort: 8888
+        env:
+        - name: PGSQL_ADDRESS
+          value: jdbc:postgresql://10.110.13.166:25432/
+        - name: PGSQL_DB_NAME
+          value: essdb
+        - name: PGSQL_USERNAME
+          value: ruijie_essdb
+        - name: PGSQL_PASSWORD
+          value: ruijie_essdb_1008
+        - name: ESS_PROXY_PORT
+          value: "17082"
+        - name: CONSUL_HOST
+          value: localhost
+        - name: CONSUL_PORT
+          value: "8500"
+        - name: CONSUL_TOKEN
+          value: rJ1#sDn
+        - name: CURRENT_NODE_IP
+          value: 172.17.8.77
         volumeMounts:
-        - mountPath: /ruijie/auth-extend/conf
-          name: ae-conf
         - mountPath: /logs
           name: ae-logpath
         - mountPath: /skywalking/agent
@@ -65,9 +82,6 @@ spec:
       imagePullSecrets:
       - name: regsecret
       volumes:
-        - name: ae-conf
-          hostPath:
-            path: /ruijie/ruijie-sourceid/sourceid/auth-extend/conf
         - name: ae-logpath
           hostPath:
             path: /ruijie/ruijie-sourceid/logs
