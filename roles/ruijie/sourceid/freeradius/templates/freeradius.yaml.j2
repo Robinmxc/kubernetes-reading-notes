@@ -35,6 +35,13 @@ spec:
           protocol: UDP
         - containerPort: 1813
           protocol: UDP
+        env:
+        - name: AUTHEXTEND_PROXY_PORT
+          value: "8888"
+        - name: ESS_PROXY_PORT
+          value: "17082"
+        - name: CURRENT_NODE_IP
+          value: 172.17.8.77
         volumeMounts:
          - mountPath: /usr/local/var/log/radius
            name: log
