@@ -4,4 +4,9 @@
   - name: 检查是否已经设置FDFS参数
     fail: msg="安装人脸组件需要先设置FDFS参数"
     when: 'FDFS_MODE == "none"'
+  
+- name: 检查rpm环境安装
+  shell: "rpm -qa"
+  no_log: false
+  ignore_errors: false
 
