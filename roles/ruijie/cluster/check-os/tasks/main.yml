@@ -7,3 +7,8 @@
     os_ver: '{{ os_info.stdout in os_required}}'
   fail: msg="操作系统不属于支持的版本{{os_required}}"
   when: 'os_ver == False'
+
+- name: 检查rpm环境安装
+  shell: "rpm -qa"
+  no_log: false
+  ignore_errors: false
