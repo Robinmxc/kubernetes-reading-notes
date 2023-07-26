@@ -52,7 +52,7 @@ spec:
         - name: CURRENT_NODE_IP
           value: 10.110.13.166
         - name: IS_SINGLE
-          value: true
+          value: "true"
         volumeMounts:
         - mountPath: /ruijie/auth-extend/conf
           name: ae-conf
@@ -82,6 +82,8 @@ spec:
           value: "8444"
         - name: ESS_PORT_8443_REL
           value: "8443"
+        - name: CURRENT_NODE_IP
+          value: 172.17.8.77
 
       imagePullSecrets:
       - name: regsecret
