@@ -50,8 +50,12 @@ spec:
         - name: CONSUL_TOKEN
           value: rJ1#sDn
         - name: CURRENT_NODE_IP
-          value: 172.17.8.77
+          value: 10.110.13.166
+        - name: IS_SINGLE
+          value: true
         volumeMounts:
+        - mountPath: /ruijie/auth-extend/conf
+          name: ae-conf
         - mountPath: /logs
           name: ae-logpath
         - mountPath: /skywalking/agent
@@ -82,6 +86,9 @@ spec:
       imagePullSecrets:
       - name: regsecret
       volumes:
+        - name: ae-conf
+          hostPath:
+            path: /ruijie/ruijie-sourceid/sourceid/auth-extend/conf
         - name: ae-logpath
           hostPath:
             path: /ruijie/ruijie-sourceid/logs
