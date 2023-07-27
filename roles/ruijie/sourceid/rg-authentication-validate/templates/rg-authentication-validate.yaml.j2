@@ -65,10 +65,6 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 17082
-        resources:
-          limits:
-            cpu: {{ deploy_conf.resources.limits.cpu }}
-            memory: {{ deploy_conf.resources.limits.memory }}
         env:
         - name: PGSQL_ADDRESS
           value: jdbc:postgresql://10.110.13.166:25432/
