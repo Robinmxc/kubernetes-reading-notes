@@ -65,6 +65,10 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 17082
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
         env:
         - name: PGSQL_ADDRESS
           value: jdbc:postgresql://10.110.13.166:25432/
@@ -84,6 +88,14 @@ spec:
           value: "8443"
         - name: CURRENT_NODE_IP
           value: 172.17.8.77
+        - name: integrate_run
+          value: "on"
+        - name: TERM
+          value: xterm
+        - name: scene
+          value: msp
+        - name: VIP
+          value: 172.17.9.5
 
       imagePullSecrets:
       - name: regsecret
