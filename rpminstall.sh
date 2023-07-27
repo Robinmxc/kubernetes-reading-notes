@@ -7,10 +7,25 @@ mode=${1:-3}
 needExec=${2:-"True"} 
 skipKubernetes=${3:-"False"} 
 osname=(`uname -r`)
-mkdir -p /opt/kad/down/rpms/${osname}
+
+release_an8_dir="4.19.91-26.an8.x86_64"
+release_oe2203_dir="5.10.0-153.12.0.92.oe2203sp2.x86_64"
+release_el7_dir="3.10.0-957.el7.x86_64"
+mkdir -p /opt/kad/down/rpms/${release_an8_dir}
+mkdir -p /opt/kad/down/rpms/${release_oe2203_dir}
+mkdir -p /opt/kad/down/rpms/${release_el7_dir}
+result=$(echo $osname | grep ".oe2203" | grep ".x86_64")
+if	[[ "$result" != "" ]] && [[ ${release_oe2203_dir} != "$osname" ]];then
+	ln -s /opt/kad/down/rpms/${release_oe2203_dir} /opt/kad/down/rpms/${osname}
+fi
+result=$(echo $osname | grep ".an8"| grep ".x86_64")
+if	[[ "$result" != "" ]] && [[ ${release_an8_dir} != "$osname" ]];then
+	ln -s /opt/kad/down/rpms/${release_an8_dir} /opt/kad/down/rpms/${osname}
+fi
+
+
 cd /opt/kad/down/rpms/${osname}
 
-rpm -ivh  /opt/kad/down/rpms/${osname}/wget/*.rpm --force --nodeps 
 if [ $? -eq 0 ];then
                 echo -e "\033[36m RPM installed sucessfully.\033[0m "
 else
@@ -78,6 +93,7 @@ function mongo_tool(){
 		rm -rf   mongodb-database-tools
 		mkdir  mongodb-database-tools
 		cd mongodb-database-tools
+		rpm -ivh  /opt/kad/down/rpms/${osname}/wget/*.rpm --force --nodeps 
 		wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-rhel80-x86_64-100.6.1.rpm
 		cd ..
 		result=$(echo $osname | grep ".el7.x86_64")
@@ -252,11 +268,11 @@ function centos7(){
 	kubernetes_process_centos7
 }
 
-result=$(echo $osname | grep ".oe2203.x86_64")
+result=$(echo $osname | grep ".oe2203" | grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ "True" == "$needExec" ]];then
 	openEulerOs
 fi
-result=$(echo $osname | grep ".an8.x86_64")
+result=$(echo $osname | grep ".an8"| grep ".x86_64")
 if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
 	AnolisOS
 fi
