@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rg-authentication-validate
+  namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-authentication-validate
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-authentication-validate
+  template:
+    metadata:
+      labels:
+        k8s-app: rg-authentication-validate
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name: rg-auth-extend
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["auth-extend"].name }}:{{ SOURCEID_DOCKERS["auth-extend"].version }}
+        imagePullPolicy: IfNotPresent
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 8888
+        env:
+        - name: PGSQL_ADDRESS
+          value: jdbc:postgresql://10.110.13.166:25432/
+        - name: PGSQL_DB_NAME
+          value: essdb
+        - name: PGSQL_USERNAME
+          value: ruijie_essdb
+        - name: PGSQL_PASSWORD
+          value: ruijie_essdb_1008
+        - name: ESS_PROXY_PORT
+          value: "17082"
+        - name: CONSUL_HOST
+          value: localhost
+        - name: CONSUL_PORT
+          value: "8500"
+        - name: CONSUL_TOKEN
+          value: rJ1#sDn
+        - name: CURRENT_NODE_IP
+          value: 10.110.13.166
+        - name: IS_SINGLE
+          value: "true"
+        volumeMounts:
+        - mountPath: /ruijie/auth-extend/conf
+          name: ae-conf
+        - mountPath: /logs
+          name: ae-logpath
+        - mountPath: /skywalking/agent
+          name: ae-agent
+      - name: rg-ess
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["ess"].name }}:{{ SOURCEID_DOCKERS["ess"].version }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 17082
+        env:
+        - name: PGSQL_ADDRESS
+          value: jdbc:postgresql://10.110.13.166:25432/
+        - name: PGSQL_DB_NAME
+          value: essdb
+        - name: PGSQL_USERNAME
+          value: ruijie_essdb
+        - name: PGSQL_PASSWORD
+          value: ruijie_essdb_1008
+        - name: ESS_PORT_80_REL
+          value: "8081"
+        - name: ESS_PORT_8080_REL
+          value: "8080"
+        - name: ESS_PORT_443_REL
+          value: "8444"
+        - name: ESS_PORT_8443_REL
+          value: "8443"
+        - name: CURRENT_NODE_IP
+          value: 172.17.8.77
+        - name: integrate_run
+          value: "on"
+        - name: TERM
+          value: xterm
+        - name: scene
+          value: msp
+        - name: VIP
+          value: 172.17.9.5
+
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: ae-conf
+          hostPath:
+            path: /ruijie/ruijie-sourceid/sourceid/auth-extend/conf
+        - name: ae-logpath
+          hostPath:
+            path: /ruijie/ruijie-sourceid/logs
+        - name: ae-agent
+          emptyDir: {}
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-authentication-validate
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    k8s-app: rg-authentication-validate
+  ports:
+  - port: 80
+    name: rg-auth-extend
+    targetPort: 8888
+  - port: 17082
+    name: rg-ess
+    targetPort: 17082
+

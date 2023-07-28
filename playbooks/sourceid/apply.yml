@@ -39,3 +39,5 @@
   - { role: ruijie/sourceid/organization-center, tags: ["organization-center"] }
   - { role: ruijie/sourceid/rg-flow, tags: ["rg-flow"] }
   - { role: ruijie/sourceid/address-book, tags: ["address-book"] }
+  - { role: ruijie/sourceid/freeradius, tags: ["freeradius"] }
+  - { role: ruijie/sourceid/rg-authentication-validate, tags: ["rg-authentication-validate"] }
