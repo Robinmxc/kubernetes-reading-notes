@@ -61,13 +61,13 @@
 
 - name: 安装 rpm
   shell: "rpm -ivh {{ base_dir }}/down/rpms/fastdfs/{{ uname.stdout }}/*rpm --force --nodeps | cat"
-  when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+  when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
   no_log: true
   ignore_errors: true
 
 - name: 安装 rpm
   shell: "rpm -ivh {{ base_dir }}/down/rpms/fastdfs/{{ uname.stdout }}/*rpm --force --nodeps  | cat"
-  when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
+  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")  
   no_log: true
   ignore_errors: true
 

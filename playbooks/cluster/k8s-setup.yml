@@ -46,22 +46,22 @@
     shell: "cat /etc/logrotate.d/syslog"
     register: syslog_info
     ignore_errors: true
-    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
 
   - name: 设置系统日志自动滚动机制
     shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/syslog"
-    when: ("'dateext' not in syslog_info.stdout" and ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+    when: ("'dateext' not in syslog_info.stdout" and "Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
     ignore_errors: true
 
   - name: 查询系统日志自动滚动机制
     shell: "cat /etc/logrotate.d/rsyslog"
     register: syslog_info
     ignore_errors: true
-    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
+    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")  
 
   - name: 设置系统日志自动滚动机制
     shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/rsyslog"
-    when: ("'dateext' not in syslog_info.stdout" and ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")
+    when: ("'dateext' not in syslog_info.stdout" and "openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")
     ignore_errors: true
 
 # to set up 'kube_master' nodes

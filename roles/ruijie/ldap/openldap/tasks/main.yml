@@ -27,20 +27,20 @@
 
   - name: 安装slapd
     shell: "rpm -ivh  {{ DATA_DIR }}/slapd/ldap/{{ uname.stdout }}/*rpm --force --nodeps  | cat"
-    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
     no_log: false
     ignore_errors: false
 
   - name: 安装slapd
     shell: "rpm -ivh  {{ DATA_DIR }}/slapd/ldap/{{ uname.stdout }}/*rpm --force --nodeps  | cat"
-    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")     
+    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")     
     no_log: false
     ignore_errors: false    
 
   - name: 注册ldap数据库类型
     set_fact:
       ldapDbType: 'mdb'
-    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
 
   - name: 注册ldap数据库类型
     set_fact:
@@ -52,19 +52,19 @@
     vars:
       SLAPD_URLS: "{{ ldap_port_conf }}"
     template: src='slapd.service.anolis.j2' dest='/usr/lib/systemd/system/slapd.service'
-    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
 
   - name: openldap证书处理
     shell: "openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj '/CN=localhost'  -keyout /etc/pki/tls/ldapserver.key -out /etc/pki/tls/ldapserver.crt"
-    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")  
+    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")  
   
   - name: tls加密文件配置
     template: src='add-tls.ldif.anolis.j2' dest='/etc/openldap/add-tls.ldif'
-    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
 
   - name: 修改ldap参数
     template: src='ldap.anolis.conf.j2' dest='/etc/openldap/ldap.conf'
-    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
     
   # cento7的处理开始  
   - name: 修改service参数
@@ -251,11 +251,11 @@
 
 - name: tls加密开启
   shell: chmod 644 /etc/pki/tls/ldapserver*
-  when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+  when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
 
 - name: tls加密开启
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/add-tls.ldif
-  when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+  when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
 
 - name: 设置ldap默认的ssl加密算法
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/tls1.2.ldif
