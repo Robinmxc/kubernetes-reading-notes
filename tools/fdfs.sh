@@ -4,6 +4,8 @@ rm -rf /opt/kad/down/fdfs/rpms
 rm -rf /opt/kad/down/fdfs/rpms/fastdfs/${osname}
 mkdir -p /opt/kad/down/fdfs/rpms/fastdfs/${osname}
 tar -xvf /opt/kad/down/fdfs/fastdfs.tar.gz -C /opt/kad/down/fdfs/rpms/
+chmod +777  /opt/kad/tools/fdfsinstall.sh
+\cp -rpf  /opt/kad/tools/fdfsinstall.sh /opt/kad/down/fdfs/rpms/fastdfs
 cd /opt/kad/down/fdfs/rpms/fastdfs/${osname}
 result=$(echo $osname | grep ".el7.x86_64")
 function centos7(){

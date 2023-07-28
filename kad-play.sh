@@ -5,10 +5,10 @@ input=${1}
 if	[[ "$result" != "" ]];then
  	ansible-playbook -i inventory/ -k $* 
 else
-    result_an8=$(echo $osname | grep ".an8.x86_64")
+    result_an8_oe2203=$(echo $osname | grep -E ".an8|.oe2203")
     echo -n "SSH password: " 
     read  -s ssh_password  
-    if	[[ "$result_an8" != "" ]];then
+    if	[[ "$result_an8_oe2203" != "" ]];then
         chmod +777 ./tools/*.py
         set -o errexit
         ./tools/env_process.py "${ssh_password}" "${input}"

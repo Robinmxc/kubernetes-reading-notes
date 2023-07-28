@@ -22,7 +22,10 @@ result=$(echo $osname | grep ".an8"| grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_an8_dir} != "$osname" ]];then
 	ln -s /opt/kad/down/rpms/${release_an8_dir} /opt/kad/down/rpms/${osname}
 fi
-
+result=$(echo $osname | grep ".el7"| grep ".x86_64")
+if	[[ "$result" != "" ]] && [[ ${release_el7_dir} != "$osname" ]];then
+	ln -s /opt/kad/down/rpms/${release_el7_dir} /opt/kad/down/rpms/${osname}
+fi
 
 cd /opt/kad/down/rpms/${osname}
 
