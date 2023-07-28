@@ -159,6 +159,12 @@
     dest: "{{ FDFS_SRC_PATH }}"
   when: 'tgz_file is exists and src_dir is not exists'
 
+- name: 欧拉系统修复编译参数
+  shell: "sed -i 's/-Werror//g' /usr/local/src/nginx-1.20.1/auto/cc/*"
+  args:
+    chdir: "{{ FDFS_SRC_PATH }}/nginx-{{ fastdfs_nginx_version }}"
+  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22" and "/usr/local/nginx/sbin/nginx" is not exists) 
+   
 - name: 安装nginx
   shell: "./configure --add-module={{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}/src && make && make install"
   args:
