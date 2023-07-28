@@ -31,7 +31,7 @@
 - name: 配置自动执行
   tags:
     - config
-  shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '*/1 * * * * sh {{ maintenanceRelated_default_dir }}/script/{{ item }} >/dev/null 2>&1'  >> /var/spool/cron/root"
+  shell: "sed -i '/{{ item }}/d' /var/spool/cron/root && echo '#*/1 * * * * sh {{ maintenanceRelated_default_dir }}/script/{{ item }} >/dev/null 2>&1'  >> /var/spool/cron/root"
   with_items:
   - "smpplus-oper.sh"
   run_once: true
