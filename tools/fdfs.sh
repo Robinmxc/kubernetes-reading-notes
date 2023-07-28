@@ -1,7 +1,9 @@
 #!/bin/bash
 osname=(`uname -r`)
 rm -rf /opt/kad/down/fdfs/rpms
+rm -rf /opt/kad/down/fdfs/rpms/fastdfs/${osname}
 mkdir -p /opt/kad/down/fdfs/rpms/fastdfs/${osname}
+tar -xvf /opt/kad/down/fdfs/fastdfs.tar.gz -C /opt/kad/down/fdfs/rpms/
 cd /opt/kad/down/fdfs/rpms/fastdfs/${osname}
 result=$(echo $osname | grep ".el7.x86_64")
 function centos7(){
@@ -28,12 +30,12 @@ function openEulerOs(){
                net-snmp-libs    openssl-devel   pcre-devel  perl-Data-Dumper   perl-Test-Harness  perl-Thread-Queue  zlib-devel "    
 	yum install -y $rpms --downloadonly  --downloaddir=./ 
 }    
-result=$(echo $osname | grep ".oe2203.x86_64")
+result=$(echo $osname | grep ".oe2203")
 yum remove -y make
 if	[[ "$result" != "" ]] ;then
 	openEulerOs
 fi
-result=$(echo $osname | grep ".an8.x86_64")
+result=$(echo $osname | grep ".an8")
 if	[[ "$result" != "" ]];then
 	AnolisOS
 fi
@@ -41,7 +43,8 @@ result=$(echo $osname | grep ".el7.x86_64")
 if	[[ "$result" != "" ]];then
 	centos7
 fi
+
 cd /opt/kad/down/fdfs/rpms/
 rm -rf /opt/kad/down/fdfs/rpms/fastdfs.tar.gz
 tar  -zcvf   fastdfs.tar.gz *
-cp fastdfs.tar.gz /opt/kad/down/fdfs/
+\cp -rpf  fastdfs.tar.gz /opt/kad/down/fdfs/
