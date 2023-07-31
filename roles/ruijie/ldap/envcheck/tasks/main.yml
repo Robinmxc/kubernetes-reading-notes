@@ -6,6 +6,13 @@
   stat: 
     path: /usr/lib/systemd/system/slapd.service    #这个服务状态不能用shell命令吗system status slapd
   register: slapd_stat
+  when:  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8") or ((ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7")
+
+- name: 检查ldap的服务状态
+  stat: 
+    path: /etc/pki/tls/ldapserver.crt    # openEuler默认安装了ldap，所有检测是否我们首次安装
+  register: slapd_stat
+  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")
 
 - name: 检查是否已部署ldap
   fail: msg="已部署ldap"
