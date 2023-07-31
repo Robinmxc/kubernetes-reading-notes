@@ -10,11 +10,11 @@ osname=(`uname -r`)
 mkdir -p /opt/kad/down/rpms/${osname}
 cd /opt/kad/down/rpms/${osname}
 
-rpm -ivh  /opt/kad/down/rpms/${osname}/wget/*.rpm --force --nodeps 
+rpm -ivh  /opt/kad/down/rpms/${osname}/unzip/*.rpm --force --nodeps 
 if [ $? -eq 0 ];then
-                echo -e "\033[36m RPM installed sucessfully.\033[0m "
+                echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
 else
-                echo -e "\033[31m RPM installed failed. Please check rpm env\033[0m "
+                echo -e "\033[31m Unzip RPM installed failed. Please check rpm env\033[0m "
                 exit 0
 fi
 
