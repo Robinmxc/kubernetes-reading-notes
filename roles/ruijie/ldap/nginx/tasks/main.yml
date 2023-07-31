@@ -13,6 +13,13 @@
   shell: "yum install -y {{ NGINX_SRC_PATH }}/nginxbuild/*rpm"
   no_log: true
   ignore_errors: true
+  when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"    
+
+- name: 安装 rpm
+  shell: "rpm -ivh  {{ NGINX_SRC_PATH }}/nginxbuild/*rpm --force --nodeps  | cat"
+  no_log: true
+  ignore_errors: true
+  when: ("Anolis"  in  ansible_distribution or "openEuler"  in  ansible_distribution)
 
 - name: 下载nginx源码
   vars:
