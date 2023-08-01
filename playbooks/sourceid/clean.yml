@@ -8,21 +8,6 @@
     command: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
 
-  - name: 检查rpm环境安装
-    shell: "rpm -qa"
-    no_log: false
-    ignore_errors: false
-
-  - name: 检查kubelet服务正常
-    shell: "kubelet --version"
-    no_log: false
-    ignore_errors: false
-
-  - name: 检查kubectl服务正常
-    shell: "kubectl version --short"
-    no_log: false
-    ignore_errors: false
-
   - name: 停止linkid
     tags:
     - linkid

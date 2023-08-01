@@ -1,14 +1,4 @@
-#数据库脚本压缩、复制、解压、脚本执行
-- name: 检查rpm环境安装
-  shell: "rpm -qa"
-  no_log: false
-  ignore_errors: false
-
-- name: 检查kubelet服务正常
-  shell: "kubelet --version"
-  no_log: false
-  ignore_errors: false
-  
+#数据库脚本压缩、复制、解压、脚本执行  
 - name: 压缩数据初始化脚本
   archive:
     path: "{{ KAD_PACKAGE_DIR }}-hotfix/db/"

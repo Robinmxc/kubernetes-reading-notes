@@ -30,11 +30,6 @@
     connection: local
     ignore_errors: true
     run_once: true
-    
-  - name: 检查rpm环境安装
-    shell: "rpm -qa"
-    no_log: false
-    ignore_errors: false
 
 - name: 清理k8s
   when: '"v1.23.8" not in k8s_result.stdout'
