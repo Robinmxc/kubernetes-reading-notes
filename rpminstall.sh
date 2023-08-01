@@ -10,13 +10,27 @@ osname=(`uname -r`)
 mkdir -p /opt/kad/down/rpms/${osname}
 cd /opt/kad/down/rpms/${osname}
 
-rpm -ivh  /opt/kad/down/rpms/${osname}/unzip/*.rpm --force --nodeps 
-if [ $? -eq 0 ];then
+echo "###检查unzip安装成功####"
+if [ -d  /opt/kad/down/rpms/${osname}/unzip ];then
+    rpm -ivh  /opt/kad/down/rpms/${osname}/unzip/*.rpm --force --nodeps 
+    if [ $? -eq 0 ];then
                 echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
-else
+    else
                 echo -e "\033[31m Unzip RPM installed failed. Please check rpm env\033[0m "
                 exit 0
+    fi
+
+else 
+    rpm -ivh  /opt/kad/down/rpms/unzip/*.rpm --force --nodeps 
+    if [ $? -eq 0 ];then
+                echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
+    else
+                echo -e "\033[31m Unzip RPM installed failed. Please check rpm env\033[0m "
+                exit 0
+    fi
+
 fi
+
 
 result=$(echo $osname | grep ".el7.x86_64")
 allowerasing="--allowerasing"
