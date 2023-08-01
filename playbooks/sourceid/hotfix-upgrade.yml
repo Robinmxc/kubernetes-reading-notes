@@ -1,3 +1,4 @@
+- import_playbook: env-check.yml
 - hosts:
   - kube_node
   tags:

@@ -1,2 +1,3 @@
+- import_playbook: env-check.yml
 - import_playbook: clean.yml
 - import_playbook: upgrade-prepare.yml
