@@ -21,7 +21,7 @@ if [ -d  /opt/kad/down/rpms/${osname}/unzip ];then
     fi
 
 else 
-    rpm -ivh  /opt/kad/down/rpms/unzip/*.rpm --force --nodeps 
+    rpm -ivh  /opt/kad/down/rpms/unzip*.rpm --force --nodeps 
     if [ $? -eq 0 ];then
                 echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
     else
