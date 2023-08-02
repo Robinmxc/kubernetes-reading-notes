@@ -10,3 +10,7 @@
   no_log: false
   ignore_errors: false
 
+- name: 检查kubelet安装
+  shell: "kubelet --version"
+  no_log: false
+  ignore_errors: false
