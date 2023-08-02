@@ -137,6 +137,7 @@
       - "sourceid/organization-center"
       - "sourceid/rg-flow"
       - "sourceid/address-book"
+      - "sourceid/auth-extend"
     connection: local
 
   - name: 获取所有已经创建的POD信息
