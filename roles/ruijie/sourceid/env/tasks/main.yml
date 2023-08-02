@@ -60,6 +60,7 @@
     - "sourceid/collect"
     - "sourceid/adapter"
     - "sourceid/mdm"
+    - "sourceid/dop"
     - "sourceid/career-event"
     - "sourceid/xxl-job"
     - "sourceid/portal"
