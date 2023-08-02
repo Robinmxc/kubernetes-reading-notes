@@ -141,6 +141,12 @@
     command: "kubectl delete -f {{ yaml_dir }}/mdm/"
     when: 'pod_info.stdout is search("rg-mdm-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 dop
+    tags:
+      - dop
+    command: "kubectl delete -f {{ yaml_dir }}/dop/"
+    when: 'pod_info.stdout is search("rg-dop-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 career-event
     tags:
       - career-event
@@ -428,6 +434,16 @@
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-mdm" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待dop结束运行
+    tags:
+      - dop
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-dop" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
