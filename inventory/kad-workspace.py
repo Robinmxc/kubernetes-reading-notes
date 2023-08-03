@@ -383,7 +383,7 @@ def parse_eoms_config(host_data):
         host_data["groups"]["influxdb"] = eoms_hosts
         host_data["groups"]["eoms"] = eoms_hosts
         host_vars = host_data["host_vars"]
-        if not host_vars[ip]:
+        if  not ip in host_vars:
           host_vars[ip]={}
 
 # 处理SourceData配置参数
