@@ -10,7 +10,3 @@
   no_log: false
   ignore_errors: false
 
-- name: 检查kubelet服务正常
-  shell: "kubelet --version"
-  no_log: false
-  ignore_errors: false
