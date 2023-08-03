@@ -7,7 +7,7 @@ deploy_conf_defaults:
   small:
     replicas: 1
   normal:
-    replicas: 1
+    replicas: 2
     resources:
       limits:
         cpu: 1
