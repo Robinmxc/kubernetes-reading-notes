@@ -280,7 +280,7 @@
   - name: 准备双主配置文件
     vars:
       file_name: '{{ item }}'
-      ldap_db_type: '{{ ldapDbType }}'
+      ldap_db_type: '{{ ldapDbType }}'      
     template:
       src: '{{ file_name }}.j2'
       dest: /etc/openldap/{{ file_name }}
@@ -293,7 +293,7 @@
       ldap_1_hostname: "{{ groups.ldap[0] }}"
       ldap_2_hostname: "{{ groups.ldap[1] }}"
       port: "{{ ldap_dual_mode_port }}"
-      ldap_db_type: '{{ ldapDbType }}'
+      ldap_db_type: '{{ ldapDbType }}'         
     template:
       src: 'master_node.j2'
       dest: /etc/openldap/master_node.ldif
@@ -304,7 +304,7 @@
       ldap_1_hostname: "{{ groups.ldap[0] }}"
       ldap_2_hostname: "{{ groups.ldap[1] }}"
       port: "{{ ldap_dual_mode_port }}"
-      ldap_db_type: '{{ ldapDbType }}'
+      ldap_db_type: '{{ ldapDbType }}'         
     template:
       src: 'master_node_openEuler.j2'
       dest: /etc/openldap/master_node.ldif
@@ -313,12 +313,11 @@
   - name: 导入双主配置文件
     vars:
       file_name: '{{ item }}'
-      ldap_db_type: '{{ ldapDbType }}'
+      ldap_db_type: '{{ ldapDbType }}'         
     shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/{{ file_name }}
     with_items:
-      - "mod_syncprov.ldif"
-      - "syncprov.ldif"
-      - "master_node.ldif"
-
+    - "mod_syncprov.ldif"
+    - "syncprov.ldif"
+    - "master_node.ldif"
 
 

@@ -2,7 +2,7 @@
 - name: 准备目录
   file: name={{ item }} state=directory
   with_items:
-    - "{{ base_dir }}/down/rpms/common"
+  - "{{ base_dir }}/down/rpms/common"
 
 - name: 解压 rpm 包
   vars:
