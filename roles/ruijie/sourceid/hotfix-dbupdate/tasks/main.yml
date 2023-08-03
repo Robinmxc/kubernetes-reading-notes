@@ -1,4 +1,4 @@
-#数据库脚本压缩、复制、解压、脚本执行
+#数据库脚本压缩、复制、解压、脚本执行  
 - name: 压缩数据初始化脚本
   archive:
     path: "{{ KAD_PACKAGE_DIR }}-hotfix/db/"
