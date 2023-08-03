@@ -5,14 +5,14 @@
       - python-firewall
       - firewalld-filesystem
     state: absent
-  when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
+  when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"    
   ignore_errors: true
-
+  
 - name: 查询防火墙状态
   shell: "systemctl list-units *.service"
   register: firewall_info
   ignore_errors: true
-
+  
 - name: 关闭防火墙
   shell: "systemctl stop firewalld && systemctl disable firewalld"
   when: '"firewalld" in firewall_info.stdout'
@@ -164,8 +164,8 @@
   shell: "sed -i 's/-Werror//g' /usr/local/src/nginx-1.20.1/auto/cc/*"
   args:
     chdir: "{{ FDFS_SRC_PATH }}/nginx-{{ fastdfs_nginx_version }}"
-  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22" and "/usr/local/nginx/sbin/nginx" is not exists)
-
+  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22" and "/usr/local/nginx/sbin/nginx" is not exists) 
+   
 - name: 安装nginx
   shell: "./configure --add-module={{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}/src && make && make install"
   args:

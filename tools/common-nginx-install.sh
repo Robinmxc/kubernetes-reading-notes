@@ -12,7 +12,7 @@ if	[[ "$result" != "" ]];then
 	    ln -s /opt/kad/down/rpms/common/nginx/${release_oe2203_dir} /opt/kad/down/rpms/common/nginx/${osname}
     fi
     set -e
-    rpm -ivh /opt/kad/down/rpms/common/nginx/${osname}/*rpm --force --nodeps
+    rpm -ivh /opt/kad/down/rpms/common/nginx/${osname}/*rpm --force --nodeps 
     set +e
 fi
 result=$(echo $osname | grep ".an8"| grep ".x86_64")
@@ -21,8 +21,8 @@ if	[[ "$result" != "" ]];then
 	    ln -s /opt/kad/down/rpms/common/nginx/${release_an8_dir} /opt/kad/down/rpms/common/nginx/${osname}
     fi
     set -e
-    rpm -ivh /opt/kad/down/rpms/common/nginx/${osname}/*rpm --force --nodeps
-    set +e
+    rpm -ivh /opt/kad/down/rpms/common/nginx/${osname}/*rpm --force --nodeps 
+    set +e    
 fi
 result=$(echo $osname | grep ".el7"| grep ".x86_64")
 if	[[ "$result" != "" ]];then
