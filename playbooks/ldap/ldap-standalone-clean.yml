@@ -24,4 +24,6 @@
         - "/etc/openldap"
         - "/etc/systemd/system/nginx.service"
         - "/usr/local/nginx/sbin/nginx"
+        - "/etc/pki/tls/ldapserver.crt"
+        
 
