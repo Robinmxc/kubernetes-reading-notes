@@ -1,0 +1,40 @@
+RG_AUTHENTICATION_VALIDATE_ENABLE: "{% if SOURCEID_DOCKERS['data-sync'] is defined and (SOURCEID_DOCKERS['data-sync'].enable is not defined or SOURCEID_DOCKERS['data-sync'].enable) %}yes{% else %}no{% endif %}"
+
+rg_authentication_validate_var:
+  ess_port_80_rel: 8081
+  ess_port_8080_rel: 8080
+  ess_port_443_rel: 8444
+  ess_port_8443_rel: 8443
+  integrate_run: "on"
+  term: xterm
+  scene: msp
+
+rg_authentication_validate_configs: []
+
+rg_authentication_validate_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+
+rg_authentication_validate_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+
+rg_authentication_validate_var_conf: '{{ rg_authentication_validate_var }}'

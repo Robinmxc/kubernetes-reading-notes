@@ -1,0 +1,46 @@
+- name: 部署rg_authentication_validate
+  when: 'RG_AUTHENTICATION_VALIDATE_ENABLE == "yes"'
+  block:
+  - name: 复制配置文件
+    tags:
+      - config
+    copy:
+      src: "{{ namespace_dir }}/conf/sourceid/auth-extend/conf/"
+      dest: "{{ config_base_dir }}/sourceid/auth-extend/conf/"
+
+  - name: 准备部署文件目录
+    tags:
+      - config
+    file: path={{ item }} state=directory
+    with_items:
+      - "{{ yaml_dir }}/rg-authentication-validate"
+    run_once: true
+    connection: local
+
+  - name: 准备部署文件
+    tags:
+      - config
+    vars:
+      deploy_conf: '{{rg_authentication_validate_deploy_conf}}'
+      var_conf: '{{rg_authentication_validate_var_conf}}'
+      comp_name: 'rg-authentication-validate'
+    template: src='rg-authentication-validate.yaml.j2' dest={{ yaml_dir }}/rg-authentication-validate/rg-authentication-validate.yml
+    run_once: true
+    connection: local
+
+  - name: 获取所有已经创建的POD信息
+    tags:
+      - deploy
+    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    run_once: true
+    connection: local
+
+  - name: 执行部署
+    tags:
+      - deploy
+    shell: "kubectl apply -f {{ yaml_dir }}/rg-authentication-validate/"
+    when: '"rg-authentication-validate" not in pod_info.stdout'
+    run_once: true
+    connection: local
+
