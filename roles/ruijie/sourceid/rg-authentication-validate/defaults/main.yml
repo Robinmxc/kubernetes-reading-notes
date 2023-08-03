@@ -1,4 +1,4 @@
-RG_AUTHENTICATION_VALIDATE_ENABLE: "{% if SOURCEID_DOCKERS['data-sync'] is defined and (SOURCEID_DOCKERS['data-sync'].enable is not defined or SOURCEID_DOCKERS['data-sync'].enable) %}yes{% else %}no{% endif %}"
+RG_AUTHENTICATION_VALIDATE_ENABLE: "{% if SOURCEID_DOCKERS['ess'] is defined and (SOURCEID_DOCKERS['ess'].enable is not defined or SOURCEID_DOCKERS['ess'].enable) %}yes{% else %}no{% endif %}"
 
 rg_authentication_validate_var:
   ess_port_80_rel: 8081
