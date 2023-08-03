@@ -44,6 +44,13 @@
   failed_when: 'create_result.stdout is not search("CREATE DATABASE")'
   connection: local
 
+- name: 创建essdb数据库
+  shell: '{{ pgsql_pod_shell }} -c "CREATE DATABASE essdb"'
+  when: '"essdb" not in db_result.stdout'
+  register: create_result
+  failed_when: 'create_result.stdout is not search("CREATE DATABASE")'
+  connection: local
+
 - name: 创建获取postgres中所有表
   shell: '{{ pgsql_pod_shell }} -d postgres -c "\dt"'
   register: table_result
