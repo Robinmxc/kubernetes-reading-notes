@@ -8,6 +8,16 @@
       src: "{{ namespace_dir }}/conf/sourceid/auth-extend/conf/"
       dest: "{{ config_base_dir }}/sourceid/auth-extend/conf/"
 
+  - name: 自动配置
+    tags:
+      - config
+    replace: path="{{ config_base_dir }}/sourceid/auth-extend/conf/application-dev.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "spring.datasource.username=.*$", replace: "spring.datasource.username=postgres"}
+      - {regexp: "spring.datasource.password=.*$", replace: "spring.datasource.password={{ PGSQL_ADMIN_PWD }}"}
+      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+    no_log: true
+
   - name: 准备部署文件目录
     tags:
       - config
