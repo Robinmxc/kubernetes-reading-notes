@@ -6,8 +6,8 @@
 # rpm -ivh /opt/kad/down/rpms/$loop/*.rpm  >/dev/null 2>&1
 #done
 chmod +777 ./rpminstall.sh
+./rpminstall.sh 2 True True
 chmod +777 ./tools/*.sh
-./rpminstall.sh 2
 cd /opt/kad/down/ 
 tar -xvf /opt/kad/down/rarlinux-x64-5.3.0.tar.gz >/dev/null 2>&1
 cd /opt/kad/down/rar
@@ -34,3 +34,4 @@ fi
 export KAD_APP_NAMESPACE=ruijie-sourceid
 cd /opt/kad
 ./kad-play.sh playbooks/sourceid/0-all.yml
+
