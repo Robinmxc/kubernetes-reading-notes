@@ -5,6 +5,7 @@
     tags:
       - config
     copy:
+      remote_src=True
       src: "{{ namespace_dir }}/conf/sourceid/mdm/conf/"
       dest: "{{ config_base_dir }}/sourceid/mdm/conf/"
 
