@@ -5,7 +5,7 @@
     tags:
       - config
     copy:
-      remote_src=True
+      remote_src: True
       src: "{{ namespace_dir }}/conf/sourceid/mdm/conf/"
       dest: "{{ config_base_dir }}/sourceid/mdm/conf/"
 
@@ -32,7 +32,8 @@
     tags:
       - config
     vars:
-      deploy_conf: '{{ mdm_deploy_conf }}'
+    remote_src: True
+    deploy_conf: '{{ mdm_deploy_conf }}'
     template: src='{{ mdm_templates_path }}mdm.yaml.j2' dest={{ yaml_dir }}/mdm/mdm.yml
     run_once: true
     connection: local
