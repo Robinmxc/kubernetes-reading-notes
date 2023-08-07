@@ -15,22 +15,8 @@
   - name: 解压 slapd 安装包
     shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ ldap_file }} -C {{ DATA_DIR }}/slapd >/dev/null"
 
-  - name: 查询系统信息
-    shell: "uname -r"
-    register: uname
-
-  - name: 安装slapd
-    shell: "yum install -y {{ DATA_DIR }}/slapd/ldap/{{ uname.stdout }}/*rpm"
-    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"        
-    no_log: false
-    ignore_errors: false
-
-  - name: 安装slapd
-    shell: "rpm -ivh  {{ DATA_DIR }}/slapd/ldap/{{ uname.stdout }}/*rpm --force --nodeps  | cat"
-    when: ("Anolis"  in  ansible_distribution or "openEuler"  in  ansible_distribution)
-    no_log: false
-    ignore_errors: false
- 
+  - name: 安装 rpm
+    shell: "{{ DATA_DIR }}/slapd/ldap/ldap-install.sh {{ DATA_DIR }}/slapd/ldap" 
 
   - name: 注册ldap数据库类型
     set_fact:
@@ -220,7 +206,7 @@
 - name: 密码策略配置
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f /etc/openldap/schema/ppolicy.ldif'
   ignore_errors: true
-  when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"
+  when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
 
 - name: 加载ppolicy模块
   shell: ldapsearch -Y EXTERNAL -H ldapi:/// -b 'cn=module{0},cn=config'
