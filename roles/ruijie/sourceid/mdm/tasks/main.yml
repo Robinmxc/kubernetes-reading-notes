@@ -32,9 +32,9 @@
     tags:
       - config
     vars:
-    remote_src: True
-    deploy_conf: '{{ mdm_deploy_conf }}'
+      deploy_conf: '{{ mdm_deploy_conf }}'
     template: src='{{ mdm_templates_path }}mdm.yaml.j2' dest={{ yaml_dir }}/mdm/mdm.yml
+    remote_src: True
     run_once: true
     connection: local
 
