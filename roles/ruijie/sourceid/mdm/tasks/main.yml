@@ -5,7 +5,6 @@
     tags:
       - config
     copy:
-      remote_src: True
       src: "{{ namespace_dir }}/conf/sourceid/mdm/conf/"
       dest: "{{ config_base_dir }}/sourceid/mdm/conf/"
 
@@ -34,7 +33,6 @@
     vars:
       deploy_conf: '{{ mdm_deploy_conf }}'
     template: src='{{ mdm_templates_path }}mdm.yaml.j2' dest={{ yaml_dir }}/mdm/mdm.yml
-    remote_src: True
     run_once: true
     connection: local
 
@@ -52,3 +50,4 @@
     shell: "kubectl apply -f {{ yaml_dir }}/mdm/"
     run_once: true
     connection: local
+
