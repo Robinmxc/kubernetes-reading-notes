@@ -205,6 +205,13 @@ spec:
               name: rg-frontend
               port:
                 number: 80
+        - path: /ess
+          pathType: Prefix
+          backend:
+            service:
+              name: rg-authentication-validate
+              port:
+                number: 8080
 {% if "yes" == SOURCEID_FGM_VERSION_ENABLED %}
         - path: /linkid/api/ztfgm
           pathType: Prefix
