@@ -50,7 +50,7 @@ spec:
       volumes:
         - name: log
           hostPath:
-            path: /ruijie/ruijie-sourceid/logs/rg-freeradius/log
+            path: {{ config_base_dir }}/logs/rg-freeradius/log
 
 ---
 apiVersion: v1
