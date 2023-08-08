@@ -9,7 +9,7 @@
   tags:
     - config
   vars:
-    cas_server_url: "{{ SOURCEID_SSO_URL }}"
+    cas_server_url: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/cas{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
   replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
     - {regexp: "^cas.server.name=.*$", replace: "cas.server.name={{ cas_server_url }}"}
@@ -30,6 +30,17 @@
     replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
   with_items: '{{ sso_configs }}'
   no_log: true
+
+- name: 单域名配置
+  tags:
+    - config
+  replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-sys.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+    - { regexp: "^server.context-path=.*$", replace: "server.context-path=/cas" }
+    - { regexp: "^cas.authn.pac4j.cas[0].loginUrl=.*$", replace: "cas.authn.pac4j.cas[0].loginUrl={{ SOURCEID_SSO_URL }}/adapter" }
+    - { regexp: "^cas.logout.redirectUrl=.*$", replace: "cas.logout.redirectUrl={{ SOURCEID_SSO_URL }}/logout?service=" }
+  no_log: true
+  when: 'SOURCEID_DOMAIN_MODE == "single"'
 
 - name: 准备部署文件目录
   tags:

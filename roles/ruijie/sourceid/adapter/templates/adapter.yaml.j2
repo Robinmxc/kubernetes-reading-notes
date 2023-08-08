@@ -74,7 +74,11 @@ spec:
         startupProbe:
           failureThreshold: 20
           httpGet:
+{% if SOURCEID_DOMAIN_MODE == "single" %}
+            path: /adapter/liveProbe
+{% else %}
             path: /liveProbe
+{% endif %}
             port: 80
             scheme: HTTP
           periodSeconds: 5
@@ -84,7 +88,11 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
+{% if SOURCEID_DOMAIN_MODE == "single" %}
+            path: /adapter/liveProbe
+{% else %}
             path: /liveProbe
+{% endif %}
             port: 80
             scheme: HTTP
           periodSeconds: 5
@@ -94,7 +102,11 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
+{% if SOURCEID_DOMAIN_MODE == "single" %}
+            path: /adapter/liveProbe
+{% else %}
             path: /liveProbe
+{% endif %}
             port: 80
             scheme: HTTP
           periodSeconds: 30
@@ -145,7 +157,11 @@ spec:
     - host: {{ SOURCEID_ADAPTER_DOMAIN }}
       http:
         paths:
+{% if SOURCEID_DOMAIN_MODE == "single" %}
+        - path: /adapter
+{% else %}
         - path: /
+{% endif %}
           pathType: Prefix
           backend:
             service:

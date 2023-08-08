@@ -41,6 +41,15 @@
   with_items: '{{ linkid_configs }}'
   no_log: true
 
+- name: 单域名配置step1
+  tags:
+    - config
+  replace: path="{{ config_base_dir }}/sourceid/linkid/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+    - { regexp: "^feign.cas.base.url=.*$", replace: "feign.cas.base.url={{ SOURCEID_SSO_URL }}/cas" }
+  no_log: true
+  when: 'SOURCEID_DOMAIN_MODE == "single"'
+
 - name: 准备部署文件目录
   tags:
     - config

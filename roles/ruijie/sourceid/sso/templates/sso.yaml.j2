@@ -86,7 +86,11 @@ spec:
         startupProbe:
           failureThreshold: 40
           httpGet:
+{% if SOURCEID_DOMAIN_MODE == "single" %}
+            path: /cas/liveProbe
+{% else %}
             path: /liveProbe
+{% endif %}
             port: 80
             scheme: HTTP
           periodSeconds: 5
@@ -96,7 +100,11 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
+{% if SOURCEID_DOMAIN_MODE == "single" %}
+            path: /cas/liveProbe
+{% else %}
             path: /liveProbe
+{% endif %}
             port: 80
             scheme: HTTP
           periodSeconds: 5
@@ -106,7 +114,11 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
+{% if SOURCEID_DOMAIN_MODE == "single" %}
+            path: /cas/liveProbe
+{% else %}
             path: /liveProbe
+{% endif %}
             port: 80
             scheme: HTTP
           periodSeconds: 30
@@ -188,10 +200,23 @@ spec:
             name: rg-gate
             port:
               number: 80
+{% if SOURCEID_DOMAIN_MODE == "single" %}
+      - path: /cas
+{% else %}
       - path: /
+{% endif %}
         pathType: Prefix
         backend:
           service:
             name: rg-sso
             port:
               number: 80
+{% if SOURCEID_DOMAIN_MODE == "single" %}
+      - path: /images
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-sso
+            port:
+              number: 80
+{% endif %}
