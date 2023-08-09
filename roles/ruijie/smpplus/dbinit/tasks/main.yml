@@ -132,10 +132,20 @@
     with_items:
       - "{{ mongodb_init_dir }}/update-data.sh"
 
+  - name: 清理历史mongo日志
+    shell: '{{ mongo_pod_shell }} rm /ruijie/init/smpplus/rg-upgrade-db/update.log -rf'
+    connection: local
+
   - name: 执行基于基础库的升级脚本
     shell: '{{ mongo_pod_shell }} /ruijie/init/update-data.sh'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+
+  - name: 查看升级脚本执行结果
+    shell: '{{ mongo_pod_shell }} cat /ruijie/init/smpplus/rg-upgrade-db/update.log | grep Error'
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search("Error") '
     connection: local
 
   - name: 保存数据库版本到SYSTEM_VERSION表中
