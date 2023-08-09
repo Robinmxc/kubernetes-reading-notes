@@ -77,7 +77,7 @@ spec:
 
 {%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["rg-flow"] is not defined or HEALTH_CHECK["rg-flow"])  %}
         startupProbe:
-          failureThreshold: 20
+          failureThreshold: 40
           httpGet:
             path: /flow/liveProbe
             port: 8082
