@@ -15,7 +15,6 @@ spec:
       labels:
         k8s-app: rg-authentication-validate
     spec:
-      hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: rg-auth-extend
@@ -53,6 +52,7 @@ spec:
 {% endif %}
         ports:
         - containerPort: 8080
+        - containerPort: 1099
         volumeMounts:
         - mountPath: /opt/ess/log
           name: ess-conf
@@ -73,8 +73,6 @@ spec:
           value: "{{ var_conf.ess_port_443_rel }}"
         - name: ESS_PORT_8443_REL
           value: "{{ var_conf.ess_port_8443_rel }}"
-        - name: CURRENT_NODE_IP
-          value: {{ KUBE_MASTER_HOSTS[0] }}
         - name: integrate_run
           value: "{{ var_conf.integrate_run }}"
         - name: TERM
@@ -97,7 +95,7 @@ spec:
           emptyDir: {}
         - name: ess-conf
           hostPath:
-            path: {{ config_base_dir }}/ess/logs
+            path: {{ config_base_dir }}/logs/ess
 
 
 ---
@@ -116,4 +114,6 @@ spec:
   - port: 8080
     name: rg-ess
     targetPort: 8080
-
+  - port: 1099
+    name: rg-ess-1099
+    targetPort: 1099

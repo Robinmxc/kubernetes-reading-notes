@@ -6,6 +6,17 @@
   - ruijie/sourceid/env
 
 - hosts:
+    - change-domain
+  tags:
+    - change-domain
+    - midware
+  vars_files:
+    - "/etc/kad/config.yml"
+  any_errors_fatal: true
+  roles:
+    - { role: ruijie/sourceid/change-domain}
+
+- hosts:
   - mongodb
   tags:
   - mongodb
