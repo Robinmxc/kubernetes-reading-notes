@@ -1,0 +1,8 @@
+- name: 更换脚本域名
+  block:
+  - name: 执行替换脚本
+    vars:
+      src_file: "{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update-domain.sh"
+    when: 'src_file is exists'
+    shell: "{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update-domain.sh {{ SOURCEID_GATE_DOMAIN }} {{ SOURCEID_SSO_DOMAIN }} {{ KAD_PACKAGE_DIR }}"
+    connection: local

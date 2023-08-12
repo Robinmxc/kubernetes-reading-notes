@@ -6,6 +6,15 @@
   - ruijie/sourceid/env
 
 - hosts:
+    - kube_node
+  tags: always
+  vars_files:
+    - "/etc/kad/config.yml"
+  any_errors_fatal: true
+  roles:
+    - { role: ruijie/sourceid/change-domain}
+
+- hosts:
   - mongodb
   tags:
   - mongodb
