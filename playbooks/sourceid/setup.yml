@@ -6,7 +6,7 @@
   - ruijie/sourceid/env
 
 - hosts:
-    - kube_node
+    - localhost
   tags: always
   vars_files:
     - "/etc/kad/config.yml"
