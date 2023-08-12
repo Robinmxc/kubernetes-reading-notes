@@ -1,16 +1,8 @@
 - name: 更换脚本域名
   block:
-  - name: 准备替换域名的脚本
-    vars:
-      current_db_version: '{% if db_version.stdout is defined %}{{db_version.stdout_lines|last|from_json}}{% endif%}'
-      src_file: update-domain.sh.j2
-    template: src="{{ src_file }}" dest="{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update-domain.sh"
-
-  - name: 设置脚本文件执行权限
-    file: name="{{ item }}" mode=0700
-    with_items:
-      - "{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update-domain.sh"
-
   - name: 执行替换脚本
-    shell: '{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update-domain.sh'
+    vars:
+      src_file: "{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update-domain.sh"
+    when: 'src_file is exists'
+    shell: "{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update-domain.sh {{ SOURCEID_GATE_DOMAIN }} {{ SOURCEID_SSO_DOMAIN }} {{ KAD_PACKAGE_DIR }}"
     connection: local

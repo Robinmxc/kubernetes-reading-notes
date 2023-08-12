@@ -15,6 +15,9 @@ spec:
       labels:
         k8s-app: rg-{{ comp_name }}
     spec:
+{% if (KUBE_NODE_HOSTS | length | int) == 1 %}
+      hostNetwork: true
+{% endif %}
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: rg-{{ comp_name }}
