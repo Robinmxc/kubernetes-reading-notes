@@ -1,5 +1,11 @@
 - name: 更换脚本域名
   block:
+  - name: 设置文件权限
+    vars:
+      src_file: "{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update_domain.sh"
+    when: 'src_file is exists'
+    shell: "chmod +777 {{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update_domain.sh"
+
   - name: 执行替换脚本
     vars:
       src_file: "{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update_domain.sh"
