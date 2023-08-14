@@ -15,9 +15,8 @@ spec:
       labels:
         k8s-app: rg-{{ comp_name }}
     spec:
-{% if (KUBE_NODE_HOSTS | length | int) == 1 %}
+      nodeName: {{ KUBE_NODE_HOSTS[0] }}
       hostNetwork: true
-{% endif %}
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: rg-{{ comp_name }}
@@ -39,10 +38,12 @@ spec:
           protocol: UDP
         env:
         - name: AUTHEXTEND_PROXY_PORT
-          value: "80"
+          value: "30080"
         - name: ESS_PROXY_PORT
-          value: "8080"
+          value: "38080"
         - name: CURRENT_NODE_IP
+          value: {{ KUBE_NODE_HOSTS[0] }}
+        - name: ESS_NODE_IP
           value: {{ KUBE_NODE_HOSTS[0] }}
         volumeMounts:
          - mountPath: /usr/local/var/log/radius
