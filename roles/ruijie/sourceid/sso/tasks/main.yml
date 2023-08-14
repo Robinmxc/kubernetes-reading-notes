@@ -9,10 +9,11 @@
   tags:
     - config
   vars:
-    cas_server_url: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/cas{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
+    cas_server_url_name: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/cas{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
+    cas_server_url: "{{ SOURCEID_SSO_URL }}"
   replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-    - {regexp: "^cas.server.name=.*$", replace: "cas.server.name={{ cas_server_url }}"}
+    - {regexp: "^cas.server.name=.*$", replace: "cas.server.name={{ cas_server_url_name }}"}
     - {regexp: "^front.server.addr=.*$", replace: "front.server.addr={{ cas_server_url }}"}
     - {regexp: "^mongodb-base-url=.*$", replace: "mongodb-base-url=mongodb://{{ SOURCEID_CAS_DB_USER }}:{{ SOURCEID_CAS_DB_PWD }}@{{ mongodb_addr }}/cas?replicaSet=rs0"}
     - {regexp: "^gateway.feign.base.url.*$", replace: "gateway.feign.base.url={{ SOURCEID_GATEWAY_URL }}"}
@@ -31,14 +32,22 @@
   with_items: '{{ sso_configs }}'
   no_log: true
 
-- name: 单域名配置
+- name: 单域名配置 step1
   tags:
     - config
   replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-sys.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
     - { regexp: "^server.context-path=.*$", replace: "server.context-path=/cas" }
     - { regexp: "^cas.authn.pac4j.cas[0].loginUrl=.*$", replace: "cas.authn.pac4j.cas[0].loginUrl={{ SOURCEID_SSO_URL }}/adapter" }
-    - { regexp: "^cas.logout.redirectUrl=.*$", replace: "cas.logout.redirectUrl={{ SOURCEID_SSO_URL }}/logout?service=" }
+  no_log: true
+  when: 'SOURCEID_DOMAIN_MODE == "single"'
+
+- name: 单域名配置 step2
+  tags:
+    - config
+  replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-sys.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+    - { regexp: "^cas.logout.redirectUrl=.*$", replace: "cas.logout.redirectUrl={{ SOURCEID_SSO_URL }}/cas/logout?service=" }
   no_log: true
   when: 'SOURCEID_DOMAIN_MODE == "single"'
 

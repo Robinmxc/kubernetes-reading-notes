@@ -186,6 +186,22 @@ spec:
             name: rg-frontend
             port:
               number: 80
+{% if SOURCEID_DOMAIN_MODE == "single" %}
+      - path: /cas/public
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-gate
+            port:
+              number: 80
+      - path: /cas/linkid
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-gate
+            port:
+              number: 80
+{% endif %}
       - path: /public
         pathType: Prefix
         backend:

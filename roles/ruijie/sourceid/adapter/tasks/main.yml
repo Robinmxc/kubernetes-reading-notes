@@ -8,16 +8,21 @@
       src: "{{ namespace_dir }}/conf/sourceid/adapter/conf/"
       dest: "{{ config_base_dir }}/sourceid/adapter/conf/"
 
-  - name: 单域名配置
+  - name: 单域名配置step1
     tags:
       - config
     lineinfile:
       dest: "{{ config_base_dir }}/sourceid/adapter/conf/application-pro.properties"
       insertafter: 'server.port=80'
       line: 'server.servlet.context-path=/adapter'
+    when: 'SOURCEID_DOMAIN_MODE == "single"'
+
+  - name: 单域名配置step2
+    tags:
+      - config
     replace: path="{{ config_base_dir }}/sourceid/adapter/conf/application-pro.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-      - { regexp: "rg-sso\.{{ APP_NAMESPACE }}\.svc/api/", replace: "rg-sso.{{ APP_NAMESPACE }}.svc/cas/api/" }
+      - { regexp: "rg-sso.{{ APP_NAMESPACE }}.svc/api/", replace: "rg-sso.{{ APP_NAMESPACE }}.svc/cas/api/" }
     no_log: true
     when: 'SOURCEID_DOMAIN_MODE == "single"'
 
