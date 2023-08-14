@@ -37,7 +37,19 @@
     insertafter: 'svc/cas/api'
     line: "{{ item }}"
   with_items:
-    - '      url: http://rg-sso.ruijie-sourceid.svc/cas/images'
+    - '      casimages_placeholder5'
+    - '      casimages_placeholder3'
+    - '      path: /cas/public/**'
+    - '      serviceId: caspublic'
+    - '      id: caspublic'
+    - '    caspublic:'
+    - '      casimages_placeholder6'
+    - '      casimages_placeholder4'
+    - '      path: /cas/linkid/**'
+    - '      serviceId: linkidpublic'
+    - '      id: linkidpublic'
+    - '    linkidpublic:'
+    - '      url: http://rg-sso.{{ APP_NAMESPACE }}.svc/cas/images'
     - '      casimages_placeholder1'
     - '      casimages_placeholder2'
     - '      path: /images/**'
@@ -53,6 +65,10 @@
   with_items:
     - {regexp: "casimages_placeholder1", replace: "sensitiveHeaders:"}
     - {regexp: "casimages_placeholder2", replace: "stripPrefix: true"}
+    - {regexp: "casimages_placeholder3", replace: "stripPrefix: true"}
+    - {regexp: "casimages_placeholder4", replace: "stripPrefix: true"}
+    - {regexp: "casimages_placeholder5", replace: "url: http://rg-frontend.{{ APP_NAMESPACE }}.svc/public"}
+    - {regexp: "casimages_placeholder6", replace: "url: http://rg-frontend.{{ APP_NAMESPACE }}.svc/public"}
   no_log: true
   when: 'SOURCEID_DOMAIN_MODE == "single"'
 
