@@ -26,6 +26,9 @@ spec:
       - name: postgresql
         image: postgres:13.6
         imagePullPolicy: IfNotPresent
+        args:
+        - '-c'
+        - max_connections=200
         env:
         - name: POSTGRES_USER
           value: postgres
