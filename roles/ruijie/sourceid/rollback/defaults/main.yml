@@ -1,1 +1,2 @@
 BAK_DIR: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/upgrade_temp"
+mongodb_deploy_mode: "{{ groups['mongodb'] | length }}"

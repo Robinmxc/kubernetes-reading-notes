@@ -5,11 +5,13 @@
       - python-firewall
       - firewalld-filesystem
     state: absent
+  ignore_errors: true
 
 - name: 查询防火墙状态
   shell: "systemctl list-units *.service"
   register: firewall_info
-
+  ignore_errors: true
+  
 - name: 关闭防火墙
   shell: "systemctl stop firewalld && systemctl disable firewalld"
   when: '"firewalld" in firewall_info.stdout'

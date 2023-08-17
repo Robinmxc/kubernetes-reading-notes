@@ -9,11 +9,14 @@ skipKubernetes=${3:-"False"}
 osname=(`uname -r`)
 mkdir -p /opt/kad/down/rpms/${osname}
 cd /opt/kad/down/rpms/${osname}
+
+
+
 result=$(echo $osname | grep ".el7.x86_64")
 allowerasing="--allowerasing"
 if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
  	allowerasing=""
-	yum remove -y python3  > /dev/null 2>&1
+	rpm -e --nodeps python3  > /dev/null 2>&1
 fi
 function rpmOperator(){
 	var=${1} 
@@ -36,7 +39,9 @@ function rpmOperator(){
 	fi
 	fileSize=`ls ./$var/ | wc -l`
 	if [[ ${mode} == 2 || ${mode} == 3 ]]  && [[ ${fileSize} > 0 ]]; then
+			set -e
 			rpm -ivh ./$var/*.rpm --force --nodeps
+			set +e
 	fi	
 }
 function pipOperator(){
@@ -51,7 +56,9 @@ function pipOperator(){
 		pip3 download -d $var  $var -i   https://pypi.douban.com/simple/
 	fi
 	if [[ ${mode} == 2 || ${mode} == 3 ]];then
+	    set -e
 		pip3 install  ./$var/*.whl
+		set +e
 	fi	
 
 }
@@ -71,7 +78,9 @@ function mongo_tool(){
 		yum install ${allowerasing} -y ./mongodb-database-tools/mongodb-database-tools-rhel80-x86_64-100.6.1.rpm --downloadonly  --downloaddir=./mongodb-database-tools
 	fi
 	if [[ ${mode} == 2 || ${mode} == 3 ]]; then
-			rpm -ivh ./mongodb-database-tools/*.rpm
+			set -e
+			rpm -ivh ./mongodb-database-tools/*.rpm --force --nodeps
+			set +e
 	fi	
 }
 function commonInstall(){
@@ -120,8 +129,10 @@ function kubernetes_process(){
 	fi
 
 	if [[ ${mode} == 2 || ${mode} == 3 ]];then
+	    set -e
 		rpm -ivh ./docker/*.rpm --force --nodeps
 		rpm -ivh ./kubernetes/*.rpm --force --nodeps
+		set +e
 	fi	
 }
 function kubernetes_process_centos7(){
@@ -136,16 +147,20 @@ function kubernetes_process_centos7(){
 			rm -rf ./kubernetes
 			yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
 			yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
+			set -e
 			yum install  -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io --downloadonly  --downloaddir=./docker
 			yum install -y   kubernetes-cni-1.2.0-0 kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64  --downloadonly  --downloaddir=./kubernetes
+			set +e
 		fi
 
 		if [[ ${mode} == 2 || ${mode} == 3 ]];then
 			#解决重装时docker删除不干净问题
 			yum remove -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io > /dev/null 2>&1
 			yum remove -y   conntrack-tools containernetworking-plugins  cri-tools libnetfilter_cthelper libnetfilter_cttimeout  libnetfilter_queue kubernetes-cni-1.2.0-0  kubelet-1.23.8-0.x86_64 kubeadm-1.23.8-0.x86_64 kubectl-1.23.8-0.x86_64 > /dev/null 2>&1
+			set -e
 			rpm -ivh ./docker/*.rpm --force --nodeps
 			rpm -ivh ./kubernetes/*.rpm --force --nodeps
+			set +e
 		fi
 
 	fi	
@@ -154,6 +169,7 @@ function kubernetes_process_centos7(){
 function AnolisOS_python3_module(){
 	echo "AnolisOS_python3_module call"
 	rpm -qa|grep python38|xargs rpm -ev --allmatches --nodeps  > /dev/null 2>&1
+	rpm -qa|grep python36|xargs rpm -ev --allmatches --nodeps  > /dev/null 2>&1
     yum remove -y python2 > /dev/null 2>&1
 }
 function AnolisOS(){
@@ -165,14 +181,14 @@ function AnolisOS(){
 		#yum -y copr enable copart/restic 
 	fi
 	commonInstall
-	rpms=(tar jq python39 wntp epel-release)
+	rpms=(tar jq python39 wntp epel-release unzip)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
 	done
 	rm -rf /usr/local/bin/pip3
 	cp -r /usr/bin/pip3 /usr/local/bin/pip3
-	pip3s=(pyyaml)
+	pip3s=(pyyaml simplejson)
 	for var in ${pip3s[@]};
 	do
 		pipOperator $var
@@ -214,7 +230,6 @@ function centos7(){
 		yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	fi
 	commonInstall
-
 	rpms=(python3 ntp  chrony.x86_64 ansible)
 	for var in ${rpms[@]};
 	do

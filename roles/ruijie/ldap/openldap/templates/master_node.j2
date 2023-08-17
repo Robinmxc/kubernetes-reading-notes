@@ -7,7 +7,7 @@ olcServerID: 0
 olcServerID: 1
 {% endif %}
 
-dn: olcDatabase={2}hdb,cn=config
+dn: olcDatabase={2}{{ ldap_db_type }},cn=config
 changetype: modify
 add: olcSyncRepl
 olcSyncRepl: rid=001
@@ -29,7 +29,7 @@ olcSyncRepl: rid=001
 add: olcMirrorMode
 olcMirrorMode: TRUE
 
-dn: olcOverlay=syncprov,olcDatabase={2}hdb,cn=config
+dn: olcOverlay=syncprov,olcDatabase={2}{{ ldap_db_type }},cn=config
 changetype: add
 objectClass: olcOverlayConfig
 objectClass: olcSyncProvConfig

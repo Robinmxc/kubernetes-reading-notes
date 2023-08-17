@@ -1,3 +1,4 @@
+
 - name: 获取操作系统版本
   command: cat /etc/system-release
   register: os_info

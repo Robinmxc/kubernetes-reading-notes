@@ -5,7 +5,8 @@
       - python-firewall
       - firewalld-filesystem
     state: absent
-
+  ignore_errors: true
+  
 #- name: 添加EPEL仓库
 #  yum: name=epel-release state=present
 

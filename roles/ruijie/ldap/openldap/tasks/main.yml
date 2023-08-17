@@ -15,27 +15,74 @@
   - name: 解压 slapd 安装包
     shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ ldap_file }} -C {{ DATA_DIR }}/slapd >/dev/null"
 
+  - name: 查询系统信息
+    shell: "uname -r"
+    register: uname
+
   - name: 安装slapd
-    shell: "yum install -y {{ DATA_DIR }}/slapd/*rpm"
+    shell: "yum install -y {{ DATA_DIR }}/slapd/ldap/{{ uname.stdout }}/*rpm"
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"        
     no_log: false
     ignore_errors: false
 
+  - name: 安装slapd
+    shell: "rpm -ivh  {{ DATA_DIR }}/slapd/ldap/{{ uname.stdout }}/*rpm --force --nodeps  | cat"
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+    no_log: false
+    ignore_errors: false
+
+  - name: 安装slapd
+    shell: "rpm -ivh  {{ DATA_DIR }}/slapd/ldap/{{ uname.stdout }}/*rpm --force --nodeps  | cat"
+    when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")     
+    no_log: false
+    ignore_errors: false    
+
+  - name: 注册ldap数据库类型
+    set_fact:
+      ldapDbType: 'mdb'
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+
+  - name: 注册ldap数据库类型
+    set_fact:
+      ldapDbType: 'hdb'
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
+
+  # cento8的处理开始 
+  - name: 修改service参数
+    vars:
+      SLAPD_URLS: "{{ ldap_port_conf }}"
+    template: src='slapd.service.anolis.j2' dest='/usr/lib/systemd/system/slapd.service'
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+
+  - name: openldap证书处理
+    shell: "openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj '/CN=localhost'  -keyout /etc/pki/tls/ldapserver.key -out /etc/pki/tls/ldapserver.crt"
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")  
+  
+  - name: tls加密文件配置
+    template: src='add-tls.ldif.anolis.j2' dest='/etc/openldap/add-tls.ldif'
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+
+  - name: 修改ldap参数
+    template: src='ldap.anolis.conf.j2' dest='/etc/openldap/ldap.conf'
+    when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+    
+  # cento7的处理开始  
   - name: 修改service参数
     template: src='slapd.service.j2' dest='/usr/lib/systemd/system/slapd.service'
-
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
   - name: 修改slapd端口
     vars:
       SLAPD_URLS: "{{ ldap_port_conf }}"
     template:
       src: 'slapd.j2'
       dest: /etc/sysconfig/slapd
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
 
   - name: 准备目录
     file: name={{ item }} state=directory
     with_items:
     - "/etc/openldap/certs"
-
-###为了在卸载后可以再次部署
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
 
   - name: 设置证书过期时间
     replace: path="/usr/libexec/openldap/generate-server-cert.sh" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
@@ -43,19 +90,25 @@
       - {regexp: "^CERT_VALID_MONTHS=.*$", replace: "CERT_VALID_MONTHS=240"}
     ignore_errors: true
     no_log: true
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
 
   - name: 准备证书文件
     shell: "sh /usr/libexec/openldap/create-certdb.sh && sh /usr/libexec/openldap/generate-server-cert.sh"
     ignore_errors: true
     no_log: true
-    
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
+
   - name: 准备配置文件
     tags:
       - config
     template: src='DB_CONFIG.j2' dest=/var/lib/ldap/DB_CONFIG
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
 
   - name: 赋予文件权限
     shell: "chown ldap. /var/lib/ldap/DB_CONFIG"
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
+
+  # cento7的处理结束 
 
   - name: 设置日志文件
     template: src='openldap_log.conf.j2' dest='/etc/rsyslog.d/openldap.conf'
@@ -86,7 +139,7 @@
   delay: 2
 
 
-- name: 生成 admin 密码
+- name: 生成 admin 密码 
   shell: "slappasswd -s {{ LDAP.LDAP_ADMIN_PWD }}"
   register: slapd_pwd_status
 
@@ -96,6 +149,8 @@
   vars:
     ldappasswd: '{{ slapd_pwd_status.stdout }}'
     filename: '{{ item }}'
+    ldap_db_type: '{{ ldapDbType }}'
+
   template: 
     src: '{{ filename }}.j2'
     dest: /etc/openldap/{{ filename }}
@@ -106,7 +161,7 @@
   - "modify_ppolicy.ldif"
   - "ppolicy_overlay.ldif"
   - "disable_anon.ldif"
-  - "hdb-index.ldif"
+  - "db-index.ldif"
   - "olcAccess.ldif"
   - "limits.ldif"
   - "tls1.2.ldif"
@@ -126,6 +181,7 @@
 - name: 导入基本的Schema模式 # 执行多条shell
   vars:
     file_name: '{{ item }}'
+    ldap_db_type: '{{ ldapDbType}}'
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/{{ file_name }}
   with_items: 
   - "cosine.ldif"
@@ -135,7 +191,7 @@
   ignore_errors: true
 
 - name: 添加索引
-  shell: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /etc/openldap/hdb-index.ldif
+  shell: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /etc/openldap/db-index.ldif
 
 - name: 导入基础域名
   tags:
@@ -191,6 +247,15 @@
 
 - name: 取消只读账号最大读取500条记录限制
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/limits.ldif
+
+
+- name: tls加密开启
+  shell: chmod 644 /etc/pki/tls/ldapserver*
+  when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
+
+- name: tls加密开启
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/add-tls.ldif
+  when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
 
 - name: 设置ldap默认的ssl加密算法
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/tls1.2.ldif

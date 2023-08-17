@@ -50,3 +50,4 @@
     shell: "kubectl apply -f {{ yaml_dir }}/mdm/"
     run_once: true
     connection: local
+
