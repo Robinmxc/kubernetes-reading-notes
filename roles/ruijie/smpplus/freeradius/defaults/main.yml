@@ -13,7 +13,7 @@ deploy_conf_defaults:
         cpu: 2
         memory: 2Gi
       requests:
-        cpu: 1
+        cpu: 500m
         memory: 1Gi
   single:
     replicas: 1
@@ -22,7 +22,7 @@ deploy_conf_defaults:
         cpu: 2
         memory: 2Gi
       requests:
-        cpu: 1
+        cpu: 500m
         memory: 1Gi
 
 freeradius_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

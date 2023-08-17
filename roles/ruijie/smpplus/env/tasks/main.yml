@@ -45,10 +45,15 @@
     - "operations"
     - "authentication-api"
     - "nodeconnector"
-    - "pcap-scan"
+#    - "pcap-scan"
     - "linkage-devices"
     - "frontend-client"
-
+    - "flow"
+    - "aiidentify" 
+    - "aitrain"
+    - "nodescanner"
+    - "nodecompliance"    
+    - "rg-log"
 - name: 获取autostart.sh状态
   stat: path="/etc/init.d/autostart.sh"
   register: data_dir_stat  

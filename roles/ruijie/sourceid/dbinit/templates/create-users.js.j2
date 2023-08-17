@@ -59,6 +59,12 @@ db.getSiblingDB("mdm").runCommand({
   roles: [{role:"dbOwner", db: "mdm"}]
 });
 
+db.getSiblingDB("dop").runCommand({
+  createUser: "{{ SOURCEID_DOP_DB_USER }}",
+  pwd: "{{ SOURCEID_DOP_DB_PWD }}",
+  roles: [{role:"dbOwner", db: "dop"}]
+});
+
 db.getSiblingDB("career-event").runCommand({
   createUser: "{{ SOURCEID_CAREER_DB_USER }}",
   pwd: "{{ SOURCEID_CAREER_DB_PWD }}",

@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rg-{{ comp_name }}
+  namespace: {{ APP_NAMESPACE }}
+  labels:
+    k8s-app: rg-{{ comp_name }}
+spec:
+  replicas: {{ deploy_conf.replicas }}
+  selector:
+    matchLabels:
+      k8s-app: rg-{{ comp_name }}
+  template:
+    metadata:
+      labels:
+        k8s-app: rg-{{ comp_name }}
+    spec:
+      containers:
+      - name: rg-{{ comp_name }}
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
+        imagePullPolicy: IfNotPresent
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - mountPath: /home/workspace/smplus_ai_identify/configs/mongodb_config.json
+          name: conf
+          subPath: mongodb_config.json
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: conf
+          hostPath:
+            path: {{ config_base_dir }}/{{comp_name}}/conf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-{{comp_name}}
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    k8s-app: rg-{{comp_name}}
+  ports:
+  - port: 5000
+    targetPort: 5000
+

@@ -7,6 +7,11 @@ metadata:
     k8s-app: rg-{{ comp_name }}
 spec:
   replicas: {{ deploy_conf.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
@@ -34,18 +39,43 @@ spec:
         ports:
         - containerPort: 9888
         - containerPort: 9788
-        - containerPort: 52580
         - containerPort: 67
           protocol: UDP
 
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
-        - mountPath: /ruijie/{{comp_name}}/complianceSoftware
-          name: share
-          readOnly: true
         - mountPath: /ruijie/{{comp_name}}/kadapitls
           name: kadapi-tls
+        startupProbe:
+          failureThreshold: 15
+          httpGet:
+            path: /liveProbe/authentication
+            port: 9888
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /liveProbe/authentication
+            port: 9888
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /liveProbe/authentication
+            port: 9888
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
 
       imagePullSecrets:
       - name: regsecret
@@ -53,9 +83,6 @@ spec:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}
-        - name: share
-          hostPath:
-            path: {{ config_base_dir }}/share
         - name: kadapi-tls
           configMap:
             name: kadapi-cert
@@ -79,10 +106,6 @@ spec:
     name: port9888
     targetPort: 9888
     nodePort: 9888
-  - port: 52580
-    name: port52580
-    targetPort: 52580
-    nodePort: 52580
   - protocol: UDP
     port: 67
     name: port67

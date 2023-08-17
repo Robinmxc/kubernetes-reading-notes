@@ -1,0 +1,3 @@
+rsconf=rs.conf();
+rsconf.members[0].host="{{ groups['mongodb'][0] }}:27017";
+rs.reconfig(rsconf,{ force: true });

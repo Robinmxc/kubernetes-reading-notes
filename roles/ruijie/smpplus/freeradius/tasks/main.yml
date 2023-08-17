@@ -1,3 +1,25 @@
+- name: 创建切割日志和清理日志脚本
+  copy:
+    dest: "/opt/split.sh"
+    content: |
+      #!/bin/sh
+      # 拷贝日志文件到昨天的log中，split可以进行文件切割，-b指定单个文件大小，-d指定如果单个文件过大，进行切割时文件的后缀为数字
+      split -b 10M -d -a 3 {{ config_base_dir }}/freeradius/log/radius.log {{ config_base_dir }}/freeradius/log/radius.`date -d yesterday +%Y%m%d`.log
+      # 清空日志
+      cat /dev/null > {{ config_base_dir }}/freeradius/log/radius.log
+      # 删除超过60天的日志
+      find {{ config_base_dir }}/freeradius/log/ -mtime +60 -name "radius.*.log*" -exec rm -rf {} \;
+
+- cron:
+    name: "split"
+    state: present
+    minute: "0"
+    hour: "2"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    job: 'sh /opt/split.sh'
+
 - name: 复制配置文件
   tags:
   - config

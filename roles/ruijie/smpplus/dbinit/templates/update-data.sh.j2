@@ -9,3 +9,4 @@ cd /ruijie/init/smpplus/rg-upgrade-db
 ./upgrade_data.sh 127.0.0.1 27017 operations smpplus {{current_db_version['operations_version']}} {{ DB_VERSION['operations'].version }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
 ./upgrade_data.sh 127.0.0.1 27017 component smpplus {{current_db_version['component_version']}} {{ DB_VERSION['component'].version }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
 ./upgrade_data.sh 127.0.0.1 27017 license smpplus {{current_db_version['license_version']}} {{ DB_VERSION['license'].version }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}
+./upgrade_data.sh 127.0.0.1 27017 log smpplus {{current_db_version['log_version']}} {{ DB_VERSION['rg-log'].version }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }}

@@ -8,6 +8,8 @@
       - "componentVersion.sh"
       - "kubectlCmd.sh"
       - "system_date.sh"
+      - "oneAuthCertDate.sh"
+      - "httpsCertDate.sh"
     ignore_errors: true
 
 - hosts:

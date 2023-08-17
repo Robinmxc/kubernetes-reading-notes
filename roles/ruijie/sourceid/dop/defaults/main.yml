@@ -1,0 +1,31 @@
+DOP_ENABLE: "{% if SOURCEID_DOCKERS['dop'] is defined and (SOURCEID_DOCKERS['dop'].enable is not defined or SOURCEID_DOCKERS['dop'].enable) %}yes{% else %}no{% endif %}"
+
+dop_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'single' %}-Xms1792m -Xmx1792m{% else %}-Xms1792m -Xmx1792m{% endif %}"
+
+dop_configs: []
+
+dop_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 4
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+dop_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

@@ -7,6 +7,11 @@ metadata:
     k8s-app: rg-{{ comp_name }}
 spec:
   replicas: {{ deploy_conf.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
@@ -33,12 +38,44 @@ spec:
 {% endif %}
         ports:
         - containerPort: 8001
+        - containerPort: 60000
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
         - mountPath: /usr/share/nmap/scripts/ruishanhttp.nse
           name: script
           subPath: ruishanhttp.nse
+
+        startupProbe:
+          failureThreshold: 20
+          httpGet:
+            path: /liveProbe/nodeIdentify
+            port: 8001
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /liveProbe/nodeIdentify
+            port: 8001
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /liveProbe/nodeIdentify
+            port: 8001
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+
       imagePullSecrets:
       - name: regsecret
       volumes:
@@ -59,6 +96,12 @@ metadata:
 spec:
   selector:
     k8s-app: rg-{{comp_name}}
+  type: NodePort
   ports:
   - port: 8001
     targetPort: 8001
+    name: port8001
+  - port: 60000
+    targetPort: 60000
+    name: port60000
+    nodePort: 60000

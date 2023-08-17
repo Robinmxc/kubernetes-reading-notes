@@ -1,0 +1,25 @@
+nodecompliance_java_opt:  "-Xms2048m -Xmx5120m"
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 6
+        memory: 6Gi
+      requests:
+        cpu: 1
+        memory: 2Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 6
+        memory: 6Gi
+      requests:
+        cpu: 1
+        memory: 2Gi
+        
+nodecompliance_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

@@ -63,6 +63,14 @@ data:
         errors
         health
         ready
+{% if HOSTS is defined %}
+        hosts {
+{% for value in HOSTS %}
+          {{HOSTS[value]}} {{value}}
+{% endfor %}
+          fallthrough
+        }
+{% endif %}
         kubernetes {{ CLUSTER_DNS_DOMAIN }} in-addr.arpa ip6.arpa {
           pods insecure
           upstream /etc/resolv.conf

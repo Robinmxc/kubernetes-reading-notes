@@ -1,0 +1,23 @@
+- name: 更新加载所需基础rpm包
+  when: 'EOMS_ENABLE == "yes"'
+  block:
+    - name: 准备目录
+      file: name={{ item }} state=directory
+      with_items:
+        - "{{ DEST_FILE_PATH }}/rpm"
+
+    - name: 复制安装文件
+      copy:
+        src: "{{ EOMS_DOWN_PATH }}/rpm/"
+        dest: "{{ DEST_FILE_PATH }}/rpm/"
+
+    - name: 获取已复制的安装文件信息
+      command: "ls {{ DEST_FILE_PATH }}/rpm/"
+      register: base_rpm_copy_info
+
+    - name: 安装基础依赖文件
+      vars:
+        rpm_file_name: "fontconfig"
+      shell: "rpm -Uvh --force --nodeps {{ DEST_FILE_PATH }}/rpm/*.rpm "
+      when: 'rpm_file_name in base_rpm_copy_info.stdout'
+      ignore_errors: true

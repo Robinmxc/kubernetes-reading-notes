@@ -141,6 +141,12 @@
     command: "kubectl delete -f {{ yaml_dir }}/mdm/"
     when: 'pod_info.stdout is search("rg-mdm-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 dop
+    tags:
+      - dop
+    command: "kubectl delete -f {{ yaml_dir }}/dop/"
+    when: 'pod_info.stdout is search("rg-dop-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 career-event
     tags:
       - career-event
@@ -158,6 +164,18 @@
       - rg-flow
     command: "kubectl delete -f {{ yaml_dir }}/rg-flow/"
     when: 'pod_info.stdout is search("rg-flow-[a-z0-9]*-[a-z0-9]*\s")'
+
+  - name: 停止 freeradius
+    tags:
+      - freeradius
+    command: "kubectl delete -f {{ yaml_dir }}/freeradius/"
+    when: 'pod_info.stdout is search("rg-freeradius-[a-z0-9]*-[a-z0-9]*\s")'
+
+  - name: 停止 rg-authentication-validate
+    tags:
+      - rg-authentication-validate
+    command: "kubectl delete -f {{ yaml_dir }}/rg-authentication-validate/"
+    when: 'pod_info.stdout is search("rg-authentication-validate-[a-z0-9]*-[a-z0-9]*\s")'
 
   - name: 停止 portal
     tags:
@@ -188,6 +206,12 @@
       - rocketmq
     command: "kubectl delete -f {{ yaml_dir }}/rocketmq/"
     when: '"rg-rocket" in pod_info.stdout'
+
+  - name: 停止 coredns
+    tags:
+      - coredns
+    command: "{{ bin_dir }}/kubectl delete -f /opt/kube/kube-system/{{ dns_backend }}"
+    when: '"coredns" in pod_info.stdout'
 
   - name: 等待linkid结束运行
     tags:
@@ -414,6 +438,16 @@
     delay: 3
     ignore_errors: true
 
+  - name: 等待dop结束运行
+    tags:
+      - dop
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-dop" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
   - name: 等待career-event结束运行
     tags:
       - career-event
@@ -440,6 +474,26 @@
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: 'pod_info.stdout is not search("rg-flow-[a-z0-9]*-[a-z0-9]*\s")'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待freeradius结束运行
+    tags:
+      - freeradius
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: 'pod_info.stdout is not search("rg-freeradius-[a-z0-9]*-[a-z0-9]*\s")'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待rg-authentication-validate结束运行
+    tags:
+      - rg-authentication-validate
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: 'pod_info.stdout is not search("rg-authentication-validate-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
     delay: 3
     ignore_errors: true
@@ -490,6 +544,16 @@
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-rocket" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待coredns结束运行
+    tags:
+      - coredns
+    shell: "{{ bin_dir }}/kubectl get pod -n kube-system "
+    register: pod_info
+    until: '"coredns" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true

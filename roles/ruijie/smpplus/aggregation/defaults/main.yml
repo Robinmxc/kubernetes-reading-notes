@@ -1,5 +1,5 @@
-aggregation_java_opt:  "-Xms1024m -Xmx2048m"
-authentication_api_java_opt:  "-Xms1024m -Xmx2048m"
+aggregation_java_opt:  "-Xms2048m -Xmx8196m"
+authentication_api_java_opt:  "-Xms1024m -Xmx1024m"
 
 aggregation_configs: []
 
@@ -12,19 +12,19 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 1
-        memory: 3Gi
+        cpu: 4
+        memory: 10Gi
       requests:
-        cpu: 0.5
-        memory: 1Gi
+        cpu: 1
+        memory: 4Gi
   single:
     replicas: 1
     resources:
       limits:
-        cpu: 1
-        memory: 3Gi
+        cpu: 4
+        memory: 10Gi
       requests:
-        cpu: 0.5
-        memory: 1Gi
+        cpu: 1
+        memory: 4Gi
 
 aggregation_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

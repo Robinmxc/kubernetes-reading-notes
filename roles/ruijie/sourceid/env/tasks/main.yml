@@ -60,6 +60,7 @@
     - "sourceid/collect"
     - "sourceid/adapter"
     - "sourceid/mdm"
+    - "sourceid/dop"
     - "sourceid/career-event"
     - "sourceid/xxl-job"
     - "sourceid/portal"
@@ -67,6 +68,7 @@
     - "sourceid/organization-center"
     - "sourceid/rg-flow"
     - "sourceid/address-book"
+    - "sourceid/freeradius"
   connection: local
   run_once: true
 

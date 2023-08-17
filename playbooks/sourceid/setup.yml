@@ -6,6 +6,12 @@
   - ruijie/sourceid/env
 
 - hosts:
+  - kube_node
+  any_errors_fatal: true
+  roles:
+  - ruijie/cluster/kube-dns
+
+- hosts:
   - mongodb
   tags:
   - mongodb
