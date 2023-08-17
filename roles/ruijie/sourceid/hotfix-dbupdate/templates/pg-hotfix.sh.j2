@@ -2,7 +2,11 @@
 
 cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db/
 
-for file in ./xxl-job_upgrade_db/sourceid/R2.0.0p1/*.sql
+if [ -d  ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE ]; then
+
+for file in ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/*.sql
 do
 psql -U postgres -d xxl_job -f  $file
 done
+
+fi
