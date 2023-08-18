@@ -1,3 +1,4 @@
+FREERADIUS_ENABLE: "{% if SOURCEID_DOCKERS['freeradius'] is defined and (SOURCEID_DOCKERS['freeradius'].enable is not defined or SOURCEID_DOCKERS['freeradius'].enable) %}yes{% else %}no{% endif %}"
 
 freeradius_configs: []
 

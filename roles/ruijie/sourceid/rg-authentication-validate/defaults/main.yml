@@ -1,7 +1,17 @@
+RG_AUTHENTICATION_VALIDATE_ENABLE: "{% if SOURCEID_DOCKERS['ess'] is defined and (SOURCEID_DOCKERS['ess'].enable is not defined or SOURCEID_DOCKERS['ess'].enable) %}yes{% else %}no{% endif %}"
 
-freeradius_configs: []
+rg_authentication_validate_var:
+  ess_port_80_rel: 8081
+  ess_port_8080_rel: 8080
+  ess_port_443_rel: 8444
+  ess_port_8443_rel: 8443
+  integrate_run: "on"
+  term: xterm
+  scene: msp
 
-freeradius_templates_path: ""
+rg_authentication_validate_configs: []
+
+rg_authentication_validate_templates_path: ""
 
 deploy_conf_defaults:
   small:
@@ -26,3 +36,5 @@ deploy_conf_defaults:
         memory: 1Gi
 
 rg_authentication_validate_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+
+rg_authentication_validate_var_conf: '{{ rg_authentication_validate_var }}'
