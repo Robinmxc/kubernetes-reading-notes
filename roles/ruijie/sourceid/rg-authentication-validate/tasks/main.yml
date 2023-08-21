@@ -11,12 +11,16 @@
   - name: 自动配置
     tags:
       - config
+    vars:
+      deploy_node_ip: "{{ groups.ess[0] }}"
+      pgsql_node_ip: "{{ groups.pgsql[0] }}"
     replace: path="{{ config_base_dir }}/sourceid/auth-extend/conf/application-dev.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
       - {regexp: "spring.datasource.username=.*$", replace: "spring.datasource.username=postgres"}
       - {regexp: "spring.datasource.password=.*$", replace: "spring.datasource.password={{ PGSQL_ADMIN_PWD }}"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
-      - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
+      - {regexp: "spring.datasource.url=jdbc:postgresql:.*/essdb.*$", replace: "spring.datasource.url=jdbc:postgresql://{{ pgsql_node_ip }}:5432/essdb"}
+      - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ deploy_node_ip }}:27017/linkid-dev?replicaSet=rs0"}
     no_log: true
 
   - name: 准备部署文件目录
@@ -35,6 +39,8 @@
       deploy_conf: '{{rg_authentication_validate_deploy_conf}}'
       var_conf: '{{rg_authentication_validate_var_conf}}'
       comp_name: 'rg-authentication-validate'
+      deploy_node_ip: "{{ groups.ess[0] }}"
+      pgsql_node_ip: "{{ groups.pgsql[0] }}"
     template: src='rg-authentication-validate.yaml.j2' dest={{ yaml_dir }}/rg-authentication-validate/rg-authentication-validate.yml
     run_once: true
     connection: local

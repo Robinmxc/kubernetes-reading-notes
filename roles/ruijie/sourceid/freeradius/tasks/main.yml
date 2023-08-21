@@ -16,6 +16,7 @@
     vars:
       deploy_conf: '{{ freeradius_deploy_conf }}'
       comp_name: 'freeradius'
+      deploy_node_ip: "{{ groups.ess[0] }}"
     template: src='freeradius.yaml.j2' dest={{ yaml_dir }}/freeradius/freeradius.yml
     run_once: true
     connection: local
