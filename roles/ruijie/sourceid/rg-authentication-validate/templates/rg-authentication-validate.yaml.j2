@@ -15,6 +15,8 @@ spec:
       labels:
         k8s-app: rg-authentication-validate
     spec:
+      hostNetwork: true
+      nodeName: {{ deploy_node_ip }}
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: rg-auth-extend
@@ -38,6 +40,39 @@ spec:
           name: ae-logpath
         - mountPath: /skywalking/agent
           name: ae-agent
+
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["rg-authentication-validate"] is not defined or HEALTH_CHECK["rg-authentication-validate"])  %}
+        startupProbe:
+          failureThreshold: 20
+          httpGet:
+            path: /liveProbe
+            port: 8888
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /liveProbe
+            port: 8888
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /liveProbe
+            port: 8888
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+{% endif %}
+
       - name: rg-ess
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["ess"].name }}:{{ SOURCEID_DOCKERS["ess"].version }}
         imagePullPolicy: IfNotPresent
@@ -52,13 +87,13 @@ spec:
 {% endif %}
         ports:
         - containerPort: 8080
-        - containerPort: 1099
+        - containerPort: 10001
         volumeMounts:
         - mountPath: /opt/ess/log
           name: ess-conf
         env:
         - name: PGSQL_ADDRESS
-          value: jdbc:postgresql://postgresql:5432/
+          value: jdbc:postgresql://{{ pgsql_node_ip }}:5432/
         - name: PGSQL_DB_NAME
           value: essdb
         - name: PGSQL_USERNAME
@@ -80,7 +115,42 @@ spec:
         - name: scene
           value: {{ var_conf.scene }}
         - name: VIP
-          value: {{ KUBE_NODE_HOSTS[0] }}
+          value: {{ deploy_node_ip }}
+        - name: CURRENT_NODE_IP
+          value: {{ deploy_node_ip }}
+
+
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["rg-authentication-validate"] is not defined or HEALTH_CHECK["rg-authentication-validate"])  %}
+        startupProbe:
+          failureThreshold: 40
+          httpGet:
+            path: /aaa/rest/liveProbe
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /aaa/rest/liveProbe
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /aaa/rest/liveProbe
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+{% endif %}
 
       imagePullSecrets:
       - name: regsecret
@@ -114,9 +184,9 @@ spec:
   - port: 8080
     name: rg-ess
     targetPort: 8080
-  - port: 1099
-    name: rg-ess-1099
-    targetPort: 1099
+  - port: 10001
+    name: rg-ess-10001
+    targetPort: 10001
 
 ---
 apiVersion: v1

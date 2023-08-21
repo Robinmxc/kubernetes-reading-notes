@@ -15,7 +15,7 @@ spec:
       labels:
         k8s-app: rg-{{ comp_name }}
     spec:
-      nodeName: {{ KUBE_NODE_HOSTS[0] }}
+      nodeName: {{ deploy_node_ip }}
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       containers:
@@ -42,12 +42,21 @@ spec:
         - name: ESS_PROXY_PORT
           value: "38080"
         - name: CURRENT_NODE_IP
-          value: {{ KUBE_NODE_HOSTS[0] }}
+          value: {{ deploy_node_ip }}
         - name: ESS_NODE_IP
-          value: {{ KUBE_NODE_HOSTS[0] }}
+          value: {{ deploy_node_ip }}
         volumeMounts:
          - mountPath: /usr/local/var/log/radius
            name: log
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["freeradius"] is not defined or HEALTH_CHECK["freeradius"])  %}
+        livenessProbe:
+          exec:
+            command:
+            - "/bin/sh"
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 5
+{% endif %}
       imagePullSecrets:
       - name: regsecret
       volumes:
