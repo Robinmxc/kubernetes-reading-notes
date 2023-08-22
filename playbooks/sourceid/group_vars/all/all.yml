@@ -200,5 +200,5 @@ MGOB: {
 #自定义路径，前后不要加‘/’
 CUSTOMIZE_SUFFIX: ""
 
-# @todo sourceid域名模式 single-单域名，multiple-多域名，自动判断sso、gate、adapter域名是否相等
+# sourceid域名模式 single-单域名，multiple-多域名，自动判断sso、gate、adapter域名是否相等
 SOURCEID_DOMAIN_MODE: "{% if SOURCEID_SSO_DOMAIN == SOURCEID_GATE_DOMAIN and SOURCEID_SSO_DOMAIN == SOURCEID_ADAPTER_DOMAIN %}single{% else %}multiple{% endif %}"
