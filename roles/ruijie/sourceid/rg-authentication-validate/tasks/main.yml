@@ -19,6 +19,8 @@
       - {regexp: "spring.datasource.username=.*$", replace: "spring.datasource.username=postgres"}
       - {regexp: "spring.datasource.password=.*$", replace: "spring.datasource.password={{ PGSQL_ADMIN_PWD }}"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+      - {regexp: "sid.log.rest.url =.*$", replace: "sid.log.rest.url = http://{{ deploy_node_ip }}:30908/log/remote/log/save"}
+      - {regexp: "sid.log.mq.ip =.*$", replace: "sid.log.mq.ip = {{ deploy_node_ip }}:9876"}
       - {regexp: "spring.datasource.url=jdbc:postgresql:.*/essdb.*$", replace: "spring.datasource.url=jdbc:postgresql://{{ pgsql_node_ip }}:5432/essdb"}
       - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ deploy_node_ip }}:27017/linkid-dev?replicaSet=rs0"}
     no_log: true

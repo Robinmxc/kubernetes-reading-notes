@@ -133,7 +133,10 @@ def parse_host_data(workspace_dir):
     result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["mgob"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["pgsql"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
-    result["groups"]["ess"] = {"hosts": [node_hosts[0]]}
+    if (len(node_hosts) > 1):
+        result["groups"]["ess"] = {"hosts": [node_hosts[1]]}
+    else:
+        result["groups"]["ess"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
 
     # 设置K8S部署模式
     deploy_mode = "single-master"
