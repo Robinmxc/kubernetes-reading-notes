@@ -28,7 +28,7 @@ spec:
         imagePullPolicy: IfNotPresent
         args:
         - '-c'
-        - max_connections=200
+        - max_connections=1000
         env:
         - name: POSTGRES_USER
           value: postgres
