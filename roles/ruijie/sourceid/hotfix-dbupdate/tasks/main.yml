@@ -15,12 +15,16 @@
 
 - name: 复制数据初始化脚本
   copy: src="{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data1.tgz" dest="{{ KAD_PACKAGE_DIR }}/db/sourceid/data1.tgz"
+  connection: local
+  run_once: true
 
 - name: 解压数据初始化脚本
   unarchive:
     src: "{{ KAD_PACKAGE_DIR }}/db/sourceid/data1.tgz"
     dest: "{{ KAD_PACKAGE_DIR }}/db/sourceid/"
     remote_src: yes
+  connection: local
+  run_once: true
 
 - name: 准备init目录
   tags:
