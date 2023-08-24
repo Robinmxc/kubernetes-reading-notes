@@ -6,12 +6,21 @@
   connection: local
   run_once: true
 
-- name: 复制hotfix脚本到数据库目录
-  copy: 
-    src: "{{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/rg-upgrade-db" 
-    dest: "{{ KAD_PACKAGE_DIR }}/db/sourceid"
+- name: 压缩数据初始化脚本
+  archive:
+    path: "{{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/"
+    dest: "{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data1.tgz"
   connection: local
   run_once: true
+
+- name: 复制数据初始化脚本
+  copy: src="{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data1.tgz" dest="{{ KAD_PACKAGE_DIR }}/db/sourceid/data1.tgz"
+
+- name: 解压数据初始化脚本
+  unarchive:
+    src: "{{ KAD_PACKAGE_DIR }}/db/sourceid/data1.tgz"
+    dest: "{{ KAD_PACKAGE_DIR }}/db/sourceid/"
+    remote_src: yes
 
 - name: 准备init目录
   tags:
