@@ -30,22 +30,33 @@
     connection: local
 
   - name: 检查部署状态
+    tags:
+      - deploy
     shell: "rm -rf {{ yaml_dir }}/diff.txt; \
         kubectl diff -f {{ yaml_dir }}/freeradius/freeradius.yml > {{ yaml_dir }}/diff.txt; \
-        cat test.txt | head -n 1; \
         echo 'x' >> {{ yaml_dir }}/diff.txt;"
     ignore_errors: true
+    run_once: true
+    connection: local
 
   - name: 获取差别
+    tags:
+      - deploy
     shell: "cat {{ yaml_dir }}/diff.txt | head -n 1"
     register: diff_output
+    run_once: true
+    connection: local
 
   - name: 执行更新
+    tags:
+      - deploy
     when: '"x" != diff_output.stdout_lines[0]'
     block:
       - name: 停止 freeradius
         command: "kubectl delete -f {{ yaml_dir }}/freeradius/"
         when: 'pod_info.stdout is search("rg-freeradius-[a-z0-9]*-[a-z0-9]*\s")'
+        run_once: true
+        connection: local
 
       - name: 等待freeradius结束运行
         shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
@@ -55,6 +66,8 @@
         retries: 30
         delay: 3
         ignore_errors: true
+        run_once: true
+        connection: local
 
   - name: 执行部署
     tags:

@@ -22,7 +22,6 @@ spec:
     spec:
       nodeName: {{ deploy_node_ip }}
       hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["freeradius"].name }}:{{ SOURCEID_DOCKERS["freeradius"].version }}

@@ -22,7 +22,6 @@ spec:
     spec:
       hostNetwork: true
       nodeName: {{ deploy_node_ip }}
-      dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: rg-auth-extend
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["auth-extend"].name }}:{{ SOURCEID_DOCKERS["auth-extend"].version }}
