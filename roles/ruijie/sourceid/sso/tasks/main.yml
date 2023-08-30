@@ -32,7 +32,7 @@
   with_items: '{{ sso_configs }}'
   no_log: true
 
-- name: 单域名配置 step1
+- name: 单域名配置
   tags:
     - config
   vars:
@@ -41,15 +41,6 @@
   with_items:
     - { regexp: "^server.context-path.*$", replace: "server.context-path{{ eq }}/cas" }
     - { regexp: "^cas.authn.pac4j.cas.*.loginUrl=.*$", replace: "cas.authn.pac4j.cas[0].loginUrl{{ eq }}{{ SOURCEID_SSO_URL }}/adapter" }
-  no_log: true
-  when: 'SOURCEID_DOMAIN_MODE == "single"'
-
-- name: 单域名配置 step2
-  tags:
-    - config
-  replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-sys.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
-  with_items:
-    - { regexp: "^cas.logout.redirectUrl=.*$", replace: "cas.logout.redirectUrl={{ SOURCEID_SSO_URL }}/cas/logout?service=" }
   no_log: true
   when: 'SOURCEID_DOMAIN_MODE == "single"'
 
