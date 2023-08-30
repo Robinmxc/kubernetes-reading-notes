@@ -493,11 +493,15 @@ def parse_fdfs_config(host_data):
         if not is_IP(ip):
             raise Exception(ip + u"不是有效的IP地址")
     host_data["groups"]["fdfs_tracker"] = tracker_hosts
+    
+    if "FDFS_TRACKER_PORT" not in group_all_vars:
+        group_all_vars["FDFS_TRACKER_PORT"] = "22122"
 
     if "single" == fdfs_mode:
         if len(tracker_hosts) != 1 or len(storage_hosts) != 1 or tracker_hosts[0] != storage_hosts[0]:
             raise Exception(u"FDFS单机部署只能配置一个IP地址")
         group_all_vars["FDFS_ACCESS_IP"] = storage_hosts[0]
+        group_all_vars["FDFS_TRACKER_SERVERS"] = storage_hosts[0] + ":" + group_all_vars["FDFS_TRACKER_PORT"]
     else:
         fdfs_vip = group_all_vars["FDFS_VIP"] if "FDFS_VIP" in group_all_vars else ""
         if "" == fdfs_vip:
@@ -505,12 +509,11 @@ def parse_fdfs_config(host_data):
         if "" != fdfs_vip and not is_IP(fdfs_vip):
             raise Exception(u"FDFS_VIP不是有效的IP地址")
         group_all_vars["FDFS_ACCESS_IP"] = fdfs_vip
-
+        group_all_vars["FDFS_TRACKER_SERVERS"] = fdfs_vip + ":" + group_all_vars["FDFS_TRACKER_PORT"]
         if len(storage_hosts) < 2:
             raise Exception(u"FDFS_STORAGE_HOSTS必须配置两个IP地址")
 
-    if "FDFS_TRACKER_PORT" not in group_all_vars:
-        group_all_vars["FDFS_TRACKER_PORT"] = "22122"
+
     if "FDFS_STORAGE_PORT" not in group_all_vars:
         group_all_vars["FDFS_STORAGE_PORT"] = "23000"
     if "FDFS_ACCESS_PORT" not in group_all_vars:
@@ -523,10 +526,6 @@ def parse_fdfs_config(host_data):
         else:
             group_all_vars["FDFS_ACCESS_URL"] = "http://" + group_all_vars["FDFS_ACCESS_IP"] + ":" + group_all_vars["FDFS_ACCESS_PORT"] + "/" + group_all_vars["FDFS_GROUP_NAME"]
 
-    tmp = []
-    for ip in storage_hosts:
-        tmp.append(ip + ":" + group_all_vars["FDFS_TRACKER_PORT"])
-    group_all_vars["FDFS_TRACKER_SERVERS"] = ",".join(tmp)
 
     # 设置FDFS Storage节点ID和角色
     host_vars = host_data["host_vars"]
