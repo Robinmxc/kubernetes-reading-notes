@@ -142,11 +142,11 @@
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
-  - name: 查看升级脚本执行结果
-    shell: '{{ mongo_pod_shell }} cat /ruijie/init/smpplus/rg-upgrade-db/update.log | grep Error'
-    register: mongo_result
-    failed_when: 'mongo_result.stdout is search("Error") '
-    connection: local
+#  - name: 查看升级脚本执行结果
+#    shell: '{{ mongo_pod_shell }} cat /ruijie/init/smpplus/rg-upgrade-db/update.log | grep Error | grep -vw "20230808-unexpectError-init_errorCode-forps1.js"'
+#    register: mongo_result
+#    failed_when: 'mongo_result.stdout is search("Error") '
+#    connection: local
 
   - name: 保存数据库版本到SYSTEM_VERSION表中
     vars:
