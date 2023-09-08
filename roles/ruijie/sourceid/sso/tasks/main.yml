@@ -9,10 +9,11 @@
   tags:
     - config
   vars:
+    cas_server_url_name: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/cas{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
     cas_server_url: "{{ SOURCEID_SSO_URL }}"
   replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-    - {regexp: "^cas.server.name=.*$", replace: "cas.server.name={{ cas_server_url }}"}
+    - {regexp: "^cas.server.name=.*$", replace: "cas.server.name={{ cas_server_url_name }}"}
     - {regexp: "^front.server.addr=.*$", replace: "front.server.addr={{ cas_server_url }}"}
     - {regexp: "^mongodb-base-url=.*$", replace: "mongodb-base-url=mongodb://{{ SOURCEID_CAS_DB_USER }}:{{ SOURCEID_CAS_DB_PWD }}@{{ mongodb_addr }}/cas?replicaSet=rs0"}
     - {regexp: "^gateway.feign.base.url.*$", replace: "gateway.feign.base.url={{ SOURCEID_GATEWAY_URL }}"}
@@ -30,6 +31,18 @@
     replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
   with_items: '{{ sso_configs }}'
   no_log: true
+
+- name: 单域名配置
+  tags:
+    - config
+  vars:
+    eq: '='
+  replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-sys.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+    - { regexp: "^server.context-path.*$", replace: "server.context-path{{ eq }}/cas" }
+    - { regexp: "^cas.authn.pac4j.cas.*.loginUrl=.*$", replace: "cas.authn.pac4j.cas[0].loginUrl{{ eq }}{{ SOURCEID_SSO_URL }}/adapter" }
+  no_log: true
+  when: 'SOURCEID_DOMAIN_MODE == "single"'
 
 - name: 准备部署文件目录
   tags:

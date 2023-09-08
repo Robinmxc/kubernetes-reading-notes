@@ -27,6 +27,17 @@
       replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
     with_items: '{{ faceid_configs }}'
 
+  - name: 单域名配置
+    tags:
+      - config
+    replace: path="{{ config_base_dir }}/sourceid/faceid/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - { regexp: ".svc/oauth2.0", replace: ".svc/cas/oauth2.0" }
+      - { regexp: "rg-sso/oauth2.0", replace: "rg-sso/cas/oauth2.0" }
+      - { regexp: "base-url: http://rg-sso.{{ APP_NAMESPACE }}.svc", replace: "base-url: http://rg-sso.{{ APP_NAMESPACE }}.svc/cas" }
+    no_log: true
+    when: 'SOURCEID_DOMAIN_MODE == "single"'
+
   - name: 准备部署文件目录
     tags:
       - config
