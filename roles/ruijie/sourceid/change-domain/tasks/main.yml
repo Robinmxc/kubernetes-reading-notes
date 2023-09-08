@@ -8,7 +8,9 @@
 
   - name: 执行替换脚本
     vars:
+      SSO_DOMAIN_URL: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/cas{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
+      GATE_DOMAIN_URL: '{{ SOURCEID_FRONTEND_URL }}'
       src_file: "{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update_domain.sh"
     when: 'src_file is exists'
-    shell: "{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update_domain.sh {{ SOURCEID_GATE_DOMAIN }} {{ SOURCEID_SSO_DOMAIN }} {{ KAD_PACKAGE_DIR }}"
+    shell: "{{ KAD_PACKAGE_DIR }}/db/sourceid/rg-upgrade-db/update_domain.sh {{ GATE_DOMAIN_URL }} {{ SSO_DOMAIN_URL }} {{ KAD_PACKAGE_DIR }}"
     connection: local
