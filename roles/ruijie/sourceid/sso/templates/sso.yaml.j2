@@ -186,6 +186,34 @@ spec:
             name: rg-frontend
             port:
               number: 80
+      - path: /channel/login
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-frontend
+            port:
+              number: 80
+      - path: /channel/oauth2.0/authorize
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-frontend
+            port:
+              number: 80
+      - path: /channel/login
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-frontend
+            port:
+              number: 80
+      - path: /channel/oauth2.0/authorize
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-frontend
+            port:
+              number: 80
 {% if SOURCEID_DOMAIN_MODE == "single" %}
       - path: /cas/public
         pathType: Prefix
@@ -229,6 +257,30 @@ spec:
               number: 80
 {% if SOURCEID_DOMAIN_MODE == "single" %}
       - path: /images
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-sso
+            port:
+              number: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rg-sso-ingress-channel
+  namespace: ruijie-sourceid
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^/channel/(.*)$ /$1;
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: {{ SOURCEID_SSO_DOMAIN }}
+    http:
+      paths:
+      - path: /channel
         pathType: Prefix
         backend:
           service:
