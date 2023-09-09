@@ -6,10 +6,23 @@
   connection: local
   run_once: true
 
-- name: 复制hotfix脚本到数据库目录
-  copy: 
-    src: "{{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/rg-upgrade-db" 
-    dest: "{{ KAD_PACKAGE_DIR }}/db/sourceid"
+- name: 压缩数据初始化脚本
+  archive:
+    path: "{{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/"
+    dest: "{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data1.tgz"
+  connection: local
+  run_once: true
+
+- name: 复制数据初始化脚本
+  copy: src="{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data1.tgz" dest="{{ KAD_PACKAGE_DIR }}/db/sourceid/data1.tgz"
+  connection: local
+  run_once: true
+
+- name: 解压数据初始化脚本
+  unarchive:
+    src: "{{ KAD_PACKAGE_DIR }}/db/sourceid/data1.tgz"
+    dest: "{{ KAD_PACKAGE_DIR }}/db/sourceid/"
+    remote_src: yes
   connection: local
   run_once: true
 
@@ -49,11 +62,19 @@
   set_fact:
     mongo_pod_name: "{{ shell_result.stdout }}"
     mongo_pod_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
+    mongo_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- mongo {{ mongo_auth_param }}"
   connection: local
   run_once: true
 
+- name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
+  shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
+  register: db_version
+  failed_when: 'db_version.stdout is search(mongo_shell_fail_pattern) and db_version.stdout is not search(mongo_shell_success_pattern)' 
+  connection: local
+
 - name: 准备升级数据的脚本
   vars:
+    current_db_version: '{% if db_version.stdout is defined %}{{db_version.stdout_lines|last|from_json}}{% endif%}'
     src_file: mongo-hotfix.sh.j2
   template: src="{{ src_file }}" dest="{{ mongodb_init_dir }}/mongo-hotfix.sh"
 

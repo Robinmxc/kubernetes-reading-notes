@@ -207,11 +207,11 @@
     command: "kubectl delete -f {{ yaml_dir }}/rocketmq/"
     when: '"rg-rocket" in pod_info.stdout'
 
-  - name: 停止 coredns
+  - name: 停止 rg-mgob
     tags:
-      - coredns
-    command: "{{ bin_dir }}/kubectl delete -f /opt/kube/kube-system/{{ dns_backend }}"
-    when: '"coredns" in pod_info.stdout'
+      - mgob
+    command: "kubectl delete -f {{ yaml_dir }}/mgob/mgob.yml"
+    when: '"rg-mgob" in pod_info.stdout'
 
   - name: 等待linkid结束运行
     tags:
@@ -547,16 +547,16 @@
     retries: 30
     delay: 3
     ignore_errors: true
-
-  - name: 等待coredns结束运行
+    
+  - name: 等待rg-mgob结束运行
     tags:
-      - coredns
-    shell: "{{ bin_dir }}/kubectl get pod -n kube-system "
+      - mgob
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
-    until: '"coredns" not in pod_info.stdout'
+    until: '"rg-mgob" not in pod_info.stdout'
     retries: 30
     delay: 3
-    ignore_errors: true
+    ignore_errors: true   
 
 - hosts:
   - gateway
