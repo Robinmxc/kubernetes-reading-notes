@@ -7,8 +7,17 @@
   when: 'not stat_result.stat.exists'
   block:
   - name: 安装influxdb
-    yum: name={{ DEST_FILE_PATH }}/{{ influxdb_file }} disable_gpg_check=Yes state=present
-  
+    shell: "yum install -y {{ DEST_FILE_PATH }}/{{ influxdb_file }}"
+    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"  
+
+  - name: 安装influxdb
+    shell: "rpm -ivh   {{ DEST_FILE_PATH }}/{{ influxdb_file }} --force --nodeps "
+    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")   
+
+  - name: influxdb系统修复脚本
+    shell: "chmod +7777 {{ DEST_FILE_PATH }}/influxd;\\cp -rpf {{ DEST_FILE_PATH }}/influxd  /usr/bin/;\\cp -rpf {{ DEST_FILE_PATH }}/influxdb.service /etc/systemd/system/;systemctl daemon-reload;"  
+    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
+
   - name: 自动配置
     tags:
       - config

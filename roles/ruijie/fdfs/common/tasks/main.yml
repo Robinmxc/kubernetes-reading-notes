@@ -43,33 +43,19 @@
   - "{{ FDFS_CONF_PATH }}"
   - "{{ FDFS_SRC_PATH }}"
   - "{{ base_dir }}/down/rpms"
+  - "{{ base_dir }}/down/rpms/common"
 
 - name: 解压 rpm 包
   vars:
-    tgz_file: '{{ base_dir }}/down/fdfs/fastdfs.tar.gz'
-    src_dir: '{{ base_dir }}/down/rpms/fastdfs'
+    tgz_file: '{{ base_dir }}/down/common/nginx.tar.gz'
+    src_dir: '{{ base_dir }}/down/rpms/common/nginx/'
   unarchive:
     src: "{{ tgz_file }}"
-    dest: "{{ base_dir }}/down/rpms"
+    dest: "{{ base_dir }}/down/rpms/common"
   when: 'tgz_file is exists and src_dir is not exists'
 
 - name: 安装 rpm
-  shell: "yum install -y {{ base_dir }}/down/rpms/fastdfs/{{ uname.stdout }}/*rpm"
-  when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
-  no_log: true
-  ignore_errors: true
-
-- name: 安装 rpm
-  shell: "rpm -ivh {{ base_dir }}/down/rpms/fastdfs/{{ uname.stdout }}/*rpm --force --nodeps | cat"
-  when: (ansible_distribution == "Anolis" and ansible_distribution_major_version == "8")
-  no_log: true
-  ignore_errors: true
-
-- name: 安装 rpm
-  shell: "rpm -ivh {{ base_dir }}/down/rpms/fastdfs/{{ uname.stdout }}/*rpm --force --nodeps  | cat"
-  when: (ansible_distribution == "openEuler" and ansible_distribution_major_version == "22")  
-  no_log: true
-  ignore_errors: true
+  shell: "{{ base_dir }}/down/rpms/common/nginx/common-nginx-install.sh"
 
 - name: 下载libfastcommon源码
   vars:
@@ -174,6 +160,12 @@
     dest: "{{ FDFS_SRC_PATH }}"
   when: 'tgz_file is exists and src_dir is not exists'
 
+- name: 欧拉系统修复编译参数
+  shell: "sed -i 's/-Werror//g' /usr/local/src/nginx-1.20.1/auto/cc/*"
+  args:
+    chdir: "{{ FDFS_SRC_PATH }}/nginx-{{ fastdfs_nginx_version }}"
+  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22" and "/usr/local/nginx/sbin/nginx" is not exists) 
+   
 - name: 安装nginx
   shell: "./configure --add-module={{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}/src && make && make install"
   args:

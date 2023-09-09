@@ -1,13 +1,12 @@
 #!/bin/bash
 osname=(`uname -r`)
-rm -rf /opt/kad/down/fdfs/rpms
-rm -rf /opt/kad/down/fdfs/rpms/fastdfs/${osname}
-mkdir -p /opt/kad/down/fdfs/rpms/fastdfs/${osname}
-tar -xvf /opt/kad/down/fdfs/fastdfs.tar.gz -C /opt/kad/down/fdfs/rpms/
-chmod +777  /opt/kad/tools/fdfsinstall.sh
-\cp -rpf  /opt/kad/tools/fdfsinstall.sh /opt/kad/down/fdfs/rpms/fastdfs
-cd /opt/kad/down/fdfs/rpms/fastdfs/${osname}
-result=$(echo $osname | grep ".el7.x86_64")
+rm -rf /opt/kad/down/rpms/common
+rm -rf /opt/kad/down/rpms/common/nginx/${osname}
+mkdir -p /opt/kad/down/rpms/common/nginx/${osname}
+tar -xvf /opt/kad/down/common/nginx.tar.gz -C /opt/kad/down/rpms/common/
+chmod +777  /opt/kad/tools/common-nginx-install.sh
+\cp -rpf  /opt/kad/tools/common-nginx-install.sh /opt/kad/down/rpms/common/nginx
+cd /opt/kad/down/rpms/common/nginx/${osname}
 function centos7(){
 	echo "centos7 call"
     rpms="make autoconf automake cpp gcc gcc-c++  glibc-devel  glibc-headers  keepalived  kernel-headers  keyutils-libs-devel  krb5-devel \
@@ -46,7 +45,7 @@ if	[[ "$result" != "" ]];then
 	centos7
 fi
 
-cd /opt/kad/down/fdfs/rpms/
-rm -rf /opt/kad/down/fdfs/rpms/fastdfs.tar.gz
-tar  -zcvf   fastdfs.tar.gz *
-\cp -rpf  fastdfs.tar.gz /opt/kad/down/fdfs/
+cd /opt/kad/down/rpms/common/
+rm -rf /opt/kad/down/rpms/common/nginx.tar.gz
+tar  -zcvf   nginx.tar.gz *
+\cp -rpf  nginx.tar.gz /opt/kad/down/common/

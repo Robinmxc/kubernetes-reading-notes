@@ -214,13 +214,16 @@ function pg_back(){
 	  back_command="kubectl exec -n ruijie-sourceid postgresql-0 -- pg_dump -U postgres  xxl_job > ${remote_back_dir}/xxl_job.sql";
 	  remote_ssh_command ${from_ip} ${from_password} "${back_command};" 
 	  back_command="kubectl exec -n ruijie-sourceid postgresql-0 -- pg_dump -U postgres  flowable > ${remote_back_dir}/flowable.sql";
-	  remote_ssh_command ${from_ip} ${from_password} "${back_command};" 
+	  remote_ssh_command ${from_ip} ${from_password} "${back_command};"
+	  back_command="kubectl exec -n ruijie-sourceid postgresql-0 -- pg_dump -U postgres  essdb > ${remote_back_dir}/essdb.sql";
+	  remote_ssh_command ${from_ip} ${from_password} "${back_command};"
 	  rm -rf ${local_back_dir}/*.sql  > /dev/null 2>&1
 	  mkdir -p ${local_back_dir}
 	  sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${from_ip}:${remote_back_dir}/init.sql ${local_back_dir}
 	  sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${from_ip}:${remote_back_dir}/xxl_job.sql ${local_back_dir}
 	  sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${from_ip}:${remote_back_dir}/flowable.sql ${local_back_dir}
-	  remote_ssh_command ${from_ip} ${from_password} "${del_command};" 
+	  sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${from_ip}:${remote_back_dir}/essdb.sql ${local_back_dir}
+	  remote_ssh_command ${from_ip} ${from_password} "${del_command};"
 }
 function ldap_back(){
 

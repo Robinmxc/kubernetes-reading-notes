@@ -1,12 +1,25 @@
 - name: 检查LDAP配置参数
   fail: msg="安装LDAP需要先设置LDAP参数"
   when: 'LDAP_ENABLE == "no"'
- 
-- name: 检查ldap的服务状态
-  stat: 
-    path: /usr/lib/systemd/system/slapd.service    #这个服务状态不能用shell命令吗system status slapd
-  register: slapd_stat
 
-- name: 检查是否已部署ldap
-  fail: msg="已部署ldap"
-  when: 'slapd_stat.stat.exists'
+- name: 检查LDAP是否安装
+  when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8") or ((ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7")
+  block:
+    - name: 检查ldap的服务状态
+      stat: 
+        path: "/usr/lib/systemd/system/slapd.service"   
+      register: slapd_stat    
+    - name: 检查是否已部署ldap
+      fail: msg="已部署ldap"
+      when: 'slapd_stat.stat.exists'    
+
+- name: 检查LDAP是否安装
+  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")
+  block:
+    - name: 检查ldap的服务状态
+      stat: 
+        path: "/etc/pki/tls/ldapserver.crt"    
+      register: slapd_stat_openEuler    
+    - name: 检查是否已部署ldap
+      fail: msg="已部署ldap"
+      when: 'slapd_stat_openEuler.stat.exists'    

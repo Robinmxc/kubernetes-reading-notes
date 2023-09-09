@@ -1,18 +1,20 @@
-- name: 解压nginx 编译所需rpm包
+
+- name: 准备目录
+  file: name={{ item }} state=directory
+  with_items:
+  - "{{ base_dir }}/down/rpms/common"
+
+- name: 解压 rpm 包
   vars:
-    #下载压缩包目录
-    tgz_file: '{{ LDAP_DOWN_PATH }}/nginxbuild.tar.gz'
-    #nginx安装目录
-    src_dir: '{{ NGINX_SRC_PATH }}/nginxbuild'
+    tgz_file: '{{ base_dir }}/down/common/nginx.tar.gz'
+    src_dir: '{{ base_dir }}/down/rpms/common/nginx/'
   unarchive:
     src: "{{ tgz_file }}"
-    dest: "{{ NGINX_SRC_PATH }}"
+    dest: "{{ base_dir }}/down/rpms/common"
   when: 'tgz_file is exists and src_dir is not exists'
 
 - name: 安装 rpm
-  shell: "yum install -y {{ NGINX_SRC_PATH }}/nginxbuild/*rpm"
-  no_log: true
-  ignore_errors: true
+  shell: "{{ base_dir }}/down/rpms/common/nginx/common-nginx-install.sh"
 
 - name: 下载nginx源码
   vars:

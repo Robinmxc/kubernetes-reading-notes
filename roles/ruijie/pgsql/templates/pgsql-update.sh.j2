@@ -11,3 +11,8 @@ cd /ruijie/init/sourceid/rg-upgrade-db
 {% if "rg-flow" in DB_VERSION %}
 ./upgrade_pg.sh {{current_db_version}} {{DB_VERSION["rg-flow"]["version"]}} flowable {{DB_VERSION["rg-flow"]["name"]}} sourceid
 {% endif %}
+
+# rg-authentication-validate组件数据库版本记录
+{% if "ess" in DB_VERSION %}
+./upgrade_pg.sh {{current_db_version}} {{DB_VERSION["ess"]["version"]}} essdb {{DB_VERSION["ess"]["name"]}} sourceid
+{% endif %}

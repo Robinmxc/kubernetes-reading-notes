@@ -14,6 +14,17 @@
     - {regexp: "http[s]{0,1}://service.test.com", replace: "{{ SOURCEID_SSO_URL }}"}
   no_log: true
 
+- name: 单域名配置
+  tags:
+    - config
+  vars:
+    sso_prefix: '{% if SOURCEID_DOMAIN_MODE == "single" %}"sso_prefix": "/cas"{% else %}"sso_prefix": ""{% endif %}'
+  lineinfile:
+    dest: "{{ config_base_dir }}/sourceid/frontend/deploy/domain/domain.json"
+    insertafter: '"link_server"'
+    line: "    {{ sso_prefix }},"
+  when: 'SOURCEID_DOMAIN_MODE == "single"'
+
 - name: 准备部署文件目录
   tags:
     - config

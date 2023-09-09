@@ -17,7 +17,7 @@ def python3_rpm(ip):
   output_uname=output_uname.replace("\n","")
   output_uname=output_uname.replace(" ","")
   try:
-    if ".an8.x86_64" in output_uname  :
+    if ".an8" in output_uname or  ".oe2203" in output_uname :
       try:
         version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \" python3 --version;\" "
         version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
@@ -30,12 +30,30 @@ def python3_rpm(ip):
   except Exception :
         raise NameError("远程安装python3失败,请保证"+ip+"远程可用")
 
+def tar_rpm(ip):
+  output_uname= subprocess.check_output("uname -r", shell=True).decode("utf-8")
+  output_uname=output_uname.replace("\n","")
+  output_uname=output_uname.replace(" ","")
+  try:
+    if ".an8" in output_uname or  ".oe2203" in output_uname :
+      try:
+        version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \" tar --version;\" "
+        version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
+      except Exception :
+        print("tar:服务器IP="+ip+"")
+        copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/tar root@"+ip+":/tmp/tar > /dev/null 2>&1"
+        install_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"rpm -ivh  /tmp/tar/*.rpm --force --nodeps > /dev/null 2>&1;\" "
+        copy_command_output = subprocess.check_output(copy_command, shell=True)
+        install_command_output = subprocess.check_output(install_command, shell=True)
+  except Exception :
+        raise NameError("远程安装python3失败,请保证"+ip+"远程可用")
+
 def rsyslog_rpm(ip):
   output_uname= subprocess.check_output("uname -r", shell=True).decode("utf-8")
   output_uname=output_uname.replace("\n","")
   output_uname=output_uname.replace(" ","")
   try:
-    if ".an8.x86_64" in output_uname  :
+    if ".an8" in output_uname or  ".oe2203" in output_uname:
       try:
         version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"  ls /usr/sbin/rsyslogd \" "
         version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
@@ -52,6 +70,7 @@ def k8sProcess():
   if json_object["all"]["vars"]["KUBE_NODE_HOSTS"]:
     kube_nodes=json_object["all"]["vars"]["KUBE_NODE_HOSTS"]
     for item in kube_nodes:
+      tar_rpm(item)      
       python3_rpm(item)
       rsyslog_rpm(item)
             
@@ -62,6 +81,7 @@ def ldapProcess():
     ldap_enable=json_object["all"]["vars"]["LDAP"]["enable"]
     if ldap_mode == "standalone" and ldap_enable:
       for item in ldap_nodes:
+        tar_rpm(item)       
         python3_rpm(item)
         rsyslog_rpm(item)
 
@@ -71,6 +91,7 @@ def fdfsProcess():
     if fdfs_mode and fdfs_mode!="none":
       fdfs_nodes=json_object["all"]["vars"]["FDFS_STORAGE_HOSTS"]
       for item in fdfs_nodes:
+        tar_rpm(item)
         python3_rpm(item)
         rsyslog_rpm(item)
 
@@ -80,6 +101,7 @@ def eomsProcess():
     if eoms_enable:
       eoms_nodes=json_object["all"]["vars"]["EOMS"]["EOMS_STORAGE_HOST"]
       for item in eoms_nodes:
+        tar_rpm(item)        
         python3_rpm(item)
         rsyslog_rpm(item)        
 def main():

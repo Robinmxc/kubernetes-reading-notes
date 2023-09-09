@@ -7,6 +7,11 @@ metadata:
     k8s-app: rg-authentication-validate
 spec:
   replicas: {{ deploy_conf.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
       k8s-app: rg-authentication-validate
@@ -16,7 +21,7 @@ spec:
         k8s-app: rg-authentication-validate
     spec:
       hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
+      nodeName: {{ deploy_node_ip }}
       containers:
       - name: rg-auth-extend
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["auth-extend"].name }}:{{ SOURCEID_DOCKERS["auth-extend"].version }}
@@ -32,27 +37,6 @@ spec:
 {% endif %}
         ports:
         - containerPort: 8888
-        env:
-        - name: PGSQL_ADDRESS
-          value: jdbc:postgresql://10.110.13.166:25432/
-        - name: PGSQL_DB_NAME
-          value: essdb
-        - name: PGSQL_USERNAME
-          value: ruijie_essdb
-        - name: PGSQL_PASSWORD
-          value: ruijie_essdb_1008
-        - name: ESS_PROXY_PORT
-          value: "17082"
-        - name: CONSUL_HOST
-          value: localhost
-        - name: CONSUL_PORT
-          value: "8500"
-        - name: CONSUL_TOKEN
-          value: rJ1#sDn
-        - name: CURRENT_NODE_IP
-          value: 10.110.13.166
-        - name: IS_SINGLE
-          value: "true"
         volumeMounts:
         - mountPath: /ruijie/auth-extend/conf
           name: ae-conf
@@ -60,50 +44,137 @@ spec:
           name: ae-logpath
         - mountPath: /skywalking/agent
           name: ae-agent
+
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["rg-authentication-validate"] is not defined or HEALTH_CHECK["rg-authentication-validate"])  %}
+        startupProbe:
+          failureThreshold: 20
+          httpGet:
+            path: /liveProbe
+            port: 8888
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /liveProbe
+            port: 8888
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /liveProbe
+            port: 8888
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+{% endif %}
+
       - name: rg-ess
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["ess"].name }}:{{ SOURCEID_DOCKERS["ess"].version }}
         imagePullPolicy: IfNotPresent
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
         ports:
-        - containerPort: 17082
+        - containerPort: 8080
+        - containerPort: 10001
+        volumeMounts:
+        - mountPath: /opt/ess/log
+          name: ess-log
+        - mountPath: /opt/ess/server/license
+          name: ess-license
         env:
         - name: PGSQL_ADDRESS
-          value: jdbc:postgresql://10.110.13.166:25432/
+          value: jdbc:postgresql://{{ pgsql_node_ip }}:5432/
         - name: PGSQL_DB_NAME
           value: essdb
         - name: PGSQL_USERNAME
-          value: ruijie_essdb
+          value: postgres
         - name: PGSQL_PASSWORD
-          value: ruijie_essdb_1008
+          value: {{ PGSQL_ADMIN_PWD }}
         - name: ESS_PORT_80_REL
-          value: "8081"
+          value: "{{ var_conf.ess_port_80_rel }}"
         - name: ESS_PORT_8080_REL
-          value: "8080"
+          value: "{{ var_conf.ess_port_8080_rel }}"
         - name: ESS_PORT_443_REL
-          value: "8444"
+          value: "{{ var_conf.ess_port_443_rel }}"
         - name: ESS_PORT_8443_REL
-          value: "8443"
-        - name: CURRENT_NODE_IP
-          value: 172.17.8.77
+          value: "{{ var_conf.ess_port_8443_rel }}"
         - name: integrate_run
-          value: "on"
+          value: "{{ var_conf.integrate_run }}"
         - name: TERM
-          value: xterm
+          value: {{ var_conf.term }}
         - name: scene
-          value: msp
+          value: {{ var_conf.scene }}
         - name: VIP
-          value: 172.17.9.5
+          value: {{ deploy_node_ip }}
+        - name: CURRENT_NODE_IP
+          value: {{ deploy_node_ip }}
+
+
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["rg-authentication-validate"] is not defined or HEALTH_CHECK["rg-authentication-validate"])  %}
+        startupProbe:
+          failureThreshold: 100
+          httpGet:
+            path: /aaa/rest/liveProbe
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /aaa/rest/liveProbe
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /aaa/rest/liveProbe
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+{% endif %}
 
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: ae-conf
           hostPath:
-            path: /ruijie/ruijie-sourceid/sourceid/auth-extend/conf
+            path: {{ config_base_dir }}/sourceid/auth-extend/conf
         - name: ae-logpath
           hostPath:
-            path: /ruijie/ruijie-sourceid/logs
+            path: {{ config_base_dir }}/logs
         - name: ae-agent
           emptyDir: {}
+        - name: ess-log
+          hostPath:
+            path: {{ config_base_dir }}/logs/ess
+        - name: ess-license
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/ess/license
 
 
 ---
@@ -116,10 +187,42 @@ spec:
   selector:
     k8s-app: rg-authentication-validate
   ports:
-  - port: 80
+  - port: 8888
     name: rg-auth-extend
     targetPort: 8888
-  - port: 17082
+  - port: 8080
     name: rg-ess
-    targetPort: 17082
+    targetPort: 8080
+  - port: 10001
+    name: rg-ess-10001
+    targetPort: 10001
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-log-node
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 8908
+      nodePort: 30908
+  selector:
+    k8s-app: rg-log
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-rocket-node
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  type: NodePort
+  ports:
+    - port: 9876
+      targetPort: 9876
+      nodePort: 9876
+  selector:
+    k8s-app: rg-rocket

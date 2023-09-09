@@ -1,4 +1,5 @@
 pgsql_offline: "postgres-13.6.tar"
+ESS_ENABLE: "{% if SOURCEID_DOCKERS['ess'] is defined and (SOURCEID_DOCKERS['ess'].enable is not defined or SOURCEID_DOCKERS['ess'].enable) %}yes{% else %}no{% endif %}"
 
 pgsql_deploy_mode: "{{ groups['kube_node'] | length }}"
 
@@ -10,7 +11,7 @@ pgsql_deploy_conf_defaults:
         memory: 1Gi
       requests:
         cpu: 0.5
-        memory: 100Mi
+        memory: "{% if ESS_ENABLE == 'yes' %}1Gi{% else %}100Mi{% endif %}"
   normal:
     resources:
       limits:
@@ -18,7 +19,7 @@ pgsql_deploy_conf_defaults:
         memory: 2Gi
       requests:
         cpu: 1
-        memory: 512Mi
+        memory: "{% if ESS_ENABLE == 'yes' %}1Gi{% else %}512Mi{% endif %}"
   single:
     resources:
       limits:
@@ -26,6 +27,6 @@ pgsql_deploy_conf_defaults:
         memory: 2Gi
       requests:
         cpu: 1
-        memory: 512Mi
+        memory: "{% if ESS_ENABLE == 'yes' %}1Gi{% else %}512Mi{% endif %}"
 
 pgsql_deploy_conf: '{{ pgsql_deploy_conf_defaults[CLUSTER_SCALE] }}'

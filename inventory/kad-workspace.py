@@ -133,6 +133,10 @@ def parse_host_data(workspace_dir):
     result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["mgob"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["pgsql"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
+    if (len(node_hosts) > 1):
+        result["groups"]["ess"] = {"hosts": [node_hosts[1]]}
+    else:
+        result["groups"]["ess"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
 
     # 设置K8S部署模式
     deploy_mode = "single-master"
@@ -383,7 +387,8 @@ def parse_eoms_config(host_data):
         host_data["groups"]["influxdb"] = eoms_hosts
         host_data["groups"]["eoms"] = eoms_hosts
         host_vars = host_data["host_vars"]
-        host_vars[ip]={}
+        if ip not in host_vars:
+            host_vars[ip] = {}
 
 # 处理SourceData配置参数
 def parse_sourcedata_config(host_data):

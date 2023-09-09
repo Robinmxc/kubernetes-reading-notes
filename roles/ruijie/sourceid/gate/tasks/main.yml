@@ -8,11 +8,15 @@
 - name: 自动配置
   tags:
     - config
+  vars:
+    auth_server: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/cas{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
+    api_path: '{% if SOURCEID_DOMAIN_MODE == "single" %}svc/cas/api{% else %}svc/api{% endif %}'
   replace: path="{{ config_base_dir }}/sourceid/gate/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "^auth-server:.*$", replace: "auth-server: {{ SOURCEID_SSO_URL }}"}
+  - {regexp: "^auth-server:.*$", replace: "auth-server: {{ auth_server }}"}
   - {regexp: "mongodb:.*/gate.*$", replace: "mongodb://{{ SOURCEID_GATE_DB_USER }}:{{ SOURCEID_GATE_DB_PWD }}@{{ mongodb_addr }}/gate?replicaSet=rs0"}
   - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+  - {regexp: "svc/api", replace: "{{ api_path }}"}
   no_log: true
 
 - name: 自定义配置
@@ -24,6 +28,49 @@
     replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}: {{item.value}}{% endif %}'
   with_items: '{{ gate_configs }}'
   no_log: true
+
+- name: 单域名配置step1
+  tags:
+    - config
+  lineinfile:
+    dest: "{{ config_base_dir }}/sourceid/gate/conf/application.yml"
+    insertafter: 'svc/cas/api'
+    line: "{{ item }}"
+  with_items:
+    - '      casimages_placeholder5'
+    - '      casimages_placeholder3'
+    - '      path: /cas/public/**'
+    - '      serviceId: caspublic'
+    - '      id: caspublic'
+    - '    caspublic:'
+    - '      casimages_placeholder6'
+    - '      casimages_placeholder4'
+    - '      path: /cas/linkid/**'
+    - '      serviceId: linkidpublic'
+    - '      id: linkidpublic'
+    - '    linkidpublic:'
+    - '      url: http://rg-sso.{{ APP_NAMESPACE }}.svc/cas/images'
+    - '      casimages_placeholder1'
+    - '      casimages_placeholder2'
+    - '      path: /images/**'
+    - '      serviceId: casimages'
+    - '      id: casimages'
+    - '    casimages:'
+  when: 'SOURCEID_DOMAIN_MODE == "single"'
+
+- name: 单域名配置step2
+  tags:
+    - config
+  replace: path="{{ config_base_dir }}/sourceid/gate/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+    - {regexp: "casimages_placeholder1", replace: "sensitiveHeaders:"}
+    - {regexp: "casimages_placeholder2", replace: "stripPrefix: true"}
+    - {regexp: "casimages_placeholder3", replace: "stripPrefix: true"}
+    - {regexp: "casimages_placeholder4", replace: "stripPrefix: true"}
+    - {regexp: "casimages_placeholder5", replace: "url: http://rg-frontend.{{ APP_NAMESPACE }}.svc/public"}
+    - {regexp: "casimages_placeholder6", replace: "url: http://rg-frontend.{{ APP_NAMESPACE }}.svc/public"}
+  no_log: true
+  when: 'SOURCEID_DOMAIN_MODE == "single"'
 
 - name: 准备部署文件目录
   tags:

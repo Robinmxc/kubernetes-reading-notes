@@ -7,6 +7,11 @@ metadata:
     k8s-app: rg-{{ comp_name }}
 spec:
   replicas: {{ deploy_conf.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
@@ -15,8 +20,8 @@ spec:
       labels:
         k8s-app: rg-{{ comp_name }}
     spec:
+      nodeName: {{ deploy_node_ip }}
       hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["freeradius"].name }}:{{ SOURCEID_DOCKERS["freeradius"].version }}
@@ -37,20 +42,31 @@ spec:
           protocol: UDP
         env:
         - name: AUTHEXTEND_PROXY_PORT
-          value: "80"
+          value: "8888"
         - name: ESS_PROXY_PORT
-          value: "17082"
+          value: "8080"
         - name: CURRENT_NODE_IP
-          value: 172.17.8.77
+          value: {{ deploy_node_ip }}
+        - name: ESS_NODE_IP
+          value: {{ deploy_node_ip }}
         volumeMounts:
          - mountPath: /usr/local/var/log/radius
            name: log
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["freeradius"] is not defined or HEALTH_CHECK["freeradius"])  %}
+        livenessProbe:
+          exec:
+            command:
+            - "/bin/sh"
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 5
+{% endif %}
       imagePullSecrets:
       - name: regsecret
       volumes:
         - name: log
           hostPath:
-            path: /home/ruijie/ruijie-smpplus/freeradius/log
+            path: {{ config_base_dir }}/logs/rg-freeradius/log
 
 ---
 apiVersion: v1
