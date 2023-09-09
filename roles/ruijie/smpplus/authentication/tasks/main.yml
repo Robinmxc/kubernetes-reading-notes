@@ -23,6 +23,7 @@
   - {regexp: "certificatePath.*$", replace: "certificatePath: /ruijie/authentication/kadapitls/kadapi.pem"}
   - {regexp: "privateKeyPath.*$", replace: "privateKeyPath: /ruijie/authentication/kadapitls/kadapi-smp-key.pem"}
   - {regexp: "kadUrl.*$", replace: "kadUrl: https://{{groups['kube_node'][0]}}:11938"}
+  - {regexp: "sentinel-dashboard-srv", replace: "{{groups['kube_node'][0]}}"}
   no_log: true
 
 - name: 自定义配置

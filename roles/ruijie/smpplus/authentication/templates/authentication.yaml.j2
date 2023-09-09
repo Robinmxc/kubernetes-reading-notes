@@ -70,12 +70,12 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /liveProbe/authentication
+            path: /liveProbe/authenticationBusiness
             port: 9888
             scheme: HTTP
-          periodSeconds: 30
+          periodSeconds: 15
           successThreshold: 1
-          timeoutSeconds: 1
+          timeoutSeconds: 5
 
       imagePullSecrets:
       - name: regsecret

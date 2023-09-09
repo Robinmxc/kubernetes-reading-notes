@@ -1,10 +1,9 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-https
   namespace: ruijie-smpplus
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/use-regex: "true"
     #nginx.ingress.kubernetes.io/app-root: /admin/
     nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -19,6 +18,7 @@ metadata:
       rewrite ^/portal/leap(/|$)(.*)$ http://123.123.123.123$1$2;
 {% endif %}
 spec:
+  ingressClassName: nginx
 {% if 'https' == ingress_mode %}
   tls:
   - hosts:
@@ -30,94 +30,150 @@ spec:
     http: &http_rules
       paths:
       - path: /admin
+        pathType: Prefix
         backend:
-          serviceName: rg-frontend-smp
-          servicePort: 8088
+          service:
+            name: rg-frontend-smp
+            port:
+              number: 8088
       - path: /portal
+        pathType: Prefix
         # 访客认证页面
         backend:
-          serviceName: rg-frontend-portal
-          servicePort: 81
+          service:
+            name: rg-frontend-portal
+            port:
+              number: 81
       - path: /entry
+        pathType: Prefix
         # 现访客认证页面
         backend:
-          serviceName: rg-frontend-portal
-          servicePort: 81
+          service:
+            name: rg-frontend-portal
+            port:
+              number: 81
       - path: /access
+        pathType: Prefix
         # 现访客认证页面
         backend:
-          serviceName: rg-frontend-portal
-          servicePort: 81
+          service:
+            name: rg-frontend-portal
+            port:
+              number: 81
       - path: /eportal
+        pathType: Prefix
         # 添加设备使用
         backend:
-          serviceName: rg-eportal
-          servicePort: 8090
+          service:
+            name: rg-eportal
+            port:
+              number: 8090
       - path: /component
+        pathType: Prefix
         # 对应界面菜单项用户管理>用户管理
         backend:
-          serviceName: rg-component
-          servicePort: 8086
-      #- path: /self
-      #  backend:
-      #    serviceName: rg-self
-      #    servicePort: 8087
+          service:
+            name: rg-component
+            port:
+              number: 8086
       - path: /api/aggregation
+        pathType: Prefix
         backend:
-          serviceName: rg-aggregation
-          servicePort: 9999
+          service:
+            name: rg-aggregation
+            port:
+              number: 9999
       - path: /maintenance
+        pathType: Prefix
         backend:
-          serviceName: rg-operations
-          servicePort: 10000
+          service:
+            name: rg-operations
+            port:
+              number: 10000
       - path: /api
+        pathType: Prefix
         backend:
-          serviceName: rg-operations
-          servicePort: 10000
+          service:
+            name: rg-operations
+            port:
+              number: 10000
       - path: /linkid
+        pathType: Prefix
         backend:
-          serviceName: rg-linkid
-          servicePort: 8901
+          service:
+            name: rg-linkid
+            port:
+              number: 8901
       - path: /nodeManager/file/download
+        pathType: Prefix
         backend:
-          serviceName: rg-authentication
-          servicePort: 9888
+          service:
+            name: rg-authentication
+            port:
+              number: 9888
       - path: /nodeManager/nodeInfoCommit/fromAD
+        pathType: Prefix
         backend:
-          serviceName: rg-authentication
-          servicePort: 9888
+          service:
+            name: rg-authentication
+            port:
+              number: 9888
       - path: /radiusSession/onlineUser/getExportLinkedOnlineUsers
+        pathType: Prefix
         backend:
-          serviceName: rg-authentication
-          servicePort: 9888
+          service:
+            name: rg-authentication
+            port:
+              number: 9888
       - path: /nodeManager/etlUserInfoSync
+        pathType: Prefix
         backend:
-          serviceName: rg-authentication
-          servicePort: 9888
+          service:
+            name: rg-authentication
+            port:
+              number: 9888
       - path: /nodeManager/nodeidentify
+        pathType: Prefix
         backend:
-          serviceName: rg-authentication
-          servicePort: 9888
+          service:
+            name: rg-authentication
+            port:
+              number: 9888
       - path: /nodeidentify
+        pathType: Prefix
         backend:
-          serviceName: rg-nodeidentify
-          servicePort: 8001
+          service:
+            name: rg-nodeidentify
+            port:
+              number: 8001
       - path: /manualbank
+        pathType: Prefix
         backend:
-          serviceName: rg-nodeidentify
-          servicePort: 8001
+          service:
+            name: rg-nodeidentify
+            port:
+              number: 8001
       - path: /self
+        pathType: Prefix
         backend:
-          serviceName: rg-frontend-client
-          servicePort: 3000
+          service:
+            name: rg-frontend-client
+            port:
+              number: 3000
       - path: /mn
+        pathType: Prefix
         backend:
-          serviceName: rg-frontend-client
-          servicePort: 3000
+          service:
+            name: rg-frontend-client
+            port:
+              number: 3000
       - path: /log
+        pathType: Prefix
         backend:
-          serviceName: rg-log
-          servicePort: 80
+          service:
+            name: rg-log
+            port:
+              number: 80
 {% if '' != SMPPLUS_SSO_DOMAIN %}
   - host: {{ SMPPLUS_SSO_DOMAIN }}
     http: *http_rules
@@ -128,13 +184,12 @@ spec:
 {% endif %}
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-license
   namespace: ruijie-smpplus
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
@@ -149,9 +204,12 @@ spec:
     http: &http_rules
       paths:
       - path: /api/license(/|$)(.*)
+        pathType: Prefix
         backend:
-          serviceName: rg-license
-          servicePort: 8089
+          service:
+            name: rg-license
+            port:
+              number: 8089
 {% if '' != SMPPLUS_SSO_DOMAIN %}
   - host: {{ SMPPLUS_SSO_DOMAIN }}
     http: *http_rules

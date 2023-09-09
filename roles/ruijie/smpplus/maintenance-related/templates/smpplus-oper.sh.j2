@@ -24,8 +24,8 @@ do
 	fi
 done
 
-#确保kubernets各个服务正常
-services=(docker kubelet.service kube-scheduler.service kube-proxy.service kube-controller-manager.service  etcd.service kube-apiserver.service)
+#确保kubernets各个服务正常#升级后核心服务容器化不再检测
+services=(docker kubelet.service)
 for service in  ${services[@]}
 do
 	serviceInfo=$(systemctl status $service  2>&1 | grep Active)
@@ -114,14 +114,47 @@ else
 fi
 
 
+function check_ip() {
+    IP=$1
+    VALID_CHECK=$(echo $IP|awk -F. '$1<=255&&$2<=255&&$3<=255&&$4<=255{print "yes"}')
+    if echo $IP|grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null; then
+        if [ ${VALID_CHECK:-no} == "yes" ]; then
+           # echo "IP $IP available."
+           echo 0
+        else
+            #echo "IP $IP not available!"
+            echo 1
+        fi
+    else
+        #echo "IP format error!"
+        echo 2
+    fi
+}
+
+
 # 解决内网pod不通，通过iptable -F清理防火墙
 podInfo=$(kubectl get pods -A -o wide 2>&1 | grep coredns )
 result=$?
 iptableClean=0
 if [ $result == 0 ]
 then
-	podArray=($podInfo)
-	podIp=${podArray[6]}
+    {% raw %}
+    podArray=($podInfo)
+    podIp="127.0.0.1"
+    for(( i=5;i<${#podArray[@]};i++))
+    #${#array[@]}获取数组长度用于循环
+    do
+      #echo "----->${podArray[i]}"
+      temp=${podArray[i]}
+      flag=$(check_ip $temp)
+      if [ "${flag}" == 0 ]
+      then
+            podIp=${temp}
+            break
+      fi
+    done;
+    {% endraw %}
+    #echo "--->$podIp"
 	pingPodInfo=$( ping -c 2  $podIp  2>&1  | grep  "packet loss")
 	result=$?
 	if [ $result == 0 ]

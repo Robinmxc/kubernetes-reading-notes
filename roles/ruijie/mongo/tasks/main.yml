@@ -220,7 +220,7 @@
       run_once: true
 
     - name: 暂停15秒等待mongo启动完成
-      wait_for: timeout=15
+      wait_for: timeout=20
 
     - name: 尝试查询复制集状态
       shell: "{{ mongo_pod_shell }} mongo --quiet --eval 'rs.status()'"

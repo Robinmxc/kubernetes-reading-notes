@@ -5,5 +5,12 @@ then
 else
   sed -i "s/$1/$2/g" /opt/kad/workspace/k8s/conf/all.yml;
   cd /opt/kad;
-  ./kad-play.sh -e "old_ip=$1" -e "new_ip=$2" -e "ischangeip=1" playbooks/smpplus/changeip.yml;
+  if [ -n "$3" ] && [ "$3" = "Web_changeIp" ] ;
+  then
+    echo "web changeIp task execute..."
+    ./kad-play.sh -e "old_ip=$1" -e "new_ip=$2" -e "ischangeip=1" -e "iswebchangeip=1" playbooks/smpplus/changeip.yml;
+  else
+    echo "shell changeIp task execute..."
+    ./kad-play.sh -e "old_ip=$1" -e "new_ip=$2" -e "ischangeip=1" playbooks/smpplus/changeip.yml;
+  fi
 fi

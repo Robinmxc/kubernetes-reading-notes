@@ -12,15 +12,6 @@
     shell: 'sed -i "s/{{ old_ip }}/{{ new_ip }}/g" {{ item }}'
     with_items:
     - "/etc/init.d/autostart.sh"
-    - "/etc/systemd/system/etcd.service"
-    - "/etc/systemd/system/kube-apiserver.service"
-    - "/etc/systemd/system/kube-controller-manager.service"
-    - "/etc/systemd/system/kubelet.service"
-    - "/etc/systemd/system/kube-proxy.service"
-    - "/etc/systemd/system/kube-scheduler.service"
-    - "/etc/etcd/ssl/etcd-csr.json"
-    - "/etc/kubernetes/ssl/kubelet-csr.json"
-    - "/etc/kubernetes/ssl/kubernetes-csr.json"
     - "{{ actual_data_path }}/ruijie/ruijie-smpplus/frontend-smp/conf/Environment.js"
     - "/opt/kube/kube-system/flannel/kube-flannel.yaml"
     - "/opt/kad/workspace/ruijie-smpplus/yaml/mongo/mongo1.yml"
