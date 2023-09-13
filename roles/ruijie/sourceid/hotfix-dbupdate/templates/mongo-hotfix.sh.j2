@@ -34,12 +34,12 @@ do
     do
 
       #echo ${dbfilepathNew[i]}/${dbfilepathNew1[j]}
-      cc=$(mongo  -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin 127.0.0.1:27017/admin --quiet --eval "tabName='SYSTEM_VERSION';function getReadableFileSizeString(tabName) {var name=tabName;var cnt=db.getCollection(name).find({"FILE_NAME":'rg-upgrade-db/${dbfilepathNew[i]}/${dbfilepathNew1[j]}'}).count();print(cnt);};getReadableFileSizeString(tabName);")  
+      cc=$(mongo  -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin 127.0.0.1:27017/admin --quiet --eval "tabName='SYSTEM_VERSION';function getReadableFileSizeString(tabName) {var name=tabName;var cnt=db.getCollection(name).find({"FILE_NAME":'${dir}/${dbfilepathNew[i]}/${dbfilepathNew1[j]}'}).count();print(cnt);};getReadableFileSizeString(tabName);")  
       if [ $cc -gt 0 ]
       then
-        echo "rg-upgrade-db/${dbfilepathNew[i]}/${dbfilepathNew1[j]}记录已存在"
+        echo "${dir}/${dbfilepathNew[i]}/${dbfilepathNew1[j]}记录已存在"
       else
-        echo "rg-upgrade-db/${dbfilepathNew[i]}/${dbfilepathNew1[j]}无记录"
+        echo "${dir}/${dbfilepathNew[i]}/${dbfilepathNew1[j]}无记录"
         time=$(date +%Y-%m-%d_%H:%M:%S)
         tt=$(mongo 127.0.0.1:27017 -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin --quiet  ${dbfilepathNew[i]}/${dbfilepathNew1[j]})
         dd=$(echo $tt | sed 's/\"//g' | awk '{gsub(/^\s+|\s+$/, "");print}')
@@ -51,7 +51,7 @@ do
             echo $dd >> update.log
             exit
         else
-            mongo  -u {{ MONGODB_ADMIN_USER }}  -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin 127.0.0.1:27017/admin --quiet --eval "tabName='SYSTEM_VERSION';function getReadableFileSizeString(tabName) {var name=tabName;var cnt=db.getCollection(name).insert({"FILE_NAME": 'rg-upgrade-db/${dbfilepathNew[i]}/${dbfilepathNew1[j]}', "TIME": '${time}', "RESULT": '${dd}'});print(cnt);};getReadableFileSizeString(tabName);"
+            mongo  -u {{ MONGODB_ADMIN_USER }}  -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin 127.0.0.1:27017/admin --quiet --eval "tabName='SYSTEM_VERSION';function getReadableFileSizeString(tabName) {var name=tabName;var cnt=db.getCollection(name).insert({"FILE_NAME": '${dir}/${dbfilepathNew[i]}/${dbfilepathNew1[j]}', "TIME": '${time}', "RESULT": '${dd}'});print(cnt);};getReadableFileSizeString(tabName);"
      
         fi
 
