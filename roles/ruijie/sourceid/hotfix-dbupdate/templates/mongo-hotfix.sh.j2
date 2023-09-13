@@ -1,6 +1,10 @@
 #!/bin/bash
 
-cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db/
+dirname=(rg-upgrade-db rg-upgrade-db-university rg-upgrade-db-general-education)
+for dir in ${dirname[@]};
+do
+
+cd /ruijie/init/sourceid-hotfix/sourceid-university/${dir}/
 
 touch update.log
 
@@ -64,6 +68,9 @@ do
 
 
 done
+
+done
+
 
 cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db/
 
