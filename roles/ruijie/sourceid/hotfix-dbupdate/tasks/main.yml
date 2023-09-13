@@ -94,6 +94,11 @@
   connection: local
   run_once: true
 
+- name: 查看执行结果
+  shell: '{{ mongo_pod_shell }} cat /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db/update.log | grep Error'
+  register: mongo_result
+  failed_when: 'mongo_result.stdout is search("Error") '
+  connection: local
 
 #执行pg升级脚本
 
