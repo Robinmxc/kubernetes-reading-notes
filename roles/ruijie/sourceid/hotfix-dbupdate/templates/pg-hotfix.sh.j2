@@ -43,9 +43,9 @@ psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMAR
 
 dbfilepath1=$(ls ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE)
 dbfilepathNew1=(${dbfilepath1//\\n/ })
-
+{% raw %}
 for((j=0;j<${#dbfilepathNew1[*]};j++))
-
+{% endraw %}
 do
 
 cc=$(psql -U postgres  -Aqtc "select count(filename) from sql_record where filename = '${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}'")  
@@ -102,9 +102,9 @@ psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMAR
 
 dbfilepath1=$(ls ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE)
 dbfilepathNew1=(${dbfilepath1//\\n/ })
-
+{% raw %}
 for((j=0;j<${#dbfilepathNew1[*]};j++))
-
+{% endraw %}
 do
 
 cc=$(psql -U postgres  -Aqtc "select count(filename) from sql_record where filename = '${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}'")  
