@@ -3,8 +3,6 @@
 
 
 
-
-
 dirname=(rg-upgrade-db rg-upgrade-db-{{ INDUSTRY_TYPE }})
 for dir in ${dirname[@]};
 do
@@ -16,10 +14,11 @@ touch updatedb.log
 
 if [ -d  ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE ]; then
 
+psql -U postgres  -Aqtc "create table if not exists filename_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500));"
 
-  errorinfo=$(grep "Error" updatedb.log)
+  errorinfo=$(grep "ERROR" updatedb.log)
 
-  if [[ ${errorinfo} =~ "Error" ]]
+  if [[ ${errorinfo} =~ "ERROR" ]]
   then
         exit
   fi
@@ -35,27 +34,28 @@ for((j=0;j<${#dbfilepathNew1[*]};j++))
 {% endraw %}
 do
 
-cc=$(mongo  -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin 127.0.0.1:27017/admin --quiet --eval "tabName='SYSTEM_VERSION';function getReadableFileSizeString(tabName) {var name=tabName;var cnt=db.getCollection(name).find({"FILE_NAME":'${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}'}).count();print(cnt);};getReadableFileSizeString(tabName);")  
+cc=$(psql -U postgres  -Aqtc "select count(filename) from filename_record where filename = '${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}'")  
+
 if [ $cc -gt 0 ]
 then
    echo "${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}记录已存在"
 else
    echo "${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}无记录"  
 
-   time=$(date +%Y-%m-%d_%H:%M:%S)
+   
 
-   tt=$(psql -U postgres -d xxl_job -f  ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]})
+   tt=$(psql -U postgres -d xxl_job -Aqtf  ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]})
 
    dd=$(echo $tt | sed 's/\"//g' | awk '{gsub(/^\s+|\s+$/, "");print}')
 
-    errorinfo1=$(echo $dd | grep "Error")
+    errorinfo1=$(echo $dd | grep "ERROR")
 
-    if [[ ${errorinfo1} =~ "Error" ]]
+    if [[ ${errorinfo1} =~ "ERROR" ]]
     then
             echo $dd >> updatedb.log
             exit
     else
-            mongo  -u {{ MONGODB_ADMIN_USER }}  -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin 127.0.0.1:27017/admin --quiet --eval "tabName='SYSTEM_VERSION';function getReadableFileSizeString(tabName) {var name=tabName;var cnt=db.getCollection(name).insert({"FILE_NAME": '${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}', "TIME": '${time}', "RESULT": '${dd}'});print(cnt);};getReadableFileSizeString(tabName);"
+           psql -U postgres  -Aqtc "insert into filename_record(filename,time,result)values('${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}',now(),'${dd}')"
      
     fi   
 
@@ -71,10 +71,11 @@ fi
 
 if [ -d  ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE ]; then
 
+psql -U postgres  -Aqtc "create table if not exists filename_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500));"
 
-  errorinfo=$(grep "Error" updatedb.log)
+  errorinfo=$(grep "ERROR" updatedb.log)
 
-  if [[ ${errorinfo} =~ "Error" ]]
+  if [[ ${errorinfo} =~ "ERROR" ]]
   then
         exit
   fi
@@ -90,28 +91,28 @@ for((j=0;j<${#dbfilepathNew1[*]};j++))
 {% endraw %}
 do
 
-cc=$(mongo  -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin 127.0.0.1:27017/admin --quiet --eval "tabName='SYSTEM_VERSION';function getReadableFileSizeString(tabName) {var name=tabName;var cnt=db.getCollection(name).find({"FILE_NAME":'${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}'}).count();print(cnt);};getReadableFileSizeString(tabName);")  
+cc=$(psql -U postgres  -Aqtc "select count(filename) from filename_record where filename = '${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}'")  
 if [ $cc -gt 0 ]
 then
    echo "${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}记录已存在"
 else
    echo "${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}无记录"  
 
-   time=$(date +%Y-%m-%d_%H:%M:%S)
+   
 
-   tt=$(psql -U postgres -d flowable -f  ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]})
+   tt=$(psql -U postgres -d flowable  -Aqtf  ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]})
 
    dd=$(echo $tt | sed 's/\"//g' | awk '{gsub(/^\s+|\s+$/, "");print}')
 
-    errorinfo1=$(echo $dd | grep "Error")
+    errorinfo1=$(echo $dd | grep "ERROR")
 
-    if [[ ${errorinfo1} =~ "Error" ]]
+    if [[ ${errorinfo1} =~ "ERROR" ]]
     then
             echo $dd >> updatedb.log
             exit
     else
-            mongo  -u {{ MONGODB_ADMIN_USER }}  -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin 127.0.0.1:27017/admin --quiet --eval "tabName='SYSTEM_VERSION';function getReadableFileSizeString(tabName) {var name=tabName;var cnt=db.getCollection(name).insert({"FILE_NAME": '${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}', "TIME": '${time}', "RESULT": '${dd}'});print(cnt);};getReadableFileSizeString(tabName);"
-     
+          psql -U postgres  -Aqtc "insert into filename_record(filename,time,result)values('${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}',now(),'${dd}')" 
+
     fi   
 
 
