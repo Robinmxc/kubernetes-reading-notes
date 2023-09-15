@@ -3,8 +3,6 @@
 
 nowversion=$(psql -U postgres  -Aqtc "select postgres_version  from system_version where name = 'db_version'")
 
-
-
 cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db
 
 # xxl-job组件数据库跨版本升级
