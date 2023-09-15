@@ -1,6 +1,20 @@
 #!/bin/bash
 
 
+nowversion=$(psql -U postgres  -Aqtc "select postgres_version  from system_version where name = 'db_version'")
+
+
+
+cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db
+
+# xxl-job组件数据库跨版本升级
+./upgrade_pg.sh ${nowversion} DBVERSIONUPGRADE xxl_job xxl-job sourceid
+
+# rg-flow组件数据库跨版本升级
+./upgrade_pg.sh ${nowversion} DBVERSIONUPGRADE flowable rg-flow sourceid
+
+
+
 
 
 dirname=(rg-upgrade-db rg-upgrade-db-{{ INDUSTRY_TYPE }})
@@ -14,7 +28,7 @@ touch updatedb.log
 
 if [ -d  ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE ]; then
 
-psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
+
 
   errorinfo=$(grep "ERROR" updatedb.log)
 
@@ -26,6 +40,8 @@ psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMAR
 
 need=$(ls ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/ | grep sql |wc -l)
 if [ "${need}" != "0" ] ; then
+
+psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
 
 dbfilepath1=$(ls ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE)
 dbfilepathNew1=(${dbfilepath1//\\n/ })
@@ -71,7 +87,7 @@ fi
 
 if [ -d  ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE ]; then
 
-psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
+
 
   errorinfo=$(grep "ERROR" updatedb.log)
 
@@ -83,6 +99,8 @@ psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMAR
 
 need=$(ls ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/ | grep sql |wc -l)
 if [ "${need}" != "0" ] ; then
+
+psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
 
 dbfilepath1=$(ls ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE)
 dbfilepathNew1=(${dbfilepath1//\\n/ })
