@@ -14,7 +14,7 @@ touch updatedb.log
 
 if [ -d  ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE ]; then
 
-psql -U postgres  -Aqtc "create table if not exists filename_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500));"
+psql -U postgres  -Aqtc "create table if not exists filename_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
 
   errorinfo=$(grep "ERROR" updatedb.log)
 
@@ -29,9 +29,9 @@ if [ "${need}" != "0" ] ; then
 
 dbfilepath1=$(ls ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE)
 dbfilepathNew1=(${dbfilepath1//\\n/ })
-{% raw %}
+
 for((j=0;j<${#dbfilepathNew1[*]};j++))
-{% endraw %}
+
 do
 
 cc=$(psql -U postgres  -Aqtc "select count(filename) from filename_record where filename = '${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}'")  
@@ -44,7 +44,7 @@ else
 
    
 
-   tt=$(psql -U postgres -d xxl_job -Aqtf  ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]})
+   tt=$(psql -U postgres -d xxl_job -f  ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]})
 
    dd=$(echo $tt | sed 's/\"//g' | awk '{gsub(/^\s+|\s+$/, "");print}')
 
@@ -71,7 +71,7 @@ fi
 
 if [ -d  ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE ]; then
 
-psql -U postgres  -Aqtc "create table if not exists filename_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500));"
+psql -U postgres  -Aqtc "create table if not exists filename_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
 
   errorinfo=$(grep "ERROR" updatedb.log)
 
@@ -86,9 +86,9 @@ if [ "${need}" != "0" ] ; then
 
 dbfilepath1=$(ls ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE)
 dbfilepathNew1=(${dbfilepath1//\\n/ })
-{% raw %}
+
 for((j=0;j<${#dbfilepathNew1[*]};j++))
-{% endraw %}
+
 do
 
 cc=$(psql -U postgres  -Aqtc "select count(filename) from filename_record where filename = '${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}'")  
@@ -100,7 +100,7 @@ else
 
    
 
-   tt=$(psql -U postgres -d flowable  -Aqtf  ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]})
+   tt=$(psql -U postgres -d flowable  -f  ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]})
 
    dd=$(echo $tt | sed 's/\"//g' | awk '{gsub(/^\s+|\s+$/, "");print}')
 
