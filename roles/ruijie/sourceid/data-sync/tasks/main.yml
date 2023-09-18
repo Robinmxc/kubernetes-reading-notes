@@ -18,6 +18,15 @@
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
     no_log: true
 
+  - name: 单域名配置
+    tags:
+      - config
+    replace: path="{{ config_base_dir }}/sourceid/data-sync/conf/application.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - { regexp: "^feign.sso.base.url=.*$", replace: "feign.sso.base.url=http://rg-sso.{{ APP_NAMESPACE }}.svc/cas" }
+    no_log: true
+    when: 'SOURCEID_DOMAIN_MODE == "single"'
+
   - name: 准备部署文件目录
     tags:
       - config
