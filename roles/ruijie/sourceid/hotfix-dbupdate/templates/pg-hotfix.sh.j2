@@ -1,12 +1,148 @@
 #!/bin/bash
 
-cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db/
+
+nowversion=$(psql -U postgres  -Aqtc "select postgres_version  from system_version where name = 'db_version'")
+
+cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db
+
+# xxl-job组件数据库跨版本升级
+./upgrade_pg.sh ${nowversion} DBVERSIONUPGRADE xxl_job xxl-job sourceid
+
+# rg-flow组件数据库跨版本升级
+./upgrade_pg.sh ${nowversion} DBVERSIONUPGRADE flowable rg-flow sourceid
+
+
+
+
+
+dirname=(rg-upgrade-db rg-upgrade-db-{{ INDUSTRY_TYPE }})
+for dir in ${dirname[@]};
+do
+
+cd /ruijie/init/sourceid-hotfix/sourceid-university/${dir}/
+
+touch updatedb.log
+
 
 if [ -d  ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE ]; then
 
-for file in ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/*.sql
+
+
+  errorinfo=$(grep "ERROR" updatedb.log)
+
+  if [[ ${errorinfo} =~ "ERROR" ]]
+  then
+        exit
+  fi
+
+
+need=$(ls ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/ | grep sql |wc -l)
+if [ "${need}" != "0" ] ; then
+
+psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
+
+dbfilepath1=$(ls ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE)
+dbfilepathNew1=(${dbfilepath1//\\n/ })
+{% raw %}
+for((j=0;j<${#dbfilepathNew1[*]};j++))
+{% endraw %}
 do
-psql -U postgres -d xxl_job -f  $file
+
+cc=$(psql -U postgres  -Aqtc "select count(filename) from sql_record where filename = '${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}'")  
+
+if [ $cc -gt 0 ]
+then
+   echo "${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}记录已存在"
+else
+   echo "${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}无记录"  
+
+   
+
+   tt=$(psql -U postgres -d xxl_job -f  ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]})
+
+   dd=$(echo $tt | sed 's/\"//g' | awk '{gsub(/^\s+|\s+$/, "");print}')
+
+    errorinfo1=$(echo $dd | grep "ERROR")
+
+    if [[ ${errorinfo1} =~ "ERROR" ]]
+    then
+            echo $dd >> updatedb.log
+            exit
+    else
+           psql -U postgres  -Aqtc "insert into sql_record(filename,time,result)values('${dir}/xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}',now(),'${dd}')"
+     
+    fi   
+
+
+fi
+
 done
 
 fi
+
+fi
+
+
+if [ -d  ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE ]; then
+
+
+
+  errorinfo=$(grep "ERROR" updatedb.log)
+
+  if [[ ${errorinfo} =~ "ERROR" ]]
+  then
+        exit
+  fi
+
+
+need=$(ls ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/ | grep sql |wc -l)
+if [ "${need}" != "0" ] ; then
+
+psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
+
+dbfilepath1=$(ls ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE)
+dbfilepathNew1=(${dbfilepath1//\\n/ })
+{% raw %}
+for((j=0;j<${#dbfilepathNew1[*]};j++))
+{% endraw %}
+do
+
+cc=$(psql -U postgres  -Aqtc "select count(filename) from sql_record where filename = '${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}'")  
+if [ $cc -gt 0 ]
+then
+   echo "${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}记录已存在"
+else
+   echo "${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}无记录"  
+
+   
+
+   tt=$(psql -U postgres -d flowable  -f  ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]})
+
+   dd=$(echo $tt | sed 's/\"//g' | awk '{gsub(/^\s+|\s+$/, "");print}')
+
+    errorinfo1=$(echo $dd | grep "ERROR")
+
+    if [[ ${errorinfo1} =~ "ERROR" ]]
+    then
+            echo $dd >> updatedb.log
+            exit
+    else
+          psql -U postgres  -Aqtc "insert into sql_record(filename,time,result)values('${dir}/rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}',now(),'${dd}')" 
+
+    fi   
+
+
+fi
+
+done
+
+fi
+
+fi
+
+
+
+
+
+
+done

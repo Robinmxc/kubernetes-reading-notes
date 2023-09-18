@@ -125,6 +125,7 @@
   file: name="{{ item }}" mode=0700
   with_items:
   - "{{ pgsql_init_dir }}/pg-hotfix.sh"
+  - "{{ pgsql_init_dir }}/sourceid-hotfix/sourceid-university/rg-upgrade-db/upgrade_pg.sh"
 
 
 - name: 执行升级脚本
