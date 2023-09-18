@@ -64,7 +64,9 @@ spec:
         - containerPort: 8910
         volumeMounts:
         - mountPath: /ruijie/sourceid/mdm/conf
-          name: conf
+          name: mdmconf
+        - mountPath: /ruijie/sourceid/data
+          name: data
         - mountPath: /logs
           name: logpath
         - mountPath: /skywalking/agent
@@ -90,7 +92,7 @@ spec:
           periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 1
-          
+
         livenessProbe:
           failureThreshold: 5
           httpGet:
@@ -101,13 +103,86 @@ spec:
           successThreshold: 1
           timeoutSeconds: 1
 {% endif %}
+      - name: rg-dop
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.dop.name }}:{{ SOURCEID_DOCKERS.dop.version }}
+        imagePullPolicy: IfNotPresent
+        env:
+{%if SKYWALKING["enable"] %}
+        - name: JAVA_AGENT_EXT
+          value: {{ SKYWALKING.JAVA_AGENT_EXT }}
+        - name: SW_AGENT_NAME
+          value: {{ SKYWALKING.AGENT_PREFIX }}-dop
+        - name: SW_AGENT_NAMESPACE
+          value: {{ SKYWALKING.NAMESPACE }}
+        - name: SW_GRPC_LOG_SERVER_HOST
+          value: {{ SKYWALKING.SERVER_HOST }}
+        - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
+          value: {{ SKYWALKING.SERVER_HOST }}:11800
+{% endif %}
+        - name: JAVA_OPT_EXT
+          value: "{{ dop_java_opt }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
+        ports:
+        - containerPort: 8920
+        volumeMounts:
+        - mountPath: /ruijie/sourceid/dop/conf
+          name: dopconf
+        - mountPath: /ruijie/sourceid/data
+          name: data
+        - mountPath: /logs
+          name: logpath
+        - mountPath: /skywalking/agent
+          name: agent
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["dop"] is not defined or HEALTH_CHECK["dop"])  %}
+        startupProbe:
+          failureThreshold: 20
+          httpGet:
+            path: /dop/liveProbe
+            port: 8920
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /dop/liveProbe
+            port: 8920
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /dop/liveProbe
+            port: 8920
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+{% endif %}
 
       imagePullSecrets:
       - name: regsecret
       volumes:
-        - name: conf
+        - name: mdmconf
           hostPath:
             path: {{ config_base_dir }}/sourceid/mdm/conf
+        - name: dopconf
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/dop/conf
+        - name: data
+          hostPath:
+            path: {{ config_base_dir }}/sourceid/data
         - name: logpath
           hostPath:
             path: {{ config_base_dir }}/logs
@@ -126,3 +201,16 @@ spec:
   ports:
   - port: 80
     targetPort: 8910
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rg-dop
+  namespace: {{ APP_NAMESPACE }}
+spec:
+  selector:
+    k8s-app: rg-mdm
+  ports:
+  - port: 80
+    targetPort: 8920

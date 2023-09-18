@@ -11,7 +11,7 @@
   - name: 自动配置
     tags:
       - config
-    replace: path="{{ config_base_dir }}/sourceid/dop/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    replace: path="{{ config_base_dir }}/sourceid/dop/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
       - {regexp: "mongodb:.*/dop.*$", replace: "mongodb://{{ SOURCEID_DOP_DB_USER }}:{{ SOURCEID_DOP_DB_PWD }}@{{ mongodb_addr }}/dop?replicaSet=rs0"}
@@ -27,35 +27,4 @@
     with_items: '{{ dop_configs }}'
     no_log: true
 
-  - name: 准备部署文件目录
-    tags:
-      - config
-    file: path={{ item }} state=directory
-    with_items:
-      - "{{ yaml_dir }}/dop"
-    run_once: true
-    connection: local
-
-  - name: 准备部署文件
-    tags:
-      - config
-    vars:
-      deploy_conf: '{{ dop_deploy_conf }}'
-    template: src='{{ dop_templates_path }}dop.yaml.j2' dest={{ yaml_dir }}/dop/dop.yml
-    run_once: true
-    connection: local
-
-  - name: 获取所有已经创建的POD信息
-    tags:
-      - deploy
-    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
-    register: pod_info
-    run_once: true
-    connection: local
-
-  - name: 执行部署
-    tags:
-      - deploy
-    shell: "kubectl apply -f {{ yaml_dir }}/dop/"
-    run_once: true
-    connection: local
+# dop 集成到 mdm 到pod中部署container.
