@@ -146,8 +146,20 @@
   template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo3.yml
   run_once: true
   connection: local
-  when: 'mongodb_deploy_mode == "3"'
+  when: 'mongodb_deploy_mode == "3" and mongdb_cluster_mode != "pss"'
 
+- name: 准备第3个mongodb的部署文件
+  tags:
+  - config
+  vars:
+    mongodb_node_name: "{{ hostvars[groups.mongodb[2]]['MONGO_NODE_NAME'] }}"
+    mongodb_node_ip: "{{ groups.mongodb[2] }}"
+    liveness_probe_sh_config_key: "liveness-probe-sh-noauth"
+    deploy_conf: '{{ mongodb_deploy_conf }}'
+  template: src=mongo.yaml.j2 dest={{ yaml_dir }}/mongo/mongo3.yml
+  run_once: true
+  connection: local
+  when: 'mongodb_deploy_mode == "3" and mongdb_cluster_mode == "pss"'
 
 - name: 获取已下载离线镜像信息
   command: "ls {{ base_dir }}/down"
@@ -244,6 +256,18 @@
       connection: local
       run_once: true
       no_log: true
+
+
+- name: pss模式修复
+  when: '"mongo"  in pod_info.stdout and mongodb_deploy_mode == "3" and mongdb_cluster_mode == "pss"'
+  block:
+    - import_tasks: update_repl_pss_set.yml
+
+- name: psa模式修复
+  when: '"mongo"  in pod_info.stdout and mongodb_deploy_mode == "3" and mongdb_cluster_mode == "psa"'
+  block:
+    - import_tasks: update_repl_psa_set.yml
+
 
 - block:
   - name: 准备MongoDB NodePort部署文件
