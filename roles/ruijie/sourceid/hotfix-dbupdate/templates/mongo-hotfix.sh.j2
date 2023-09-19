@@ -20,55 +20,25 @@ done
 for (( j = 0 ; j < $end+1 ; j++ ))
 do
 
-    if [    "${versions[$j]}" \> {{current_db_version['cas_version']}} ]; then
 
-    ./upgrade_data.sh 127.0.0.1 27017 cas sourceid ${versions[$j]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
+    dbname=(cas gate gateway faceid groupview log mdm xxl-job report organization-center rg-flow address-book)
+    for db in ${dbname[@]};
+    do
+
+    if [    "${versions[$j]}" \> {{current_db_version['${db}_version']}} ]; then
+
+    ./upgrade_data.sh 127.0.0.1 27017 ${db} sourceid ${versions[$j]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
 
     fi
+
+    done
 
     if [    "${versions[$j]}" \> {{current_db_version['linkid-dev_version']}} ]; then
 
     ./upgrade_data.sh 127.0.0.1 27017 linkid sourceid ${versions[$j]} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
 
     fi
-
-
-    if [    "${versions[$j]}" \> {{current_db_version['gate_version']}} ]; then
-
-    ./upgrade_data.sh 127.0.0.1 27017 gate sourceid ${versions[$j]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-
-    fi
-
-    if [    "${versions[$j]}" \> {{current_db_version['gateway_version']}} ]; then
-
-    ./upgrade_data.sh 127.0.0.1 27017 gateway sourceid ${versions[$j]} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-
-    fi
-
-    if [    "${versions[$j]}" \> {{current_db_version['faceid_version']}} ]; then
-
-    ./upgrade_data.sh 127.0.0.1 27017 faceid sourceid ${versions[$j]} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-
-    fi
-
-    if [    "${versions[$j]}" \> {{current_db_version['groupview_version']}} ]; then
-
-    ./upgrade_data.sh 127.0.0.1 27017 groupview sourceid ${versions[$j]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-
-    fi    
-
-    if [    "${versions[$j]}" \> {{current_db_version['log_version']}} ]; then
-
-    ./upgrade_data.sh 127.0.0.1 27017 log sourceid ${versions[$j]} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-
-    fi
-
-
-    if [    "${versions[$j]}" \> {{current_db_version['mdm_version']}} ]; then
-
-    ./upgrade_data.sh 127.0.0.1 27017 mdm sourceid ${versions[$j]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-
-    fi
+   
 
     if [    "${versions[$j]}" \> {{current_db_version['career-event_version']}} ]; then
 
@@ -76,39 +46,10 @@ do
 
     fi
 
-    if [    "${versions[$j]}" \> {{current_db_version['xxl-job_version']}} ]; then
-
-    ./upgrade_data.sh 127.0.0.1 27017 xxl-job sourceid ${versions[$j]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-
-    fi
 
     if [    "${versions[$j]}" \> {{current_db_version['internet-id_version']}} ]; then
 
     ./upgrade_data.sh 127.0.0.1 27017 internetid sourceid ${versions[$j]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-
-    fi
-
-    if [    "${versions[$j]}" \> {{current_db_version['report_version']}} ]; then
-
-    ./upgrade_data.sh 127.0.0.1 27017 report sourceid ${versions[$j]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-
-    fi
-
-    if [    "${versions[$j]}" \> {{current_db_version['organization-center_version']}} ]; then
-
-    ./upgrade_data.sh 127.0.0.1 27017 organization-center sourceid ${versions[$j]} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-
-    fi
-
-    if [    "${versions[$j]}" \> {{current_db_version['rg-flow_version']}} ]; then
-
-    ./upgrade_data.sh 127.0.0.1 27017 rg-flow sourceid ${versions[$j]} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-
-    fi
-
-    if [    "${versions[$j]}" \> {{current_db_version['rg-flow_version']}} ]; then
-
-    ./upgrade_data.sh 127.0.0.1 27017 address-book sourceid ${versions[$j]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
 
     fi
 
