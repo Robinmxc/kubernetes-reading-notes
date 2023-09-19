@@ -167,6 +167,12 @@
     when: '"rg-log" in pod_info.stdout'
     ignore_errors: true
 
+  - name: 停止 rocketmq
+    tags:
+      - rocketmq
+    command: "kubectl delete -f {{ yaml_dir }}/rocketmq/"
+    when: '"rg-rocket" in pod_info.stdout'
+
   - name: 等待frontend-smp结束运行
     tags:
       - frontend-smp
@@ -397,7 +403,16 @@
     retries: 30
     delay: 3
     ignore_errors: true
-
+    
+  - name: 等待rocketmq结束运行
+    tags:
+      - rocketmq
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-rocket" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
   - name: 获取maintenance-related script
     tags:
       - maintenance-related
