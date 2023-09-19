@@ -18,12 +18,12 @@ spec:
       containers:
       - name: broker
         image: rocketmqinc/rocketmq:{{ rocketmq_version }}
-{% if  rocket_cluster_mode != "yes" or DEPLOY_MODE =='allinone' %}
+{% if  rocket_cluster_mode != "yes" or DEPLOY_MODE =='allinone' or "yes" == (rocketmq_public) %}
         command: ["sh","mqbroker", "-n","localhost:9876 autoCreateTopicEnable=true"]
 {% endif %}
 
-{% if  rocket_cluster_mode == "yes" and  DEPLOY_MODE !='allinone'%}
-        command: ["sh","mqbroker", "-n","rg-rocket1:9876;rg-rocket2:9876 autoCreateTopicEnable=true"]
+{% if  rocket_cluster_mode == "yes" and  DEPLOY_MODE !='allinone' and "yes" != (rocketmq_public) %}
+        command: ["sh","mqbroker", "-n", "\"rg-rocket1:9876;rg-rocket2:9876\" autoCreateTopicEnable=true"]
 {% endif %}
 
         env:
