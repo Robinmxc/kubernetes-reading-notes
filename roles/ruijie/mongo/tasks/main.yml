@@ -135,7 +135,7 @@
   connection: local
   when: 'mongodb_deploy_mode == "3"'
 
-- name: 准备第3个mongodb的部署文件
+- name: 准备第3个mongodb的部署文件-{{mongdb_cluster_mode}}
   tags:
   - config
   vars:
@@ -148,7 +148,7 @@
   connection: local
   when: 'mongodb_deploy_mode == "3" and mongdb_cluster_mode != "pss"'
 
-- name: 准备第3个mongodb的部署文件
+- name: 准备第3个mongodb的部署文件-{{mongdb_cluster_mode}}
   tags:
   - config
   vars:
