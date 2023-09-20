@@ -15,6 +15,7 @@
     with_items:
       - {regexp: "mongodb:.*/log.*$", replace: "mongodb://{{ SOURCEID_LOG_DB_USER }}:{{ SOURCEID_LOG_DB_PWD }}@{{ mongodb_addr }}/log?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+      - {regexp: "name-srv-addr:.*$", replace: "name-srv-addr: {{rocketmq_addr}}"}       
     no_log: true
 
   - name: 自定义配置
