@@ -39,6 +39,20 @@
   template: src=rocketmq.yaml.j2 dest={{ yaml_dir }}/rocketmq/rocketmq.yml
   run_once: true
   connection: local
+  when: 'rocket_cluster_mode == "yes" and  DEPLOY_MODE !="allinone" and "yes" != (rocketmq_public)'
+
+- name: 准备RocketMQ的部署文件
+  tags:
+  - config
+  vars:
+    rg_rocket_name: "rg-rocket"
+    rocketmq_node_ip: "{{ groups.rocketmq[0] }}"
+    brokerName: "broker-a"
+    deploy_conf: '{{ mq_deploy_conf }}'
+  template: src=rocketmq.yaml.j2 dest={{ yaml_dir }}/rocketmq/rocketmq.yml
+  run_once: true
+  connection: local
+  when: 'rocket_cluster_mode != "yes" or  DEPLOY_MODE =="allinone" or "yes" == (rocketmq_public)'
 
 - name: 准备RocketMQ-2的部署文件
   tags:
@@ -66,10 +80,20 @@
   - config
   vars:
     rocketmq_node_ip: "{{ ansible_host }}"
+    brokerName: "broker-a"
+    deploy_conf: '{{ mq_deploy_conf }}'
+  template: src=broker.conf dest={{ rocketmq_conf_dir }}/broker.conf
+  when: 'rocket_cluster_mode != "yes" or  DEPLOY_MODE =="allinone" or "yes" == (rocketmq_public)'
+
+- name: 准备RocketMQ的broker文件
+  tags:
+  - config
+  vars:
+    rocketmq_node_ip: "{{ ansible_host }}"
     brokerName: "{% if ansible_host == groups.rocketmq[1] %}broker-a{% else %}broker-b{%endif%}"
     deploy_conf: '{{ mq_deploy_conf }}'
   template: src=broker.conf dest={{ rocketmq_conf_dir }}/broker.conf
-
+  when: 'rocket_cluster_mode == "yes" and  DEPLOY_MODE !="allinone" and "yes" != (rocketmq_public)'
 
 - name: 获取已下载离线镜像信息
   command: "ls {{ base_dir }}/down"
