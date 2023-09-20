@@ -3,50 +3,65 @@
   when: 'mongodb_deploy_mode == "3" and inventory_hostname == groups.mongodb[0] and mongdb_cluster_mode != "pss"'
 
 - name: init
-  connection: local
-  run_once: true
   block:
 
   - name: 获取mongo1 POD 名称
     shell: "kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
     register: shell_result
-    connection: local
     run_once: true
+    connection: local
 
   - name: set vars mongo_pod_shell
     set_fact:
       mongo_pod_name: "{{ shell_result.stdout }}"
       mongo_pod_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
-    connection: local
     run_once: true
+    connection: local
 
   - name: set vars mongo_shell_init_rs
     set_fact:
       mongo_shell_init_rs: "{{ mongo_pod_shell }} mongo {{ mongo_auth_param }}"
+    run_once: true  
+    connection: local
 
   - name: 查询复制集是否PSA状态
     shell: "{{ mongo_shell_init_rs }} --quiet --eval 'r1=rs.status().members[2].stateStr;'"
     register: rs_mongo3_status
+    connection: local
 
   - name: 输出复制集状态
     debug:
       msg: "{{rs_mongo3_status}}"
+    run_once: true 
+    connection: local
 
   - name: 清理mongo3文件
-    shell: "rm -rf {{ mongodb_data_dir }}/*;"
-
+    shell: "{% if ansible_host == groups.mongodb[2] %}rm -rf {{ mongodb_data_dir }}/*;{% else %}echo '无需执行';{%endif%}"
+    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'    
 
   - name: 复制集模式PSS改变为PSA，进行复制集修复
     shell: "{{ mongo_shell_init_rs }} /ruijie/init/init-repl-set-update.js"
     when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'
-
-
-  - name: 重新部署第3个mongodb
-    shell: "kubectl apply -f {{ yaml_dir }}/mongo/mongo3.yml"
     connection: local
     run_once: true
-    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'    
 
+  - name: 停止 mongodb3
+    command: "kubectl delete -f {{ yaml_dir }}/mongo/mongo3.yml"
+    run_once: true
+    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'    
+    connection: local
+
+  - name: 等待mongodb3结束运行
+    wait_for: timeout=10
+    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'  
+    connection: local
+    run_once: true
+
+  - name: 重启启动mongodb3
+    command: "kubectl create -f {{ yaml_dir }}/mongo/mongo3.yml"
+    run_once: true
+    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'    
+    connection: local
 
   - name: 检测复制集完成状态
     shell: "{{ mongo_shell_init_rs }} --eval 'rs.status()'"
@@ -55,7 +70,11 @@
     retries: 3
     delay: 10
     when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" == rs_mongo3_status.stdout'    
+    connection: local
+    run_once: true
 
   - name: 暂停20秒等待复制集初始化完成
     wait_for: timeout=20
     when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" == rs_mongo3_status.stdout'
+    connection: local   
+    run_once: true    
