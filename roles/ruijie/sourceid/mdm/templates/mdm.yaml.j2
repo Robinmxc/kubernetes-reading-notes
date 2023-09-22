@@ -103,6 +103,7 @@ spec:
           successThreshold: 1
           timeoutSeconds: 1
 {% endif %}
+{% if DOP_ENABLE == "yes" %}
       - name: rg-dop
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.dop.name }}:{{ SOURCEID_DOCKERS.dop.version }}
         imagePullPolicy: IfNotPresent
@@ -170,6 +171,7 @@ spec:
           successThreshold: 1
           timeoutSeconds: 1
 {% endif %}
+{% endif %}
 
       imagePullSecrets:
       - name: regsecret
@@ -202,6 +204,7 @@ spec:
   - port: 80
     targetPort: 8910
 
+{% if DOP_ENABLE == "yes" %}
 ---
 apiVersion: v1
 kind: Service
@@ -214,3 +217,4 @@ spec:
   ports:
   - port: 80
     targetPort: 8920
+{% endif %}
