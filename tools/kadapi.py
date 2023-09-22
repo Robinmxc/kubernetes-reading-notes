@@ -367,7 +367,7 @@ def changeip_thread(data):
     if (old_ip == new_ip):
         logging.info("changeip: old_ip equals new_ip, only restart network")
         if ".an8" in output_uname or  ".oe2203" in output_uname :
-            os.system('nmcli networking off && nmcli networking on')
+            os.system('systemctl restart NetworkManager.service && nmcli networking off && nmcli networking on')
         else:
             os.system('systemctl restart network')    
         return
@@ -386,10 +386,12 @@ def changeip_thread(data):
     # os.system('cp ' + filepath + ' ' + filepath + 'temp')
     # os.system('sed -i "s/oldIp/' + old_ip + '/g" ' + filepath)
     # os.system('sed -i "s/newIp/' + new_ip + '/g" ' + filepath)
-    logging.info("changeip: restart network start.")
+    logging.info("changeip: restart network start."+output_uname)
     if ".an8" in output_uname or  ".oe2203" in output_uname :
-        restart_network_status_code = int(os.system('nmcli networking off && nmcli networking on'))
+        logging.info("changeip: restart network start. nmcli networking off && nmcli networking on")
+        restart_network_status_code = int(os.system('systemctl restart NetworkManager.service && nmcli networking off && nmcli networking on'))
     else:
+        logging.info("changeip: restart network start. nmcli networking off && nmcli networking on")
         restart_network_status_code = int(os.system('systemctl restart network'))   
  
     logging.info("changeip: restart_network_status_code ---->" + str(restart_network_status_code))
