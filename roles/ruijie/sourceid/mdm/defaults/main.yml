@@ -1,10 +1,18 @@
 MDM_ENABLE: "{% if SOURCEID_DOCKERS['mdm'] is defined and (SOURCEID_DOCKERS['mdm'].enable is not defined or SOURCEID_DOCKERS['mdm'].enable) %}yes{% else %}no{% endif %}"
 
+DOP_ENABLE: "{% if SOURCEID_DOCKERS['dop'] is defined and (SOURCEID_DOCKERS['dop'].enable is not defined or SOURCEID_DOCKERS['dop'].enable) %}yes{% else %}no{% endif %}"
+
+dop_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms480m -Xmx480m{% elif CLUSTER_SCALE == 'single' %}-Xms480m -Xmx480m{% else %}-Xms480m -Xmx480m{% endif %}"
+
 mdm_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'single' %}-Xms1792m -Xmx1792m{% else %}-Xms1792m -Xmx1792m{% endif %}"
 
 mdm_configs: []
 
 mdm_templates_path: ""
+
+dop_configs: []
+
+dop_templates_path: ""
 
 deploy_conf_defaults:
   small:
@@ -29,3 +37,5 @@ deploy_conf_defaults:
         memory: 1Gi
 
 mdm_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+
+dop_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
