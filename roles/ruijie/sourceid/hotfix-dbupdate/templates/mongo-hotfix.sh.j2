@@ -21,10 +21,6 @@ cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db/
 ./upgrade_data.sh 127.0.0.1 27017 address-book sourceid {{current_db_version['address-book_version']}}  DBVERSIONUPGRADE {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
 
 
-
-
-
-
 dirname=(rg-upgrade-db rg-upgrade-db-{{ INDUSTRY_TYPE }})
 for dir in ${dirname[@]};
 do
