@@ -1,3 +1,32 @@
+- name: 部署dop
+  when: 'DOP_ENABLE == "yes"'
+  block:
+  - name: 复制配置文件
+    tags:
+      - config
+    copy:
+      src: "{{ namespace_dir }}/conf/sourceid/dop/conf/"
+      dest: "{{ config_base_dir }}/sourceid/dop/conf/"
+
+  - name: 自动配置
+    tags:
+      - config
+    replace: path="{{ config_base_dir }}/sourceid/dop/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+      - {regexp: "mongodb:.*/dop.*$", replace: "mongodb://{{ SOURCEID_DOP_DB_USER }}:{{ SOURCEID_DOP_DB_PWD }}@{{ mongodb_addr }}/dop?replicaSet=rs0"}
+    no_log: true
+
+  - name: 自定义配置
+    tags:
+      - config
+    replace:
+      path: '{{ config_base_dir }}/sourceid/dop/conf/application.yml'
+      regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
+      replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
+    with_items: '{{ dop_configs }}'
+    no_log: true
+    
 - name: 部署mdm
   when: 'MDM_ENABLE == "yes"'
   block:
