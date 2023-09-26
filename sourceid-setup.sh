@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #rpmDirs=$(ls /opt/kad/down/rpms/)
 #for loop in ${rpmDirs[*]}
 #do

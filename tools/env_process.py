@@ -12,55 +12,60 @@ if Py_version >= (3, 0):
 output=subprocess.check_output("/opt/kad/inventory/kad-workspace.py --list", shell=True)
 json_object = json.loads(output)
 ssh_password=""
+ssh_user=""+ssh_user+""
+ssh_port=22
 def python3_rpm(ip):
+  sudo="echo "+ssh_password+" | sudo -S "
   output_uname= subprocess.check_output("uname -r", shell=True).decode("utf-8")
   output_uname=output_uname.replace("\n","")
   output_uname=output_uname.replace(" ","")
   try:
     if ".an8" in output_uname or  ".oe2203" in output_uname :
       try:
-        version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \" python3 --version;\" "
+        version_command="sshpass -p "+ ssh_password+  " ssh -p "+ssh_port+" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "+ssh_user+"@"+ip+" \" "+sudo+"python3 --version;\" "
         version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
       except Exception :
         print("远程安装python3:服务器IP="+ip+"")
-        copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/python39 root@"+ip+":/tmp/python39 > /dev/null 2>&1"
-        install_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"rpm -ivh  /tmp/python39/*.rpm --force --nodeps > /dev/null 2>&1;\" "
+        copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/python39 "+ssh_user+"@"+ip+":/tmp/python39 > /dev/null 2>&1"
+        install_command="sshpass -p "+ ssh_password+  " ssh -p "+ssh_port+" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "+ssh_user+"@"+ip+" \""+sudo+"rpm -ivh  /tmp/python39/*.rpm --force --nodeps > /dev/null 2>&1;\" "
         copy_command_output = subprocess.check_output(copy_command, shell=True)
         install_command_output = subprocess.check_output(install_command, shell=True)
   except Exception :
         raise NameError("远程安装python3失败,请保证"+ip+"远程可用")
 
 def tar_rpm(ip):
+  sudo="echo "+ssh_password+" | sudo -S "
   output_uname= subprocess.check_output("uname -r", shell=True).decode("utf-8")
   output_uname=output_uname.replace("\n","")
   output_uname=output_uname.replace(" ","")
   try:
     if ".an8" in output_uname or  ".oe2203" in output_uname :
       try:
-        version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \" tar --version;\" "
+        version_command="sshpass -p "+ ssh_password+  " ssh -p "+ssh_port+" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "+ssh_user+"@"+ip+" \" "+sudo+"tar --version;\" "
         version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
       except Exception :
         print("tar:服务器IP="+ip+"")
-        copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/tar root@"+ip+":/tmp/tar > /dev/null 2>&1"
-        install_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"rpm -ivh  /tmp/tar/*.rpm --force --nodeps > /dev/null 2>&1;\" "
+        copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/tar "+ssh_user+"@"+ip+":/tmp/tar > /dev/null 2>&1"
+        install_command="sshpass -p "+ ssh_password+  " ssh -p "+ssh_port+" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "+ssh_user+"@"+ip+" \""+sudo+"rpm -ivh  /tmp/tar/*.rpm --force --nodeps > /dev/null 2>&1;\" "
         copy_command_output = subprocess.check_output(copy_command, shell=True)
         install_command_output = subprocess.check_output(install_command, shell=True)
   except Exception :
         raise NameError("远程安装python3失败,请保证"+ip+"远程可用")
 
 def rsyslog_rpm(ip):
+  sudo="echo "+ssh_password+" | sudo -S "
   output_uname= subprocess.check_output("uname -r", shell=True).decode("utf-8")
   output_uname=output_uname.replace("\n","")
   output_uname=output_uname.replace(" ","")
   try:
     if ".an8" in output_uname or  ".oe2203" in output_uname:
       try:
-        version_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"  ls /usr/sbin/rsyslogd \" "
+        version_command="sshpass -p "+ ssh_password+  " ssh -p "+ssh_port+" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "+ssh_user+"@"+ip+" \"  "+sudo+"ls /usr/sbin/rsyslogd \" "
         version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
       except Exception :
         print("远程安装rsyslog:服务器IP="+ip+"")
-        copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/rsyslog root@"+ip+":/tmp/rsyslog > /dev/null 2>&1"
-        install_command="sshpass -p "+ ssh_password+  " ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"+ip+" \"rpm -ivh  /tmp/rsyslog/*.rpm --force --nodeps > /dev/null 2>&1;\" "
+        copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/rsyslog "+ssh_user+"@"+ip+":/tmp/rsyslog > /dev/null 2>&1"
+        install_command="sshpass -p "+ ssh_password+  " ssh -p "+ssh_port+" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "+ssh_user+"@"+ip+" \""+sudo+"rpm -ivh  /tmp/rsyslog/*.rpm --force --nodeps > /dev/null 2>&1;\" "
         copy_command_output = subprocess.check_output(copy_command, shell=True)
         install_command_output = subprocess.check_output(install_command, shell=True)
   except Exception :
@@ -111,8 +116,12 @@ def main():
     else:
         importlib.reload(sys)
     global ssh_password
-    ssh_password=sys.argv[1];  
-    input=sys.argv[2];  
+    global ssh_user
+    global ssh_port
+    ssh_user=sys.argv[1];  
+    ssh_password=sys.argv[2];  
+    ssh_port=sys.argv[3];  
+    input=sys.argv[4];  
     if "ldap" in input:
       ldapProcess()
     elif "eoms" in input:
