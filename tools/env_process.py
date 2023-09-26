@@ -12,7 +12,7 @@ if Py_version >= (3, 0):
 output=subprocess.check_output("/opt/kad/inventory/kad-workspace.py --list", shell=True)
 json_object = json.loads(output)
 ssh_password=""
-ssh_user=""+ssh_user+""
+ssh_user="root"
 ssh_port=22
 def python3_rpm(ip):
   sudo="echo "+ssh_password+" | sudo -S "
