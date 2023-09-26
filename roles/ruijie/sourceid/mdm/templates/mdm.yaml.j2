@@ -32,6 +32,7 @@ spec:
         - name: agent
           mountPath: /skywalking/agent
 {% endif %}
+      shareProcessNamespace: true
       containers:
       - name: rg-mdm
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.mdm.name }}:{{ SOURCEID_DOCKERS.mdm.version }}
