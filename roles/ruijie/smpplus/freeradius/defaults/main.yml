@@ -5,9 +5,9 @@ freeradius_templates_path: ""
 
 deploy_conf_defaults:
   small:
-    replicas: 1
+    replicas: 5
   normal:
-    replicas: 1
+    replicas: 5
     resources:
       limits:
         cpu: 2
@@ -16,7 +16,7 @@ deploy_conf_defaults:
         cpu: 500m
         memory: 1Gi
   single:
-    replicas: 1
+    replicas: 5
     resources:
       limits:
         cpu: 2
