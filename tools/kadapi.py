@@ -367,7 +367,7 @@ def changeip_thread(data):
     if (old_ip == new_ip):
         logging.info("changeip: old_ip equals new_ip, only restart network")
         if ".an8" in output_uname or  ".oe2203" in output_uname :
-            os.system('systemctl restart NetworkManager.service && sleep 2 && nmcli networking off && sleep 2 && nmcli networking on')
+            os.system('systemctl restart NetworkManager.service && sleep 2 && nmcli networking off && sleep 2 && nmcli networking on  &&  systemctl restart docker')
         else:
             os.system('systemctl restart network')    
         return
@@ -389,7 +389,7 @@ def changeip_thread(data):
     logging.info("changeip: restart network start."+output_uname)
     if ".an8" in output_uname or  ".oe2203" in output_uname :
         logging.info("changeip: restart network start. nmcli networking off && nmcli networking on")
-        restart_network_status_code = int(os.system('systemctl restart NetworkManager.service && sleep 2 && nmcli networking off && sleep 2 && nmcli networking on'))
+        restart_network_status_code = int(os.system('systemctl restart NetworkManager.service && sleep 2 && nmcli networking off && sleep 2 && nmcli networking on &&  systemctl restart docker'))
     else:
         logging.info("changeip: restart network start. nmcli networking off && nmcli networking on")
         restart_network_status_code = int(os.system('systemctl restart network'))   
