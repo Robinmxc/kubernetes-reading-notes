@@ -407,6 +407,14 @@ def changeip_thread(data):
             stop_script_status_code))
     #serverUser = submit_info['serverUser']
     serverPwd = data['serverPwd']
+
+    ssh_known_hosts_path = "/root/.ssh/known_hosts"
+    if os.path.isfile(ssh_known_hosts_path):
+        logging.info("changeip:start clean known_hosts contents")
+        clean_ssh_known_hosts_code = int(os.system("echo '' > " + ssh_known_hosts_path))
+        logging.info("changeip:end stop clean known_hosts contents" + "execution return status code-->" + str(
+            clean_ssh_known_hosts_code))
+    time.sleep(1)
     logging.info("changeip: start shell_change_ip.")
     #os.system('sh /etc/kad/api/changeip.sh ' + old_ip + ' ' + new_ip)
     shell_change_ip(serverPwd, old_ip, new_ip)
