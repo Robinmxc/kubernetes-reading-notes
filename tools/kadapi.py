@@ -352,6 +352,7 @@ def save_ip():
 
 
 def changeip_thread(data):
+    logging.info(data)
     logging.info("changeip: start changeip_thread.")
     current_net_info = prase_netfile()
     old_ip = current_net_info["date"]["ipAddress"]
@@ -407,9 +408,10 @@ def changeip_thread(data):
             stop_script_status_code))
     #serverUser = submit_info['serverUser']
     serverPwd = data['serverPwd']
+    serverUser = data['serverUser']
     logging.info("changeip: start shell_change_ip.")
     #os.system('sh /etc/kad/api/changeip.sh ' + old_ip + ' ' + new_ip)
-    shell_change_ip(serverPwd, old_ip, new_ip)
+    shell_change_ip(serverUser,serverPwd, old_ip, new_ip)
     logging.info("changeip: end shell_change_ip.")
     # change_mongoip = True
     # while change_mongoip:
@@ -896,13 +898,14 @@ def pod_running_check():
     return flag
 
 
-def shell_change_ip(serverPwd, old_ip, new_ip):
+def shell_change_ip(serverUser,serverPwd, old_ip, new_ip):
     try:
-        logging.debug("shell_change_ip: shell_change_ip is start.")
+        logging.debug("shell_change_ip: shell_change_ip is start")
         #只重启业务组件
         password = serverPwd
         # spawn启动reconfig程序
-        shell_cmd = 'sh /opt/kad/changeip.sh ' + old_ip + ' ' + new_ip + ' Web_changeIp'
+        shell_cmd = 'sh /opt/kad/changeip.sh ' + old_ip + ' ' + new_ip + ' Web_changeIp ' +serverUser
+        logging.debug(shell_cmd)
         process = pexpect.spawn('/bin/bash', ['-c', shell_cmd])
         # expect方法等待scp产生的输出，判断是否匹配指定的字符串Password:
         process.expect('password:')
