@@ -17,6 +17,9 @@
   - name: 设置nginx存活检测脚本
     template: src=nginx_check.sh.j2 dest=/etc/keepalived/nginx_check.sh mode=755
 
+  - name: 设置slapd存活检测脚本
+    template: src=ldap_check.sh.j2 dest=/etc/keepalived/ldap_check.sh mode=755
+
   - name: 开机启用keepalived服务
     shell: systemctl enable keepalived
 
