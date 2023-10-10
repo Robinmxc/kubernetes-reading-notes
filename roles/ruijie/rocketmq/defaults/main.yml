@@ -3,7 +3,7 @@ rocketmq_version: "4.3.0"
 rocketmq_offline: "rocketmq-4.3.0.tar"
 
 rocketmq_check_data_dir: "no"
-
+rocket_cluster_mode: "no"
 mq_broker_java_opt: "{%- if CLUSTER_SCALE == 'normal' -%}-Xms4096m -Xmx4096m -Xmn2g -XX:MaxDirectMemorySize=4096m{% elif CLUSTER_SCALE == 'single' %}-Xms512m -Xmx1024m -Xmn256m -XX:MaxDirectMemorySize=512m{%- else -%}-Xms512m -Xmx512m -Xmn256m -XX:MaxDirectMemorySize=256m{%- endif -%}"
 
 mq_server_java_opt: "{%- if CLUSTER_SCALE == 'normal' -%}-Xms512m -Xmx512m -Xmn256m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx512m -Xmn256m{%- else -%}-Xms256m -Xmx256m -Xmn128m{%- endif -%}"

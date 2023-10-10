@@ -46,7 +46,9 @@
     replace: path="{{ KAD_PACKAGE_DIR }}/{{ updatereplset_file_path }}" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
     - {regexp: "hostIp", replace: "{{groups['kube_node'][0]}}"}
-
+    connection: local
+    run_once: true
+    
   - name: 压缩数据初始化脚本
     archive:
       path: "{{ KAD_PACKAGE_DIR }}/db/"
