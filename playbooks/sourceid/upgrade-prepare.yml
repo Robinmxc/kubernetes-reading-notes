@@ -85,6 +85,13 @@
       replace: 'LimitCORE=0'
     when: '"infinity" in docker_service.stdout'
 
+  - name: 修改docker service配置
+    replace:
+      path: '/usr/lib/systemd/system/docker.service'
+      regexp: 'LimitNOFILE=infinity'
+      replace: 'LimitNOFILE=65535'
+    when: '"infinity" in docker_service.stdout'
+
   - name: 重启docker 服务
     shell: systemctl daemon-reload && systemctl restart docker
     when: '"infinity" in docker_service.stdout'

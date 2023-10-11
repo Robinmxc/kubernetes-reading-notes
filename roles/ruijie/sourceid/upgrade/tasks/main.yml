@@ -102,12 +102,12 @@
     shell: "\\cp -rpf {{UPGRADE_DIR}}/kad/* {{base_dir}}"
     connection: local
     
-  - name: 拷贝SourceID配置文件
+  - name: 拷贝SourceID配置文件中不存在的配置文件
     vars:
       src_path: "{{UPGRADE_DIR}}/kad/down/{{KAD_UPGRADE_PACKAGE_NAME}}/conf/{{ item }}"
       dest_path: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/conf/{{ item }}"
     copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
-    when: 'src_path is exists'
+    when: 'src_path is exists and dest_path is not exists'
     with_items:
       - "sourceid/sso"
       - "sourceid/gate"
@@ -139,6 +139,17 @@
       - "sourceid/rg-flow"
       - "sourceid/address-book"
       - "sourceid/auth-extend"
+    connection: local
+
+  - name: 配置文件自动比对、同步
+    vars:
+      new_path: "{{UPGRADE_DIR}}/kad/down/{{KAD_UPGRADE_PACKAGE_NAME}}/conf/sourceid"
+      old_path: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}/conf/sourceid"
+    shell: "sh /opt/kad/compare/sid-config-compare.sh {{ old_path }} {{ new_path }} /opt/kad/compare/compare.log"
+    connection: local
+
+  - name: kad.yml 自动比对、同步
+    shell: "python3 /opt/kad/compare/compare_kad_yml.py {{ KAD_APP_VERSION }} /opt/kad/compare/compare.log"
     connection: local
 
   - name: 获取所有已经创建的POD信息
@@ -184,7 +195,7 @@
     
   - name: 停止postgres数据库
     shell: 'kubectl delete -f {{ yaml_dir }}/pgsql/pgsql.yml'
-    when: '"xxl_job" not in table_result.stdout'
+    when: '"postgresql" in pod_info.stdout'
     connection: local
 
   - name: 删除postgres数据目录

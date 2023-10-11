@@ -33,7 +33,7 @@
 
   - name: 加载prometheus镜像合集
     command: "docker load -i {{ img_download_dir }}/eoms/prometheus.tar"
-    when: '"prometheus.tar" in prometheus_dockerImages_info.stdout'
+    when: '"prometheus.tar" in prometheus_dockerImages_info.stdout and KAD_APP_NAME == "smpplus"'
   
   - name: 获取所有已经创建的POD信息
     tags:

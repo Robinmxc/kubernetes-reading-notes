@@ -159,18 +159,6 @@
     command: "kubectl delete -f {{ yaml_dir }}/rg-flow/"
     when: 'pod_info.stdout is search("rg-flow-[a-z0-9]*-[a-z0-9]*\s")'
 
-  - name: 停止 freeradius
-    tags:
-      - freeradius
-    command: "kubectl delete -f {{ yaml_dir }}/freeradius/"
-    when: 'pod_info.stdout is search("rg-freeradius-[a-z0-9]*-[a-z0-9]*\s")'
-
-  - name: 停止 rg-authentication-validate
-    tags:
-      - rg-authentication-validate
-    command: "kubectl delete -f {{ yaml_dir }}/rg-authentication-validate/"
-    when: 'pod_info.stdout is search("rg-authentication-validate-[a-z0-9]*-[a-z0-9]*\s")'
-
   - name: 停止 portal
     tags:
       - portal
@@ -470,26 +458,6 @@
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: 'pod_info.stdout is not search("rg-flow-[a-z0-9]*-[a-z0-9]*\s")'
-    retries: 30
-    delay: 3
-    ignore_errors: true
-
-  - name: 等待freeradius结束运行
-    tags:
-      - freeradius
-    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
-    register: pod_info
-    until: 'pod_info.stdout is not search("rg-freeradius-[a-z0-9]*-[a-z0-9]*\s")'
-    retries: 30
-    delay: 3
-    ignore_errors: true
-
-  - name: 等待rg-authentication-validate结束运行
-    tags:
-      - rg-authentication-validate
-    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
-    register: pod_info
-    until: 'pod_info.stdout is not search("rg-authentication-validate-[a-z0-9]*-[a-z0-9]*\s")'
     retries: 30
     delay: 3
     ignore_errors: true

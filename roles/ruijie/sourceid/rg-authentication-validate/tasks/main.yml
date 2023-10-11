@@ -14,7 +14,7 @@
     vars:
       deploy_node_ip: "{{ groups.ess[0] }}"
       pgsql_node_ip: "{{ groups.pgsql[0] }}"
-    replace: path="{{ config_base_dir }}/sourceid/auth-extend/conf/application-dev.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    replace: path="{{ config_base_dir }}/sourceid/auth-extend/conf/application-pro.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
       - {regexp: "spring.datasource.username=.*$", replace: "spring.datasource.username=postgres"}
       - {regexp: "spring.datasource.password=.*$", replace: "spring.datasource.password={{ PGSQL_ADMIN_PWD }}"}
