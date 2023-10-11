@@ -41,12 +41,6 @@
     when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'
     connection: local
 
-  - name: 等待mongodb3结束运行
-    wait_for: timeout=10
-    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'
-    connection: local
-    run_once: true
-
   - name: 调整mongo1资源限制
     command: "kubectl apply -f {{ yaml_dir }}/mongo/mongo1.yml"
     when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'
@@ -55,6 +49,12 @@
 
   - name: 调整mongo2资源限制
     command: "kubectl apply -f {{ yaml_dir }}/mongo/mongo2.yml"
+    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'
+    connection: local
+    run_once: true
+
+  - name: 等待mongodb3结束运行
+    wait_for: timeout=20
     when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'
     connection: local
     run_once: true
