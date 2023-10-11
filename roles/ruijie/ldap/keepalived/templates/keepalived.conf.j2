@@ -2,8 +2,8 @@ global_defs {
     router_id ldap-storage-{{ hostvars[inventory_hostname]["LDAP_HOST_ID"] }}
 }
 
-vrrp_script chk_nginx {
-    script "/etc/keepalived/nginx_check.sh"
+vrrp_script chk_ldap {
+    script "/etc/keepalived/nginx_ldap.sh"
     interval 2
     weight -20
 }
@@ -22,7 +22,7 @@ vrrp_instance VI-ldap-storage {
     virtual_router_id {{ LDAP_ROUTER_ID }}
     advert_int 1
     track_script {
-        chk_nginx
+        chk_ldap
     }
     virtual_ipaddress {
         {{ LDAP_VIP }}
