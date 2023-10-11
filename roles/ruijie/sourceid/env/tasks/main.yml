@@ -69,6 +69,7 @@
     - "sourceid/rg-flow"
     - "sourceid/address-book"
     - "sourceid/freeradius"
+    - "sourceid/auth-extend"
   connection: local
   run_once: true
 

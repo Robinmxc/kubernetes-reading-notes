@@ -82,18 +82,18 @@
     - name: 暂停15秒等待pgsql启动完成
       wait_for: timeout=15
 
-    - name: 压缩数据初始化脚本
-      archive:
-        path: "{{ KAD_PACKAGE_DIR }}/db/"
-        dest: "{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz"
-      connection: local
-      run_once: true
+- name: 压缩数据初始化脚本
+  archive:
+    path: "{{ KAD_PACKAGE_DIR }}/db/"
+    dest: "{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz"
+  connection: local
+  run_once: true
 
-    - name: 复制数据初始化脚本
-      copy: src="{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz" dest="{{ pgsql_init_dir }}/data.tgz"
+- name: 复制数据初始化脚本
+  copy: src="{{ temp_dir }}/{{ KAD_PACKAGE_NAME }}-data.tgz" dest="{{ pgsql_init_dir }}/data.tgz"
 
-    - name: 解压数据初始化脚本
-      unarchive:
-        src: "{{ pgsql_init_dir }}/data.tgz"
-        dest: "{{ pgsql_init_dir }}/"
-        remote_src: yes
+- name: 解压数据初始化脚本
+  unarchive:
+    src: "{{ pgsql_init_dir }}/data.tgz"
+    dest: "{{ pgsql_init_dir }}/"
+    remote_src: yes
