@@ -56,6 +56,24 @@
     connection: local
     run_once: true
 
+  - name: 修改mongo1资源限制
+    command: "kubectl apply -f {{ yaml_dir }}/mongo/mongo1.yml"
+    run_once: true
+    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode == "pss" and "ARBITER" == rs_mongo3_status.stdout'
+    connection: local
+
+  - name: 修改mongo2资源限制
+    command: "kubectl apply -f {{ yaml_dir }}/mongo/mongo2.yml"
+    run_once: true
+    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode == "pss" and "ARBITER" == rs_mongo3_status.stdout'
+    connection: local
+
+  - name: 停止 mongodb3
+    command: "kubectl apply -f {{ yaml_dir }}/mongo/mongo1.yml"
+    run_once: true
+    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode == "pss" and "ARBITER" == rs_mongo3_status.stdout'
+    connection: local
+
   - name: 清理mongo3文件
     shell: "{% if ansible_host == groups.mongodb[2] %}rm -rf {{ mongodb_data_dir }}/*;{% else %}echo '无需执行';{%endif%}"
     when: ' mongodb_deploy_mode == "3"  and mongdb_cluster_mode == "pss" and "ARBITER" == rs_mongo3_status.stdout and "scp" not in status_pss.stdout'
