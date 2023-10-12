@@ -1,5 +1,5 @@
 - name: 更新加载所需基础rpm包
-  when: 'EOMS_ENABLE == "yes"'
+  when: 'EOMS_ENABLE == "yes" and KAD_APP_NAME == "smpplus"'
   block:
     - name: 准备目录
       file: name={{ item }} state=directory
