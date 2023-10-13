@@ -70,7 +70,7 @@
 
   - name: 清理mongo3文件
     shell: "{% if ansible_host == groups.mongodb[2] %}rm -rf {{ mongodb_data_dir }}/*;{% else %}echo '无需执行';{%endif%}"
-    when: ' mongodb_deploy_mode == "3"  and mongdb_cluster_mode == "pss" and "ARBITER" == rs_mongo3_status.stdout and "scp" not in status_pss.stdout'
+    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode == "pss" and "ARBITER" == rs_mongo3_status.stdout and "scp" not in status_pss.stdout'
 
   - name: 复制集模式PSA改变为PSS，进行复制集修复
     shell: "{{ mongo_shell_init_rs }} /ruijie/init/init-repl-set-update.js"
