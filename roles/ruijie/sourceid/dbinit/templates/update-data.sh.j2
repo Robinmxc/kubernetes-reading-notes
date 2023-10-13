@@ -2,24 +2,27 @@
 
 cd /ruijie/init/sourceid/rg-upgrade-db
 
-{% if DB_VERSION is undefined %}
 
-./upgrade_data.sh 127.0.0.1 27017 cas sourceid {{current_db_version['cas_version']}} {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-./upgrade_data.sh 127.0.0.1 27017 linkid sourceid {{current_db_version['linkid-dev_version']}}  {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-./upgrade_data.sh 127.0.0.1 27017 gate sourceid {{current_db_version['gate_version']}}  {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-./upgrade_data.sh 127.0.0.1 27017 gateway sourceid {{current_db_version['gateway_version']}}  {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-cd /ruijie/init/component/rg-init-db
-./upgrade_data.sh 127.0.0.1 27017 component {{current_db_version['component_version']}}  {{ COMPONENT_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-cd /ruijie/init/sourceid/rg-upgrade-db
-./upgrade_data.sh 127.0.0.1 27017 faceid sourceid {{current_db_version['faceid_version']}}  {{ SOURCEID_DB_VERSION }} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
+versions=(R0.0 R1.0 R1.1 R1.2 R1.3 R1.4 R1.5 R1.6 R1.6.3 R1.6.4 R1.6.5 R1.7.0 R1.7.1 R1.7.2 R1.8.0 R1.8.0p1 R1.8.0p2 R1.9.0 R1.9.0p2 R1.9.1 R1.9.1p1 R2.0.0 R2.0.0p1 R2.0.1 R2.0.1p1 R2.0.2 R2.0.2p1 R2.0.3 R2.0.3p1 R2.0.4)
 
-{% else %}
-{% for value in DB_VERSION %}
-{% if value != "mdm" %}
-./upgrade_data.sh 127.0.0.1 27017 {{value}} sourceid {{current_db_version[DB_VERSION[value]["name"]+'_version']}} {{DB_VERSION[value]["version"]}} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-{% endif %}
-{% endfor %}
-{% if "mdm" in DB_VERSION %}
-./upgrade_data.sh 127.0.0.1 27017 mdm sourceid {{current_db_version[DB_VERSION["mdm"]["name"]+'_version']}} {{DB_VERSION["mdm"]["version"]}} {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
-{% endif %}
-{% endif %}
+
+{% raw %}
+for (( i = 0 ; i < ${#versions[@]} ; i++ ))
+{% endraw %}
+do
+
+    {% for value in DB_VERSION %}
+
+    if [  "${versions[$i]}" \>  {{current_db_version[DB_VERSION[value]["name"]+'_version']}} ]; then
+    
+       if [ "${versions[$i]}" \<  {{DB_VERSION[value]["version"]}}  ] || [ "${versions[$i]}" == {{DB_VERSION[value]["version"]}}  ]; then
+
+         ./upgrade_data.sh 127.0.0.1 27017 {{value}}  sourceid  ${versions[$i]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
+
+       fi
+
+    fi
+
+    {% endfor %}
+
+done
