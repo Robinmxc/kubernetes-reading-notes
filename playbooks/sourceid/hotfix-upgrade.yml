@@ -5,6 +5,7 @@
   - initdata
   any_errors_fatal: true
   vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/sourceid/hotfix-dbupdate, tags: always }
