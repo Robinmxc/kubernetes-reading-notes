@@ -3,14 +3,18 @@ global_defs {
 }
 
 vrrp_script chk_ldap {
-    script "/etc/keepalived/nginx_ldap.sh"
+    script "/etc/keepalived/ldap_check.sh"
     interval 2
     weight -20
 }
 
 vrrp_instance VI-ldap-storage {
-    state hostvars[inventory_hostname]["LDAP_ROLE"]
-    priority {% if "MASTER" == hostvars[inventory_hostname]["LDAP_ROLE"] %}100{% else %}{{ 99 | random(61, 1) }}{% endif %}
+    state BACKUP
+{% if "MASTER" == hostvars[inventory_hostname]["LDAP_ROLE"] %}
+    priority  100
+{% else %}
+    priority  90
+{% endif %}
     nopreempt
     unicast_src_ip {{ inventory_hostname }}
     unicast_peer {

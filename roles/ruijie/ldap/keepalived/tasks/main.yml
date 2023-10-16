@@ -14,9 +14,6 @@
   - name: 设置keepalived配置文件
     template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
 
-  - name: 设置nginx存活检测脚本
-    template: src=nginx_check.sh.j2 dest=/etc/keepalived/nginx_check.sh mode=755
-
   - name: 设置slapd存活检测脚本
     template: src=ldap_check.sh.j2 dest=/etc/keepalived/ldap_check.sh mode=755
 
