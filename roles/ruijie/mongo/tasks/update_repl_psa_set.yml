@@ -54,7 +54,7 @@
     run_once: true
 
   - name: 等待mongodb3结束运行
-    wait_for: timeout=20
+    wait_for: timeout=60
     when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'
     connection: local
     run_once: true
@@ -81,12 +81,12 @@
     until: '"PRIMARY" in rs_status.stdout'
     retries: 3
     delay: 10
-    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" == rs_mongo3_status.stdout'    
+    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'
     connection: local
     run_once: true
 
   - name: 暂停20秒等待复制集初始化完成
     wait_for: timeout=20
-    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" == rs_mongo3_status.stdout'
+    when: 'mongodb_deploy_mode == "3"  and mongdb_cluster_mode != "pss" and "ARBITER" != rs_mongo3_status.stdout'
     connection: local   
     run_once: true    
