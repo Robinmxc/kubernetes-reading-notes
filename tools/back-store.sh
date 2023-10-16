@@ -265,17 +265,20 @@ function ldap_back(){
 	echo "ldap开始备份,服务器IP：${from_ldap_ip}"
 	del_command="rm -rf ${remote_back_dir}/ldap_back.ldif > /dev/null 2>&1"
 	dir_create="mkdir -p ${remote_back_dir}";
-	back_command="ldapsearch -x -h ${from_ldap_ip} -p ${from_ldap_port} -b ${from_ldap_domain} -D \"cn=admin,${from_ldap_domain}\" -w ${from_ldap_password} >${remote_back_dir}/ldap_back.ldif"
+	stop_ldap="systemctl stop slapd";
+	start_ldap="systemctl start slapd"
+	back_command="slapcat  > ${remote_back_dir}/ldap_back.ldif"
 	echo "备份命令:${back_command}"
 	fail=false
-	remote_ssh_command ${from_ldap_ip} ${from_password} "${del_command};${dir_create};${back_command};" || fail=true
+	remote_ssh_command ${from_ldap_ip} ${from_password} "${del_command};${dir_create};${stop_ldap};${back_command};" || fail=true
 	if [[ ${fail} == true ]] ;then
-		 echo -e "\033[31m ldap备份失败,服务器IP:${from_ldap_ip} \033[0m" 
+		 echo -e "\033[31m ldap备份失败,服务器IP:${from_ldap_ip} \033[0m" ;
+		 remote_ssh_command ${from_ldap_ip} ${from_password} "${start_ldap};"
 	else
 	 	rm -rf ${local_back_dir}/ldap_back.ldif  > /dev/null 2>&1
 		mkdir -p ${local_back_dir}
 		sshpass -p ${from_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@${from_ldap_ip}:${remote_back_dir}/ldap_back.ldif ${local_back_dir}
-		remote_ssh_command ${from_ldap_ip} ${from_password} "${del_command};"
+		remote_ssh_command ${from_ldap_ip} ${from_password} "${del_command};${start_ldap};"
 	fi 
  
 }
