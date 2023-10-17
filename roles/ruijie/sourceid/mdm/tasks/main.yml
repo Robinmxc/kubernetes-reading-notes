@@ -16,7 +16,6 @@
       - {regexp: "mongodb:.*/mdm.*$", replace: "mongodb://{{ SOURCEID_MDM_DB_USER }}:{{ SOURCEID_MDM_DB_PWD }}@{{ mongodb_addr }}/mdm?replicaSet=rs0"}
       - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
-      - {regexp: "sid.log.mq.ip =.*$", replace: "sid.log.mq.ip = {{rocketmq_addr}}"}   
     no_log: true
 
   - name: 准备部署文件目录

@@ -17,7 +17,6 @@
   - {regexp: "mongodb:.*/gate.*$", replace: "mongodb://{{ SOURCEID_GATE_DB_USER }}:{{ SOURCEID_GATE_DB_PWD }}@{{ mongodb_addr }}/gate?replicaSet=rs0"}
   - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
   - {regexp: "svc/api", replace: "{{ api_path }}"}
-  - {regexp: "ip: rg-rocket*$", replace: "ip: {{rocketmq_addr}}"}     
   no_log: true
 
 - name: 自定义配置

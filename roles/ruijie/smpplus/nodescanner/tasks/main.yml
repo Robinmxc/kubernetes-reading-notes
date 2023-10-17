@@ -12,7 +12,7 @@
   - config  
   replace: path="{{ config_base_dir }}/nodescanner/conf/application-prd.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "name-srv-addr:.*$", replace: "name-srv-addr: {{rocketmq_addr}}"} 
+  - {regexp: "name-srv-addr.*$", replace: "name-srv-addr: rg-rocket.{{ APP_NAMESPACE }}.svc:9876"}
   - {regexp: "mongodb:.*/nodes.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/nodes?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
   no_log: true
