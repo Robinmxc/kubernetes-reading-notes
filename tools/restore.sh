@@ -221,11 +221,12 @@ function ldap_restore(){
 	remote_ssh_command ${to_ldap_ip} ${to_password} "${del_command};${dir_create};" 
   sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  ${local_back_dir}/ldap_back.ldif root@${to_ldap_ip}:${remote_back_dir}
   command_del_data="rm -rf  /var/lib/ldap/*";
-  change_own = "chown -R ldap:ldap /var/lib/ldap";
-  stop_ldap ="systemctl stop slapd";
-  start_ldap ="systemctl start slapd";
+  change_own= "chown -R ldap:ldap /var/lib/ldap";
+  stop_ldap="systemctl stop slapd";
+  start_ldap="systemctl start slapd";
+  start_keepalived="systemctl start keepalived";
 	command_restore="slapadd -l ${remote_back_dir}/ldap_back.ldif > /dev/null 2>&1";
-	remote_ssh_command ${to_ldap_ip} ${to_password} "${stop_ldap};${command_del_data};${command_restore};${start_ldap};"
+	remote_ssh_command ${to_ldap_ip} ${to_password} "${stop_ldap};${command_del_data};${command_restore};${change_own};${start_ldap};${start_keepalived};"
 	remote_ssh_command ${to_ldap_ip} ${to_password} "${del_command};" 
   done
 }
