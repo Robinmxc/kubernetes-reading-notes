@@ -16,8 +16,6 @@
       - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
       - {regexp: "commonserver.redis.url.*$", replace: "commonserver.redis.url=http://rg-linkid.{{ APP_NAMESPACE }}.svc/linkid"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
-      - {regexp: "rocket.namesrv-addr.*$", replace: "rocket.namesrv-addr = {{rocketmq_addr}}"}
-      - {regexp: "sid.log.mq.ip =.*$", replace: "sid.log.mq.ip = {{rocketmq_addr}}"}         
     no_log: true
 
   - name: 单域名配置
