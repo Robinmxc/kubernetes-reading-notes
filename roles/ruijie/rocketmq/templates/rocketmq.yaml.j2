@@ -1,31 +1,29 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{rg_rocket_name}}
+  name: rg-rocket
   namespace: {{ APP_NAMESPACE }}
 spec:
-  serviceName: {{rg_rocket_name}}
+  serviceName: rg-rocket
   replicas: 1
   selector:
     matchLabels:
-      name: {{rg_rocket_name}}
+      name: rg-rocket
   template:
     metadata:
      labels:
-       name: {{rg_rocket_name}}
+       name: rg-rocket
     spec:
       nodeName: {{ rocketmq_node_ip }}
       containers:
       - name: broker
         image: rocketmqinc/rocketmq:{{ rocketmq_version }}
-{% if  rocket_cluster_mode != "yes" or DEPLOY_MODE =='allinone' %}
+{% if "yes" == (rocketmq_public) %}
         command: ["sh","mqbroker", "-n","localhost:9876 autoCreateTopicEnable=true"]
 {% endif %}
-
-{% if  rocket_cluster_mode == "yes" and  DEPLOY_MODE !='allinone'%}
-        command: ["sh","mqbroker", "-n","rg-rocket1:9876;rg-rocket2:9876 autoCreateTopicEnable=true"]
+{% if "yes" != (rocketmq_public) %}
+        command: ["sh","mqbroker", "-n","localhost:9876 autoCreateTopicEnable=true"]
 {% endif %}
-
         env:
         - name: JAVA_OPT_EXT
 {% if KAD_APP_NAME == 'smpplus' %}
@@ -94,11 +92,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{rg_rocket_name}}
+  name: rg-rocket
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    name: {{rg_rocket_name}}
+    name: rg-rocket
 {% if "yes" == (rocketmq_public) %}
   type: NodePort
   ports:
