@@ -236,8 +236,7 @@
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/limits.ldif
 
 - name: 调整索引数据最大条目限制
-  shell: ldapmodify -x -W -D 'cn=config' -H ldap:// -f /etc/openldap/limits2.ldif
-
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/limits2.ldif
 
 - name: tls加密开启
   shell: chmod 644 /etc/pki/tls/ldapserver*
