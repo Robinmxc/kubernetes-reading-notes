@@ -149,6 +149,7 @@
   - "db-index.ldif"
   - "olcAccess.ldif"
   - "limits.ldif"
+  - "limits2.ldif"
   - "tls1.2.ldif"
 
 - name: 准备schema文件
@@ -233,6 +234,9 @@
 
 - name: 取消只读账号最大读取500条记录限制
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/limits.ldif
+
+- name: 调整索引数据最大条目限制
+  shell: ldapmodify -x -W -D 'cn=config' -H ldap:// -f /etc/openldap/limits2.ldif
 
 
 - name: tls加密开启
