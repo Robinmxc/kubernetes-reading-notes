@@ -257,6 +257,11 @@
       run_once: true
       no_log: true
 
+- name: 再次获取所有已经创建的POD信息
+  command: "kubectl get pod -n {{ APP_NAMESPACE }}"
+  register: pod_info
+  run_once: true
+  connection: local
 
 - name: pss模式修复
   when: '"mongo"  in pod_info.stdout and mongodb_deploy_mode == "3" and mongdb_cluster_mode == "pss"'
