@@ -11,7 +11,7 @@
   unarchive:
     src: "{{ tgz_file }}"
     dest: "{{ base_dir }}/down/rpms/common"
-  when: 'tgz_file is exists and src_dir is not exists'
+  when: 'tgz_file is exists'
 
 - name: 安装 rpm
   shell: "{{ base_dir }}/down/rpms/common/nginx/common-nginx-install.sh"
@@ -35,7 +35,7 @@
   unarchive:
     src: "{{ tgz_file }}"
     dest: "{{ NGINX_SRC_PATH }}"
-  when: 'tgz_file is exists and src_dir is not exists'
+  when: 'tgz_file is exists '
 
 - name: 安装nginx
   shell: "./configure && make && make install"
