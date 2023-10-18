@@ -211,23 +211,38 @@ function pg_restore(){
 	  remote_ssh_command ${to_ip} ${to_password} "${kube_cp};${kube_cp_2};${kube_cp_3};${kube_cp_4};${restore_command_del};${restore_command_del_2};${restore_command_del_3};${restore_command_del_4};${restore_command};${restore_command_2};${restore_command_3};${restore_command_4};${del_command};"
 }
 function ldap_restore(){
-
+  echo "`date` ldap数据库开始恢复";
+  # 1.停止所有节点ldap服务
+  stop_ldap="systemctl stop slapd";
   for to_ldap_ip in ${node_ldap_nodes[@]};
   do
-     echo "ldap数据库开始恢复,服务器IP:${to_ldap_ip}"
-	remote_back_dir="/${to_append_dir}"
-	del_command="rm -rf ${remote_back_dir} > /dev/null 2>&1"
-	dir_create="mkdir -p ${remote_back_dir}";
-	remote_ssh_command ${to_ldap_ip} ${to_password} "${del_command};${dir_create};" 
-  sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  ${local_back_dir}/ldap_back.ldif root@${to_ldap_ip}:${remote_back_dir}
+    echo "`date` step1--- 停止ldap服务,服务器IP:${to_ldap_ip}"
+    remote_ssh_command ${to_ldap_ip} ${to_password} "${stop_ldap};"
+  done
+
   command_del_data="rm -rf  /var/lib/ldap/*";
-  change_own= "chown -R ldap:ldap /var/lib/ldap";
-  stop_ldap="systemctl stop slapd";
+  change_own="chown -R ldap:ldap /var/lib/ldap";
+  for to_ldap_ip in ${node_ldap_nodes[@]};
+  do
+    echo "`date` step2--- 恢复ldap数据,服务器IP:${to_ldap_ip}"
+	  remote_back_dir="/${to_append_dir}"
+	  del_command="rm -rf ${remote_back_dir} > /dev/null 2>&1"
+	  dir_create="mkdir -p ${remote_back_dir}";
+	  remote_ssh_command ${to_ldap_ip} ${to_password} "${del_command};${dir_create};"
+    sshpass -p ${to_password}  scp  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  ${local_back_dir}/ldap_back.ldif root@${to_ldap_ip}:${remote_back_dir}
+	  # 导入ldap数据
+	  command_restore="slapadd -l ${remote_back_dir}/ldap_back.ldif > /dev/null 2>&1";
+	  remote_ssh_command ${to_ldap_ip} ${to_password} "${command_del_data};${command_restore};${change_own};"
+	  remote_ssh_command ${to_ldap_ip} ${to_password} "${del_command};"
+	  echo "`date` step2--- ldap数据恢复完毕,服务器IP:${to_ldap_ip}"
+  done
+
   start_ldap="systemctl start slapd";
   start_keepalived="systemctl start keepalived";
-	command_restore="slapadd -l ${remote_back_dir}/ldap_back.ldif > /dev/null 2>&1";
-	remote_ssh_command ${to_ldap_ip} ${to_password} "${stop_ldap};${command_del_data};${command_restore};${change_own};${start_ldap};${start_keepalived};"
-	remote_ssh_command ${to_ldap_ip} ${to_password} "${del_command};" 
+  for to_ldap_ip in ${node_ldap_nodes[@]};
+  do
+    echo "`date` step3--- 启动ldap数据,服务器IP:${to_ldap_ip}"
+    remote_ssh_command ${to_ldap_ip} ${to_password} "${start_ldap};${start_keepalived};"
   done
 }
 if [[ ${enable_mongo} == true ]] ;then
