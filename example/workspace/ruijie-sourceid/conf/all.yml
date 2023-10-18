@@ -1,0 +1,57 @@
+# 应用名称
+KAD_APP_NAME: "sourceid"
+
+# 应用版本
+KAD_APP_VERSION: "r1.6.1"
+
+# 部署模式：dev, prd。dev模式下会多一些和开发、测试有关的配置参数
+SOURCEID_DEPLOY_PROFILE: "prd"
+
+# 数据库管理员账号，只能由大/小写字母、数字、下划线组成，长度3~16字符。默认值 ：admin。
+MONGODB_ADMIN_USER: "admin"
+
+# 数据库管理员密码，只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符。
+MONGODB_ADMIN_PWD: ""
+
+# 数据库只读账号密码，只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符。
+MONGODB_READONLY_PWD: ""
+
+# PGSQL数据库密码，只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符。
+PGSQL_ADMIN_PWD: ""
+
+#SSO域名
+SOURCEID_SSO_DOMAIN: "id.example.com"
+
+#自助和管理端域名
+SOURCEID_GATE_DOMAIN: "id-self.example.com"
+
+#adapter组件域名
+SOURCEID_ADAPTER_DOMAIN: "adapter.example.com"
+
+SOURCEID_MYAPP_DOMAIN: "myapp.example.com"
+
+#登录成功后的跳转地址
+SOURCEID_REDIRECT_URL: "http://www.baidu.com"
+
+
+#### 二次认证网关配置参数 ####
+# 二次认证网关部署模式：none - 不部署；standalone - 独立部署
+SOURCEID_GATEWAY_DEPLOY_MODE: "none"
+
+# 二次认证网关服务器IP。双机模式必须配置两个IP
+# SOURCEID_GATEWAY_HOSTS: ["1.1.1.101", "1.1.1.102"]
+
+# 二次认证网关集群虚IP，双机模式必须设置
+# SOURCEID_GATEWAY_VIP: ""
+
+# 二次认证网关Cookie存储域名
+# SOURCEID_GATEWAY_COOKIE_DOMAIN: "ruijie.com.cn"
+
+SOURCEDATA_HOSTS: []
+
+SOURCEDATA_MYSQL_USER: "root"
+
+SOURCEDATA_MYSQL_PWD: ""
+
+# 行业环境：self:本体, university:高教, general-education:普教, enterprise:企业
+INDUSTRY_TYPE: "university"

@@ -1,7 +1,7 @@
 BAK_DIR: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/upgrade_temp"
 
-KAD_UPGRADE_PACKAGE_NAME: "smpplus-kad-3.3.6-p7"
+KAD_UPGRADE_PACKAGE_NAME: "smpplus-kad-1.2.1"
 
-UPGRADE_DIR: "{{base_dir}}/down/smpplus-kad-3.3.6-p7-upgrade"
+UPGRADE_DIR: "{{base_dir}}/down/smpplus-kad-1.2.1-upgrade"
 
 # UPGRADE_VERSION: "3.3.1"

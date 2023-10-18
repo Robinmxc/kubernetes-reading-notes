@@ -1,2 +1,3 @@
 #!/bin/bash
-kubectl delete service -n ruijie-smpplus mongo-node 
+kubectl delete service -n ruijie-sourceid mongo-node 
+kubectl delete service -n ruijie-sourceid rg-pg-node
