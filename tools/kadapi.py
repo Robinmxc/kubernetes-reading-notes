@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import subprocess
 import sys
 import re
 import ssl
@@ -359,11 +360,16 @@ def changeip_thread(data):
     #模式切换对应的操作
     access_mode_change(current_net_info, data)
     logging.info("changeip: The access_mode_change conversion operation is complete.")
-
+    output_uname= subprocess.check_output("uname -r", shell=True).decode("utf-8")
+    output_uname=output_uname.replace("\n","")
+    output_uname=output_uname.replace(" ","")
     edit_netfile(data)
     if (old_ip == new_ip):
         logging.info("changeip: old_ip equals new_ip, only restart network")
-        os.system('systemctl restart network')
+        if ".an8" in output_uname or  ".oe2203" in output_uname :
+            os.system('systemctl restart NetworkManager.service && sleep 2 && nmcli networking off && sleep 2 && nmcli networking on  &&  systemctl restart docker')
+        else:
+            os.system('systemctl restart network')    
         return
 
     logging.info("changeip: old_ip is not equal to new_ip. old_ip: " + old_ip + " new_ip: " + new_ip)
@@ -380,8 +386,14 @@ def changeip_thread(data):
     # os.system('cp ' + filepath + ' ' + filepath + 'temp')
     # os.system('sed -i "s/oldIp/' + old_ip + '/g" ' + filepath)
     # os.system('sed -i "s/newIp/' + new_ip + '/g" ' + filepath)
-    logging.info("changeip: restart network start.")
-    restart_network_status_code = int(os.system('systemctl restart network'))
+    logging.info("changeip: restart network start."+output_uname)
+    if ".an8" in output_uname or  ".oe2203" in output_uname :
+        logging.info("changeip: restart network start. nmcli networking off && nmcli networking on")
+        restart_network_status_code = int(os.system('systemctl restart NetworkManager.service && sleep 2 && nmcli networking off && sleep 2 && nmcli networking on &&  systemctl restart docker'))
+    else:
+        logging.info("changeip: restart network start. nmcli networking off && nmcli networking on")
+        restart_network_status_code = int(os.system('systemctl restart network'))   
+ 
     logging.info("changeip: restart_network_status_code ---->" + str(restart_network_status_code))
     logging.info("changeip: restart network end.")
     time.sleep(5)
@@ -395,6 +407,14 @@ def changeip_thread(data):
             stop_script_status_code))
     #serverUser = submit_info['serverUser']
     serverPwd = data['serverPwd']
+
+    ssh_known_hosts_path = "/root/.ssh/known_hosts"
+    if os.path.isfile(ssh_known_hosts_path):
+        logging.info("changeip:start clean known_hosts contents")
+        clean_ssh_known_hosts_code = int(os.system("echo '' > " + ssh_known_hosts_path))
+        logging.info("changeip:end stop clean known_hosts contents" + "execution return status code-->" + str(
+            clean_ssh_known_hosts_code))
+    time.sleep(1)
     logging.info("changeip: start shell_change_ip.")
     #os.system('sh /etc/kad/api/changeip.sh ' + old_ip + ' ' + new_ip)
     shell_change_ip(serverPwd, old_ip, new_ip)

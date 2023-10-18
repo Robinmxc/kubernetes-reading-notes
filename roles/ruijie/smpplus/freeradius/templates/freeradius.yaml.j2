@@ -15,7 +15,7 @@ spec:
       labels:
         k8s-app: rg-{{ comp_name }}
     spec:
-      hostNetwork: true
+      #hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: rg-{{ comp_name }}
@@ -78,14 +78,18 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
+  externalTrafficPolicy: Local
   selector:
     k8s-app: rg-{{comp_name}}
+  type: NodePort
   ports:
   - protocol: UDP
     port: 1812
     name: port1812
     targetPort: 1812
+    nodePort: 1812
   - protocol: UDP
     port: 1813
     name: port1813
     targetPort: 1813
+    nodePort: 1813
