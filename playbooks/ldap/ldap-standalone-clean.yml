@@ -17,6 +17,26 @@
         state: absent
       ignore_errors: true
 
+    - name: 确认目录存在/home/backup
+      file:
+        path: /home/backup
+        state: directory
+
+    - name: 获取当前时间
+      command: date "+%Y%m%d%H%M%S"
+      register: current_datetime
+      changed_when: false
+
+    - name: 备份ldap数据
+      archive:
+        path: "{{ item.src_dir }}"
+        dest: "/home/backup/{{ item.backup_name }}_{{ current_datetime.stdout }}.tar.gz"
+        format: gz
+      with_items:
+        - { src_dir: /var/lib/ldap, backup_name: ldap_backup }
+        - { src_dir: /etc/openldap/schema, backup_name: schema_backup }
+        - { src_dir: /etc/openldap/slapd.d, backup_name: slapd.d_backup }
+
     - name: delete files
       file: name={{ item }} state=absent
       with_items:
