@@ -28,10 +28,23 @@ do
 
    {% for value in DB_VERSION %}
 
+    if echo  {{current_db_version[DB_VERSION[value]["name"]+'_version']}}  | grep -q p; then
+
+    if [    "${versions[$j]}" \> {{current_db_version[DB_VERSION[value]["name"]+'_version']}} ] || [ "${versions[$j]}" == {{current_db_version[DB_VERSION[value]["name"]+'_version']}} ]; then
+
+     ./upgrade_data.sh 127.0.0.1 27017 {{value}}  sourceid  ${versions[$j]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
+
+    fi
+
+    else
 
     if [    "${versions[$j]}" \> {{current_db_version[DB_VERSION[value]["name"]+'_version']}} ]; then
 
      ./upgrade_data.sh 127.0.0.1 27017 {{value}}  sourceid  ${versions[$j]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
+
+    fi
+
+
 
     fi
 
