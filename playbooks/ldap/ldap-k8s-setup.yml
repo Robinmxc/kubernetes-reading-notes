@@ -1,7 +1,11 @@
 - hosts:
-    - kube_node
+    - ldap
   any_errors_fatal: true
   vars_files:
     - "/etc/kad/config.yml"
   roles:
-    - { role: ruijie/ldap-k8s }
+    - { role: ruijie/ldap-k8s/openldap }
+
+- name: 配置k8s内ldap双主模式
+  when: "ldap_deploy_mode  == '2'"
+  import_playbook: dualk8s.yml

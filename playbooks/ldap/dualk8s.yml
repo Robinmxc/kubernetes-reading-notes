@@ -1,0 +1,7 @@
+- hosts:
+  - ldap
+  tags:
+  - ldap
+  any_errors_fatal: true
+  roles:
+  - ruijie/ldapk8s/keepalived
