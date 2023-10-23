@@ -22,7 +22,7 @@
       ignore_errors: true
 
     - name: delete files
-      file: name="{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/openldap" state=absent
+      file: name="{{ DATA_DIR }}/ruijie/openldap" state=absent
       ignore_errors: true
 
     - name: delete secret

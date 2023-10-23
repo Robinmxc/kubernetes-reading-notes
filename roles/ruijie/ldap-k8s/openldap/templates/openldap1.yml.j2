@@ -1,24 +1,24 @@
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: openldap
+  name: openldap1
   namespace: {{ APP_NAMESPACE }}
   labels:
-    app: openldap
+    app: openldap1
 spec:
-  serviceName: openldap
+  serviceName: openldap1
   replicas: 1
   selector:
     matchLabels:
-      app: openldap
+      app: openldap1
   template:
     metadata:
       labels:
-        app: openldap
+        app: openldap1
     spec:
       nodeName: {{ ldap_node_ip }}
       containers:
-        - name: openldap
+        - name: openldap1
           image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/openldap:{{ ldap_version }}
           imagePullPolicy: IfNotPresent
           args:
@@ -59,11 +59,11 @@ spec:
               protocol: TCP
           resources:
             limits:
-              cpu: 2
-              memory: 1Gi
+              cpu: {{ deploy_conf.resources.limits.cpu }}
+              memory: {{ deploy_conf.resources.limits.memory }}
             requests:
-              cpu: 100m
-              memory: 100Mi
+              cpu: {{ deploy_conf.resources.requests.cpu }}
+              memory: {{ deploy_conf.resources.requests.memory }}
       imagePullSecrets:
         - name: regsecret
       volumes:
@@ -81,13 +81,13 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: openldap
+  name: openldap1
   namespace: {{ APP_NAMESPACE }}
   labels:
-    app: openldap
+    app: openldap1
 spec:
   selector:
-    app: openldap
+    app: openldap1
   type: NodePort
   ports:
     - name: tcp-389

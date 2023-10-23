@@ -6,6 +6,6 @@
   roles:
     - { role: ruijie/ldap-k8s/openldap }
 
-- name: 配置k8s内ldap双主模式
-  when: "ldap_deploy_mode  == '2'"
-  import_playbook: dualk8s.yml
+- name: 配置k8s内ldap双主模式{{ldap_deploy_mode}}
+  when: "groups.ldap | length >= 2 "
+  import_playbook: dual-k8s.yml

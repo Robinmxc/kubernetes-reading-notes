@@ -1,11 +1,4 @@
-- name: 获取所有已经创建的POD信息
-  command: "kubectl get pod -n {{ APP_NAMESPACE }}"
-  register: pod_info
-  run_once: true
-  connection: local
-
-- name: 部署
-  when: '"openldap" not in pod_info.stdout'
+- name: 准备LDAP存储目录
   block:
   - name: 准备LDAP存储目录
     file: path={{ item }} state=directory
@@ -25,15 +18,15 @@
 
   - name: 获取docker已加载的镜像信息
     command: "docker images --format ''{{ '{{' }}.Repository{{ '}}' }}:{{ '{{' }}.Tag{{ '}}' }}''"
-    register: imgages_info
+    register: images_info
 
   - name: 复制镜像文件
     copy: src={{ LDAP_DOWN_PATH }}/{{ ldap_image_file }} dest={{ img_copy_dir }}/{{ ldap_image_file }}
-    when: 'not stat_result.stat.exists and ldap_image_name_tag not in imgages_info.stdout'
+    when: 'not stat_result.stat.exists and ldap_image_name_tag not in images_info.stdout'
 
   - name: 加载镜像
     command: 'docker load -i {{ img_copy_dir }}/{{ ldap_image_file }}'
-    when: 'ldap_image_name_tag not in imgages_info.stdout'
+    when: 'ldap_image_name_tag not in images_info.stdout'
 
   - name: 获取secret数据
     command: "kubectl get secret -n {{ APP_NAMESPACE }}"
@@ -55,20 +48,21 @@
     run_once: true
     connection: local
 
-  - name: 准备部署文件
+  - name: ldap--准备部署文件
     vars:
-      ldap_node_ip: "{{ groups.ldap[0] }}" 
-    template: src='openldap.yml.j2' dest={{ yaml_dir }}/openldap/openldap.yml
+      ldap_node_ip: "{{ groups.ldap[0] }}"
+      ldap_sync_ip: "{{ groups.ldap[1] }}"
+    template: src='openldap1.yml.j2' dest={{ yaml_dir }}/openldap/openldap1.yml
     run_once: true
     connection: local
 
-  - name: 执行部署
-    shell: "kubectl apply -f {{ yaml_dir }}/openldap/"
+  - name: ldap--执行部署
+    shell: "kubectl apply -f {{ yaml_dir }}/openldap/openldap1.yml"
     run_once: true
     connection: local
 
-  - name: 轮询等待LDAP运行
-    shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap' | awk '{print $3}'"
+  - name: ldap--轮询等待LDAP运行
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap1' | awk '{print $3}'"
     register: pod_status
     until: pod_status.stdout == "Running"
     connection: local
@@ -76,3 +70,30 @@
     retries: 12
     delay: 5
     ignore_errors: true
+
+  - name: ldap2--准备部署文件
+    when: "groups.ldap | length >= 2 "
+    vars:
+      ldap_node_ip: "{{ groups.ldap[1] }}"
+      ldap_sync_ip: "{{ groups.ldap[0] }}"
+    template: src='openldap2.yml.j2' dest={{ yaml_dir }}/openldap/openldap2.yml
+    run_once: true
+    connection: local
+
+  - name: ldap2--执行部署
+    when: "groups.ldap | length >= 2 "
+    shell: "kubectl apply -f {{ yaml_dir }}/openldap/openldap2.yml"
+    run_once: true
+    connection: local
+
+  - name: ldap2--轮询等待LDAP运行
+    when: "groups.ldap | length >= 2 "
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap2' | awk '{print $3}'"
+    register: pod_status
+    until: pod_status.stdout == "Running"
+    connection: local
+    run_once: true
+    retries: 12
+    delay: 5
+    ignore_errors: true
+

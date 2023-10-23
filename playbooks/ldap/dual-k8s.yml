@@ -4,4 +4,4 @@
   - ldap
   any_errors_fatal: true
   roles:
-  - ruijie/ldapk8s/keepalived
+  - ruijie/ldap-k8s/keepalived
