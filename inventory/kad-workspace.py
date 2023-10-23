@@ -338,16 +338,37 @@ def parse_ldap_config(host_data):
     base_dn = base_dn[0:-1]
     ldap_config["LDAP_BASE_DN"] = base_dn
 
-    #k8s部署参数处理
+    #ldap k8s内部署参数处理
     if ldap_mode == "k8s":
-        if 3 == len(group_all_vars["KUBE_NODE_HOSTS"]):
-            host_data["groups"]["ldap"] = {"hosts": [group_all_vars["KUBE_NODE_HOSTS"][1]]}
+        ldap_vip = ldap_config["LDAP_VIP"] if "LDAP_VIP" in ldap_config else ""
+
+        # 3个节点及以上选前两个节点
+        if 3 >= len(group_all_vars["KUBE_NODE_HOSTS"]):
+            host_data["groups"]["ldap"] = {"hosts": [group_all_vars["KUBE_NODE_HOSTS"][0], group_all_vars["KUBE_NODE_HOSTS"][1]]}
+            # 校验ldap中vip的配置
+            if len(group_all_vars["KUBE_NODE_HOSTS"]) >= 3 and len(ldap_vip) == 0:
+                raise Exception("非单节点内置ldap模式必须配置LDAP_VIP")
+            if "" != ldap_vip and not is_IP(ldap_vip):
+                raise Exception(u"LDAP_VIP不是有效的IP地址")
+            group_all_vars["LDAP_VIP"] = ldap_vip
         else:
             host_data["groups"]["ldap"] = {"hosts": [group_all_vars["KUBE_NODE_HOSTS"][0]]}
 
+        host_vars = host_data["host_vars"]
+        idx = 1
+        for ip in host_data["groups"]["ldap"]["hosts"]:
+            if ip not in host_vars:
+                host_vars[ip] = {}
+            host_vars[ip]["LDAP_HOST_ID"] = str(100000 + idx)
+            if idx == 1:
+                host_vars[ip]["LDAP_ROLE"] = "MASTER"
+            else:
+                host_vars[ip]["LDAP_ROLE"] = "BACKUP"
+            idx = idx + 1
+
     #独立部署参数处理
     if ldap_mode == "standalone":
-        ldap_hosts =  ldap_config["LDAP_HOST"] if "LDAP_HOST" in ldap_config else []
+        ldap_hosts = ldap_config["LDAP_HOST"] if "LDAP_HOST" in ldap_config else []
         ldap_vip = ldap_config["LDAP_VIP"] if "LDAP_VIP" in ldap_config else ""
         if len(ldap_hosts) !=1 and len(ldap_hosts) !=2:
           raise Exception(ldap_hosts + u"必须配置一个或者两个IP")
