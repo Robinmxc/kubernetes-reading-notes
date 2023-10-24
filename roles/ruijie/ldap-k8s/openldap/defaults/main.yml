@@ -1,7 +1,7 @@
-ldap_base_dir: "{{ DATA_DIR }}/ruijie/openldap"
-ldap_version: 1.5.0
+ldap_base_dir: "{{ DATA_DIR }}/ruijie/{ APP_NAMESPACE }}/openldap"
+ldap_version: 1.5.1
 ldap_image_file: "openldap_image-{{ ldap_version }}.tar"
-ldap_image_name_tag: "{{ PRIVATE_INSECURE_REGISTRY }}/sourceid/openldap:{{ ldap_version }}"
+ldap_image_name_tag: "sourceid/openldap:{{ ldap_version }}"
 
 ldap_deploy_conf:
   resources:
