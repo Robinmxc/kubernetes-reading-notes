@@ -51,6 +51,8 @@ spec:
               mountPath: /var/lib/ldap
             - name: ldap-certs
               mountPath: /container/service/slapd/assets/certs
+            - name: ldap-schema
+              mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
           ports:
             - name: tcp-389
               containerPort: 389
@@ -68,6 +70,9 @@ spec:
       imagePullSecrets:
         - name: regsecret
       volumes:
+        - name: ldap-schema
+          hostPath:
+            path: {{ ldap_base_dir }}/schema
         - name: ldap-config
           hostPath:
             path: {{ ldap_base_dir }}/conf

@@ -1,12 +1,5 @@
 - name: 准备LDAP存储目录
   block:
-  - name: 准备LDAP存储目录
-    file: path={{ item }} state=directory
-    with_items:
-      - "{{ ldap_base_dir }}/conf"
-      - "{{ ldap_base_dir }}/data"
-      - "{{ ldap_base_dir }}/certs"
-
   - name: 准备镜像复制目录
     file: path={{ item }} state=directory
     with_items:
@@ -51,7 +44,6 @@
   - name: ldap--准备部署文件
     vars:
       ldap_node_ip: "{{ groups.ldap[0] }}"
-      ldap_sync_ip: "{{ groups.ldap[1] }}"
     template: src='openldap1.yml.j2' dest={{ yaml_dir }}/openldap/openldap1.yml
     run_once: true
     connection: local
@@ -75,7 +67,6 @@
     when: "groups.ldap | length >= 2 "
     vars:
       ldap_node_ip: "{{ groups.ldap[1] }}"
-      ldap_sync_ip: "{{ groups.ldap[0] }}"
     template: src='openldap2.yml.j2' dest={{ yaml_dir }}/openldap/openldap2.yml
     run_once: true
     connection: local
