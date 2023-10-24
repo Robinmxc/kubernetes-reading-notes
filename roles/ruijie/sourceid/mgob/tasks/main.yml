@@ -1,3 +1,37 @@
+- name: 部署cleanscript
+  when: 'MGOB.MGOB_SFTP_ENABLED == "yes"'
+  block:
+  - name: 在deploy节点准备目录
+    tags:
+    - config
+    file: path={{ item }} state=directory
+    with_items:
+    - "{{ yaml_dir }}/mgob"
+    run_once: true
+    connection: local
+
+  - name: 准备mgob的清理文件
+    template: src=cleanmongob.sh.j2 dest={{ yaml_dir }}/mgob/cleanmongob.sh
+    run_once: true
+    connection: local
+
+  - name: 准备mgob的清理文件
+    template: src=copyscript.sh.j2 dest={{ yaml_dir }}/mgob/copyscript.sh
+    run_once: true
+    connection: local
+
+  - name: 准备mgob的清理文件
+    template: src=cronroot.j2 dest={{ yaml_dir }}/mgob/cronroot
+    run_once: true
+    connection: local
+
+  - name: 执行拷贝脚本
+    shell: '/bin/bash {{ yaml_dir }}/mgob/copyscript.sh'
+    connection: local
+    run_once: true
+
+
+
 - name: 部署License
   when: 'MGOB_POD_ENABLE == "yes"'
   block:
