@@ -13,16 +13,39 @@ do
 
     {% for value in DB_VERSION %}
 
-    if [  "${versions[$i]}" \>  {{current_db_version[DB_VERSION[value]["name"]+'_version']}} ]; then
+        {% if value != "mdm" %}
+
+         if [  "${versions[$i]}" \>  {{current_db_version[DB_VERSION[value]["name"]+'_version']}} ]; then
     
-       if [ "${versions[$i]}" \<  {{DB_VERSION[value]["version"]}}  ] || [ "${versions[$i]}" == {{DB_VERSION[value]["version"]}}  ]; then
+           if [ "${versions[$i]}" \<  {{DB_VERSION[value]["version"]}}  ] || [ "${versions[$i]}" == {{DB_VERSION[value]["version"]}}  ]; then
 
-         ./upgrade_data.sh 127.0.0.1 27017 {{value}}  sourceid  ${versions[$i]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
+             ./upgrade_data.sh 127.0.0.1 27017 {{value}}  sourceid  ${versions[$i]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
 
-       fi
+           fi
 
-    fi
+         fi
+
+        {% endif %}
 
     {% endfor %}
+
+
+    {% if "mdm" in DB_VERSION %}
+
+     if [  "${versions[$i]}" \>  {{current_db_version[DB_VERSION["mdm"]["name"]+'_version']}} ]; then
+    
+        if [ "${versions[$i]}" \<  {{DB_VERSION["mdm"]["version"]}}  ] || [ "${versions[$i]}" == {{DB_VERSION["mdm"]["version"]}}  ]; then
+
+          ./upgrade_data.sh 127.0.0.1 27017 mdm  sourceid  ${versions[$i]}  {{ MONGODB_ADMIN_USER }} {{ MONGODB_ADMIN_PWD }} admin {{ INDUSTRY_TYPE }}
+
+        fi
+
+     fi
+
+
+    {% endif %}
+
+
+
 
 done
