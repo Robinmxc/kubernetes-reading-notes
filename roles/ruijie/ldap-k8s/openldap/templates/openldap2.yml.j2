@@ -59,11 +59,11 @@ spec:
               protocol: TCP
           resources:
             limits:
-              cpu: {{ deploy_conf.resources.limits.cpu }}
-              memory: {{ deploy_conf.resources.limits.memory }}
+              cpu: {{ ldap_deploy_conf.resources.limits.cpu }}
+              memory: {{ ldap_deploy_conf.resources.limits.memory }}
             requests:
-              cpu: {{ deploy_conf.resources.requests.cpu }}
-              memory: {{ deploy_conf.resources.requests.memory }}
+              cpu: {{ ldap_deploy_conf.resources.requests.cpu }}
+              memory: {{ ldap_deploy_conf.resources.requests.memory }}
       imagePullSecrets:
         - name: regsecret
       volumes:

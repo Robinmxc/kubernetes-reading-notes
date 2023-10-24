@@ -3,7 +3,7 @@ ldap_version: 1.5.0
 ldap_image_file: "openldap_image-{{ ldap_version }}.tar"
 ldap_image_name_tag: "{{ PRIVATE_INSECURE_REGISTRY }}/sourceid/openldap:{{ ldap_version }}"
 
-deploy_conf:
+ldap_deploy_conf:
   resources:
     limits:
       cpu: 2
