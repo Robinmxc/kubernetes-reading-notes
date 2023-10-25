@@ -62,6 +62,27 @@
           fi;"
   tags: upgrade_k8s
 
+- name: 配置kubernetes的aggregator
+  shell: "grep enable-aggregator-routing /etc/kubernetes/manifests/kube-apiserver.yaml >> /dev/null; \
+          if [ $? -ne 0 ]; \
+          then sed -i \"s#--enable-bootstrap-token-auth=true#--enable-bootstrap-token-auth=true\\n    - --enable-aggregator-routing=true#g\" /etc/kubernetes/manifests/kube-apiserver.yaml; \
+          fi;"
+  tags: upgrade_k8s
+
+- name: 配置kubernetes的leader-elect
+  shell: "grep leader-elect-lease-duration /etc/kubernetes/manifests/kube-controller-manager.yaml >> /dev/null; \
+          if [ $? -ne 0 ]; \
+          then sed -i \"s#--leader-elect=true#--leader-elect=true\\n    - --leader-elect-lease-duration=30s#g\" /etc/kubernetes/manifests/kube-controller-manager.yaml; \
+          fi;"
+  tags: upgrade_k8s
+
+- name: 配置kubernetes的leader-elect
+  shell: "grep leader-elect-renew-deadline /etc/kubernetes/manifests/kube-controller-manager.yaml >> /dev/null; \
+          if [ $? -ne 0 ]; \
+          then sed -i \"s#--leader-elect=true#--leader-elect=true\\n    - --leader-elect-renew-deadline=20s#g\" /etc/kubernetes/manifests/kube-controller-manager.yaml; \
+          fi;"
+  tags: upgrade_k8s
+  
 - name: 重置端口后,轮询等待apiserver处于running状态
   shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'"
   register: pod_status
