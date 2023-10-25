@@ -17,9 +17,10 @@ spec:
         app: openldap1
     spec:
       nodeName: {{ ldap_node_ip }}
+      hostNetwork: true
       containers:
         - name: openldap1
-          image: {{ PRIVATE_INSECURE_REGISTRY }}/sourceid/openldap:{{ ldap_version }}
+          image: sourceid/openldap:{{ ldap_version }}
           imagePullPolicy: IfNotPresent
           args:
             - '--copy-service'
@@ -50,6 +51,8 @@ spec:
               mountPath: /var/lib/ldap
             - name: ldap-certs
               mountPath: /container/service/slapd/assets/certs
+            - name: ldap-schema
+              mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
           ports:
             - name: tcp-389
               containerPort: 389
@@ -67,6 +70,9 @@ spec:
       imagePullSecrets:
         - name: regsecret
       volumes:
+        - name: ldap-schema
+          hostPath:
+            path: {{ ldap_base_dir }}/schema
         - name: ldap-config
           hostPath:
             path: {{ ldap_base_dir }}/conf
@@ -76,27 +82,3 @@ spec:
         - name: ldap-certs
           hostPath:
             path: {{ ldap_base_dir }}/certs
----
-
-kind: Service
-apiVersion: v1
-metadata:
-  name: openldap1
-  namespace: {{ APP_NAMESPACE }}
-  labels:
-    app: openldap1
-spec:
-  selector:
-    app: openldap1
-  type: NodePort
-  ports:
-    - name: tcp-389
-      protocol: TCP
-      port: 389
-      targetPort: 389
-      nodePort: {{ LDAP.LDAP_PORT }}
-    - name: tcp-636
-      protocol: TCP
-      port: 636
-      targetPort: 636
-      nodePort: {{ LDAP.LDAP_SSL_PORT }}

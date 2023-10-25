@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
-
-A=`ps -C slapd --no-header |wc -l`
+   
+A=`docker ps |grep 'sourceid/openldap:{{ ldap_version }}' |grep -v 'pause' |wc -l`
 if [ $A -eq 0 ];then
    echo `date`':  slapd is not healthy, try to killall keepalived' >> /var/log/keepalived.log
    killall keepalived
