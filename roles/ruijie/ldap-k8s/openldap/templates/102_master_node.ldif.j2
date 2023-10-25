@@ -29,10 +29,4 @@ olcSyncRepl: rid=001
 add: olcMirrorMode
 olcMirrorMode: TRUE
 
-dn: olcOverlay=syncprov,olcDatabase={1}mdb,cn=config
-changetype: add
-objectClass: olcOverlayConfig
-objectClass: olcSyncProvConfig
-olcOverlay: syncprov
-
 

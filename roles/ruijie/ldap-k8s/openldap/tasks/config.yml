@@ -17,14 +17,14 @@
         src: '{{ filename }}.j2'
         dest: '{{ ldap_base_dir }}/schema/{{ filename }}'
       with_items:
-        - "01_add_ppolicy.ldif"
+        #- "01_add_ppolicy.ldif"
         - "02_modify_ppolicy.ldif"
         - "03_ppolicy_overlay.ldif"
-        - "04_disable_anon.ldif"
+        #- "04_disable_anon.ldif"
         - "05_db-index.ldif"
         - "06_limits.ldif"
-        - "07_tls1.2.ldif"
-        - "08_name.ldif"
+        #- "07_tls1.2.ldif"
+        #- "08_name.ldif"
         - "09_olcAccess.ldif"
 
     - name: 生成双主特殊配置文件
