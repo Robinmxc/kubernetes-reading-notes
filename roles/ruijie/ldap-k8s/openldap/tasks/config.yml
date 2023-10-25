@@ -15,7 +15,7 @@
         filename: '{{ item }}'
       template:
         src: '{{ filename }}.j2'
-        dest: {{ ldap_base_dir }}/schema/{{ filename }}
+        dest: '{{ ldap_base_dir }}/schema/{{ filename }}'
       with_items:
         - "01_add_ppolicy.ldif"
         - "02_modify_ppolicy.ldif"
@@ -35,8 +35,8 @@
         ldap_2_hostname: "{{ groups.ldap[1] }}"
       template:
         src: '{{ filename }}.j2'
-        dest: {{ ldap_base_dir }}/schema/{{ filename }}
+        dest: '{{ ldap_base_dir }}/schema/{{ filename }}'
       with_items:
         - "100_mod_syncprov.ldif"
         - "101_syncprov.ldif"
-        - "102_master_node"
+        - "102_master_node.ldif"
