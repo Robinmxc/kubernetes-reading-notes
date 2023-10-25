@@ -1,0 +1,59 @@
+#!/bin/bash
+
+mkdir -p {{ MGOB.MGOB_SFTP_DIR }} 
+
+size=$(df --output=pcent --direct {{ MGOB.MGOB_SFTP_DIR }}  | tail -n 1 | awk '{print $NF}' | cut -d '%' -f 1)
+
+size2=$((100-$size))
+
+if [ $size2 -lt  {{ MGOB.MGOB_DISK_PERCENT }} ]
+then
+
+aa=true
+while $aa
+do
+
+
+cd {{ MGOB.MGOB_SFTP_DIR }}
+
+num=$( ls -lrt | grep gz | wc -l )
+
+if [ $num -gt 2 ]
+then
+
+    filename=$(ls -lrt |  grep gz | head -n 1 | awk '{print $NF}')
+    rm -rf  $filename
+
+    size=$(df --output=pcent --direct {{ MGOB.MGOB_SFTP_DIR }}  | tail -n 1 | awk '{print $NF}' | cut -d '%' -f 1)
+
+    size2=$((100-$size))
+
+    if [ $size2 -ge  {{ MGOB.MGOB_DISK_PERCENT }} ]; then
+        aa=false
+    fi
+
+
+else
+
+   aa=false
+
+fi
+
+
+done
+
+
+else
+
+cd {{ MGOB.MGOB_SFTP_DIR }}
+
+num=$( ls -lrt | grep gz | wc -l )
+
+if [ $num -gt 2 ]
+then
+
+find {{ MGOB.MGOB_SFTP_DIR }} -type f -name "*.gz" -mtime +{{ MGOB.MGOB_BACKUP_DAY }}  | xargs rm -rf
+
+fi
+
+fi
