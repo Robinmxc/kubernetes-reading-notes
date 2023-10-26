@@ -5,5 +5,5 @@ olcLimits: dn.exact="cn={{ LDAP_READONLY_USER_USERNAME }},{{ LDAP.LDAP_BASE_DN }
 
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
-add: olcDbMaxSize
+replace: olcDbMaxSize
 olcDbMaxSize: 1000000000

@@ -44,6 +44,8 @@ spec:
                 secretKeyRef:
                   name: ldap-pwds
                   key: readonly
+            - name: LDAP_REPLICATION
+              value: 'own'
           volumeMounts:
             - name: ldap-config
               mountPath: /etc/ldap/slapd.d

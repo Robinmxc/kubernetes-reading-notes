@@ -5,5 +5,5 @@ olcTLSProtocolMin: 3.3
 
 dn: cn=config
 changetype: modify
-add: olcTLSCipherSuite
+replace: olcTLSCipherSuite
 olcTLSCipherSuite: ECDHE-RSA-AES256-SHA384:AES256-SHA256:!RC4:HIGH:!MD5:!aNULL:!EDH:!EXP:!SSLV2:!eNULL

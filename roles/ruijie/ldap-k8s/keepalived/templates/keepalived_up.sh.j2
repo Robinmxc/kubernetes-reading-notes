@@ -1,13 +1,13 @@
 #!/bin/bash
 set -x
    
-A=`docker ps |grep 'sourceid/openldap:{{ ldap_version }}' |grep -v 'pause' |wc -l`
+A=`docker ps |grep 'k8s_openldap' |grep -v 'pause' |wc -l`
 if [ $A -eq 0 ];then
    echo `date`':  slapd is not up' >> /var/log/keepalived.log
    exit 0
 fi
 status=`systemctl is-active keepalived`
-if ["$status" == "inactive"];then
+if [ "$status" == "inactive" ];then
    echo `date`':  slapd is up, start keepalived' >> /var/log/keepalived.log
    systemctl start keepalived
    fi
