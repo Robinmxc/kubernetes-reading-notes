@@ -1,5 +1,5 @@
 - name: 部署cleanscript
-  when: 'MGOB.MGOB_SFTP_ENABLED == "yes"'
+  when: 'MGOB_SFTP_ENABLE == "yes"'
   block:
   - name: 在deploy节点准备目录
     tags:
