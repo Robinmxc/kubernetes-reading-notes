@@ -1,4 +1,21 @@
 #数据库脚本压缩、复制、解压、脚本执行  
+- name: 更换脚本域名
+  block:
+  - name: 设置文件权限
+    vars:
+      src_file: "{{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/rg-upgrade-db/update_domain2.sh"
+    when: 'src_file is exists'
+    shell: "chmod +777 {{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/rg-upgrade-db/update_domain2.sh"
+
+  - name: 执行替换脚本
+    vars:
+      SSO_DOMAIN_URL: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/cas{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
+      GATE_DOMAIN_URL: '{{ SOURCEID_FRONTEND_URL }}'
+      src_file: "{{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/rg-upgrade-db/update_domain2.sh"
+    when: 'src_file is exists'
+    shell: "{{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/rg-upgrade-db/update_domain2.sh {{ GATE_DOMAIN_URL }} {{ SSO_DOMAIN_URL }} {{ KAD_PACKAGE_DIR }}"
+    connection: local
+
 - name: 压缩数据初始化脚本
   archive:
     path: "{{ KAD_PACKAGE_DIR }}-hotfix/db/"
