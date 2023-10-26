@@ -1,5 +1,7 @@
 MGOB_POD_ENABLE: "{% if MGOB is defined and MGOB.MGOB_ENABLED %}yes{% else %}no{% endif %}"
 
+MGOB_SFTP_ENABLE: "{% if MGOB is defined and (MGOB.MGOB_SFTP_ENABLED) == \"yes\"  %}yes{% else %}no{% endif %}"
+
 mgob_offline: "mgob-1.0.tar"
 mgob_version: "1.0"
 MGOB_SFTP_ENABLED: "no"
