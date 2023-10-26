@@ -12,9 +12,9 @@ changetype: modify
 add: olcSyncRepl
 olcSyncRepl: rid=001
 {% if inventory_hostname == ldap_1_hostname %}
-  provider=ldap://{{ ldap_2_hostname }}:389/
+  provider=ldap://{{ ldap_2_hostname }}:{{ LDAP_STORAGE_PORT }}/
 {% elif inventory_hostname == ldap_2_hostname %}
-  provider=ldap://{{ ldap_1_hostname }}:389/
+  provider=ldap://{{ ldap_1_hostname }}:{{ LDAP_STORAGE_PORT }}/
 {% endif %}
   bindmethod=simple
   binddn="cn=admin,{{ LDAP.LDAP_BASE_DN }}"

@@ -17,6 +17,15 @@
   - name: 设置slapd存活检测脚本
     template: src=ldap_check.sh.j2 dest=/etc/keepalived/ldap_check.sh mode=755
 
+  - name: 设置keepalived服务拉起脚本
+    template: src=keepalived_up.sh.j2 dest=/etc/keepalived/keepalived_up.sh mode=755
+
+  - name: crontab清理eepalived服务拉起脚本
+    shell: sed -i '/keepalived_up/d' /var/spool/cron/root
+
+  - name: crontab添加keepalived服务拉起脚本
+    shell: echo '* * * * * /etc/keepalived/keepalived_up.sh' >> /var/spool/cron/root
+
   - name: 开机启用keepalived服务
     shell: systemctl enable keepalived
 

@@ -56,11 +56,11 @@ spec:
             - name: ldap-schema
               mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
           ports:
-            - name: tcp-389
-              containerPort: 389
+            - name: tcp-{{ LDAP_STORAGE_PORT }}
+              containerPort: {{ LDAP_STORAGE_PORT }}
               protocol: TCP
-            - name: tcp-636
-              containerPort: 636
+            - name: tcp-{{ LDAPS_STORAGE_PORT }}
+              containerPort: {{ LDAPS_STORAGE_PORT }}
               protocol: TCP
           resources:
             limits:

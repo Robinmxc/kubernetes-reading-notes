@@ -17,14 +17,10 @@
         src: '{{ filename }}.j2'
         dest: '{{ ldap_base_dir }}/schema/{{ filename }}'
       with_items:
-        #- "01_add_ppolicy.ldif"
         - "02_modify_ppolicy.ldif"
         - "03_ppolicy_overlay.ldif"
-        #- "04_disable_anon.ldif"
         - "05_db-index.ldif"
         - "06_limits.ldif"
-        #- "07_tls1.2.ldif"
-        #- "08_name.ldif"
         - "09_olcAccess.ldif"
 
     - name: 生成双主特殊配置文件
@@ -40,3 +36,48 @@
         - "100_mod_syncprov.ldif"
         - "101_syncprov.ldif"
         - "102_master_node.ldif"
+
+    - name: 检查 LDAP 证书密钥文件
+      stat:
+        path: /etc/pki/tls/ldapserver.key
+      register: key_file
+      connection: local
+      run_once: true
+
+    - name: 检查 LDAP 证书文件
+      stat:
+        path: /etc/pki/tls/ldapserver.crt
+      register: crt_file
+      connection: local
+      run_once: true
+
+    - name: 生成LDAP证书文件
+      when: key_file.stat.exists == false and crt_file.stat.exists == false
+      shell: "openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj '/CN=localhost'  -keyout /etc/pki/tls/ldapserver.key -out /etc/pki/tls/ldapserver.crt"
+      connection: local
+      run_once: true
+
+    - name: 复制 ldap.key
+      copy:
+        src: /etc/pki/tls/ldapserver.key
+        dest: "{{ ldap_base_dir }}/certs/ldap.key"
+
+    - name: 复制 ldap.crt
+      copy:
+        src: /etc/pki/tls/ldapserver.crt
+        dest: "{{ ldap_base_dir }}/certs/ldap.crt"
+
+    - name: 复制 ca.crt
+      copy:
+        src: /etc/pki/tls/ldapserver.crt
+        dest: "{{ ldap_base_dir }}/certs/ca.crt"
+
+    - name: 设置LDAP证书目录权限
+      file: path="{{ ldap_base_dir }}/certs" state=directory mode=0770 owner=911 group=911
+
+    - name: 设置LDAP证书文件权限
+      file: path="{{ ldap_base_dir }}/certs/{{ item }}" mode=0660 owner=911 group=911
+      with_items:
+        - "ldap.key"
+        - "ldap.crt"
+        - "ca.crt"

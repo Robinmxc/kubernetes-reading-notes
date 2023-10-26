@@ -111,10 +111,10 @@ LDAP: {
   #根组织名称，例如"Ruijie"，默认和LDAP_DOMAIN相同
   LDAP_ORGANISATION: "",
 
-  #LDAP端口，独立部署时默认值为389，K8S部署时默认值为30389（NodePort）
+  #LDAP端口，独立部署时默认值为389，K8S部署时默认值为389（hostWork）
   LDAP_PORT: "",
 
-  #LDAPS端口，独立部署时默认值为636，K8S部署时默认值为30636（NodePort）
+  #LDAPS端口，独立部署时默认值为636，K8S部署时默认值为636（hostWork）
   LDAP_SSL_PORT: ""
 }
 
