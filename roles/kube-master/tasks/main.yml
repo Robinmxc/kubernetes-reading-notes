@@ -9,8 +9,25 @@
           fi;"
   tags: upgrade_k8s
 
+- name: 创建master镜像目录
+  file: name={{ item }} state=directory
+  with_items:
+  - /opt/kube/images
+
+- name: 拷贝k8s基础镜像到master节点
+  copy: src={{ base_dir }}/down/{{ item }} dest=/opt/kube/images/{{ item }}
+  with_items:
+  - "{{ kube_apiserver }}"
+  - "{{ kube_proxy }}"
+  - "{{ kube_scheduler }}"
+  - "{{ kube_controller_manager }}"
+  - "{{ etcd }}"
+  - "{{ coredns }}"
+  - "{{ pause }}"
+
+
 - name: 加载kubernetes镜像包
-  shell: "docker load -i {{ base_dir }}/down/{{ item }}"
+  shell: "docker load -i /opt/kube/images/{{ item }}"
   with_items:
   - "{{ kube_apiserver }}"
   - "{{ kube_proxy }}"
@@ -22,16 +39,18 @@
 
 - name: 配置 kubeadm文件 
   template: src=kubeadm.yaml.j2 dest=/etc/kubeadm.yaml
+  connection: local
   run_once: true
   tags: restart_master
 
 - name: 通过kubeadm安装并启动kubernetes
-  shell: 'kubeadm init  --config=/etc/kubeadm.yaml; \
+  shell: 'kubeadm init   --upload-certs --config=/etc/kubeadm.yaml; \
           mkdir -p $HOME/.kube; \
           sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config; \
           sudo chown $(id -u):$(id -g) $HOME/.kube/config; \
           export KUBECONFIG=/etc/kubernetes/admin.conf'
-  run_once: True
+  connection: local
+  run_once: true
   tags: upgrade_k8s
 
 - name: 以轮询的方式等待master服务启动完成
@@ -41,7 +60,8 @@
   retries:  10
   delay: 10
   delegate_to: "{{ groups.deploy[0] }}"
-  run_once: True
+  connection: local
+  run_once: true
   tags: upgrade_k8s, restart_master
 
 - name: 轮询等待apiserver处于running状态
@@ -54,12 +74,20 @@
   delay: 5
   ignore_errors: true
   tags: upgrade_k8s
+  
+- name: 设置node节点可以调度pod
+  shell: 'kubectl taint nodes --all node-role.kubernetes.io/master-'
+  when: DEPLOY_MODE == "allinone" or  DEPLOY_MODE == "multi-master" 
+  connection: local
+  run_once: true  
 
 - name: 修改kubernetes的端口范围
   shell: "grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml >> /dev/null; \
           if [ $? -ne 0 ]; \
           then sed -i \"s#--allow-privileged=true#--allow-privileged=true\\n    - --service-node-port-range=1-65535#g\" /etc/kubernetes/manifests/kube-apiserver.yaml; \
           fi;"
+  connection: local
+  run_once: true
   tags: upgrade_k8s
 
 - name: 重置端口后,轮询等待apiserver处于running状态
@@ -73,19 +101,6 @@
   ignore_errors: true
   tags: upgrade_k8s
 
-- name: 配置{{ BASIC_AUTH_USER }}用户rbac权限
-  template: src=basic-auth-rbac.yaml.j2 dest=/opt/kube/basic-auth-rbac.yaml
-  when: 'BASIC_AUTH_ENABLE == "yes"'
-  delegate_to: "{{ groups.deploy[0] }}"
-  run_once: true
-  tags: restart_master
-
-- name: 创建{{ BASIC_AUTH_USER }}用户rbac权限
-  shell: "kubectl apply -f /opt/kube/basic-auth-rbac.yaml"
-  when: 'BASIC_AUTH_ENABLE == "yes"'
-  delegate_to: "{{ groups.deploy[0] }}"
-  run_once: true
-  tags: restart_master
 
 # 支持kubectl命令自动补全
 - name: 支持kubectl命令自动补全
@@ -93,5 +108,8 @@
 
 - name: 配置db端口挂载清理任务
   shell: "chmod +777 /opt/kad/tools/db-port-clean.sh && touch /var/spool/cron/root && sed -i '/db-port-clean.sh/d' /var/spool/cron/root && echo '40 2 * * *  sh /opt/kad/tools/db-port-clean.sh' >> /var/spool/cron/root"
+  connection: local
   run_once: true
-  tags: restart_master  
+  tags: restart_master 
+
+# 如果node节点也包括在master节点中,设置该节点可以调度pod

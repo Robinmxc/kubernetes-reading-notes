@@ -141,24 +141,21 @@ def parse_host_data(workspace_dir):
     # 设置K8S部署模式
     deploy_mode = "single-master"
     if (len(master_hosts) == 2):
+        raise Exception(u"多master高可用至少三个master节点")
+    if (len(master_hosts) == 3):
         deploy_mode = "multi-master"
     elif (len(node_hosts) == 1 and node_hosts[0] == master_hosts[0]):
         deploy_mode = "allinone"
     group_all_vars["DEPLOY_MODE"] = deploy_mode
 
     if (deploy_mode == "multi-master"):
+        if k8s_config["KUBE_MASTER_VIP"] == "":
+            raise Exception(u"多master高可用必须配置KUBE_MASTER_VIP")
         if not is_IP(k8s_config["KUBE_MASTER_VIP"]):
             raise Exception(k8s_config["KUBE_MASTER_VIP"] + u"不是有效的IP地址")
-        # 设置负载均衡节点
-        result["groups"]["lb"] = {"hosts": master_hosts}
-        # 双Master部署模式设置为虚
-        group_all_vars["MASTER_IP"] = k8s_config["KUBE_MASTER_VIP"]
-        # 双Master部署模式设置端口为8443
-        group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:8443"
+        group_all_vars["KUBE_MASTER_VIP"] = k8s_config["KUBE_MASTER_VIP"]
     else:
-        result["groups"]["lb"] = {"hosts": []}
-        group_all_vars["MASTER_IP"] = master_hosts[0]
-        group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:6443"
+        group_all_vars["KUBE_MASTER_VIP"] = master_hosts[0]
 
     # 计算服务网段
     if "SERVICE_CIDR" in k8s_config:
@@ -215,14 +212,9 @@ def parse_host_data(workspace_dir):
     for ip in node_hosts:
         host_vars[ip] = {"K8S_ROLE": "node"}
 
-    # 设置负载均衡角色
-    if (deploy_mode == "multi-master"):
-        host_vars[master_hosts[0]]["LB_ROLE"] = "master"
-        host_vars[master_hosts[1]]["LB_ROLE"] = "backup"
-
     # 设置nodekeepalive角色
     idx = 1
-    for ip in node_hosts:
+    for ip in master_hosts:
         host_vars[ip]["NODE_LB_ID"] = str(100000 + idx)
         if idx == 1:
             host_vars[ip]["NODE_LB_ROLE"] = "MASTER"

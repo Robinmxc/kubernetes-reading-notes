@@ -43,11 +43,6 @@
   roles:
   - ruijie/cluster/prepare
 
-# [optional] to install loadbalance service, only needed by multi-master cluster
-- hosts: lb
-  any_errors_fatal: true
-  roles:
-  - lb
 
 # to install etcd cluster
 #- hosts: etcd
@@ -90,6 +85,7 @@
 - hosts: kube_master
   any_errors_fatal: true
   roles:
+  - ruijie/cluster/keepalived  
   - kube-master
   #- kube-node
   #

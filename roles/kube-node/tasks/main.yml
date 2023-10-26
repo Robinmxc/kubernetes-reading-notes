@@ -1,5 +1,5 @@
 - name: 部署node节点
-  when: "inventory_hostname not in groups.kube_master"
+  when: "inventory_hostname != groups.deploy[0]"
   block: 
     - name: 开机启用kubelet 服务
       shell: systemctl enable kubelet
@@ -29,17 +29,32 @@
     - name: 获取kubeadm的token
       shell: "kubeadm token create"
       delegate_to: "{{ groups.deploy[0] }}"
+      run_once: true        
       register: kubeadm_token
     
     - name: 获取kubeadm的token_ca_cert_hash
       shell: "openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'"
       delegate_to: "{{ groups.deploy[0] }}"
       register: kubeadm_token_ca_cert_hash
+      run_once: true        
 
-    - name: node节点加入master节点
-      shell: "kubeadm join {{ groups.deploy[0] }}:6443 --token {{ kubeadm_token.stdout_lines[0] }} --discovery-token-ca-cert-hash sha256:{{ kubeadm_token_ca_cert_hash.stdout_lines[0] }}"
+    - name: 获取kubeadm的token
+      shell: "kubeadm init phase upload-certs --upload-certs | sed -n '/Using certificate key:/{n;p}'"
+      delegate_to: "{{ groups.deploy[0] }}"
+      register: kubeadm_certificate_key
+      run_once: true        
+      
+    - name: node节点加入集群
+      shell: "kubeadm join {{ KUBE_MASTER_VIP }}:6443 --token {{ kubeadm_token.stdout_lines[0] }} --discovery-token-ca-cert-hash sha256:{{ kubeadm_token_ca_cert_hash.stdout_lines[0] }}"
       tags: upgrade_k8s
-    
+      when: "inventory_hostname not in groups.kube_master"
+
+    - name: node节点加入master节点集群
+      shell: 'kubeadm join {{ KUBE_MASTER_VIP }}:6443 --token {{ kubeadm_token.stdout_lines[0] }} --discovery-token-ca-cert-hash sha256:{{ kubeadm_token_ca_cert_hash.stdout_lines[0] }} --control-plane --certificate-key {{kubeadm_certificate_key.stdout}}'
+      tags: upgrade_k8s
+      when: "inventory_hostname in groups.kube_master"
+
+
     # 批准 node 节点，首先轮询等待kubelet启动完成
     - name: 轮询等待kubelet启动
       shell: "systemctl status kubelet.service|grep Active"
@@ -74,8 +89,3 @@
       shell: "kubectl label node {{ inventory_hostname }} kubernetes.io/role=node --overwrite"
       ignore_errors: true
       delegate_to: "{{ groups.deploy[0] }}"
-
-# 如果node节点也包括在master节点中,设置该节点可以调度pod
-- name: 设置node节点可以调度pod
-  shell: 'kubectl taint nodes --all node-role.kubernetes.io/master-'
-  when: "inventory_hostname in groups.kube_master"
