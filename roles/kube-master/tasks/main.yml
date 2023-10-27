@@ -50,7 +50,8 @@
   tags: upgrade_k8s
 
 - name: 通过kubeadm安装后支持kubelet命令
-  shell: 'rm -rf $HOME/.kube； mkdir -p $HOME/.kube; \
+  shell: 'rm -rf $HOME/.kube; \
+          mkdir -p $HOME/.kube; \
           sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config; \
           sudo chown $(id -u):$(id -g) $HOME/.kube/config; \
           export KUBECONFIG=/etc/kubernetes/admin.conf'

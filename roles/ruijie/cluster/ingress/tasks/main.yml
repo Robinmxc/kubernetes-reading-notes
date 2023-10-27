@@ -60,11 +60,13 @@
     - name: 自动添加server_name为ip
       replace: path="{{ nginx_temp_dir }}/nginx.tmpl" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
       with_items:
-      - {regexp: "server_ip_copy", replace: '{{ groups.kube_node[0] }}' }
+      - {regexp: "server_ip_copy", replace: '{{ KUBE_MASTER_VIP }}' }
       - {regexp: "server_domain_copy", replace: '{{ SMPPLUS_SSO_DOMAIN }}' }
       no_log: true
       when: "KAD_APP_NAME == 'smpplus'"
-
+      connection: local
+      run_once: true
+      
     - name: 获取configmap数据
       command: "kubectl -n kube-system get configmap"
       register: nginx_config
