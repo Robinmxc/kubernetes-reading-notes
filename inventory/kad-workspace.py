@@ -320,12 +320,12 @@ def parse_ldap_config(host_data):
         ldap_config["LDAP_ORGANISATION"] = ldap_config["LDAP_DOMAIN"]
 
     if "LDAP_PORT" not in ldap_config or ldap_config["LDAP_PORT"] == "":
-        ldap_config["LDAP_PORT"] = "30389" if ldap_mode == "k8s" else "389"
+        ldap_config["LDAP_PORT"] = "389"
     if not is_port(ldap_config["LDAP_PORT"]):
         raise Exception(u"LDAP_PORT参数不是有效的端口号")
 
     if "LDAP_SSL_PORT" not in ldap_config or ldap_config["LDAP_SSL_PORT"] == "":
-        ldap_config["LDAP_SSL_PORT"] = "30636" if ldap_mode == "k8s" else "636"
+        ldap_config["LDAP_SSL_PORT"] = "636"
     if not is_port(ldap_config["LDAP_SSL_PORT"]):
         raise Exception(u"LDAP_SSL_PORT参数不是有效的端口号")
 

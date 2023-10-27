@@ -22,6 +22,7 @@
 
   - name: crontab清理eepalived服务拉起脚本
     shell: sed -i '/keepalived_up/d' /var/spool/cron/root
+    ignore_errors: true
 
   - name: crontab添加keepalived服务拉起脚本
     shell: echo '* * * * * /etc/keepalived/keepalived_up.sh' >> /var/spool/cron/root
