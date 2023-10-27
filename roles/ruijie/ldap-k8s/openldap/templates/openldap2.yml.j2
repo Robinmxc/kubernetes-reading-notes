@@ -46,6 +46,10 @@ spec:
                   key: readonly
             - name: LDAP_REPLICATION
               value: 'own'
+            - name: LDAP_PORT
+              value: '{{ LDAP_STORAGE_PORT }}'
+            - name: LDAPS_PORT
+              value: '{{ LDAPS_STORAGE_PORT }}'
           volumeMounts:
             - name: ldap-config
               mountPath: /etc/ldap/slapd.d
