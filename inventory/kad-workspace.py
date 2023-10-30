@@ -343,7 +343,7 @@ def parse_ldap_config(host_data):
         ldap_vip = ldap_config["LDAP_VIP"] if "LDAP_VIP" in ldap_config else ""
 
         # 3个节点及以上选前两个节点
-        if 3 >= len(group_all_vars["KUBE_NODE_HOSTS"]):
+        if len(group_all_vars["KUBE_NODE_HOSTS"]) >=3 :
             host_data["groups"]["ldap"] = {"hosts": [group_all_vars["KUBE_NODE_HOSTS"][0], group_all_vars["KUBE_NODE_HOSTS"][1]]}
             # 校验ldap中vip的配置
             if len(group_all_vars["KUBE_NODE_HOSTS"]) >= 3 and len(ldap_vip) == 0:
