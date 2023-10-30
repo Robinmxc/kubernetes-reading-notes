@@ -39,6 +39,8 @@ spec:
                 secretKeyRef:
                   name: ldap-pwds
                   key: admin
+            - name: LDAP_READONLY_USER_USERNAME
+              value: "{{ LDAP_READONLY_USER_USERNAME }}"
             - name: LDAP_READONLY_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
