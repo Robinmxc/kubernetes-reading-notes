@@ -21,10 +21,24 @@
       delay: 3
       ignore_errors: true
 
-    - name: delete files
-      file: name="{{ DATA_DIR }}/ruijie/openldap" state=absent
-      ignore_errors: true
-
     - name: delete secret
       shell: "kubectl delete secrets ldap-pwds -n {{ APP_NAMESPACE }} --ignore-not-found"
+      ignore_errors: true
+
+- hosts:
+    - ldap
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: 备份ldap数据
+      vars:
+        data_dir: "{{ current_data_dir.stdout | trim}}"
+      archive:
+        path: "{{ ldap_base_dir }}"
+        dest: "{{ ldap_backup_dir }}/ldap_backup_{{ current_datetime.stdout }}.tar.gz"
+        format: gz
+
+    - name: 删除ldap数据
+      file: name="{{ ldap_base_dir }}" state=absent
       ignore_errors: true

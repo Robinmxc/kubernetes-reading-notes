@@ -16,9 +16,9 @@
         state: absent
       ignore_errors: true
 
-    - name: 确认目录存在/home/backup
+    - name: 确认目录存在
       file:
-        path: /home/backup
+        path: "{{ ldap_backup_dir }}"
         state: directory
 
     - name: 获取当前时间
@@ -35,11 +35,12 @@
         data_dir: "{{ current_data_dir.stdout | trim}}"
       archive:
         path: "{{ item.src_dir }}"
-        dest: "/home/backup/{{ item.backup_name }}_{{ current_datetime.stdout }}.tar.gz"
+        dest: "{{ ldap_backup_dir }}/{{ item.backup_name }}_{{ current_datetime.stdout }}.tar.gz"
         format: gz
       with_items:
         - { src_dir: "{{ data_dir }}", backup_name: ldap_backup }
         - { src_dir: /etc/openldap/schema, backup_name: schema_backup }
+        - { src_dir: /etc/openldap/certs, backup_name: certs_backup }
         - { src_dir: /etc/openldap/slapd.d, backup_name: slapd.d_backup }
 
     - name: delete files
