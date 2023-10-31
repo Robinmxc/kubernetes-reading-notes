@@ -1,21 +1,15 @@
 #!/bin/bash
 set -x
    
-A=`ps -C slapd --no-header |wc -l`
-if [ $A -eq 0 ];then
+A=`systemctl is-active slapd`
+if [ "$A" == "inactive" ];then
    echo `date`':  slapd is not up' >> /var/log/keepalived.log
-   exit 0
-fi
-   
-A=`ps -C nginx --no-header |wc -l`
-if [ $A -eq 0 ];then
-   echo `date`':  nginx is not up' >> /var/log/keepalived.log
    exit 0
 fi
 
 status=`systemctl is-active keepalived`
 if [ "$status" == "inactive" ];then
-   echo `date`':  slapd and nginx is up, start keepalived' >> /var/log/keepalived.log
+   echo `date`':  slapd is up, start keepalived' >> /var/log/keepalived.log
    systemctl start keepalived
    fi
 exit 0

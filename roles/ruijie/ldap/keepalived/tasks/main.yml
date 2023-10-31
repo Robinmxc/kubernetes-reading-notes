@@ -1,6 +1,23 @@
 - name: 部署keepalived
   when: '"" != LDAP_VIP'
   block:
+  - name: 准备目录
+    file: name={{ item }} state=directory
+    with_items:
+     - "{{ base_dir }}/down/rpms/common"
+
+  - name: 解压 rpm 包
+    vars:
+      tgz_file: '{{ base_dir }}/down/common/nginx.tar.gz'
+      src_dir: '{{ base_dir }}/down/rpms/common/nginx/'
+    unarchive:
+      src: "{{ tgz_file }}"
+      dest: "{{ base_dir }}/down/rpms/common"
+    when: 'tgz_file is exists'
+
+  - name: 安装 rpm
+    shell: "{{ base_dir }}/down/rpms/common/nginx/common-nginx-install.sh"
+
   - name: 读取网卡名称
     shell: "ip a|grep '{{ inventory_hostname }}/'|awk '{print $NF}'"
     register: if_info

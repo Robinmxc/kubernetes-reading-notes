@@ -1,15 +1,8 @@
 #!/bin/bash
 set -x
 
-A=`ps -C nginx --no-header |wc -l`
-if [ $A -eq 0 ];then
-   echo `date`':  nginx is not healthy, try to killall keepalived' >> /var/log/keepalived.log
-   killall keepalived
-   exit 1
-fi
-   
-A=`ps -C slapd --no-header |wc -l`
-if [ $A -eq 0 ];then
+A=`systemctl is-active slapd`
+if [ "$A" == "inactive" ];then
    echo `date`':  slapd is not healthy, try to killall keepalived' >> /var/log/keepalived.log
    killall keepalived
    exit 1

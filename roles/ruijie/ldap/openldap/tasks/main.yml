@@ -1,5 +1,5 @@
 - name: 检查ldap的服务状态
-  stat: 
+  stat:
     path: /usr/lib/systemd/system/slapd.service    #这个服务状态不能用shell命令吗system status slapd
   register: slapd_stat
 
@@ -10,13 +10,14 @@
     file: name={{ item }} state=directory
     with_items:
     - "{{ DATA_DIR }}/slapd"
-    - "/var/lib/ldap"
+    - "{{ ldap_default_data_dir }}"
+    - "{{ ldap_customer_data_dir }}"
 
   - name: 解压 slapd 安装包
     shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ ldap_file }} -C {{ DATA_DIR }}/slapd >/dev/null"
 
   - name: 安装 rpm
-    shell: "{{ DATA_DIR }}/slapd/ldap/ldap-install.sh {{ DATA_DIR }}/slapd/ldap" 
+    shell: "{{ DATA_DIR }}/slapd/ldap/ldap-install.sh {{ DATA_DIR }}/slapd/ldap"
 
   - name: 注册ldap数据库类型
     set_fact:
@@ -28,7 +29,7 @@
       ldapDbType: 'hdb'
     when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
 
-  # cento8的处理开始 
+  # cento8的处理开始
   - name: 修改service参数
     vars:
       SLAPD_URLS: "{{ ldap_port_conf }}"
@@ -42,7 +43,7 @@
   - name: openldap证书处理
     shell: "openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj '/CN=localhost'  -keyout /etc/pki/tls/ldapserver.key -out /etc/pki/tls/ldapserver.crt"
     when: ("Anolis"  in  ansible_distribution or "openEuler"  in  ansible_distribution)
-  
+
   - name: tls加密文件配置
     template: src='add-tls.ldif.anolis.j2' dest='/etc/openldap/add-tls.ldif'
     when: ("Anolis"  in  ansible_distribution or "openEuler"  in  ansible_distribution)
@@ -50,11 +51,8 @@
   - name: 修改ldap参数
     template: src='ldap.anolis.conf.j2' dest='/etc/openldap/ldap.conf'
     when: ("Anolis"  in  ansible_distribution or "openEuler"  in  ansible_distribution)
-    
 
-
-
-  # cento7的处理开始  
+  # cento7的处理开始
   - name: 修改slapd端口
     vars:
       SLAPD_URLS: "{{ ldap_port_conf }}"
@@ -86,11 +84,13 @@
   - name: 准备配置文件
     tags:
       - config
-    template: src='DB_CONFIG.j2' dest=/var/lib/ldap/DB_CONFIG
+    template:
+      src: 'DB_CONFIG.j2'
+      dest: "{{ ldap_default_data_dir }}/DB_CONFIG"
     when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
 
   - name: 赋予文件权限
-    shell: "chown ldap. /var/lib/ldap/DB_CONFIG"
+    shell: "chown ldap. {{ ldap_default_data_dir }}/DB_CONFIG"
     when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
 
   # cento7的处理结束
@@ -124,7 +124,7 @@
   delay: 2
 
 
-- name: 生成 admin 密码 
+- name: 生成 admin 密码
   shell: "slappasswd -s {{ LDAP.LDAP_ADMIN_PWD }}"
   register: slapd_pwd_status
 
@@ -135,11 +135,10 @@
     ldappasswd: '{{ slapd_pwd_status.stdout }}'
     filename: '{{ item }}'
     ldap_db_type: '{{ ldapDbType }}'
-
-  template: 
+  template:
     src: '{{ filename }}.j2'
     dest: /etc/openldap/{{ filename }}
-  with_items: 
+  with_items:
   - "chrootpw.ldif"
   - "chdomain.ldif"
   - "add_ppolicy.ldif"
@@ -169,7 +168,7 @@
     file_name: '{{ item }}'
     ldap_db_type: '{{ ldapDbType}}'
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/{{ file_name }}
-  with_items: 
+  with_items:
   - "cosine.ldif"
   - "nis.ldif"
   - "inetorgperson.ldif"
@@ -197,8 +196,8 @@
 - name: name.ldif文件
   vars:
     readonly_pwd: '{{ readonly_pwd_status.stdout }}'
-  template: 
-    src: 'name.ldif.j2' 
+  template:
+    src: 'name.ldif.j2'
     dest: /etc/openldap/name.ldif
 
 - name: 导入name.ldif文件
@@ -237,6 +236,7 @@
 
 - name: 调整索引数据最大条目限制
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/limits2.ldif
+  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
 
 - name: tls加密开启
   shell: chmod 644 /etc/pki/tls/ldapserver*
@@ -249,27 +249,13 @@
 - name: 设置ldap默认的ssl加密算法
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/tls1.2.ldif
 
-- name: 设置定时清理Berkeley DB Logs 
-  file: 
-    name: "/var/spool/cron/root"
-    state: touch
-
-- name: sed -i
-  shell: sed -i '/db_checkpoint/d' /var/spool/cron/root
-- name: echo '003'
-  shell: echo '0 3 * * * db_checkpoint -1 -h /var/lib/ldap' >> /var/spool/cron/root
-- name: sed -i
-  shell: sed -i '/db_archive/d' /var/spool/cron/root
-- name: echo 004
-  shell: echo '0 4 * * * db_archive -d -h /var/lib/ldap' >> /var/spool/cron/root
-
 - name: 生成双主配置文件
   when: ' ldap_deploy_mode == "2"'
   block:
   - name: 准备双主配置文件
     vars:
       file_name: '{{ item }}'
-      ldap_db_type: '{{ ldapDbType }}'      
+      ldap_db_type: '{{ ldapDbType }}'
     template:
       src: '{{ file_name }}.j2'
       dest: /etc/openldap/{{ file_name }}
@@ -281,7 +267,7 @@
     vars:
       ldap_1_hostname: "{{ groups.ldap[0] }}"
       ldap_2_hostname: "{{ groups.ldap[1] }}"
-      port: "{{ ldap_dual_mode_port }}"
+      port: "{{ LDAP.LDAP_PORT }}"
       ldap_db_type: '{{ ldapDbType }}'         
     template:
       src: 'master_node.j2'
@@ -292,8 +278,8 @@
     vars:
       ldap_1_hostname: "{{ groups.ldap[0] }}"
       ldap_2_hostname: "{{ groups.ldap[1] }}"
-      port: "{{ ldap_dual_mode_port }}"
-      ldap_db_type: '{{ ldapDbType }}'         
+      port: "{{ LDAP.LDAP_PORT }}"
+      ldap_db_type: '{{ ldapDbType }}'
     template:
       src: 'master_node_openEuler.j2'
       dest: /etc/openldap/master_node.ldif
@@ -302,11 +288,52 @@
   - name: 导入双主配置文件
     vars:
       file_name: '{{ item }}'
-      ldap_db_type: '{{ ldapDbType }}'         
+      ldap_db_type: '{{ ldapDbType }}'
     shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/{{ file_name }}
     with_items:
     - "mod_syncprov.ldif"
     - "syncprov.ldif"
     - "master_node.ldif"
 
+- name: 调整默认数据库路径配置
+  block:
+    - name: 停止slap服务
+      shell: systemctl stop slapd
 
+    - name: copy数据库文件
+      shell: "cp -rf {{ ldap_default_data_dir }}/* {{ ldap_customer_data_dir }}"
+
+    - name: 赋予文件权限
+      shell: "chown -R ldap:ldap {{ ldap_customer_data_dir }}"
+
+    - name: 获取当前ldap数据目录
+      shell: "egrep -r '^olcDbDirectory: (.*)$' /etc/openldap/slapd.d/ |awk -F : '{ print $1 }'"
+      register: current_config_dir
+
+    - name: 修改配置
+      replace:
+        path: "{{ current_config_dir.stdout }}"
+        regexp: "^olcDbDirectory: (.*)$"
+        replace: "olcDbDirectory: {{ ldap_customer_data_dir }}"
+
+    - name: 清理默认目录
+      file:
+        name: {{ ldap_default_data_dir }}
+        state: absent
+
+    - name: 启动slap服务
+      shell: systemctl start slapd
+
+- name: 设置定时清理Berkeley DB Logs
+  file:
+    name: "/var/spool/cron/root"
+    state: touch
+
+- name: 清理数据库校验
+  shell: sed -i '/db_checkpoint/d' /var/spool/cron/root
+- name: 添加数据库校验
+  shell: echo '0 3 * * * db_checkpoint -1 -h {{ ldap_customer_data_dir }}' >> /var/spool/cron/root
+- name: 清理数据库备份
+  shell: sed -i '/db_archive/d' /var/spool/cron/root
+- name: 添加数据库备份
+  shell: echo '0 4 * * * db_archive -d -h {{ ldap_customer_data_dir }}' >> /var/spool/cron/root
