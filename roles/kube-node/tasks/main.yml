@@ -89,3 +89,21 @@
       shell: "kubectl label node {{ inventory_hostname }} kubernetes.io/role=node --overwrite"
       ignore_errors: true
       delegate_to: "{{ groups.deploy[0] }}"
+
+    - name: 修改kubernetes的端口范围
+      shell: "grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml >> /dev/null; \
+              if [ $? -ne 0 ]; \
+              then sed -i \"s#--allow-privileged=true#--allow-privileged=true\\n    - --service-node-port-range=1-65535#g\" /etc/kubernetes/manifests/kube-apiserver.yaml; \
+              fi;"
+      tags: upgrade_k8s
+      when: 'DEPLOY_MODE == "multi-master" and inventory_hostname in groups.kube_master'
+
+    - name: 重置端口后,轮询等待apiserver处于running状态
+      shell: "kubectl get pod -n kube-system | grep 'kube-apiserver-{{inventory_hostname}}' | awk '{print $3}'"
+      register: pod_status
+      until: pod_status.stdout == "Running"
+      retries: 15
+      delay: 5
+      ignore_errors: true
+      tags: upgrade_k8s      
+      when: 'DEPLOY_MODE == "multi-master" and inventory_hostname in groups.kube_master' 

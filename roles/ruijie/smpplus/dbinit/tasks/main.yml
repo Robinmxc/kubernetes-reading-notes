@@ -45,7 +45,9 @@
   - name: 修改hostIp为当前服务Ip
     replace: path="{{ KAD_PACKAGE_DIR }}/{{ updatereplset_file_path }}" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-    - {regexp: "hostIp", replace: "{{groups['kube_node'][0]}}"}
+    - {regexp: "hostIp", replace: "{{KUBE_MASTER_VIP}}"}
+    connection: local
+    run_once: true
 
   - name: 压缩数据初始化脚本
     archive:
@@ -69,10 +71,21 @@
     - "{{ mongodb_init_dir }}/smpplus/rg-init-db/init-data.sh"
     - "{{ mongodb_init_dir }}/smpplus/rg-upgrade-db/upgrade_data.sh"
 
+  - name: unrar拷贝
+    copy: src="/opt/kad/down/rarlinux-x64-5.3.0.tar.gz" dest="/opt/kad/down/"
+    when: DEPLOY_MODE == "multi-master"
+
+  - name: unrar安装
+    shell: 'cd /opt/kad/down/; \
+      tar -xvf /opt/kad/down/rarlinux-x64-5.3.0.tar.gz >/dev/null 2>&1;  \
+      cd /opt/kad/down/rar; \
+      make >/dev/null;'
+    when: DEPLOY_MODE == "multi-master"
+
   - name: 执行初始化数据库解压
     shell: 'unrar x -o+ {{ mongodb_init_dir }}/smpplus/rg-init-db/SMP_DATA.rar {{ mongodb_init_dir }}/smpplus/rg-init-db/'
-    connection: local
-
+    run_once: true
+    
   - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
     register: db_version
