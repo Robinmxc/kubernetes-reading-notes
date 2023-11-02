@@ -318,7 +318,7 @@
 
     - name: 清理默认目录
       file:
-        name: {{ ldap_default_data_dir }}
+        name: "{{ ldap_default_data_dir }}"
         state: absent
 
     - name: 启动slap服务
