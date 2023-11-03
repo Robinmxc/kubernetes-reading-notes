@@ -67,7 +67,7 @@
   delegate_to: "{{ groups.deploy[0] }}"
   run_once: True
   tags: upgrade_k8s, restart_master
-  when: 'DEPLOY_MODE == "single-master"'
+  when: 'DEPLOY_MODE == "single-master" or DEPLOY_MODE == "allinone"'
 
 
 - name: 修改kubernetes的端口范围

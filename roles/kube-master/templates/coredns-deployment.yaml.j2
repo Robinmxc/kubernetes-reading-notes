@@ -13,7 +13,12 @@ metadata:
   uid: 7dcda463-a9c5-4dca-99c6-0a1dde749281
 spec:
   progressDeadlineSeconds: 600
+{%if "allinone" != DEPLOY_MODE %}
   replicas: 2
+{% endif %}  
+{%if "allinone" == DEPLOY_MODE %}
+  replicas: 1
+{% endif %}  
   revisionHistoryLimit: 10
   selector:
     matchLabels:
