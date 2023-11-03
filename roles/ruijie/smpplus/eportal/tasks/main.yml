@@ -12,7 +12,7 @@
   with_items:
   - {regexp: "mongodb:.*/eportal.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ groups.kube_node[0] }}/eportal?replicaSet=rs0"}
   - {regexp: "protectEnable.*$", replace: "protectEnable: {{ protectEnable_value }}"}
-  - {regexp: "whiteHost.*$", replace: "whiteHost: {{KUBE_MASTER_VIP}}"}
+  - {regexp: "whiteHost.*$", replace: "whiteHost: {{allNodeStr}}"}
 
 - name: 自定义配置
   tags:

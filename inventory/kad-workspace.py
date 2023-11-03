@@ -133,6 +133,7 @@ def parse_host_data(workspace_dir):
     result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["mgob"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["pgsql"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
+
     if (len(node_hosts) > 1):
         result["groups"]["ess"] = {"hosts": [node_hosts[1]]}
     else:
@@ -156,7 +157,13 @@ def parse_host_data(workspace_dir):
         group_all_vars["KUBE_MASTER_VIP"] = k8s_config["KUBE_MASTER_VIP"]
     else:
         group_all_vars["KUBE_MASTER_VIP"] = master_hosts[0]
-
+    allNodes = set(master_hosts);    
+    allNodes.add(k8s_config["KUBE_MASTER_VIP"])
+    allNodes.update(node_hosts)
+    allNodes.union()   
+    allNodeStr = ', '.join(str(x) for x in allNodes) 
+    allNodeStr = allNodeStr.replace(' ', '')
+    group_all_vars["allNodeStr"] = allNodeStr
     # 计算服务网段
     if "SERVICE_CIDR" in k8s_config:
         config_value = k8s_config["SERVICE_CIDR"].encode("iso-8859-1").decode("iso-8859-1")

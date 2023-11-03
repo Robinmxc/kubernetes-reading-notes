@@ -16,7 +16,7 @@
   - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
   - {regexp: "protectEnable.*$", replace: "protectEnable= {{ protectEnable_value }}"}
-  - {regexp: "whiteHost.*$", replace: "whiteHost= {{KUBE_MASTER_VIP}}"}
+  - {regexp: "whiteHost.*$", replace: "whiteHost= {{allNodeStr}}"}
   - {regexp: "namesrv:", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc:"}
   no_log: true
 

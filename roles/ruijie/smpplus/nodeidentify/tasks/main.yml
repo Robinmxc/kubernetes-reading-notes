@@ -18,7 +18,7 @@
   - {regexp: "mongodb:.*/node-identify.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/node-identify?replicaSet=rs0"}
   - {regexp: "namesrv:", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc:"}
   - {regexp: "protectEnable.*$", replace: "protectEnable: {{ protectEnable_value }}"}
-  - {regexp: "whiteHost.*$", replace: "whiteHost: {{KUBE_MASTER_VIP}}"}
+  - {regexp: "whiteHost.*$", replace: "whiteHost: {{allNodeStr}}"}
   no_log: true
 
 - name: 定时任务自动配置

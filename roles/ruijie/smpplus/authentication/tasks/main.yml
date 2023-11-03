@@ -18,7 +18,7 @@
   - {regexp: "host-address-ip.*$", replace: "host-address-ip: {{ host_ip_value }}"}
   - {regexp: "namesrv:", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc:"}
   - {regexp: "protectEnable.*$", replace: "protectEnable: {{ protectEnable_value }}"}
-  - {regexp: "whiteHost.*$", replace: "whiteHost: {{KUBE_MASTER_VIP}}"}
+  - {regexp: "whiteHost.*$", replace: "whiteHost: {{allNodeStr}}"}
   #- {regexp: "softwarePackageDownLoadAddress.*$", replace: "softwarePackageDownLoadAddress: http://{{KUBE_MASTER_VIP}}:9888"}
   - {regexp: "certificatePath.*$", replace: "certificatePath: /ruijie/authentication/kadapitls/kadapi.pem"}
   - {regexp: "privateKeyPath.*$", replace: "privateKeyPath: /ruijie/authentication/kadapitls/kadapi-smp-key.pem"}
