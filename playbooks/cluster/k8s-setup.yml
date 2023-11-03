@@ -108,13 +108,18 @@
   any_errors_fatal: true
   roles:
   - ruijie/cluster/flannel
-
 # to set up 'kube_node' nodes
 - hosts: kube_node
   any_errors_fatal: true
   roles:
   - kube-node
 
+- hosts: 
+  - kube_master
+  - kube_node
+  any_errors_fatal: true
+  roles:
+  - kube-process
 # to install network plugin, only one can be choosen
 #- hosts:
 #  - kube_master

@@ -69,7 +69,7 @@
   tags: upgrade_k8s, restart_master
 
 - name: 轮询等待apiserver处于running状态
-  shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'"
+  shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}' | sort -u"
   register: pod_status
   until: pod_status.stdout == "Running"
   connection: local
@@ -79,16 +79,6 @@
   ignore_errors: true
   tags: upgrade_k8s
   
-- name: 设置node节点可以调度pod
-  shell: 'kubectl taint nodes --all node-role.kubernetes.io/master-'
-  when: DEPLOY_MODE == "allinone" or  DEPLOY_MODE == "multi-master" 
-  connection: local
-  run_once: true  
-
-- name: 设置特定master不参与pod调度
-  shell: ' kubectl taint nodes {{inventory_hostname}} node-role.kubernetes.io/master=:NoSchedule'
-  when: DEPLOY_MODE == "multi-master" and inventory_hostname not in groups.kube_node
-  delegate_to: "{{ groups.deploy[0] }}"
 
 - name: 修改kubernetes的端口范围
   shell: "grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml >> /dev/null; \

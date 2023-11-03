@@ -1,0 +1,15 @@
+- name: 设置node节点可以调度pod
+  shell: 'kubectl taint nodes --all node-role.kubernetes.io/master- --overwrite'
+  when: DEPLOY_MODE == "allinone"
+  connection: local
+  run_once: true  
+
+- name: 设置master节点可以调度pod
+  shell: 'kubectl taint nodes {{inventory_hostname}} node-role.kubernetes.io/master- --overwrite'
+  when: DEPLOY_MODE == "multi-master" and inventory_hostname  in groups.kube_node and inventory_hostname  in groups.kube_master
+  delegate_to: "{{ groups.deploy[0] }}"
+
+- name: 设置特定master不参与pod调度
+  shell: ' kubectl taint nodes {{inventory_hostname}} node-role.kubernetes.io/master=:NoSchedule --overwrite'
+  when: DEPLOY_MODE == "multi-master" and inventory_hostname not in groups.kube_node and inventory_hostname  in groups.kube_master
+  delegate_to: "{{ groups.deploy[0] }}"
