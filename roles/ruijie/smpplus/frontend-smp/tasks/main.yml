@@ -18,18 +18,18 @@
   - config
   replace: path="{{ config_base_dir }}/frontend-smp/conf/Environment.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "rg-adminui", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-aggregation", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-authentication", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-component", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-eportal", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-freeradius", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-frontend-portal", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-frontend-smp", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-license", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-linkid", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-nodemanager-scan", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-rocketmq", replace: "{{groups['kube_node'][0]}}"}
+  - {regexp: "rg-adminui", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-aggregation", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-authentication", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-component", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-eportal", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-freeradius", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-frontend-portal", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-frontend-smp", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-license", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-linkid", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-nodemanager-scan", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-rocketmq", replace: "{{KUBE_MASTER_VIP}}"}
 
 - name: 自动配置
   tags:
@@ -41,7 +41,7 @@
   - {regexp: "var licenseDomain.*", replace: "var licenseDomain = '/api/license';"}
   - {regexp: "var commonDomain.*", replace: "var commonDomain = '/component';"}
   - {regexp: "var mstscHttp.*", replace: "var mstscHttp = '/api/mstsc';"}
-  - {regexp: "var mstscWS.*", replace: "//var mstscWS = 'ws://{{groups['kube_node'][0]}}:9999';"}
+  - {regexp: "var mstscWS.*", replace: "//var mstscWS = 'ws://{{KUBE_MASTER_VIP}}:9999';"}
   - {regexp: "var smpOperdomain.*", replace: "var smpOperdomain = '/api';"}
   - {regexp: "crypto : true,", replace: "crypto : {{ protectEnable_value }},"}
   - {regexp: "cryptoLog : true,", replace: "cryptoLog : {{ protectEnable_value }},"}

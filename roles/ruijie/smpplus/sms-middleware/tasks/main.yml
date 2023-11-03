@@ -19,7 +19,7 @@
     - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
     - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
     - {regexp: "protectEnable.*$", replace: "protectEnable: {{ protectEnable_value }}"}
-    - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
+    - {regexp: "whiteHost.*$", replace: "whiteHost: {{KUBE_MASTER_VIP}}"}
     no_log: true
 
   - name: 自定义配置

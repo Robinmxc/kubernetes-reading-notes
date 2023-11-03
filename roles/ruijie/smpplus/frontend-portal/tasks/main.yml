@@ -10,20 +10,20 @@
   - config
   replace: path="{{ config_base_dir }}/frontend-portal/conf/config.js" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "rg-adminui", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-aggregation", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-authentication", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-component", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-eportal", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-freeradius", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-frontend-portal", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-frontend-smp", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-license", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-linkid", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-nodemanager-scan", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "rg-rocketmq", replace: "{{groups['kube_node'][0]}}"}
-  - {regexp: "var ip =.*", replace: "var ip = '{{groups['kube_node'][0]}}:8090'"}
-  - {regexp: "smpdomain:.*", replace: "smpdomain: 'http://{{groups['kube_node'][0]}}:9999/api/aggregation',"}
+  - {regexp: "rg-adminui", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-aggregation", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-authentication", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-component", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-eportal", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-freeradius", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-frontend-portal", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-frontend-smp", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-license", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-linkid", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-nodemanager-scan", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "rg-rocketmq", replace: "{{KUBE_MASTER_VIP}}"}
+  - {regexp: "var ip =.*", replace: "var ip = '{{KUBE_MASTER_VIP}}:8090'"}
+  - {regexp: "smpdomain:.*", replace: "smpdomain: 'http://{{KUBE_MASTER_VIP}}:9999/api/aggregation',"}
 
 - name: 自动配置
   tags:

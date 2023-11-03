@@ -18,29 +18,29 @@
     replace:
       path: "{{ item.path }}"
       regexp: "const hostIp.*$"
-      replace: "const hostIp = '{{groups['kube_node'][0]}}'"
+      replace: "const hostIp = '{{KUBE_MASTER_VIP}}'"
     with_items:
       - "{{constantFiles.files}}"
 
 #  - name: 修改hostIp为当前服务Ip
 #    replace: path="{{ KAD_PACKAGE_DIR }}/{{ constant_file_path }}" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
 #    with_items:
-#    - {regexp: "const hostIp.*$", replace: "const hostIp = '{{groups['kube_node'][0]}}'"}
+#    - {regexp: "const hostIp.*$", replace: "const hostIp = '{{KUBE_MASTER_VIP}}'"}
 #
 #  - name: 修改hostIp为当前服务Ip
 #    replace: path="{{ KAD_PACKAGE_DIR }}/{{ constant_file_path_rc2 }}" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
 #    with_items:
-#    - { regexp: "const hostIp.*$", replace: "const hostIp = '{{groups['kube_node'][0]}}'" }
+#    - { regexp: "const hostIp.*$", replace: "const hostIp = '{{KUBE_MASTER_VIP}}'" }
 #
 #  - name: 修改hostIp为当前服务Ip-3.3.6
 #    replace: path="{{ KAD_PACKAGE_DIR }}/{{ constant_file_path_336 }}" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
 #    with_items:
-#    - { regexp: "const hostIp.*$", replace: "const hostIp = '{{groups['kube_node'][0]}}'" }
+#    - { regexp: "const hostIp.*$", replace: "const hostIp = '{{KUBE_MASTER_VIP}}'" }
 #
 #  - name: 修改hostIp为当前服务Ip-3.3.6-p1
 #    replace: path="{{ KAD_PACKAGE_DIR }}/{{ constant_file_path_336_p1 }}" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
 #    with_items:
-#    - { regexp: "const hostIp.*$", replace: "const hostIp = '{{groups['kube_node'][0]}}'" }
+#    - { regexp: "const hostIp.*$", replace: "const hostIp = '{{KUBE_MASTER_VIP}}'" }
 
   - name: 修改hostIp为当前服务Ip
     replace: path="{{ KAD_PACKAGE_DIR }}/{{ updatereplset_file_path }}" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
