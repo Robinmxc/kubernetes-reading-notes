@@ -42,6 +42,7 @@
       - name: 判断ldap主节点
         when: " mark_vip in vip_inet.stdout"
         debug:
+          msg: "VIP：{{ LDAP_VIP }} 主节点 {{ inventory_hostname }}"
 
       - name: 获取主节点ldap备份数据
         when: " mark_vip in vip_inet.stdout"
