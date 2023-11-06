@@ -90,7 +90,7 @@
   tags: upgrade_k8s
 
 - name: 重置端口后,轮询等待apiserver处于running状态
-  shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'"
+  shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'| sort -u"
   register: pod_status
   until: pod_status.stdout == "Running"
   connection: local
