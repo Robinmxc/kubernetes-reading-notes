@@ -1,10 +1,28 @@
+- name: 获取node加入变量
+  block: 
+    - name: 获取kubeadm的token
+      shell: "kubeadm token create"
+      delegate_to: "{{ groups.deploy[0] }}"
+      run_once: true        
+      register: kubeadm_token
+    
+    - name: 获取kubeadm的token_ca_cert_hash
+      shell: "openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'"
+      delegate_to: "{{ groups.deploy[0] }}"
+      register: kubeadm_token_ca_cert_hash
+      run_once: true        
+
+    - name: 获取kubeadm的certs
+      shell: "kubeadm init phase upload-certs --upload-certs | sed -n '/Using certificate key:/{n;p}'"
+      delegate_to: "{{ groups.deploy[0] }}"
+      register: kubeadm_certificate_key
+      run_once: true      
 - name: 部署node节点
   when: "inventory_hostname != groups.deploy[0]"
   block: 
     - name: 开机启用kubelet 服务
       shell: systemctl enable kubelet
       ignore_errors: true
-
     - name: 修改kubelet对应的cgroupDriver
       shell: "grep cgroup-driver=cgroupfs /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf >> /dev/null; \
               if [ $? -ne 0 ]; \
@@ -24,25 +42,7 @@
       with_items:
       - "{{ kube_proxy }}"
       - "{{ pause }}"
-      - "{{ coredns }}"
-      
-    - name: 获取kubeadm的token
-      shell: "kubeadm token create"
-      delegate_to: "{{ groups.deploy[0] }}"
-      run_once: true        
-      register: kubeadm_token
-    
-    - name: 获取kubeadm的token_ca_cert_hash
-      shell: "openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'"
-      delegate_to: "{{ groups.deploy[0] }}"
-      register: kubeadm_token_ca_cert_hash
-      run_once: true        
-
-    - name: 获取kubeadm的token
-      shell: "kubeadm init phase upload-certs --upload-certs | sed -n '/Using certificate key:/{n;p}'"
-      delegate_to: "{{ groups.deploy[0] }}"
-      register: kubeadm_certificate_key
-      run_once: true        
+      - "{{ coredns }}"       
       
     - name: node节点加入集群
       shell: "kubeadm join {{ KUBE_MASTER_VIP }}:6443 --token {{ kubeadm_token.stdout_lines[0] }} --discovery-token-ca-cert-hash sha256:{{ kubeadm_token_ca_cert_hash.stdout_lines[0] }}"
@@ -53,7 +53,6 @@
       shell: 'kubeadm join {{ KUBE_MASTER_VIP }}:6443 --token {{ kubeadm_token.stdout_lines[0] }} --discovery-token-ca-cert-hash sha256:{{ kubeadm_token_ca_cert_hash.stdout_lines[0] }} --control-plane --certificate-key {{kubeadm_certificate_key.stdout}}'
       tags: upgrade_k8s
       when: "inventory_hostname in groups.kube_master"
-
 
     # 批准 node 节点，首先轮询等待kubelet启动完成
     - name: 轮询等待kubelet启动
