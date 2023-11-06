@@ -1,0 +1,51 @@
+- hosts:
+    - ldap
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: ldap备份默认路径
+      debug:
+        msg: "{{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+      connection: local
+      run_once: true
+
+    - name: 准备临时数据目录
+      file:
+        path: "{{ ldap_backup_dir }}"
+        state: directory
+
+    - name: 删除原ldap备份数据
+      file: name="{{ ldap_backup_dir }}/{{ ldap_backup_file }}" state=absent
+      ignore_errors: true
+
+    - name: 备份ldap数据
+      shell: "slapcat > {{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+      ignore_errors: true
+
+    - name: 获取单节点ldap备份数据
+      when: "''==LDAP_VIP and (groups.ldap | length) == 1 "
+      fetch:
+        src: "{{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+        dest: "{{ ldap_backup_dir }}/"
+        flat: yes
+
+    - name: 获取多节点ldap备份数据
+      when: "''!=LDAP_VIP "
+      vars:
+        mark_vip: '{{LDAP_VIP}}/32'
+      block:
+      - name: 判断ldap主节点 VIP：{{ LDAP_VIP }}
+        shell: "ip addr |grep inet"
+        register: vip_inet
+
+      - name: 判断ldap主节点
+        when: " mark_vip in vip_inet.stdout"
+        debug:
+
+      - name: 获取主节点ldap备份数据
+        when: " mark_vip in vip_inet.stdout"
+        fetch:
+          src: "{{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+          dest: "{{ ldap_backup_dir }}/"
+          flat: yes

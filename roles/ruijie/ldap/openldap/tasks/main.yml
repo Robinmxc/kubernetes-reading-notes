@@ -146,6 +146,7 @@
   - "ppolicy_overlay.ldif"
   - "disable_anon.ldif"
   - "db-index.ldif"
+  - "db-directory.ldif"
   - "olcAccess.ldif"
   - "limits.ldif"
   - "limits2.ldif"
@@ -323,6 +324,9 @@
 
     - name: 启动slap服务
       shell: systemctl start slapd
+
+    - name: 再次校准mdb文件
+      shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/openldap/db-directory.ldif
 
 - name: 设置定时清理Berkeley DB Logs
   file:

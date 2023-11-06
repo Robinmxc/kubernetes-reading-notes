@@ -35,7 +35,7 @@ PRIVATE_INSECURE_REGISTRY: "172.17.8.20:8082"
 PRIVATE_REGISTRY_USER: ""
 PRIVATE_REGISTRY_PWD: ""
 
-ldap_backup_file: "ldap_backup.ldif"
+ldap_backup_file: "ldap_back.ldif"
 ldap_backup_dir: "{{ DATA_DIR }}/backup/openldap"
 
 ldap_base_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/openldap"

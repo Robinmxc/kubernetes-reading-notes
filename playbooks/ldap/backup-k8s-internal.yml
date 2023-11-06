@@ -1,0 +1,68 @@
+- hosts:
+    - localhost
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: ldap备份默认路径
+      debug:
+        msg: "{{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+
+    - name: 准备临时数据目录
+      file:
+        path: "{{ ldap_backup_dir }}"
+        state: directory
+
+    - name: 删除原ldap备份数据
+      file: name="{{ ldap_backup_dir }}/{{ ldap_backup_file }}" state=absent
+      ignore_errors: true
+
+    - name: 获取Pod名称
+      shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap' | awk '{print $1}'"
+      register: pod_status
+
+    - name: 设置变量ldap_pod_name
+      when: '"openldap" in pod_status.stdout'
+      set_fact:
+        ldap_pod_name: "{{ pod_status.stdout_lines }}"
+
+    - name: 生成ldap备份文件
+      when: '"openldap" in pod_status.stdout'
+      shell: "kubectl -n {{ APP_NAMESPACE }} exec {{ item }} -- bash -c 'slapcat > /var/lib/ldap/{{ ldap_backup_file }}'"
+      with_items: "{{ ldap_pod_name }}"
+
+
+- hosts:
+    - ldap
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: 获取单节点ldap备份数据
+      when: "''==LDAP_VIP and (groups.ldap | length) == 1 "
+      fetch:
+        #k8s内的默认ldap数据目录是{{ ldap_base_dir }}/data
+        src: "{{ ldap_base_dir }}/data/{{ ldap_backup_file }}"
+        dest: "{{ ldap_backup_dir }}/"
+        flat: yes
+
+    - name: 获取多节点ldap备份数据
+      when: "''!=LDAP_VIP "
+      vars:
+        mark_vip: '{{LDAP_VIP}}/32'
+      block:
+      - name: 判断ldap主节点 VIP：{{ LDAP_VIP }}
+        shell: "ip addr |grep inet"
+        register: vip_inet
+
+      - name: 判断ldap主节点
+        when: " mark_vip in vip_inet.stdout"
+        debug:
+          msg: "VIP：{{ LDAP_VIP }} 主节点 {{ inventory_hostname }}"
+
+      - name: 获取主节点ldap备份数据
+        when: " mark_vip in vip_inet.stdout"
+        fetch:
+          src: "{{ ldap_base_dir }}/data/{{ ldap_backup_file }}"
+          dest: "{{ ldap_backup_dir }}/"
+          flat: yes

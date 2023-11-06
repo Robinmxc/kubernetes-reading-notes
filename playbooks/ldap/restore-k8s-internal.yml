@@ -1,0 +1,129 @@
+- hosts:
+    - ldap
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: 准备临时数据目录
+      file:
+        path: "{{ ldap_backup_dir }}"
+        state: directory
+
+    - name: 获取当前时间
+      command: date "+%Y%m%d%H%M%S"
+      register: current_datetime
+      changed_when: false
+
+    - name: 删除ldap数据
+      file: name="{{ ldap_base_dir }}/data/{{ ldap_backup_file }}" state=absent
+      ignore_errors: true
+
+    - name: 临时备份ldap数据
+      archive:
+        path: "{{ ldap_base_dir }}"
+        dest: "{{ ldap_backup_dir }}/ldap_backup_{{ current_datetime.stdout }}.tar.gz"
+        format: gz
+
+    - name: 清理数据目录
+      shell: "rm -rf {{ ldap_base_dir }}/data/*"
+
+    - name: 准备数据导入文件
+      copy:
+        src: "{{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+        dest: "{{ ldap_base_dir }}/data/"
+
+- hosts:
+    - localhost
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: 获取Pod名称
+      shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap' | wc -l"
+      register: podCount
+
+    - name: 单节点导入ldap数据
+      when: ' podCount.stdout == "1" '
+      block:
+        - name: 单节点导入ldap数据
+          debug:
+            msg: 正在导入ldap数据，根据数据量大小耗时间不同...
+
+        - name: 单节点导入ldap数据
+          shell: "kubectl -n {{ APP_NAMESPACE }} exec openldap-0 -- bash -c 'slapadd -l  /var/lib/ldap/{{ ldap_backup_file }}'"
+          async: 0
+          poll: 30
+
+        - name: 单节设置ldap目录权限
+          shell: "kubectl -n {{ APP_NAMESPACE }} exec openldap-0 -- bash -c 'chown -R openldap:openldap /var/lib/ldap/'"
+
+        - name: 停止ldap
+          shell: "kubectl delete -f {{ yaml_dir }}/openldap/openldap.yml"
+
+        - name: 启动ldap
+          shell: "kubectl apply -f {{ yaml_dir }}/openldap/openldap.yml"
+
+    - name: 多节点导入ldap数据
+      when: ' podCount.stdout == "2" '
+      block:
+        - name: 停止openldap2
+          shell: "kubectl delete -f {{ yaml_dir }}/openldap/openldap2.yml"
+
+        - name: openldap1节点导入ldap数据
+          debug:
+            msg: 正在导入ldap数据，根据数据量大小耗时间不同...
+
+        - name: openldap1节点导入ldap数据
+          shell: "kubectl -n {{ APP_NAMESPACE }} exec openldap1-0 -- bash -c 'slapadd -l  /var/lib/ldap/{{ ldap_backup_file }}'"
+          async: 0
+          poll: 30
+
+        - name: openldap1设置ldap目录权限
+          shell: "kubectl -n {{ APP_NAMESPACE }} exec openldap1-0 -- bash -c 'chown -R openldap:openldap /var/lib/ldap/'"
+
+        - name: 停止ldap1
+          shell: "kubectl delete -f {{ yaml_dir }}/openldap/openldap1.yml"
+
+- hosts:
+    - ldap[0]
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: 下载openldap1导入成功的数据
+      fetch:
+        src: "{{ ldap_base_dir }}/data/{{ item }}"
+        dest: "{{ ldap_backup_dir }}/"
+        flat: yes
+      with_items:
+        - "data.mdb"
+        - "lock.mdb"
+
+- hosts:
+    - ldap[1]
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: 上传openldap2导入成功的文件
+      copy:
+        src: "{{ ldap_backup_dir }}/{{ item }}"
+        dest: "{{ ldap_base_dir }}/data"
+        group: "911"
+        owner: "911"
+      with_items:
+        - "data.mdb"
+        - "lock.mdb"
+
+- hosts:
+    - localhost
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: 启动ldap
+      block:
+      - name: 启动ldap
+        shell: "kubectl apply -f {{ yaml_dir }}/openldap/"
+
+
