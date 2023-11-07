@@ -19,6 +19,7 @@
       with_items:
         - "02_modify_ppolicy.ldif"
         - "03_ppolicy_overlay.ldif"
+        - "04_name.ldif"
         - "05_db-index.ldif"
         - "06_limits.ldif"
         - "09_olcAccess.ldif"
