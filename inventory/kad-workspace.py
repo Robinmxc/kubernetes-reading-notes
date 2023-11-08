@@ -158,7 +158,7 @@ def parse_host_data(workspace_dir):
     else:
         group_all_vars["KUBE_MASTER_VIP"] = master_hosts[0]
     allNodes = set(master_hosts);    
-    allNodes.add(k8s_config["KUBE_MASTER_VIP"])
+    allNodes.add(group_all_vars["KUBE_MASTER_VIP"])
     allNodes.update(node_hosts)
     allNodes.union()   
     allNodeStr = ', '.join(str(x) for x in allNodes) 

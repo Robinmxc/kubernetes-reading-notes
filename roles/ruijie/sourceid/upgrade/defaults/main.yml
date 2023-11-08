@@ -4,4 +4,4 @@ KAD_UPGRADE_PACKAGE_NAME: "sourceid-kad-2.0.1"
 
 UPGRADE_DIR: "{{base_dir}}/down/sourceid-kad-2.0.1-upgrade"
 
-docker_images: "{% for h in SOURCEID_DOCKERS.keys() %} {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS[h]['name'] }}:{{ SOURCEID_DOCKERS[h]['version'] }} {% endfor %}"
+docker_images: "{% for h in SOURCEID_DOCKERS %} {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS[h]['name'] }}:{{ SOURCEID_DOCKERS[h]['version'] }} {% endfor %}"
