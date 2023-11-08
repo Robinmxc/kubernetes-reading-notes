@@ -45,17 +45,21 @@
     - name: 单节点导入ldap数据
       when: ' podCount.stdout == "1" '
       block:
+        - name: 获取Pod名称
+          shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap' | awk '{ print $1 }'"
+          register: ldap_name
+
         - name: 单节点导入ldap数据
           debug:
             msg: 正在导入ldap数据，根据数据量大小耗时间不同...
 
         - name: 单节点导入ldap数据
-          shell: "kubectl -n {{ APP_NAMESPACE }} exec openldap-0 -- bash -c 'slapadd -l  /var/lib/ldap/{{ ldap_backup_file }}'"
+          shell: "kubectl -n {{ APP_NAMESPACE }} exec {{ ldap_name.stdout }} -- bash -c 'slapadd -l  /var/lib/ldap/{{ ldap_backup_file }}'"
           async: 0
           poll: 30
 
         - name: 单节设置ldap目录权限
-          shell: "kubectl -n {{ APP_NAMESPACE }} exec openldap-0 -- bash -c 'chown -R openldap:openldap /var/lib/ldap/'"
+          shell: "kubectl -n {{ APP_NAMESPACE }} exec {{ ldap_name.stdout }}  -- bash -c 'chown -R openldap:openldap /var/lib/ldap/'"
 
         - name: 停止ldap
           shell: "kubectl delete -f {{ yaml_dir }}/openldap/openldap.yml"
