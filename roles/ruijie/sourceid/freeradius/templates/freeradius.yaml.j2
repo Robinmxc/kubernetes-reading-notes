@@ -1,17 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: rg-{{ comp_name }}
   namespace: {{ APP_NAMESPACE }}
   labels:
     k8s-app: rg-{{ comp_name }}
 spec:
+  serviceName: rg-freeradius
   replicas: {{ deploy_conf.replicas }}
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
@@ -22,6 +18,10 @@ spec:
     spec:
       nodeName: {{ deploy_node_ip }}
       hostNetwork: true
+      hostAliases:
+      - ip: "{{ deploy_node_ip }}"
+        hostnames:
+        - "rg-freeradius"
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["freeradius"].name }}:{{ SOURCEID_DOCKERS["freeradius"].version }}
