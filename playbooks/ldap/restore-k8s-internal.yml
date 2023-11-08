@@ -38,7 +38,7 @@
   vars_files:
     - "/etc/kad/config.yml"
   tasks:
-    - name: 获取Pod名称
+    - name: 获取Pod状态
       shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap' | wc -l"
       register: podCount
 
