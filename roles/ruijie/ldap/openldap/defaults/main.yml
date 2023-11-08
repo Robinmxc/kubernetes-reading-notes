@@ -1,0 +1,2 @@
+ldap_default_data_dir: "/var/lib/ldap"
+ldap_customer_data_dir: "{{ DATA_DIR }}/ruijie/openldap/data"

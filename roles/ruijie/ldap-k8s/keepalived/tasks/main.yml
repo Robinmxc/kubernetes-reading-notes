@@ -1,29 +1,20 @@
 - name: 部署keepalived
   when: '"" != LDAP_VIP'
   block:
-  - name: 准备目录
-    file: name={{ item }} state=directory
-    with_items:
-     - "{{ base_dir }}/down/rpms/common"
-
-  - name: 解压 rpm 包
-    vars:
-      tgz_file: '{{ base_dir }}/down/common/nginx.tar.gz'
-      src_dir: '{{ base_dir }}/down/rpms/common/nginx/'
-    unarchive:
-      src: "{{ tgz_file }}"
-      dest: "{{ base_dir }}/down/rpms/common"
-    when: 'tgz_file is exists'
-
-  - name: 安装 rpm
-    shell: "{{ base_dir }}/down/rpms/common/nginx/common-nginx-install.sh"
-
   - name: 读取网卡名称
     shell: "ip a|grep '{{ inventory_hostname }}/'|awk '{print $NF}'"
     register: if_info
 
   - name: 设置负载均衡网卡
     set_fact: LDAP_ACCESS_IF="{{ if_info.stdout }}"
+
+  - name: crontab清理eepalived服务拉起脚本
+    shell: sed -i '/keepalived_up/d' /var/spool/cron/root
+    ignore_errors: true
+
+  - name: 停止keepalived服务
+    service: name=keepalived state=stopped enabled=no
+    ignore_errors: true
 
   - name: 创建keepalived目录
     file: name=/etc/keepalived state=directory
@@ -37,14 +28,14 @@
   - name: 设置keepalived服务拉起脚本
     template: src=keepalived_up.sh.j2 dest=/etc/keepalived/keepalived_up.sh mode=755
 
-  - name: crontab清理eepalived服务拉起脚本
-    shell: sed -i '/keepalived_up/d' /var/spool/cron/root
-
-  - name: crontab添加keepalived服务拉起脚本
-    shell: echo '* * * * * /etc/keepalived/keepalived_up.sh' >> /var/spool/cron/root
+  - name: 安装 keepalived
+    package: name=keepalived state=present
 
   - name: 开机启用keepalived服务
     shell: systemctl enable keepalived
 
   - name: 启动keepalived服务
     shell: systemctl start keepalived
+
+  - name: crontab添加keepalived服务拉起脚本
+    shell: echo '* * * * * /etc/keepalived/keepalived_up.sh' >> /var/spool/cron/root

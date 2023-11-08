@@ -1,0 +1,8 @@
+rs.remove("{{ groups['mongodb'][2] }}:27017")
+rsconf=rs.conf()
+rsconf.members=[
+  {_id:0, host: "{{ groups['mongodb'][0] }}:27017", priority: 2},
+  {_id:1, host: "{{ groups['mongodb'][1] }}:27017", priority: 1},
+]
+rs.reconfig(rsconf,{ force: true });
+rs.add({_id:2, host: "{{ groups['mongodb'][2] }}:27017", arbiterOnly: true})

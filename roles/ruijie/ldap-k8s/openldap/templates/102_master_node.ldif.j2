@@ -7,14 +7,14 @@ olcServerID: 0
 olcServerID: 1
 {% endif %}
 
-dn: olcDatabase={2}{{ ldap_db_type }},cn=config
+dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 add: olcSyncRepl
 olcSyncRepl: rid=001
 {% if inventory_hostname == ldap_1_hostname %}
-  provider=ldap://{{ ldap_2_hostname }}:{{ port }}/
+  provider=ldap://{{ ldap_2_hostname }}:{{ LDAP_STORAGE_PORT }}/
 {% elif inventory_hostname == ldap_2_hostname %}
-  provider=ldap://{{ ldap_1_hostname }}:{{ port }}/
+  provider=ldap://{{ ldap_1_hostname }}:{{ LDAP_STORAGE_PORT }}/
 {% endif %}
   bindmethod=simple
   binddn="cn=admin,{{ LDAP.LDAP_BASE_DN }}"
@@ -28,11 +28,5 @@ olcSyncRepl: rid=001
 -
 add: olcMirrorMode
 olcMirrorMode: TRUE
-
-dn: olcOverlay=syncprov,olcDatabase={2}{{ ldap_db_type }},cn=config
-changetype: add
-objectClass: olcOverlayConfig
-objectClass: olcSyncProvConfig
-olcOverlay: syncprov
 
 

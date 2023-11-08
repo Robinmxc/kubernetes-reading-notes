@@ -68,17 +68,31 @@
   run_once: true
   tags: upgrade_k8s, restart_master
 
-- name: 轮询等待apiserver处于running状态
-  shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}' | sort -u"
-  register: pod_status
-  until: pod_status.stdout == "Running"
-  connection: local
-  run_once: true
-  retries: 15
-  delay: 5
-  ignore_errors: true
-  tags: upgrade_k8s
-  
+- block:
+    - name: 在deploy 节点创建相关目录
+      file: name=/opt/kube/kube-system/coredns state=directory
+    - name: 配置 coredns-1
+      template: src=coredns-deployment.yaml.j2 dest=/opt/kube/kube-system/coredns/coredns-deployment.yaml
+
+    - name: 停止coredns
+      command: "kubectl delete -f /opt/kube/kube-system/coredns/"
+      ignore_errors: true
+    - name: 等待coredns结束运行
+      shell: "kubectl get pod -n kube-system"
+      register: pod_info
+      until: 'pod_info.stdout is not search("coredns-[a-z0-9]*-[a-z0-9]*\s")'
+      retries: 30
+      delay: 3
+      ignore_errors: true  
+
+    - name: coredns节点
+      command: "kubectl create -f /opt/kube/kube-system/coredns/"
+      
+  delegate_to: "{{ groups.deploy[0] }}"
+  run_once: True
+  tags: upgrade_k8s, restart_master
+  when: 'DEPLOY_MODE == "single-master" or DEPLOY_MODE == "allinone"'
+
 
 - name: 修改kubernetes的端口范围
   shell: "grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml >> /dev/null; \

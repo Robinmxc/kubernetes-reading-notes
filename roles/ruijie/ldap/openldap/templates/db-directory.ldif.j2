@@ -1,0 +1,4 @@
+dn: olcDatabase={2}{{ ldap_db_type }},cn=config
+changetype: modify
+replace: olcDbDirectory
+olcDbDirectory: {{ ldap_customer_data_dir }}
