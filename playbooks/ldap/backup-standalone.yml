@@ -15,12 +15,11 @@
         path: "{{ ldap_backup_dir }}"
         state: directory
 
-    - name: 删除原ldap备份数据
-      file: name="{{ ldap_backup_dir }}/{{ ldap_backup_file }}" state=absent
-      ignore_errors: true
-
     - name: 备份ldap数据
       shell: "slapcat > {{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+
+    - name: 删除原ldap备份数据
+      file: name="{{ ldap_backup_dir }}/{{ ldap_backup_file }}" state=absent
       ignore_errors: true
 
     - name: 获取单节点ldap备份数据
