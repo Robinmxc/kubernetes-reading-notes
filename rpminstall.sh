@@ -26,32 +26,31 @@ result=$(echo $osname | grep ".el7"| grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_el7_dir} != "$osname" ]];then
 	ln -s /opt/kad/down/rpms/${release_el7_dir} /opt/kad/down/rpms/${osname}
 fi
-
+mkdir -p cd /opt/kad/down/rpms/${osname}
 cd /opt/kad/down/rpms/${osname}
 
 echo "###检查unzip安装成功####"
 osname=(`uname -r`)
-if [ -d  /opt/kad/down/rpms/${osname}/unzip ];then
-    rpm -ivh  /opt/kad/down/rpms/${osname}/unzip/*.rpm --force --nodeps
-    if [ $? -eq 0 ];then
-                echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
-    else
-                echo -e "\033[31m Unzip RPM installed failed. Please check rpm env\033[0m "
-                exit 0
-    fi
-
-else
-    rpm -ivh  /opt/kad/down/rpms/unzip*.rpm --force --nodeps
-    if [ $? -eq 0 ];then
-                echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
-    else
-                echo -e "\033[31m Unzip RPM installed failed. Please check rpm env\033[0m "
-                exit 0
-    fi
-
+if [[ ${mode} == 2 ]];then
+	if [ -d  /opt/kad/down/rpms/${osname}/unzip ];then
+	    rpm -ivh  /opt/kad/down/rpms/${osname}/unzip/*.rpm --force --nodeps
+	    if [ $? -eq 0 ];then
+	                echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
+	    else
+	                echo -e "\033[31m Unzip RPM installed failed. Please check rpm env\033[0m "
+	                exit 0
+	    fi
+	
+	else
+		rpm -ivh  /opt/kad/down/rpms/unzip*.rpm --force --nodeps
+		if [ $? -eq 0 ];then
+		                echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
+		else
+		                echo -e "\033[31m Unzip RPM installed failed. Please check rpm env\033[0m "
+		                exit 0
+		fi
+	fi
 fi
-
-
 result=$(echo $osname | grep ".el7.x86_64")
 allowerasing="--allowerasing"
 if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
@@ -207,6 +206,16 @@ function kubernetes_process_centos7(){
 	fi	
 	
 }
+function kubernetes_process_ky10(){
+	echo "kubernetes_process call"
+	# 暂时只能采用龙溪的docker和kubernetes且无法通过命令下载
+	if [[ ${mode} == 2 || ${mode} == 3 ]];then
+	    set -e
+		rpm -ivh ./docker/*.rpm --force --nodeps
+		rpm -ivh ./kubernetes/*.rpm --force --nodeps
+		set +e
+	fi	
+}
 function AnolisOS_python3_module(){
 	echo "AnolisOS_python3_module call"
 	rpm -qa|grep python38|xargs rpm -ev --allmatches --nodeps  > /dev/null 2>&1
@@ -241,6 +250,17 @@ function AnolisOS(){
 	fi
 	ansibleInstall
 	kubernetes_process
+}
+function ky10(){
+	echo "ky10 call"
+	commonInstall
+	rpms=(tar jq ansible ntp  chrony.x86_64)
+	for var in ${rpms[@]};
+	do
+		rpmOperator $var
+	done
+	mongo_tool
+	kubernetes_process_ky10
 }
 function openEulerOs(){
 	echo "openEulerOs call"
@@ -287,6 +307,10 @@ function centos7(){
 	kubernetes_process_centos7
 }
 
+result=$(echo $osname | grep ".ky10" | grep ".x86_64")
+if	[[ "$result" != "" ]] && [[ "True" == "$needExec" ]];then
+	ky10
+fi
 result=$(echo $osname | grep ".oe2203" | grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ "True" == "$needExec" ]];then
 	openEulerOs
