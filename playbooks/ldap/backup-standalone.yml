@@ -23,14 +23,14 @@
       shell: "slapcat > {{ ldap_backup_dir }}/{{ ldap_backup_file }}"
 
     - name: 获取单节点ldap备份数据
-      when: "''==LDAP_VIP and (groups.ldap | length) == 1 "
+      when: " (groups.ldap | length) == 1 "
       fetch:
         src: "{{ ldap_backup_dir }}/{{ ldap_backup_file }}"
         dest: "{{ ldap_backup_dir }}/"
         flat: yes
 
     - name: 获取多节点ldap备份数据
-      when: "''!=LDAP_VIP "
+      when: "''!=LDAP_VIP and (groups.ldap | length) != 1"
       vars:
         mark_vip: '{{LDAP_VIP}}/32'
       block:
