@@ -1,5 +1,5 @@
 - hosts:
-    - ldap
+    - localhost
   gather_facts: false
   vars_files:
     - "/etc/kad/config.yml"
@@ -7,14 +7,17 @@
     - name: 获取待还原的备份数据状态
       stat: path="{{ ldap_backup_dir }}/{{ ldap_backup_file }}"
       register: backup_data_stat
-      connection: local
-      run_once: true
 
     - name: 检查待还原的备份数据是否存在
       fail: msg="备份数据{{ ldap_backup_dir }}/{{ ldap_backup_file }}不存在"
       when: 'not backup_data_stat.stat.exists'
-      connection: local
-      run_once: true
+
+- hosts:
+    - ldap
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
 
     - name: 清理原备份数据
       file: name="{{ ldap_backup_dir }}/{{ ldap_backup_file }}" state=absent
