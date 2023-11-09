@@ -43,7 +43,7 @@
       changed_when: false
 
     - name: 停止服务
-      service: name={{ item }} state=stop enabled=no
+      service: name={{ item }} state=stopped enabled=no
       with_items:
         - slapd
         - keepalived
@@ -83,7 +83,7 @@
       shell: "chown -R ldap:ldap {{ current_data_dir.stdout | trim }}"
 
     - name: 启动服务
-      service: name={{ item }} state=restart enabled=yes
+      service: name={{ item }} state=started enabled=yes
       with_items:
         - slapd
         - keepalived
