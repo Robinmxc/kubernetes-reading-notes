@@ -54,6 +54,10 @@
       shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap' | wc -l"
       register: podCount
 
+    - name: 获取Pod状态
+      set_fact:
+          POD_COUNT : "{{podCount.stdout}}"
+
     - name: 单节点导入ldap数据
       when: ' podCount.stdout == "1" '
       block:
@@ -74,10 +78,11 @@
           shell: "kubectl -n {{ APP_NAMESPACE }} exec {{ ldap_name.stdout }}  -- bash -c 'chown -R openldap:openldap /var/lib/ldap/'"
 
         - name: 停止ldap
-          shell: "kubectl delete -f {{ yaml_dir }}/openldap/openldap.yml"
+          shell: "kubectl delete -f {{ yaml_dir }}/openldap/"
+          ignore_errors: true
 
         - name: 启动ldap
-          shell: "kubectl apply -f {{ yaml_dir }}/openldap/openldap.yml"
+          shell: "kubectl apply -f {{ yaml_dir }}/openldap/"
 
     - name: 多节点导入ldap数据
       when: ' podCount.stdout == "2" '
@@ -101,45 +106,36 @@
           shell: "kubectl delete -f {{ yaml_dir }}/openldap/openldap1.yml"
 
 - hosts:
-    - ldap[0]
+    - ldap
   gather_facts: false
   vars_files:
     - "/etc/kad/config.yml"
   tasks:
-    - name: 下载openldap1导入成功的数据
-      fetch:
-        src: "{{ ldap_base_dir }}/data/{{ item }}"
-        dest: "{{ ldap_backup_dir }}/"
-        flat: yes
-      with_items:
-        - "data.mdb"
-        - "lock.mdb"
-
-- hosts:
-    - ldap[1]
-  gather_facts: false
-  vars_files:
-    - "/etc/kad/config.yml"
-  tasks:
-    - name: 上传openldap2导入成功的文件
-      copy:
-        src: "{{ ldap_backup_dir }}/{{ item }}"
-        dest: "{{ ldap_base_dir }}/data"
-        group: "911"
-        owner: "911"
-      with_items:
-        - "data.mdb"
-        - "lock.mdb"
-
-- hosts:
-    - localhost
-  gather_facts: false
-  vars_files:
-    - "/etc/kad/config.yml"
-  tasks:
-    - name: 启动ldap
+    - name: 多节点导入ldap数据
+      when: ' hostvars.localhost.POD_COUNT == "2" '
       block:
+      - name: 下载openldap1导入成功的数据
+        when: "inventory_hostname == groups.ldap[0] "
+        fetch:
+          src: "{{ ldap_base_dir }}/data/{{ item }}"
+          dest: "{{ ldap_backup_dir }}/"
+          flat: yes
+        with_items:
+          - "data.mdb"
+          - "lock.mdb"
+
+      - name: 上传openldap2导入成功的文件
+        when: "inventory_hostname == groups.ldap[1]"
+        copy:
+          src: "{{ ldap_backup_dir }}/{{ item }}"
+          dest: "{{ ldap_base_dir }}/data"
+          group: "911"
+          owner: "911"
+        with_items:
+          - "data.mdb"
+          - "lock.mdb"
+
       - name: 启动ldap
         shell: "kubectl apply -f {{ yaml_dir }}/openldap/"
-
-
+        connection: local
+        run_once: true
