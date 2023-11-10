@@ -1,6 +1,97 @@
 #!/bin/bash
 
 
+###清理essdb 脏数据####
+qq=$(psql -U postgres -lqt | grep essdb | wc -l)
+
+if [ $qq -gt 0 ]
+then
+
+    gg=$(psql -U postgres -d essdb -Aqtc "select count(*) from pg_class where relname = 't_system_config'")
+    if [ $gg -gt 0 ]
+    then
+      
+      ff=$(psql -U postgres -d essdb -Aqtc "select count(*) from t_system_config where value like '%SOURCEID_GATE_DOMAIN%'")
+      if [ $ff -gt 0 ]
+      then
+        psql -U postgres  -Aqtc "update pg_database set datallowconn = 'false' where datname = 'essdb'"
+        psql -U postgres  -Aqtc "select pg_terminate_backend(pid) from pg_stat_activity where datname = 'essdb'"
+        psql -U postgres  -Aqtc "DROP DATABASE essdb"
+        psql -U postgres  -Aqtc "CREATE DATABASE essdb"
+        psql -U postgres  -Aqtc "delete from sql_record where filename = 'rg-upgrade-db/ess_upgrade_db/sourceid/R2.0.3p1/2023-01-01.sql'"
+        psql -U postgres  -Aqtc "delete from sql_record where filename = 'rg-upgrade-db/ess_upgrade_db/sourceid/R2.0.3p1/2023-07-06.sql'"
+        psql -U postgres  -Aqtc "delete from sql_record where filename = 'rg-upgrade-db/ess_upgrade_db/sourceid/R2.0.3p1/2023-06-08.sql'"
+        psql -U postgres  -Aqtc "delete from sql_record where filename = 'rg-upgrade-db/ess_upgrade_db/sourceid/R2.0.3p1/2023-08-08.sql'"
+      fi
+
+    fi
+
+fi
+
+cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db
+
+if [ -d  ./ess_upgrade_db/sourceid/R2.0.3p1 ]; then
+
+
+
+  errorinfo=$(grep "ERROR" updatedb.log)
+
+  if [[ ${errorinfo} =~ "ERROR" ]]
+  then
+        exit
+  fi
+
+
+need=$(ls ./ess_upgrade_db/sourceid/R2.0.3p1/ | grep sql |wc -l)
+if [ "${need}" != "0" ] ; then
+
+psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
+psql -U postgres  -Aqtc "alter table sql_record alter column result type varchar(102400)"
+
+dbfilepath1=$(ls ./ess_upgrade_db/sourceid/R2.0.3p1)
+dbfilepathNew1=(${dbfilepath1//\\n/ })
+{% raw %}
+for((j=0;j<${#dbfilepathNew1[*]};j++))
+{% endraw %}
+do
+
+cc=$(psql -U postgres  -Aqtc "select count(filename) from sql_record where filename = 'rg-upgrade-db/ess_upgrade_db/sourceid/R2.0.3p1/${dbfilepathNew1[j]}'")  
+
+if [ $cc -gt 0 ]
+then
+   echo "rg-upgrade-db/ess_upgrade_db/sourceid/R2.0.3p1/${dbfilepathNew1[j]}记录已存在"
+else
+   echo "rg-upgrade-db/ess_upgrade_db/sourceid/R2.0.3p1/${dbfilepathNew1[j]}无记录"  
+
+   
+
+   tt=$(psql -U postgres -d essdb -f  ./ess_upgrade_db/sourceid/R2.0.3p1/${dbfilepathNew1[j]})
+
+   dd=$(echo $tt | sed 's/\"//g' | awk '{gsub(/^\s+|\s+$/, "");print}')
+
+    errorinfo1=$(echo $dd | grep "ERROR")
+
+    if [[ ${errorinfo1} =~ "ERROR" ]]
+    then
+            echo $dd >> updatedb.log
+            exit
+    else
+           psql -U postgres  -Aqtc "insert into sql_record(filename,time,result)values('rg-upgrade-db/ess_upgrade_db/sourceid/R2.0.3p1/${dbfilepathNew1[j]}',now(),'${dd}')"
+     
+    fi   
+
+
+fi
+
+done
+
+fi
+
+fi
+
+
+
+
 nowversion=$(psql -U postgres  -Aqtc "select postgres_version  from system_version where name = 'db_version'")
 
 cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db
@@ -12,6 +103,8 @@ cd /ruijie/init/sourceid-hotfix/sourceid-university/rg-upgrade-db
 ./upgrade_pg.sh ${nowversion} DBVERSIONUPGRADE flowable rg-flow sourceid
 
 
+# ess组件数据库跨版本升级
+./upgrade_pg.sh ${nowversion} DBVERSIONUPGRADE essdb ess sourceid
 
 
 
@@ -40,6 +133,7 @@ need=$(ls ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE/ | grep sql |wc -l)
 if [ "${need}" != "0" ] ; then
 
 psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
+psql -U postgres  -Aqtc "alter table sql_record alter column result type varchar(102400)"
 
 dbfilepath1=$(ls ./xxl-job_upgrade_db/sourceid/DBVERSIONUPGRADE)
 dbfilepathNew1=(${dbfilepath1//\\n/ })
@@ -82,6 +176,65 @@ fi
 
 fi
 
+if [ -d  ./ess_upgrade_db/sourceid/DBVERSIONUPGRADE ]; then
+
+
+
+  errorinfo=$(grep "ERROR" updatedb.log)
+
+  if [[ ${errorinfo} =~ "ERROR" ]]
+  then
+        exit
+  fi
+
+
+need=$(ls ./ess_upgrade_db/sourceid/DBVERSIONUPGRADE/ | grep sql |wc -l)
+if [ "${need}" != "0" ] ; then
+
+psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
+psql -U postgres  -Aqtc "alter table sql_record alter column result type varchar(102400)"
+
+dbfilepath1=$(ls ./ess_upgrade_db/sourceid/DBVERSIONUPGRADE)
+dbfilepathNew1=(${dbfilepath1//\\n/ })
+{% raw %}
+for((j=0;j<${#dbfilepathNew1[*]};j++))
+{% endraw %}
+do
+
+cc=$(psql -U postgres  -Aqtc "select count(filename) from sql_record where filename = '${dir}/ess_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}'")  
+
+if [ $cc -gt 0 ]
+then
+   echo "${dir}/ess_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}记录已存在"
+else
+   echo "${dir}/ess_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}无记录"  
+
+   
+
+   tt=$(psql -U postgres -d essdb -f  ./ess_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]})
+
+   dd=$(echo $tt | sed 's/\"//g' | awk '{gsub(/^\s+|\s+$/, "");print}')
+
+    errorinfo1=$(echo $dd | grep "ERROR")
+
+    if [[ ${errorinfo1} =~ "ERROR" ]]
+    then
+            echo $dd >> updatedb.log
+            exit
+    else
+           psql -U postgres  -Aqtc "insert into sql_record(filename,time,result)values('${dir}/ess_upgrade_db/sourceid/DBVERSIONUPGRADE/${dbfilepathNew1[j]}',now(),'${dd}')"
+     
+    fi   
+
+
+fi
+
+done
+
+fi
+
+fi
+
 
 if [ -d  ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE ]; then
 
@@ -99,6 +252,7 @@ need=$(ls ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE/ | grep sql |wc -l)
 if [ "${need}" != "0" ] ; then
 
 psql -U postgres  -Aqtc "create table if not exists sql_record (id SERIAL PRIMARY KEY, filename varchar(500),time timestamp,result varchar(500))"
+psql -U postgres  -Aqtc "alter table sql_record alter column result type varchar(102400)"
 
 dbfilepath1=$(ls ./rg-flow_upgrade_db/sourceid/DBVERSIONUPGRADE)
 dbfilepathNew1=(${dbfilepath1//\\n/ })

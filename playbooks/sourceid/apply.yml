@@ -41,3 +41,4 @@
   - { role: ruijie/sourceid/address-book, tags: ["address-book"] }
   - { role: ruijie/sourceid/freeradius, tags: ["freeradius"] }
   - { role: ruijie/sourceid/rg-authentication-validate, tags: ["rg-authentication-validate"] }
+  - { role: ruijie/sourceid/application-facade, tags: ["application-facade"] }

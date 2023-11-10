@@ -1,17 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: rg-authentication-validate
   namespace: {{ APP_NAMESPACE }}
   labels:
     k8s-app: rg-authentication-validate
 spec:
+  serviceName: rg-authentication-validate
   replicas: {{ deploy_conf.replicas }}
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
   selector:
     matchLabels:
       k8s-app: rg-authentication-validate
@@ -22,6 +18,10 @@ spec:
     spec:
       hostNetwork: true
       nodeName: {{ deploy_node_ip }}
+      hostAliases:
+      - ip: "{{ deploy_node_ip }}"
+        hostnames:
+        - "rg-authentication-validate"
       containers:
       - name: rg-auth-extend
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["auth-extend"].name }}:{{ SOURCEID_DOCKERS["auth-extend"].version }}
