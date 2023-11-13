@@ -28,14 +28,15 @@
   - name: 设置keepalived服务拉起脚本
     template: src=keepalived_up.sh.j2 dest=/etc/keepalived/keepalived_up.sh mode=755
 
-  - name: 安装 keepalived
-    package: name=keepalived state=present
+#借助k8s安装更新即在每个kubenode上安装了keepalived
+#  - name: 安装 keepalived
+#    package: name=keepalived state=present
 
-  - name: 开机启用keepalived服务
-    shell: systemctl enable keepalived
-
-  - name: 启动keepalived服务
-    shell: systemctl start keepalived
+  - name: 启动服务
+    service: name={{ item }} state=started enabled=yes
+    with_items:
+      - keepalived
+    ignore_errors: true
 
   - name: crontab添加keepalived服务拉起脚本
     shell: echo '* * * * * /etc/keepalived/keepalived_up.sh' >> /var/spool/cron/root
