@@ -24,7 +24,7 @@ db.getSiblingDB("career-event").changeUserPassword("{{ SOURCEID_CAREER_DB_USER }
 
 db.getSiblingDB("report").changeUserPassword("{{ SOURCEID_REPORT_DB_USER }}","{{ SOURCEID_REPORT_DB_PWD }}");
 
-db.getSiblingDB("report").changeUserPassword("{{ SOURCEID_APPLICATION_FACADE_DB_USER }}","{{ SOURCEID_APPLICATION_FACADE_DB_PWD }}");
+db.getSiblingDB("application-facade").changeUserPassword("{{ SOURCEID_APPLICATION_FACADE_DB_USER }}","{{ SOURCEID_APPLICATION_FACADE_DB_PWD }}");
 
 {% for value in db_list %}
 db.getSiblingDB("{{ value }}").changeUserPassword("{{ SOURCEID_READONLY_DB_USER }}","{{ SOURCEID_READONLY_DB_PWD }}");
