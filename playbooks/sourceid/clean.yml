@@ -105,9 +105,9 @@
     command: "kubectl delete -f {{ yaml_dir }}/fgm-backend/"
     when: '"rg-fgm-backend" in pod_info.stdout'
 
-  - name: 停止 rg-application-facade
+  - name: 停止 application-facade
     tags:
-    - rg-application-facade
+    - application-facade
     command: "kubectl delete -f {{ yaml_dir }}/application-facade/"
     when: '"rg-application-facade" in pod_info.stdout'
 
@@ -244,9 +244,9 @@
     delay: 3
     ignore_errors: true
 
-  - name: 等待rg-application-facade结束运行
+  - name: 等待application-facade结束运行
     tags:
-    - frg-application-facade
+    - application-facade
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-application-facade" not in pod_info.stdout'
