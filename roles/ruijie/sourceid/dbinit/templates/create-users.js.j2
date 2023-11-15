@@ -83,6 +83,12 @@ db.getSiblingDB("report").runCommand({
   roles: [{role:"dbOwner", db: "report"}]
 });
 
+db.getSiblingDB("application-facade").runCommand({
+  createUser: "{{ SOURCEID_APPLICATION_FACADE_DB_USER }}",
+  pwd: "{{ SOURCEID_APPLICATION_FACADE_DB_PWD }}",
+  roles: [{role:"dbOwner", db: "application-facade"}]
+});
+
 {% for value in db_list %}
 db.getSiblingDB("{{ value }}").runCommand({
   createUser: "{{ SOURCEID_READONLY_DB_USER }}",

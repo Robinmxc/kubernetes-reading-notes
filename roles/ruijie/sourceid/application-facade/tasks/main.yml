@@ -13,7 +13,7 @@
       - config
     replace: path="{{ config_base_dir }}/sourceid/application-facade/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-      - {regexp: "mongodb:.*/faceid.*$", replace: "mongodb://{{ SOURCEID_FACEID_DB_USER }}:{{ SOURCEID_FACEID_DB_PWD }}@{{ mongodb_addr }}/faceid?replicaSet=rs0"}
+      - {regexp: "mongodb:.*/application.*$", replace: "mongodb://{{ SOURCEID_APPLICATION_FACADE_DB_USER }}:{{ SOURCEID_APPLICATION_FACADE_DB_PWD }}@{{ mongodb_addr }}/application-facade?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
     no_log: true
 

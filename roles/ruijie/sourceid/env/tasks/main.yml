@@ -70,6 +70,7 @@
     - "sourceid/address-book"
     - "sourceid/freeradius"
     - "sourceid/auth-extend"
+    - "sourceid/application-facade"
   connection: local
   run_once: true
 
