@@ -128,7 +128,7 @@ function commonInstall(){
 	echo "commonInstall call"
 	echo "参数 2：仅安装用于现场  3:下载并安装（特定场景） 4:清理 当前参数${mode}"
 	rpms=(git  sshpass  wget unzip libpcap tcpdump net-tools iptables-services ipset-libs ipset ipvsadm tcl bash-completion  rsyslog  \
-		oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl)
+		oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl keepalived)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var

@@ -1,0 +1,42 @@
+- name: 部署keepalived
+  when: '"" != LDAP_VIP'
+  block:
+  - name: 读取网卡名称
+    shell: "ip a|grep '{{ inventory_hostname }}/'|awk '{print $NF}'"
+    register: if_info
+
+  - name: 设置负载均衡网卡
+    set_fact: LDAP_ACCESS_IF="{{ if_info.stdout }}"
+
+  - name: crontab清理eepalived服务拉起脚本
+    shell: sed -i '/keepalived_up/d' /var/spool/cron/root
+    ignore_errors: true
+
+  - name: 停止keepalived服务
+    service: name=keepalived state=stopped enabled=no
+    ignore_errors: true
+
+  - name: 创建keepalived目录
+    file: name=/etc/keepalived state=directory
+
+  - name: 设置keepalived配置文件
+    template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
+
+  - name: 设置slapd存活检测脚本
+    template: src=ldap_check.sh.j2 dest=/etc/keepalived/ldap_check.sh mode=755
+
+  - name: 设置keepalived服务拉起脚本
+    template: src=keepalived_up.sh.j2 dest=/etc/keepalived/keepalived_up.sh mode=755
+
+#借助k8s安装更新即在每个kubenode上安装了keepalived
+#  - name: 安装 keepalived
+#    package: name=keepalived state=present
+
+  - name: 启动服务
+    service: name={{ item }} state=started enabled=yes
+    with_items:
+      - keepalived
+    ignore_errors: true
+
+  - name: crontab添加keepalived服务拉起脚本
+    shell: echo '* * * * * /etc/keepalived/keepalived_up.sh' >> /var/spool/cron/root

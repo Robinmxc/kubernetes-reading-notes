@@ -1,0 +1,7 @@
+- name: ldap外置数据备份
+  when: "LDAP['LDAP_MODE']  == 'standalone'"
+  import_playbook: backup-standalone.yml
+
+- name: ldap内置数据备份
+  when: "LDAP['LDAP_MODE']  == 'k8s'"
+  import_playbook: backup-k8s-internal.yml

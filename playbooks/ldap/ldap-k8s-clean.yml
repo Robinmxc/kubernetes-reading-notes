@@ -21,10 +21,39 @@
       delay: 3
       ignore_errors: true
 
-    - name: delete files
-      file: name="{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/openldap" state=absent
-      ignore_errors: true
-
     - name: delete secret
       shell: "kubectl delete secrets ldap-pwds -n {{ APP_NAMESPACE }} --ignore-not-found"
+      ignore_errors: true
+
+- hosts:
+    - ldap
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: 准备临时数据目录
+      file:
+        path: "{{ ldap_backup_dir }}"
+        state: directory
+
+    - name: 获取当前时间
+      command: date "+%Y%m%d%H%M%S"
+      register: current_datetime
+      changed_when: false
+
+    - name: 临时备份ldap数据
+      archive:
+        path: "{{ ldap_base_dir }}"
+        dest: "{{ ldap_backup_dir }}/ldap_backup_{{ current_datetime.stdout }}.tar.gz"
+        format: gz
+
+    - name: 删除ldap数据
+      file: name="{{ ldap_base_dir }}" state=absent
+      ignore_errors: true
+
+    - name: 清理keepalived配置
+      shell: sed -i '/keepalived_up/d' /var/spool/cron/root
+
+    - name: 停止keepalived服务
+      service: name=keepalived state=stopped enabled=no
       ignore_errors: true

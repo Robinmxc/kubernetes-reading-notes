@@ -1,0 +1,90 @@
+- hosts:
+    - localhost
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: 获取待还原的备份数据状态
+      stat: path="{{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+      register: backup_data_stat
+
+    - name: 检查待还原的备份数据是否存在
+      fail: msg="备份数据{{ ldap_backup_dir }}/{{ ldap_backup_file }}不存在"
+      when: 'not backup_data_stat.stat.exists'
+
+- hosts:
+    - ldap
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+
+    - name: 清理原备份数据
+      file: name="{{ ldap_backup_dir }}/{{ ldap_backup_file }}" state=absent
+      ignore_errors: true
+
+    - name: 准备临时数据目录
+      file:
+        path: "{{ ldap_backup_dir }}"
+        state: directory
+
+    - name: copy备份文件
+      copy:
+        src: "{{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+        dest: "{{ ldap_backup_dir }}"
+
+    - name: 获取当前外置ldap数据目录
+      shell: "egrep -r '^olcDbDirectory: (.*)$' /etc/openldap/slapd.d/ |awk -F : '{ print $3 }'"
+      register: current_data_dir
+
+    - name: 获取当前时间
+      command: date "+%Y%m%d%H%M%S"
+      register: current_datetime
+      changed_when: false
+
+    - name: 停止服务
+      service: name={{ item }} state=stopped enabled=no
+      with_items:
+        - slapd
+        - keepalived
+      ignore_errors: true
+
+    - name: 准备临时备份外置ldap数据
+      debug:
+        msg: 临时数据备份地址：{{ ldap_backup_dir }}/ldap_backup_{{ current_datetime.stdout }}.tar.gz...
+
+    - name: 备份外置ldap数据
+      vars:
+        data_dir: "{{ current_data_dir.stdout | trim}}"
+      archive:
+        path: "{{ data_dir }}"
+        dest: "{{ ldap_backup_dir }}/ldap_backup_{{ current_datetime.stdout }}.tar.gz"
+        format: gz
+
+    - name: 清空ldap数据目录
+      file: name="{{ current_data_dir.stdout | trim }}" state=absent
+      ignore_errors: true
+
+    - name: 准备ldap数据目录
+      file:
+        path: "{{ current_data_dir.stdout | trim }}"
+        state: directory
+
+    - name: 导入ldap数据
+      debug:
+        msg: 正在导入ldap数据，根据数据量大小耗时间不同...
+
+    - name: 导入ldap数据
+      shell: "slapadd -l {{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+      async: 0
+      poll: 30
+
+    - name: 设置ldap目录权限
+      shell: "chown -R ldap:ldap {{ current_data_dir.stdout | trim }}"
+
+    - name: 启动服务
+      service: name={{ item }} state=started enabled=yes
+      with_items:
+        - slapd
+        - keepalived
+      ignore_errors: true

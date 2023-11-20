@@ -1,0 +1,15 @@
+#!/bin/bash
+set -x
+   
+A=`systemctl is-active slapd`
+if [ "$A" == "inactive" ];then
+   echo `date`':  slapd is not up' >> /var/log/keepalived.log
+   exit 0
+fi
+
+status=`systemctl is-active keepalived`
+if [ "$status" == "inactive" ];then
+   echo `date`':  slapd is up, start keepalived' >> /var/log/keepalived.log
+   systemctl start keepalived
+   fi
+exit 0
