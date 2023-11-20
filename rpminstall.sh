@@ -254,10 +254,15 @@ function AnolisOS(){
 function ky10(){
 	echo "ky10 call"
 	commonInstall
-	rpms=(tar jq ansible ntp  chrony.x86_64)
+	rpms=(guile  tar jq ansible ntp  chrony.x86_64)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
+	done
+	pip3s=(pyyaml simplejson)
+	for var in ${pip3s[@]};
+	do
+		pipOperator $var
 	done
 	mongo_tool
 	kubernetes_process_ky10
