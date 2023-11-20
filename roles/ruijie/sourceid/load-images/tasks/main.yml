@@ -27,7 +27,7 @@
     img_id_ver: "{{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS[comp_name].name }}:{{ docker_version }}"
     img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
   shell: "cd {{ img_copy_dir }};for i in `ls {{ comp_name }}-[0-9]*.tar`;do reg='^{{ comp_name }}.*.tar$';if [ \"$i\" != {{ img_file_name }} ] && [[ \"$i\" =~ $reg ]];then  rm -rf $i;fi;done;"
-  with_items: "{{ SOURCEID_DOCKERS.keys() }}"
+  with_items: "{{ SOURCEID_DOCKERS }}"
 
 
 - name: 复制镜像
@@ -50,7 +50,7 @@
       img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
     copy: src={{ img_download_dir }}/{{ img_file_name }} dest={{ img_copy_dir }}/{{ img_file_name }}
     when: '"" != docker_version and img_file_name not in images_copy_info.stdout and img_id_ver not in imgages_info.stdout'
-    with_items: "{{ SOURCEID_DOCKERS.keys() }}"
+    with_items: "{{ SOURCEID_DOCKERS }}"
 
 - name: 加载镜像
   vars:
@@ -60,4 +60,4 @@
     img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
   command: 'docker load -i {{ img_dir }}/{{ img_file_name }}'
   when: '"" != docker_version and img_id_ver not in imgages_info.stdout and ( "gateway" != item or SOURCEID_GATEWAY_DEPLOY_MODE == "k8s" )'
-  with_items: "{{ SOURCEID_DOCKERS.keys() }}"
+  with_items: "{{ SOURCEID_DOCKERS }}"

@@ -14,13 +14,22 @@ read  -s ssh_password
 if	[[ "$result" != "" ]];then
  	 sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $*  --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}" 
 else
-    result_an8_oe2203=$(echo $osname | grep -E ".an8|.oe2203")
-   
-    if	[[ "$result_an8_oe2203" != "" ]];then
+    result_an8_oe2203_ky10=$(echo $osname | grep -E ".an8|.oe2203|.ky10")
+    result_ky10=$(echo $osname | grep -E ".an8|.oe2203|.ky10")
+    if	[[ "result_ky10" != "" ]];then
+          sed -i '1s/.*/#!\/usr\/bin\/python39/'  /opt/kad/tools/env_process.py 
+          sed -i '1s/.*/#!\/usr\/bin\/python39/'  /opt/kad/inventory/kad-workspace.py
+    fi
+    if	[[ "$result_an8_oe2203_ky10" != "" ]];then
         chmod +777 ./tools/*.py
         set -o errexit
         ./tools/env_process.py "${ssh_user}" "${ssh_password}" "${ssh_port}" "${input}" 
         set +o errexit 
     fi	
-    sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $* -e 'ansible_python_interpreter=/usr/bin/python3' --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}" 
+    if	[[ "result_ky10" != "" ]];then
+   	  sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $* -e 'ansible_python_interpreter=/usr/bin/python39' --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}" 
+    else
+       sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $* -e 'ansible_python_interpreter=/usr/bin/python3' --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}" 
+    fi
+
 fi

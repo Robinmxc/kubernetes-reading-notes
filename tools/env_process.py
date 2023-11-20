@@ -20,7 +20,7 @@ def python3_rpm(ip):
   output_uname=output_uname.replace("\n","")
   output_uname=output_uname.replace(" ","")
   try:
-    if ".an8" in output_uname or  ".oe2203" in output_uname :
+    if ".an8" in output_uname or  ".oe2203" in output_uname:
       try:
         version_command="sshpass -p "+ ssh_password+  " ssh -p "+ssh_port+" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "+ssh_user+"@"+ip+" \" "+sudo+"python3 --version;\" "
         version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
@@ -30,6 +30,17 @@ def python3_rpm(ip):
         install_command="sshpass -p "+ ssh_password+  " ssh -p "+ssh_port+" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "+ssh_user+"@"+ip+" \""+sudo+"rpm -ivh  /tmp/python39/*.rpm --force --nodeps > /dev/null 2>&1;\" "
         copy_command_output = subprocess.check_output(copy_command, shell=True)
         install_command_output = subprocess.check_output(install_command, shell=True)
+    if  ".ky10" in output_uname:
+      try:
+        version_command="sshpass -p "+ ssh_password+  " ssh -p "+ssh_port+" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "+ssh_user+"@"+ip+" \" "+sudo+"/usr/bin/python39 --version;\" "
+        version_command_output = subprocess.check_output(version_command, shell=True).decode("utf-8")
+      except Exception :
+        print("远程安装python3:服务器IP="+ip+"")
+        del_command="sshpass -p "+ ssh_password+  " ssh -p "+ssh_port+" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "+ssh_user+"@"+ip+" \""+sudo+" rm -rf /usr/bin/python39;rm -rf /usr/bin/pip3 > /dev/null 2>&1;\" "
+        del_command_output= subprocess.check_output(del_command, shell=True)   
+        copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/python39/* "+ssh_user+"@"+ip+":/usr/bin > /dev/null 2>&1"
+        copy_command_output = subprocess.check_output(copy_command, shell=True)   
+
   except Exception :
         raise NameError("远程安装python3失败,请保证"+ip+"远程可用")
 

@@ -251,6 +251,12 @@ function AnolisOS(){
 	ansibleInstall
 	kubernetes_process
 }
+function ky10_python3(){
+	rm -rf /usr/bin/python39
+	rm -rf /usr/bin/pip3
+	cp /opt/kad/down/rpms/4.19.90-52.15.v2207.ky10.x86_64/python39/python39 /usr/bin/python39
+	cp /opt/kad/down/rpms/4.19.90-52.15.v2207.ky10.x86_64/python39/pip3 /usr/bin/pip3
+}	
 function ky10(){
 	echo "ky10 call"
 	commonInstall
@@ -259,6 +265,7 @@ function ky10(){
 	do
 		rpmOperator $var
 	done
+
 	pip3s=(pyyaml simplejson)
 	for var in ${pip3s[@]};
 	do
