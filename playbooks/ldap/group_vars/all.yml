@@ -22,13 +22,7 @@ DEST_FILE_PATH: "{{ DATA_DIR }}/file"
 
 ldap_deploy_mode: "{{ groups['ldap'] | length }}"
 
-ldap_dual_mode_port: 388
-
-#将ldap改成388端口
-ldap_port_conf: "{% if ldap_deploy_mode  == '2' %}ldapi:/// ldap://0.0.0.0:{{ ldap_dual_mode_port }}/ ldaps:///{% else %}ldapi:/// ldap://0.0.0.0:{{ LDAP.LDAP_PORT }}/ ldaps://0.0.0.0:{{ LDAP.LDAP_SSL_PORT }}/{% endif %}"
-
-#nginx安装目录
-NGINX_SRC_PATH: "/usr/local/src"
+ldap_port_conf: "ldapi:/// ldap://0.0.0.0:{{ LDAP.LDAP_PORT }}/ ldaps://0.0.0.0:{{ LDAP.LDAP_SSL_PORT }}/"
 
 ldap_file: "ldap.tar.gz"
 nginx_file: "nginx-1.20.1.tar.gz"
@@ -40,3 +34,8 @@ PRIVATE_REGISTRY_ENABLED: "no"
 PRIVATE_INSECURE_REGISTRY: "172.17.8.20:8082"
 PRIVATE_REGISTRY_USER: ""
 PRIVATE_REGISTRY_PWD: ""
+
+ldap_backup_file: "ldap_back.ldif"
+ldap_backup_dir: "{{ DATA_DIR }}/backup/openldap"
+
+ldap_base_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/openldap"

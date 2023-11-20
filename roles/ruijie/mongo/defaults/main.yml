@@ -1,13 +1,14 @@
 mongodb_version: "4.0.24"
 mongodb_offline: "mongo-4.0.24.tar"
 mongodb_port: 27017
+mongdb_cluster_mode: "psa"
 mongodb_deploy_mode: "{{ groups['mongodb'] | length }}"
 mongodb_auth_mode: "no"
 mongodb_tool: "mongodb-database-tools-rhel80-x86_64-100.6.1.rpm"
 
 mongodb_check_data_dir: "no"
 
-wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' -%}16{%- elif CLUSTER_SCALE == 'single' -%}8{%- else -%}0.5{%- endif -%}"
+wiredTigerCacheSizeGB: "{%- if CLUSTER_SCALE == 'normal' and mongdb_cluster_mode == 'psa' -%}16{%- elif CLUSTER_SCALE == 'normal' and mongdb_cluster_mode == 'pss' -%}10{%- elif CLUSTER_SCALE == 'single' -%}8{%- else -%}0.5{%- endif -%}"
 
 mongodb_liveness_probe: "no"
 
@@ -24,7 +25,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 16
-        memory: 24Gi
+        memory: "{%- if  mongdb_cluster_mode == 'psa' -%}24Gi{%- else -%}16Gi{%- endif -%}"
       requests:
         cpu: 8
         memory: 16Gi

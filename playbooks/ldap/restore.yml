@@ -1,0 +1,7 @@
+- name: ldap外置数据还原
+  when: "LDAP['LDAP_MODE']  == 'standalone'"
+  import_playbook: restore-standalone.yml
+
+- name: ldap内置数据还原
+  when: "LDAP['LDAP_MODE']  == 'k8s'"
+  import_playbook: restore-k8s-internal.yml
