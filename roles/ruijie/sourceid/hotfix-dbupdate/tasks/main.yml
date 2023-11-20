@@ -6,6 +6,8 @@
       src_file: "{{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/rg-upgrade-db/update_domain2.sh"
     when: 'src_file is exists'
     shell: "chmod +777 {{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/rg-upgrade-db/update_domain2.sh"
+    connection: local
+    run_once: true
 
   - name: 执行替换脚本
     vars:
@@ -15,6 +17,7 @@
     when: 'src_file is exists'
     shell: "{{ KAD_PACKAGE_DIR }}-hotfix/db/sourceid-hotfix/sourceid-university/rg-upgrade-db/update_domain2.sh {{ GATE_DOMAIN_URL }} {{ SSO_DOMAIN_URL }} {{ KAD_PACKAGE_DIR }}"
     connection: local
+    run_once: true
 
 - name: 压缩数据初始化脚本
   archive:
@@ -119,6 +122,7 @@
     - "rg-flow"
     - "address-book"
     - "ess"
+    - "application-facade"
   connection: local
 
 - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
@@ -171,6 +175,20 @@
   connection: local
   run_once: true
 
+- name: 查询pgsql 是否已初始化
+  shell: '{{ pgsql_pod_shell }} -c "\l"'
+  register: db_result
+  connection: local
+  run_once: true
+
+- name: 创建essdb数据库
+  shell: '{{ pgsql_pod_shell }} -c "CREATE DATABASE essdb"'
+  when: '"essdb" not in db_result.stdout'
+  register: create_result
+  failed_when: 'create_result.stdout is not search("CREATE DATABASE")'
+  connection: local
+  run_once: true
+   
 - name: 准备升级数据的脚本
   vars:
     src_file: pg-hotfix.sh.j2
@@ -187,3 +205,4 @@
   shell: '{{ pgsql_shell }} /ruijie/init/pg-hotfix.sh'
   register: pg_result
   connection: local
+  run_once: true

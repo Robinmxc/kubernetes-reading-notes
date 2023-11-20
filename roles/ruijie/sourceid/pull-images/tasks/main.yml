@@ -47,11 +47,24 @@
     img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
   command: 'docker load -i {{ img_download_dir }}/{{ img_file_name }}'
   when: '"" != docker_version and img_file_name  in download_info.stdout and img_id_ver not in imgages_info.stdout'
-  with_items: "{{ SOURCEID_DOCKERS }}"
+  with_items: "{{ SOURCEID_DOCKERS.keys() }}"
 
 - name: 重新获取docker已加载的镜像信息
   command: "docker images --format ''{{ '{{' }}.Repository{{ '}}' }}:{{ '{{' }}.Tag{{ '}}' }}''"
   register: imgages_info
+
+- name: 清理历史不用的镜像文件
+  vars:
+    comp_name: "{{ item }}"
+    docker_version: "{{ SOURCEID_DOCKERS[comp_name].version }}"
+    img_id_ver: "{{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS[comp_name].name }}:{{ docker_version }}"
+    img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
+  shell: "cd {{ img_download_dir }};for i in `ls {{ comp_name }}-[0-9]*.tar`;do reg='^{{ comp_name }}.*.tar$';if [ \"$i\" != {{ img_file_name }} ] && [[ \"$i\" =~ $reg ]];then  rm -rf $i;fi;done;"
+  with_items: "{{ SOURCEID_DOCKERS.keys() }}"
+  
+- name: 删除镜像合集
+  file: path="{{ img_download_dir }}/dockerImages/docker_images_all.tar" state=absent
+  when: '"docker_images_all.tar" in dockerImages_info.stdout'
 
 - name: 下载镜像
   vars:
@@ -61,7 +74,7 @@
     img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
   command: 'docker pull {{ img_id_ver }}'
   when: '"" != docker_version and img_id_ver not in imgages_info.stdout and img_file_name not in download_info.stdout'
-  with_items: "{{ SOURCEID_DOCKERS }}"
+  with_items: "{{ SOURCEID_DOCKERS.keys() }}"
 
 - name: 保存镜像文件
   vars:
@@ -71,17 +84,5 @@
     img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
   command: 'docker save -o {{ img_download_dir }}/{{ img_file_name }} {{ img_id_ver }}'
   when: '"" != docker_version and img_file_name not in download_info.stdout'
-  with_items: "{{ SOURCEID_DOCKERS }}"
+  with_items: "{{ SOURCEID_DOCKERS.keys() }}"
 
-- name: 清理历史不用的镜像文件
-  vars:
-    comp_name: "{{ item }}"
-    docker_version: "{{ SOURCEID_DOCKERS[comp_name].version }}"
-    img_id_ver: "{{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS[comp_name].name }}:{{ docker_version }}"
-    img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
-  shell: "cd {{ img_download_dir }};for i in `ls {{ comp_name }}*.tar`;do reg='^{{ comp_name }}-([0-9p]|-|\\.)*.tar$';if [ \"$i\" != {{ img_file_name }} ] && [[ \"$i\" =~ $reg ]];then  rm -rf $i;fi;done;"
-  with_items: "{{ SOURCEID_DOCKERS }}"
-  
-- name: 删除镜像合集
-  file: path="{{ img_download_dir }}/dockerImages/docker_images_all.tar" state=absent
-  when: '"docker_images_all.tar" in dockerImages_info.stdout'
