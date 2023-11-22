@@ -1,0 +1,39 @@
+- import_playbook: env-check.yml
+- import_playbook: clean.yml
+
+- hosts:
+  - localhost
+  gather_facts: false
+
+  tasks:
+  - name: 获取所有已经创建的POD信息
+    tags: always
+    command: "kubectl get pod -n kube-system"
+    register: pod_info
+
+  - name: 停止nginx-ingress
+    tags:
+    - nginx-ingress
+    command: "kubectl delete -f /opt/kube/kube-system/nginx-ingress/nginx-ingress.yaml"
+    when: '"nginx-ingress" in pod_info.stdout'
+
+  - name: 等待nginx-ingress结束运行
+    tags:
+    - nginx-ingress
+    shell: "kubectl get pod -n kube-system"
+    register: pod_info
+    until: '"nginx-ingress" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+
+- hosts:
+  - kube_master
+  - kube_node
+  gather_facts: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  any_errors_fatal: true
+  roles:
+  - ruijie/sourceid/openresty
