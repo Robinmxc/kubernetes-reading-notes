@@ -1,0 +1,72 @@
+- name: 部署nginx http
+  when: "'http' == ingress_mode"
+  block:
+  - name: 在deploy节点准备目录
+    file: path={{ item }} state=directory
+    with_items:
+    - "/usr/local/"
+
+  - name: 复制openresty压缩包
+    copy: src="{{ KAD_PACKAGE_DIR }}-hotfix/conf/nginx/openresty.tgz" dest="/usr/local/openresty.tgz"
+
+  - name: 解压openresty压缩包
+    unarchive:
+      src: "/usr/local/openresty.tgz"
+      dest: "/usr/local/"
+      remote_src: yes
+
+  - name: 复制nginx http配置文件
+    template: src=sidhttp.conf.j2 dest=/usr/local/openresty/nginx/conf/domains/sidhttp.conf
+
+  - name: 准备service文件
+    template: src="nginx.service.j2" dest="/usr/lib/systemd/system/nginx.service"
+ 
+  - name: 清理iptables NAT策略
+    shell: 'iptables -F -t nat'
+
+  - name: 启动nginx进程
+    shell: 'systemctl daemon-reload && systemctl enable  nginx.service && systemctl start  nginx.service'
+
+  - name: 查看nginx状态
+    shell: 'systemctl status nginx.service'
+
+  - name: 清理nginx日志
+    template: src="nginx.j2" dest="/etc/logrotate.d/nginx"
+
+
+- name: 部署nginx https
+  when: "'https' == ingress_mode"
+  block:
+  - name: 在deploy节点准备目录
+    file: path={{ item }} state=directory
+    with_items:
+    - "/usr/local/"
+
+  - name: 复制openresty压缩包
+    copy: src="{{ KAD_PACKAGE_DIR }}-hotfix/conf/nginx/openresty.tgz" dest="/usr/local/openresty.tgz"
+
+  - name: 解压openresty压缩包
+    unarchive:
+      src: "/usr/local/openresty.tgz"
+      dest: "/usr/local/"
+      remote_src: yes
+
+  - name: 复制nginx https配置文件
+    template: src=sidhttps.conf.j2 dest=/usr/local/openresty/nginx/conf/domains/sidhttps.conf
+
+  - name: 准备service文件
+    template: src="nginx.service.j2" dest="/usr/lib/systemd/system/nginx.service"
+
+  - name: 清理iptables NAT策略
+    shell: 'iptables -F -t nat'
+
+  - name: 启动nginx进程
+    shell: 'systemctl daemon-reload && systemctl enable  nginx.service && systemctl start  nginx.service'
+
+  - name: 查看nginx状态
+    shell: 'systemctl status nginx.service'
+
+  - name: 清理nginx日志
+    template: src="nginx.j2" dest="/etc/logrotate.d/nginx"
+
+ 

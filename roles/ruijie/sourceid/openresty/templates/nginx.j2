@@ -1,0 +1,9 @@
+/usr/local/openresty/nginx/logs/{{ SOURCEID_SSO_DOMAIN }}_access.log
+/usr/local/openresty/nginx/logs/{{ SOURCEID_SSO_DOMAIN }}_ssl_access.log
+{
+    missingok
+    daily
+    copytruncate
+    rotate 7
+    notifempty
+}

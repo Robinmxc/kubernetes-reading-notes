@@ -9,6 +9,8 @@
   - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/sourceid/hotfix-dbupdate, tags: always }
+  - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
+  - { role: ruijie/sourceid/dbinit, tags: always }
 
 
 - hosts:

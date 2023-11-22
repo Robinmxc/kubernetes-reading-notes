@@ -145,10 +145,17 @@ spec:
     - host: {{ SOURCEID_MYAPP_DOMAIN }}
       http:
         paths:
-        - path: /
+        - path: /portal
           pathType: Prefix
           backend:
             service:
               name: rg-portal
               port:
-                number: 80            
+                number: 80
+        - path: /web-page
+          pathType: Prefix
+          backend:
+            service:
+              name: rg-frontend
+              port:
+                number: 80             
