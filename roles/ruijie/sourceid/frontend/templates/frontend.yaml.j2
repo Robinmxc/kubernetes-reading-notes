@@ -30,6 +30,9 @@ spec:
       - name: rg-frontend
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.frontend.name }}:{{ SOURCEID_DOCKERS.frontend.version }}
         imagePullPolicy: IfNotPresent
+        env:
+          - name: SELF_SUFFIX
+            value: {{ SELF_SUFFIX }}
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:

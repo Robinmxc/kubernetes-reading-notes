@@ -83,6 +83,12 @@ db.getSiblingDB("report").runCommand({
   roles: [{role:"dbOwner", db: "report"}]
 });
 
+db.getSiblingDB("license").runCommand({
+  createUser: "{{ SOURCEID_LICENSE_DB_USER }}",
+  pwd: "{{ SOURCEID_LICENSE_DB_PWD }}",
+  roles: [{role:"dbOwner", db: "license"}]
+});
+
 db.getSiblingDB("application-facade").runCommand({
   createUser: "{{ SOURCEID_APPLICATION_FACADE_DB_USER }}",
   pwd: "{{ SOURCEID_APPLICATION_FACADE_DB_PWD }}",

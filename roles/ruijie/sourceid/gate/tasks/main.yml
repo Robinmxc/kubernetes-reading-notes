@@ -9,8 +9,8 @@
   tags:
     - config
   vars:
-    auth_server: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/cas{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
-    api_path: '{% if SOURCEID_DOMAIN_MODE == "single" %}svc/cas/api{% else %}svc/api{% endif %}'
+    auth_server: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/{{ CAS_SUFFIX }}{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
+    api_path: '{% if SOURCEID_DOMAIN_MODE == "single" %}svc/{{ CAS_SUFFIX }}/api{% else %}svc/api{% endif %}'
   replace: path="{{ config_base_dir }}/sourceid/gate/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
   - {regexp: "^auth-server:.*$", replace: "auth-server: {{ auth_server }}"}
@@ -49,7 +49,7 @@
     - '      serviceId: linkidpublic'
     - '      id: linkidpublic'
     - '    linkidpublic:'
-    - '      url: http://rg-sso.{{ APP_NAMESPACE }}.svc/cas/images'
+    - '      url: http://rg-sso.{{ APP_NAMESPACE }}.svc/{{ CAS_SUFFIX }}/images'
     - '      casimages_placeholder1'
     - '      casimages_placeholder2'
     - '      path: /images/**'
@@ -71,6 +71,30 @@
     - {regexp: "casimages_placeholder6", replace: "url: http://rg-frontend.{{ APP_NAMESPACE }}.svc/public"}
   no_log: true
   when: 'SOURCEID_DOMAIN_MODE == "single"'
+
+
+- name: 单域名配置step3
+  tags:
+    - config
+  lineinfile:
+    dest: "{{ config_base_dir }}/sourceid/gate/conf/application.yml"
+    insertafter: 'port: 80'
+    line: "{{ item }}"
+  with_items:
+    - '  servlet:'
+    - '    context-path: /{{ SELF_SUFFIX }}'
+  when: 'SOURCEID_DOMAIN_MODE == "single"'
+
+
+- name: 单域名配置自动配置
+  tags:
+    - config
+  replace: path="{{ config_base_dir }}/sourceid/gate/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+    - {regexp: "rg-frontend.ruijie-sourceid.svc", replace: "rg-frontend.ruijie-sourceid.svc/{{ SELF_SUFFIX }}} 
+  no_log: true
+  when: 'SOURCEID_DOMAIN_MODE == "single"'
+
 
 - name: 准备部署文件目录
   tags:
