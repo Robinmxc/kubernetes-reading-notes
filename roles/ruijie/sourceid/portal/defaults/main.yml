@@ -1,6 +1,6 @@
 PORTAL_ENABLE: "{% if CLUSTER_SCALE == 'normal' and SOURCEID_DOCKERS['portal'] is defined and (SOURCEID_DOCKERS['portal'].enable is not defined or SOURCEID_DOCKERS['portal'].enable) %}yes{% else %}no{% endif %}"
 
-portal_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms256m -Xmx256m{% elif CLUSTER_SCALE == 'single' %}-Xms256m -Xmx256m{% else %}-Xms256m -Xmx256m{% endif %}"
+portal_java_opt: "{% if CLUSTER_SCALE == 'normal' or  CLUSTER_SCALE == 'basic' %}-Xms256m -Xmx256m{% elif CLUSTER_SCALE == 'single' or  CLUSTER_SCALE == 'single-basic' %}-Xms256m -Xmx256m{% else %}-Xms256m -Xmx256m{% endif %}"
 
 portal_configs: []
 
@@ -27,5 +27,22 @@ deploy_conf_defaults:
       requests:
         cpu: 250m
         memory: 256Mi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
 portal_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

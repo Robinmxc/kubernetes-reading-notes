@@ -28,5 +28,20 @@ pgsql_deploy_conf_defaults:
       requests:
         cpu: 1
         memory: "{% if ESS_ENABLE == 'yes' %}1Gi{% else %}512Mi{% endif %}"
-
+  basic:
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: "{% if ESS_ENABLE == 'yes' %}1Gi{% else %}512Mi{% endif %}"
+  single-basic:
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: "{% if ESS_ENABLE == 'yes' %}1Gi{% else %}512Mi{% endif %}"
 pgsql_deploy_conf: '{{ pgsql_deploy_conf_defaults[CLUSTER_SCALE] }}'

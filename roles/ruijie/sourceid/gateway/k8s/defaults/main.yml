@@ -24,5 +24,22 @@ deploy_conf_defaults:
       requests:
         cpu: 1
         memory: 1.5Gi
-
+  basic:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1.5Gi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1.5Gi
 gateway_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

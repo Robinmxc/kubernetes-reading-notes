@@ -1,6 +1,6 @@
 IMPORT_USER_ENABLE: "{% if SOURCEID_DOCKERS['import-user'] is defined and (SOURCEID_DOCKERS['import-user'].enable is not defined or SOURCEID_DOCKERS['import-user'].enable) %}yes{% else %}no{% endif %}"
 
-import_user_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx1024m{% elif CLUSTER_SCALE == 'single' %}-Xms512m -Xmx1024m{% else %}-Xms256m -Xmx512m{% endif %}"
+import_user_java_opt: "{% if CLUSTER_SCALE == 'normal' or  CLUSTER_SCALE == 'basic' %}-Xms512m -Xmx1024m{% elif CLUSTER_SCALE == 'single' or  CLUSTER_SCALE == 'single-basic' %}-Xms512m -Xmx1024m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 import_user_configs: []
 
@@ -25,5 +25,22 @@ deploy_conf_defaults:
       requests:
         cpu: 500m
         memory: 512Mi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1.5Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1.5Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
 import_user_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
