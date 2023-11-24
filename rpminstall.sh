@@ -263,7 +263,7 @@ function ky10_python3(){
 function ky10(){
 	echo "ky10 call"
 	commonInstall
-	rpms=(gc  libtool-ltdl guile  tar jq ansible ntp  chrony.x86_64)
+	rpms=(perl gc  libtool-ltdl guile  tar jq ansible ntp  chrony.x86_64)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
