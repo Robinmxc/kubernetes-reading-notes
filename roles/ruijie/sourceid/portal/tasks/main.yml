@@ -15,7 +15,7 @@
     with_items:
       - {regexp: "mongodb:.*/application.*$", replace: "mongodb://{{ SOURCEID_APPLICATION_FACADE_DB_USER }}:{{ SOURCEID_APPLICATION_FACADE_DB_PWD }}@{{ mongodb_addr }}/application-facade?replicaSet=rs0"}
       - {regexp: "url:.*$", replace: "url: {{ SOURCEID_SSO_URL }}"}
-      - {regexp: "apiServer:.*$", replace: "apiServer: {{ SOURCEID_FRONTEND_URL }}"}
+      - {regexp: "apiServer:.*$", replace: "apiServer: {{ SOURCEID_MYAPP_URL }}"}
       - {regexp: "name:.*$", replace: "name: {{ SOURCEID_MYAPP_URL }}"}
     no_log: true
 
