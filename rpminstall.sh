@@ -254,18 +254,21 @@ function AnolisOS(){
 function ky10_python3(){
 	rm -rf /usr/bin/python39
 	rm -rf /usr/bin/pip3
-	cp /opt/kad/down/rpms/4.19.90-52.15.v2207.ky10.x86_64/python39/python39 /usr/bin/python39
-	cp /opt/kad/down/rpms/4.19.90-52.15.v2207.ky10.x86_64/python39/pip3 /usr/bin/pip3
+	rm -rf /usr/local/python3
+	mkdir -p /usr/local/python3/
+	tar -xvf /opt/kad/down/rpms/4.19.90-52.15.v2207.ky10.x86_64/python39/python3.tar -C /usr/local/python3
+	cp /usr/local/python3/bin/python3.9 /usr/bin/python39
+	cp /usr/local/python3/bin/pip3 /usr/bin/pip3
 }	
 function ky10(){
 	echo "ky10 call"
 	commonInstall
-	rpms=(guile  tar jq ansible ntp  chrony.x86_64)
+	rpms=(perl gc  libtool-ltdl guile  tar jq ansible ntp  chrony.x86_64)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
 	done
-
+	ky10_python3
 	pip3s=(pyyaml simplejson)
 	for var in ${pip3s[@]};
 	do
