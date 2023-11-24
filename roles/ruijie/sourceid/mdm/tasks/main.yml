@@ -61,7 +61,7 @@
       - config
     vars:
       deploy_conf: '{{ mdm_deploy_conf }}'
-      dop_deploy_conf: '{{ dop_deploy_conf }}'
+      dop_mdm_deploy_conf: '{{ dop_deploy_conf }}'
     template: src='{{ mdm_templates_path }}mdm.yaml.j2' dest={{ yaml_dir }}/mdm/mdm.yml
     run_once: true
     connection: local

@@ -126,11 +126,11 @@ spec:
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
-            cpu: {{ dop_deploy_conf.resources.limits.cpu }}
-            memory: {{ dop_deploy_conf.resources.limits.memory }}
+            cpu: {{ dop_mdm_deploy_conf.resources.limits.cpu }}
+            memory: {{ dop_mdm_deploy_conf.resources.limits.memory }}
           requests:
-            cpu: {{ dop_deploy_conf.resources.requests.cpu }}
-            memory: {{ dop_deploy_conf.resources.requests.memory }}
+            cpu: {{ dop_mdm_deploy_conf.resources.requests.cpu }}
+            memory: {{ dop_mdm_deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
         - containerPort: 8920
