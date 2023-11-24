@@ -8,3 +8,9 @@ mem_required:
   single:
     master: 64
     node: 64
+  basic:
+    master: 16
+    node: 32
+  single-basic:
+    master: 32
+    node: 32

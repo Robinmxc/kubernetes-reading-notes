@@ -8,3 +8,9 @@ cpu_required:
   single:
     master: 32
     node: 32
+  basic:
+    master: 8
+    node: 16
+  single-basic:
+    master: 8
+    node: 16

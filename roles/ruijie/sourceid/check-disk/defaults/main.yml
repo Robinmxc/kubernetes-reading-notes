@@ -10,3 +10,9 @@ disk_required:
   single:
     master: 10
     node: 10
+  basic:
+    master: 10
+    node: 400
+  single-basic:
+    master: 10
+    node: 10

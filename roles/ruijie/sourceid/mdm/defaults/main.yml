@@ -74,7 +74,7 @@ dop_deploy_conf_defaults:
       requests:
         cpu: 1
         memory: 512Mi
-  normal:
+  basic:
     replicas: 1
     resources:
       limits:
@@ -83,7 +83,7 @@ dop_deploy_conf_defaults:
       requests:
         cpu: 0.5
         memory: 256Mi
-  single:
+  single-basic:
     replicas: 1
     resources:
       limits:
