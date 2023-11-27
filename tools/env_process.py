@@ -40,10 +40,8 @@ def python3_rpm(ip):
         del_command_output= subprocess.check_output(del_command, shell=True)   
         copy_command="sshpass -p "+ ssh_password+ " scp  -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /opt/kad/down/rpms/"+output_uname+"/python39/* "+ssh_user+"@"+ip+":/tmp/ > /dev/null 2>&1"
         copy_command_output = subprocess.check_output(copy_command, shell=True)   
-        print("远程拷贝文件"+copy_command)
         install_command="sshpass -p "+ ssh_password+  " ssh -p "+ssh_port+" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "+ssh_user+"@"+ip+" \""+sudo+"tar -xvf /tmp/python3.tar -C /usr/local/python3;"+sudo+"cp /usr/local/python3/bin/python3.9 /usr/bin/python39;	"+sudo+"cp /usr/local/python3/bin/pip3 /usr/bin/pip3;\" "
         install_command_output = subprocess.check_output(install_command, shell=True)   
-        print("远程安装")   
   except Exception :
         raise NameError("远程安装python3失败,请保证"+ip+"远程可用")
 
