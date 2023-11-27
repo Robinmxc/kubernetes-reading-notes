@@ -1,11 +1,10 @@
 
 - name: 获取操作系统版本
   shell: "uname -r"
-  register: uname
-
+  register: uname   
 - name: 检查操作系统版本
   vars:
-    os_ver: ' {{ "el7" in uname.stdout or "oe2203" in uname.stdout or   "an8" in uname.stdout }}'
+    os_ver: ' {{ "el7" in uname.stdout or "oe2203" in uname.stdout or   "an8" in uname.stdout or   "ky10" in uname.stdout}}'
   fail: msg="操作系统不属于支持的版本{{os_required}}"
   when: 'os_ver == False'
 
