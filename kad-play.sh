@@ -16,7 +16,7 @@ if	[[ "$result" != "" ]];then
 else
     result_an8_oe2203_ky10=$(echo $osname | grep -E ".an8|.oe2203|.ky10")
     result_ky10=$(echo $osname | grep -E ".ky10")
-    if	[[ "result_ky10" != "" ]];then
+    if	[[ "$result_ky10" != "" ]];then
           sed -i '1s/.*/#!\/usr\/bin\/python39/'  /opt/kad/tools/env_process.py 
           sed -i '1s/.*/#!\/usr\/bin\/python39/'  /opt/kad/inventory/kad-workspace.py
     fi
@@ -26,7 +26,7 @@ else
         ./tools/env_process.py "${ssh_user}" "${ssh_password}" "${ssh_port}" "${input}" 
         set +o errexit 
     fi	
-    if	[[ "result_ky10" != "" ]];then
+    if	[[ "$result_ky10" != "" ]];then
    	  sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $* -e 'ansible_python_interpreter=/usr/bin/python39' --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}" 
     else
        sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $* -e 'ansible_python_interpreter=/usr/bin/python3' --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}" 
