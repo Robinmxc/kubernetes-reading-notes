@@ -6,7 +6,6 @@ metadata:
   labels:
     k8s-app: {{ pcapture_node_name }}
 spec:
-  serviceName: {{ pcapture_node_name }}
   strategy:
     type: RollingUpdate
     rollingUpdate:

@@ -9,9 +9,9 @@ pcapture_templates_path: ""
 
 deploy_conf_defaults:
   small:
-    replicas: { { replicas_num } }
+    replicas: '{{ replicas_num }}'
   normal:
-    replicas: { { replicas_num } }
+    replicas: '{{ replicas_num }}'
     resources:
       limits:
         cpu: 2
@@ -20,7 +20,7 @@ deploy_conf_defaults:
         cpu: 1
         memory: 1Gi
   single:
-    replicas: { { replicas_num } }
+    replicas: '{{ replicas_num }}'
     resources:
       limits:
         cpu: 2
