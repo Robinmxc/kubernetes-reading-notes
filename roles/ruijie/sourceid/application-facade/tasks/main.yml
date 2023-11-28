@@ -1,0 +1,71 @@
+- name: 部署application-facade
+  when: 'FACADE_ENABLE == "yes"'
+  block:
+  - name: 复制配置文件
+    tags:
+      - config
+    copy:
+      src: "{{ namespace_dir }}/conf/sourceid/application-facade/"
+      dest: "{{ config_base_dir }}/sourceid/application-facade/"
+
+  - name: 自动配置
+    tags:
+      - config
+    replace: path="{{ config_base_dir }}/sourceid/application-facade/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "mongodb:.*/application.*$", replace: "mongodb://{{ SOURCEID_APPLICATION_FACADE_DB_USER }}:{{ SOURCEID_APPLICATION_FACADE_DB_PWD }}@{{ mongodb_addr }}/application-facade?replicaSet=rs0"}
+      - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+    no_log: true
+
+  - name: 自定义配置
+    tags:
+      - config
+    replace:
+      path: '{{ config_base_dir }}/sourceid/application-facade/conf/application-pro.yml'
+      regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
+      replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
+    with_items: '{{ facade_configs }}'
+
+  - name: 单域名配置
+    tags:
+      - config
+    replace: path="{{ config_base_dir }}/sourceid/application-facade/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - { regexp: ".svc/oauth2.0", replace: ".svc/cas/oauth2.0" }
+      - { regexp: "rg-sso/oauth2.0", replace: "rg-sso/cas/oauth2.0" }
+      - { regexp: "base-url: http://rg-sso.{{ APP_NAMESPACE }}.svc", replace: "base-url: http://rg-sso.{{ APP_NAMESPACE }}.svc/cas" }
+    no_log: true
+    when: 'SOURCEID_DOMAIN_MODE == "single"'
+
+  - name: 准备部署文件目录
+    tags:
+      - config
+    file: path={{ item }} state=directory
+    with_items:
+      - "{{ yaml_dir }}/application-facade"
+    run_once: true
+    connection: local
+
+  - name: 准备部署文件
+    tags:
+      - config
+    vars:
+      deploy_conf: '{{ facade_deploy_conf }}'
+    template: src='{{ facade_templates_path }}application-facade.yaml.j2' dest={{ yaml_dir }}/application-facade/application-facade.yml
+    run_once: true
+    connection: local
+
+  - name: 获取所有已经创建的POD信息
+    tags:
+      - deploy
+    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    run_once: true
+    connection: local
+
+  - name: 执行部署
+    tags:
+      - deploy
+    shell: "kubectl apply -f {{ yaml_dir }}/application-facade/"
+    run_once: true
+    connection: local

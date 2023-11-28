@@ -1,0 +1,71 @@
+- hosts:
+    - ldap
+  gather_facts: false
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: 停止ldap服务
+      shell: systemctl stop slapd
+
+    - name: 停止keepalived服务
+      shell: systemctl stop keepalived
+      ignore_errors: true
+
+    - name: 准备临时数据目录
+      file:
+        path: "{{ ldap_backup_dir }}"
+        state: directory
+
+    - name: 获取当前外置ldap数据目录
+      shell: "egrep -r '^olcDbDirectory: (.*)$' /etc/openldap/slapd.d/ |awk -F : '{ print $3 }'"
+      register: current_data_dir
+
+    - name: 获取当前时间
+      command: date "+%Y%m%d%H%M%S"
+      register: current_datetime
+      changed_when: false
+
+    - name: 备份外置ldap数据,临时数据备份地址：{{ ldap_backup_dir }}/ldap_backup_{{ current_datetime.stdout }}.tar.gz
+      vars:
+        data_dir: "{{ current_data_dir.stdout | trim}}"
+      archive:
+        path: "{{ data_dir }}"
+        dest: "{{ ldap_backup_dir }}/ldap_backup_{{ current_datetime.stdout }}.tar.gz"
+        format: gz
+
+    - name: 删除ldap数据
+      file: name="{{ current_data_dir.stdout | trim }}" state=absent
+      ignore_errors: true
+
+    - name: 删除ldap数据
+      file: name="{{ ldap_backup_dir }}/{{ ldap_backup_file }}" state=absent
+      ignore_errors: true
+
+    - name: copy备份文件
+      copy:
+        src: "{{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+        dest: "{{ ldap_backup_dir }}"
+
+    - name: 准备ldap数据目录
+      file:
+        path: "{{ current_data_dir.stdout | trim }}"
+        state: directory
+
+    - name: 导入ldap数据
+      debug:
+        msg: 正在导入ldap数据，根据数据量大小耗时间不同...
+
+    - name: 导入ldap数据
+      shell: "slapadd -l {{ ldap_backup_dir }}/{{ ldap_backup_file }}"
+      async: 0
+      poll: 30
+
+    - name: 设置ldap目录权限
+      shell: "chown -R ldap:ldap {{ current_data_dir.stdout | trim }}"
+
+    - name: 启动ldap服务
+      shell: systemctl start slapd
+
+    - name: 启动keepalived
+      shell: systemctl start keepalived
+      ignore_errors: true

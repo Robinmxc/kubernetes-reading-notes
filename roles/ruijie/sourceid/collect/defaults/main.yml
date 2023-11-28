@@ -1,6 +1,6 @@
 COLLECT_ENABLE: "{% if SOURCEID_DOCKERS['collect'] is defined and (SOURCEID_DOCKERS['collect'].enable is not defined or SOURCEID_DOCKERS['collect'].enable) %}yes{% else %}no{% endif %}"
 
-collect_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms512m -Xmx2048m{% elif CLUSTER_SCALE == 'single' %}-Xms512m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
+collect_java_opt: "{% if CLUSTER_SCALE == 'normal' or  CLUSTER_SCALE == 'basic' %}-Xms512m -Xmx2048m{% elif CLUSTER_SCALE == 'single' or  CLUSTER_SCALE == 'single-basic' %}-Xms512m -Xmx2048m{% else %}-Xms256m -Xmx512m{% endif %}"
 
 collect_configs: []
 
@@ -27,5 +27,22 @@ deploy_conf_defaults:
       requests:
         cpu: 1
         memory: 1Gi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
 collect_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

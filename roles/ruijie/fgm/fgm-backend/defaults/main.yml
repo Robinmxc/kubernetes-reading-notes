@@ -1,6 +1,6 @@
 FGM_BACKEND_ENABLE: "{% if SOURCEID_DOCKERS['fgm-backend'] is defined and (SOURCEID_DOCKERS['fgm-backend'].enable is not defined or SOURCEID_DOCKERS['fgm-backend'].enable) %}yes{% else %}no{% endif %}"
 
-fgm_backend_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms128m -Xmx512m{% elif CLUSTER_SCALE == 'single' %}-Xms128m -Xmx512m{% else %}-Xms128m -Xmx512m{% endif %}"
+fgm_backend_java_opt: "{% if CLUSTER_SCALE == 'normal' or CLUSTER_SCALE == 'basic' %}-Xms128m -Xmx512m{% elif CLUSTER_SCALE == 'single' or  CLUSTER_SCALE == 'single-basic'%}-Xms128m -Xmx512m{% else %}-Xms128m -Xmx512m{% endif %}"
 
 deploy_conf_defaults:
   small:
@@ -23,7 +23,24 @@ deploy_conf_defaults:
       requests:
         cpu: 100m
         memory: 512Mi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
 fgm_backend_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
 
 fgm_db_host: "{{SOURCEDATA_HOSTS[0]}}"

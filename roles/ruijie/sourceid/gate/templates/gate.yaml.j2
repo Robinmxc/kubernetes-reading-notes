@@ -156,7 +156,7 @@ spec:
     - host: {{ SOURCEID_GATE_DOMAIN }}
       http:
         paths:
-        - path: /
+        - path: /{{ SELF_SUFFIX }}
           pathType: Prefix
           backend:
             service:

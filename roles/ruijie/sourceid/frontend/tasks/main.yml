@@ -18,7 +18,7 @@
   tags:
     - config
   vars:
-    sso_prefix: '{% if SOURCEID_DOMAIN_MODE == "single" %}"sso_prefix": "/cas"{% else %}"sso_prefix": ""{% endif %}'
+    sso_prefix: '{% if SOURCEID_DOMAIN_MODE == "single" %}"sso_prefix": "/{{ CAS_SUFFIX }}"{% else %}"sso_prefix": ""{% endif %}'
   lineinfile:
     dest: "{{ config_base_dir }}/sourceid/frontend/deploy/domain/domain.json"
     insertafter: '"link_server"'

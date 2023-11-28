@@ -4,7 +4,7 @@ mem_required:
     node: 8
   normal:
     master: 16
-    node: 64
+    node: 32
   single:
     master: 32
     node: 32

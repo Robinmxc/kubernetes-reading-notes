@@ -29,11 +29,11 @@
   - config
   replace: path="{{ config_base_dir }}/operations/conf/application-prd.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "mongodb:.*/database.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{groups['kube_node'][0]}}/database-ops-history?replicaSet=rs0"}
-  - {regexp: "mongodb:.*/operations.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{groups['kube_node'][0]}}/operations?replicaSet=rs0"}
-  - {regexp: "mongodb:.*/nodes.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{groups['kube_node'][0]}}/nodes?replicaSet=rs0"}
-  - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
-  - {regexp: "grabIp:.*$", replace: "grabIp: {{groups['kube_node'][0]}}"}
+  - {regexp: "mongodb:.*/database.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{mongodb_addr}}/database-ops-history?replicaSet=rs0"}
+  - {regexp: "mongodb:.*/operations.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{mongodb_addr}}/operations?replicaSet=rs0"}
+  - {regexp: "mongodb:.*/nodes.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{mongodb_addr}}/nodes?replicaSet=rs0"}
+  - {regexp: "whiteHost.*$", replace: "whiteHost: {{allNodeStr}}"}
+  - {regexp: "grabIp:.*$", replace: "grabIp: {{KUBE_MASTER_VIP}}"}
   - {regexp: "protectEnable.*$", replace: "protectEnable: {{ protectEnable_value }}"}
   - {regexp: "hostPath:.*$", replace: "hostPath: {{ config_base_dir }}"}
   no_log: true

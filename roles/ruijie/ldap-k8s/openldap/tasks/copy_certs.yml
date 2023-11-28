@@ -1,0 +1,36 @@
+- name: 获取Pod名称
+  shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap1' | awk '{print $1}'"
+  register: pod_status
+  connection: local
+  run_once: true
+
+- name: 设置变量ldap_pod_name
+  when: '"openldap1" in pod_status.stdout'
+  set_fact:
+    ldap_pod_name: "{{ pod_status.stdout }}"
+  connection: local
+  run_once: true
+
+- name: 等待dhparam文件生成
+  when: '"openldap1" in pod_status.stdout'
+  shell: "kubectl -n {{ APP_NAMESPACE }} exec {{ ldap_pod_name }} -- ls -l container/run/service/slapd/assets/certs/ | grep dhparam | awk '{print $5}'"
+  register: shell_result
+  until: "shell_result.stdout != '0'"
+  retries: 30
+  delay: 10
+  connection: local
+
+- name: 复制文件
+  when: '"openldap1" in pod_status.stdout'
+  block:
+  - name: 复制LDAP证书文件1
+    shell: "kubectl -n {{ APP_NAMESPACE }} cp {{ ldap_pod_name }}:container/run/service/:ssl-tools/assets/default-ca/default-ca.pem {{ ldap_base_dir }}/certs/ca.crt"
+    connection: local
+    run_once: true
+
+  - name: 复制LDAP证书文件2
+    shell: "kubectl -n {{ APP_NAMESPACE }} cp {{ ldap_pod_name }}:container/run/service/slapd/assets/certs/{{ item }} {{ ldap_base_dir }}/certs/{{ item }}"
+    with_items:
+      - "dhparam.pem"
+    connection: local
+    run_once: true

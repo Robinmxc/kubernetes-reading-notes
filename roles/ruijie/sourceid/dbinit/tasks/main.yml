@@ -130,6 +130,8 @@
       - "rg-flow"
       - "address-book"
       - "ess"
+      - "application-facade"
+      - "license"
     connection: local
 
   - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
@@ -187,7 +189,7 @@
       db_name: "{{ DB_VERSION[comp_name].name }}_version"
       db_cur_version: "{{ DB_VERSION[comp_name].version }}"
     shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("admin").runCommand({"findAndModify":"SYSTEM_VERSION","query":{"_id":"DB_VERSION"},"update":{"$set":{"{{ db_name }}":"{{ db_cur_version }}"}},"new":true})'''
-    with_items: "{{ DB_VERSION.keys() }}"
+    with_items: "{{ DB_VERSION }}"
     when: "DB_VERSION is defined"
     connection: local
 

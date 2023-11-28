@@ -133,6 +133,7 @@ def parse_host_data(workspace_dir):
     result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["mgob"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["pgsql"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
+
     if (len(node_hosts) > 1):
         result["groups"]["ess"] = {"hosts": [node_hosts[1]]}
     else:
@@ -141,25 +142,28 @@ def parse_host_data(workspace_dir):
     # 设置K8S部署模式
     deploy_mode = "single-master"
     if (len(master_hosts) == 2):
+        raise Exception(u"多master高可用至少三个master节点")
+    if (len(master_hosts) == 3):
         deploy_mode = "multi-master"
     elif (len(node_hosts) == 1 and node_hosts[0] == master_hosts[0]):
         deploy_mode = "allinone"
     group_all_vars["DEPLOY_MODE"] = deploy_mode
 
     if (deploy_mode == "multi-master"):
+        if k8s_config["KUBE_MASTER_VIP"] == "":
+            raise Exception(u"多master高可用必须配置KUBE_MASTER_VIP")
         if not is_IP(k8s_config["KUBE_MASTER_VIP"]):
             raise Exception(k8s_config["KUBE_MASTER_VIP"] + u"不是有效的IP地址")
-        # 设置负载均衡节点
-        result["groups"]["lb"] = {"hosts": master_hosts}
-        # 双Master部署模式设置为虚
-        group_all_vars["MASTER_IP"] = k8s_config["KUBE_MASTER_VIP"]
-        # 双Master部署模式设置端口为8443
-        group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:8443"
+        group_all_vars["KUBE_MASTER_VIP"] = k8s_config["KUBE_MASTER_VIP"]
     else:
-        result["groups"]["lb"] = {"hosts": []}
-        group_all_vars["MASTER_IP"] = master_hosts[0]
-        group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:6443"
-
+        group_all_vars["KUBE_MASTER_VIP"] = master_hosts[0]
+    allNodes = set(master_hosts);    
+    allNodes.add(group_all_vars["KUBE_MASTER_VIP"])
+    allNodes.update(node_hosts)
+    allNodes.union()   
+    allNodeStr = ', '.join(str(x) for x in allNodes) 
+    allNodeStr = allNodeStr.replace(' ', '')
+    group_all_vars["allNodeStr"] = allNodeStr
     # 计算服务网段
     if "SERVICE_CIDR" in k8s_config:
         config_value = k8s_config["SERVICE_CIDR"].encode("iso-8859-1").decode("iso-8859-1")
@@ -215,14 +219,9 @@ def parse_host_data(workspace_dir):
     for ip in node_hosts:
         host_vars[ip] = {"K8S_ROLE": "node"}
 
-    # 设置负载均衡角色
-    if (deploy_mode == "multi-master"):
-        host_vars[master_hosts[0]]["LB_ROLE"] = "master"
-        host_vars[master_hosts[1]]["LB_ROLE"] = "backup"
-
     # 设置nodekeepalive角色
     idx = 1
-    for ip in node_hosts:
+    for ip in master_hosts:
         host_vars[ip]["NODE_LB_ID"] = str(100000 + idx)
         if idx == 1:
             host_vars[ip]["NODE_LB_ROLE"] = "MASTER"
@@ -320,12 +319,12 @@ def parse_ldap_config(host_data):
         ldap_config["LDAP_ORGANISATION"] = ldap_config["LDAP_DOMAIN"]
 
     if "LDAP_PORT" not in ldap_config or ldap_config["LDAP_PORT"] == "":
-        ldap_config["LDAP_PORT"] = "30389" if ldap_mode == "k8s" else "389"
+        ldap_config["LDAP_PORT"] = "389"
     if not is_port(ldap_config["LDAP_PORT"]):
         raise Exception(u"LDAP_PORT参数不是有效的端口号")
 
     if "LDAP_SSL_PORT" not in ldap_config or ldap_config["LDAP_SSL_PORT"] == "":
-        ldap_config["LDAP_SSL_PORT"] = "30636" if ldap_mode == "k8s" else "636"
+        ldap_config["LDAP_SSL_PORT"] = "636"
     if not is_port(ldap_config["LDAP_SSL_PORT"]):
         raise Exception(u"LDAP_SSL_PORT参数不是有效的端口号")
 
@@ -338,16 +337,37 @@ def parse_ldap_config(host_data):
     base_dn = base_dn[0:-1]
     ldap_config["LDAP_BASE_DN"] = base_dn
 
-    #k8s部署参数处理
+    #ldap k8s内部署参数处理
     if ldap_mode == "k8s":
-        if 3 == len(group_all_vars["KUBE_NODE_HOSTS"]):
-            host_data["groups"]["ldap"] = {"hosts": [group_all_vars["KUBE_NODE_HOSTS"][1]]}
+        ldap_vip = ldap_config["LDAP_VIP"] if "LDAP_VIP" in ldap_config else ""
+
+        # 3个节点及以上选前两个节点
+        if len(group_all_vars["KUBE_NODE_HOSTS"]) >= 3 :
+            host_data["groups"]["ldap"] = {"hosts": [group_all_vars["KUBE_NODE_HOSTS"][0], group_all_vars["KUBE_NODE_HOSTS"][1]]}
+            # 校验ldap中vip的配置
+            if len(group_all_vars["KUBE_NODE_HOSTS"]) >= 3 and len(ldap_vip) == 0:
+                raise Exception("非单节点内置ldap模式必须配置LDAP_VIP")
+            if "" != ldap_vip and not is_IP(ldap_vip):
+                raise Exception(u"LDAP_VIP不是有效的IP地址")
+            group_all_vars["LDAP_VIP"] = ldap_vip
         else:
             host_data["groups"]["ldap"] = {"hosts": [group_all_vars["KUBE_NODE_HOSTS"][0]]}
 
+        host_vars = host_data["host_vars"]
+        idx = 1
+        for ip in host_data["groups"]["ldap"]["hosts"]:
+            if ip not in host_vars:
+                host_vars[ip] = {}
+            host_vars[ip]["LDAP_HOST_ID"] = str(100000 + idx)
+            if idx == 1:
+                host_vars[ip]["LDAP_ROLE"] = "MASTER"
+            else:
+                host_vars[ip]["LDAP_ROLE"] = "BACKUP"
+            idx = idx + 1
+
     #独立部署参数处理
     if ldap_mode == "standalone":
-        ldap_hosts =  ldap_config["LDAP_HOST"] if "LDAP_HOST" in ldap_config else []
+        ldap_hosts = ldap_config["LDAP_HOST"] if "LDAP_HOST" in ldap_config else []
         ldap_vip = ldap_config["LDAP_VIP"] if "LDAP_VIP" in ldap_config else ""
         if len(ldap_hosts) !=1 and len(ldap_hosts) !=2:
           raise Exception(ldap_hosts + u"必须配置一个或者两个IP")

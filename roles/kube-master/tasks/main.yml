@@ -9,8 +9,25 @@
           fi;"
   tags: upgrade_k8s
 
+- name: 创建master镜像目录
+  file: name={{ item }} state=directory
+  with_items:
+  - /opt/kube/images
+
+- name: 拷贝k8s基础镜像到master节点
+  copy: src={{ base_dir }}/down/{{ item }} dest=/opt/kube/images/{{ item }}
+  with_items:
+  - "{{ kube_apiserver }}"
+  - "{{ kube_proxy }}"
+  - "{{ kube_scheduler }}"
+  - "{{ kube_controller_manager }}"
+  - "{{ etcd }}"
+  - "{{ coredns }}"
+  - "{{ pause }}"
+
+
 - name: 加载kubernetes镜像包
-  shell: "docker load -i {{ base_dir }}/down/{{ item }}"
+  shell: "docker load -i /opt/kube/images/{{ item }}"
   with_items:
   - "{{ kube_apiserver }}"
   - "{{ kube_proxy }}"
@@ -22,16 +39,22 @@
 
 - name: 配置 kubeadm文件 
   template: src=kubeadm.yaml.j2 dest=/etc/kubeadm.yaml
+  connection: local
   run_once: true
   tags: restart_master
 
 - name: 通过kubeadm安装并启动kubernetes
-  shell: 'kubeadm init  --config=/etc/kubeadm.yaml; \
+  shell: 'kubeadm init   --upload-certs --config=/etc/kubeadm.yaml'
+  connection: local
+  run_once: true
+  tags: upgrade_k8s
+
+- name: 通过kubeadm安装后支持kubelet命令
+  shell: 'rm -rf $HOME/.kube; \
           mkdir -p $HOME/.kube; \
           sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config; \
           sudo chown $(id -u):$(id -g) $HOME/.kube/config; \
           export KUBECONFIG=/etc/kubernetes/admin.conf'
-  run_once: True
   tags: upgrade_k8s
 
 - name: 以轮询的方式等待master服务启动完成
@@ -41,29 +64,47 @@
   retries:  10
   delay: 10
   delegate_to: "{{ groups.deploy[0] }}"
-  run_once: True
-  tags: upgrade_k8s, restart_master
-
-- name: 轮询等待apiserver处于running状态
-  shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'"
-  register: pod_status
-  until: pod_status.stdout == "Running"
   connection: local
   run_once: true
-  retries: 15
-  delay: 5
-  ignore_errors: true
-  tags: upgrade_k8s
+  tags: upgrade_k8s, restart_master
+
+- block:
+    - name: 在deploy 节点创建相关目录
+      file: name=/opt/kube/kube-system/coredns state=directory
+    - name: 配置 coredns-1
+      template: src=coredns-deployment.yaml.j2 dest=/opt/kube/kube-system/coredns/coredns-deployment.yaml
+
+    - name: 停止coredns
+      command: "kubectl delete -f /opt/kube/kube-system/coredns/"
+      ignore_errors: true
+    - name: 等待coredns结束运行
+      shell: "kubectl get pod -n kube-system"
+      register: pod_info
+      until: 'pod_info.stdout is not search("coredns-[a-z0-9]*-[a-z0-9]*\s")'
+      retries: 30
+      delay: 3
+      ignore_errors: true  
+
+    - name: coredns节点
+      command: "kubectl create -f /opt/kube/kube-system/coredns/"
+      
+  delegate_to: "{{ groups.deploy[0] }}"
+  run_once: True
+  tags: upgrade_k8s, restart_master
+  when: 'DEPLOY_MODE == "single-master" or DEPLOY_MODE == "allinone"'
+
 
 - name: 修改kubernetes的端口范围
   shell: "grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml >> /dev/null; \
           if [ $? -ne 0 ]; \
           then sed -i \"s#--allow-privileged=true#--allow-privileged=true\\n    - --service-node-port-range=1-65535#g\" /etc/kubernetes/manifests/kube-apiserver.yaml; \
           fi;"
+  connection: local
+  run_once: true
   tags: upgrade_k8s
   
 - name: 重置端口后,轮询等待apiserver处于running状态
-  shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'"
+  shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'| sort -u"
   register: pod_status
   until: pod_status.stdout == "Running"
   connection: local
@@ -73,19 +114,6 @@
   ignore_errors: true
   tags: upgrade_k8s
 
-- name: 配置{{ BASIC_AUTH_USER }}用户rbac权限
-  template: src=basic-auth-rbac.yaml.j2 dest=/opt/kube/basic-auth-rbac.yaml
-  when: 'BASIC_AUTH_ENABLE == "yes"'
-  delegate_to: "{{ groups.deploy[0] }}"
-  run_once: true
-  tags: restart_master
-
-- name: 创建{{ BASIC_AUTH_USER }}用户rbac权限
-  shell: "kubectl apply -f /opt/kube/basic-auth-rbac.yaml"
-  when: 'BASIC_AUTH_ENABLE == "yes"'
-  delegate_to: "{{ groups.deploy[0] }}"
-  run_once: true
-  tags: restart_master
 
 # 支持kubectl命令自动补全
 - name: 支持kubectl命令自动补全
@@ -93,5 +121,8 @@
 
 - name: 配置db端口挂载清理任务
   shell: "chmod +777 /opt/kad/tools/db-port-clean.sh && touch /var/spool/cron/root && sed -i '/db-port-clean.sh/d' /var/spool/cron/root && echo '40 2 * * *  sh /opt/kad/tools/db-port-clean.sh' >> /var/spool/cron/root"
+  connection: local
   run_once: true
-  tags: restart_master  
+  tags: restart_master 
+
+# 如果node节点也包括在master节点中,设置该节点可以调度pod

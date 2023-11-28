@@ -46,7 +46,7 @@
       comp_name: "{{ item }}"
       db_name: "{{ DB_VERSION[comp_name].name }}"
     shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("{{ db_name }}").dropDatabase()'''
-    with_items: "{{ DB_VERSION.keys() }}" 
+    with_items: "{{ DB_VERSION }}" 
     connection: local
 
   - name: drop mongo中mdm和carrer数据库

@@ -30,8 +30,8 @@
   - {regexp: "mongodb:.*/node-identify.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/node-identify?replicaSet=rs0"}
   - {regexp: "softwarePackageDownLoadAddress:.*$", replace: "softwarePackageDownLoadAddress: http://{{ groups.kube_node[0] }}:9889"}
   - {regexp: "protectEnable.*$", replace: "protectEnable: {{ protectEnable_value }}"}
-  - {regexp: "whiteHost.*$", replace: "whiteHost: {{groups['kube_node'][0]}}"}
-  - {regexp: "sentinel-dashboard-srv", replace: "{{groups['kube_node'][0]}}"}
+  - {regexp: "whiteHost.*$", replace: "whiteHost: {{allNodeStr}}"}
+  - {regexp: "sentinel-dashboard-srv", replace: "{{KUBE_MASTER_VIP}}"}
   - {regexp: "namesrv", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc"}
   no_log: true
 

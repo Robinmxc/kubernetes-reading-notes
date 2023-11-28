@@ -9,25 +9,20 @@
     template: src=server-centos.conf.j2 dest=/etc/chrony.conf
     when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
 
-  - name: 启动 chrony server
-    service: name=chronyd state=restarted enabled=yes
-    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
-  
+  - name: 配置 chrony server 
+    template: src=server-anolis.conf.j2 dest=/etc/chrony.conf
+    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
+
+  - name: 配置 chrony server 
+    template: src=server-ky10.conf.j2 dest=/etc/chrony.conf
+    when: ("Kylin"  in  ansible_distribution )  
+
   - name: 配置 chrony server 
     template: src=server-anolis.conf.j2 dest=/etc/chrony.conf
     when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
 
   - name: 启动 chrony server
     service: name=chronyd state=restarted enabled=yes
-    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
-
-  - name: 配置 chrony server 
-    template: src=server-openEuler.conf.j2 dest=/etc/chrony.conf
-    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")  
-
-  - name: 启动 chrony server
-    service: name=chronyd state=restarted enabled=yes
-    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")  
 
   - name: 立即同步时间
     shell: "chronyc makestep"
@@ -39,17 +34,13 @@
     when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
 
 
-  - name: 启动 chrony client 
-    service: name=chronyd state=restarted enabled=yes
-    when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7"
-
   - name: 配置 chrony client
     template: src=client-anolis.conf.j2 dest=/etc/chrony.conf
     when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
 
-  - name: 启动 chrony client 
-    service: name=chronyd state=restarted enabled=yes
-    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
+  - name: 配置 chrony client
+    template: src=client-ky10.conf.j2 dest=/etc/chrony.conf
+    when: ("Kylin"  in  ansible_distribution )  
 
   - name: 配置 chrony client
     template: src=client-openEuler.conf.j2 dest=/etc/chrony.conf
@@ -57,7 +48,6 @@
 
   - name: 启动 chrony client 
     service: name=chronyd state=restarted enabled=yes
-    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")  
 
   - name: 配置 rsyslog 
     template: src=rsyslog.conf dest=/etc/rsyslog.conf
@@ -65,7 +55,6 @@
 
   - name: 立即同步时间
     shell: "chronyc makestep"
-    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8") or ((ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7")
   when: 'inventory_hostname != local_ntp_server'
 
 - name: 设置时区、更新硬件时钟、重启时间变动会影响到的服务
@@ -78,7 +67,19 @@
    && systemctl restart crond
    && systemctl restart rsyslog"
   ignore_errors: true
-  when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
+  when: ("Kylin"  in  ansible_distribution )  
+
+- name: 设置时区、更新硬件时钟、重启时间变动会影响到的服务
+  shell: "timedatectl set-timezone Asia/Shanghai
+   && timedatectl set-local-rtc 0
+   && hwclock --systohc
+   && hwclock -w
+   && systemctl enable chronyd
+   && systemctl restart chronyd 
+   && systemctl restart crond
+   && systemctl restart rsyslog"
+  ignore_errors: true
+  when: ("Anolis"  in  ansible_distribution)
 
 - name: 设置时区、更新硬件时钟、重启时间变动会影响到的服务
   shell: "timedatectl set-timezone Asia/Shanghai

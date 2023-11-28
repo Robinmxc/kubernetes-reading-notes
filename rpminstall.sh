@@ -26,32 +26,31 @@ result=$(echo $osname | grep ".el7"| grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_el7_dir} != "$osname" ]];then
 	ln -s /opt/kad/down/rpms/${release_el7_dir} /opt/kad/down/rpms/${osname}
 fi
-
+mkdir -p cd /opt/kad/down/rpms/${osname}
 cd /opt/kad/down/rpms/${osname}
 
 echo "###检查unzip安装成功####"
 osname=(`uname -r`)
-if [ -d  /opt/kad/down/rpms/${osname}/unzip ];then
-    rpm -ivh  /opt/kad/down/rpms/${osname}/unzip/*.rpm --force --nodeps
-    if [ $? -eq 0 ];then
-                echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
-    else
-                echo -e "\033[31m Unzip RPM installed failed. Please check rpm env\033[0m "
-                exit 0
-    fi
-
-else
-    rpm -ivh  /opt/kad/down/rpms/unzip*.rpm --force --nodeps
-    if [ $? -eq 0 ];then
-                echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
-    else
-                echo -e "\033[31m Unzip RPM installed failed. Please check rpm env\033[0m "
-                exit 0
-    fi
-
+if [[ ${mode} == 2 ]];then
+	if [ -d  /opt/kad/down/rpms/${osname}/unzip ];then
+	    rpm -ivh  /opt/kad/down/rpms/${osname}/unzip/*.rpm --force --nodeps
+	    if [ $? -eq 0 ];then
+	                echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
+	    else
+	                echo -e "\033[31m Unzip RPM installed failed. Please check rpm env\033[0m "
+	                exit 0
+	    fi
+	
+	else
+		rpm -ivh  /opt/kad/down/rpms/unzip*.rpm --force --nodeps
+		if [ $? -eq 0 ];then
+		                echo -e "\033[36m Unzip RPM installed sucessfully.\033[0m "
+		else
+		                echo -e "\033[31m Unzip RPM installed failed. Please check rpm env\033[0m "
+		                exit 0
+		fi
+	fi
 fi
-
-
 result=$(echo $osname | grep ".el7.x86_64")
 allowerasing="--allowerasing"
 if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
@@ -128,7 +127,7 @@ function commonInstall(){
 	echo "commonInstall call"
 	echo "参数 2：仅安装用于现场  3:下载并安装（特定场景） 4:清理 当前参数${mode}"
 	rpms=(git  sshpass  wget unzip libpcap tcpdump net-tools iptables-services ipset-libs ipset ipvsadm tcl bash-completion  rsyslog  \
-		oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl)
+		oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl keepalived)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
@@ -207,6 +206,16 @@ function kubernetes_process_centos7(){
 	fi	
 	
 }
+function kubernetes_process_ky10(){
+	echo "kubernetes_process call"
+	# 暂时只能采用龙溪的docker和kubernetes且无法通过命令下载
+	if [[ ${mode} == 2 || ${mode} == 3 ]];then
+	    set -e
+		rpm -ivh ./docker/*.rpm --force --nodeps
+		rpm -ivh ./kubernetes/*.rpm --force --nodeps
+		set +e
+	fi	
+}
 function AnolisOS_python3_module(){
 	echo "AnolisOS_python3_module call"
 	rpm -qa|grep python38|xargs rpm -ev --allmatches --nodeps  > /dev/null 2>&1
@@ -241,6 +250,32 @@ function AnolisOS(){
 	fi
 	ansibleInstall
 	kubernetes_process
+}
+function ky10_python3(){
+	rm -rf /usr/bin/python39
+	rm -rf /usr/bin/pip3
+	rm -rf /usr/local/python3
+	mkdir -p /usr/local/python3/
+	tar -xvf /opt/kad/down/rpms/4.19.90-52.15.v2207.ky10.x86_64/python39/python3.tar -C /usr/local/python3
+	cp /usr/local/python3/bin/python3.9 /usr/bin/python39
+	cp /usr/local/python3/bin/pip3 /usr/bin/pip3
+}	
+function ky10(){
+	echo "ky10 call"
+	commonInstall
+	rpms=(perl gc  libtool-ltdl guile  tar jq ansible ntp  chrony.x86_64)
+	for var in ${rpms[@]};
+	do
+		rpmOperator $var
+	done
+	ky10_python3
+	pip3s=(pyyaml simplejson)
+	for var in ${pip3s[@]};
+	do
+		pipOperator $var
+	done
+	mongo_tool
+	kubernetes_process_ky10
 }
 function openEulerOs(){
 	echo "openEulerOs call"
@@ -287,6 +322,10 @@ function centos7(){
 	kubernetes_process_centos7
 }
 
+result=$(echo $osname | grep ".ky10" | grep ".x86_64")
+if	[[ "$result" != "" ]] && [[ "True" == "$needExec" ]];then
+	ky10
+fi
 result=$(echo $osname | grep ".oe2203" | grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ "True" == "$needExec" ]];then
 	openEulerOs

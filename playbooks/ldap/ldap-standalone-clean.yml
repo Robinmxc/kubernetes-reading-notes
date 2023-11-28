@@ -6,7 +6,6 @@
       with_items:
         - slapd
         - keepalived
-        - nginx
       ignore_errors: true
 
     - name: 卸载 openldap
@@ -16,11 +15,40 @@
           - openldap-clients
         state: absent
       ignore_errors: true
+      no_log: true
+    - name: 确认目录存在
+      file:
+        path: "{{ ldap_backup_dir }}"
+        state: directory
+
+    - name: 获取当前时间
+      command: date "+%Y%m%d%H%M%S"
+      register: current_datetime
+      changed_when: false
+
+    - name: 获取当前ldap数据目录
+      shell: "egrep -r '^olcDbDirectory: (.*)$' /etc/openldap/slapd.d/ |awk -F : '{ print $3 }'"
+      register: current_data_dir
+
+    - name: 备份ldap数据
+      vars:
+        data_dir: "{{ current_data_dir.stdout | trim}}"
+      archive:
+        path: "{{ item.src_dir }}"
+        dest: "{{ ldap_backup_dir }}/{{ item.backup_name }}_{{ current_datetime.stdout }}.tar.gz"
+        format: gz
+      with_items:
+        - { src_dir: "{{ data_dir }}", backup_name: ldap_backup }
+        - { src_dir: /etc/openldap/schema, backup_name: schema_backup }
+        - { src_dir: /etc/openldap/certs, backup_name: certs_backup }
+        - { src_dir: /etc/openldap/slapd.d, backup_name: slapd.d_backup }
 
     - name: delete files
+      vars:
+        data_dir: "{{ current_data_dir.stdout | trim}}"
       file: name={{ item }} state=absent
       with_items:
-        - "/var/lib/ldap"
+        - "{{ data_dir }}"
         - "/etc/openldap"
         - "/etc/systemd/system/nginx.service"
         - "/usr/local/nginx/sbin/nginx"

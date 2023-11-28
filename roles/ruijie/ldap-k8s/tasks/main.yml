@@ -1,5 +1,0 @@
-- name: 部署LDAP组件
-  when: 'LDAP is defined and LDAP.LDAP_MODE == "k8s"'
-  block:
-  - import_tasks: deploy.yml
-  - import_tasks: copy_certs.yml

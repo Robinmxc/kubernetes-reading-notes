@@ -1,6 +1,6 @@
 FACEID_DISPLAY_ENABLE: "{% if SOURCEID_DOCKERS['faceid-display'] is defined and (SOURCEID_DOCKERS['faceid-display'].enable is not defined or SOURCEID_DOCKERS['faceid-display'].enable) %}yes{% else %}no{% endif %}"
 
-faceid_display_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1433m -Xmx1433m{% elif CLUSTER_SCALE == 'single' %}-Xms717m -Xmx717m{% else %}-Xms717m -Xmx717m{% endif %}"
+faceid_display_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1433m -Xmx1433m{% elif CLUSTER_SCALE == 'single' %}-Xms717m -Xmx717m{%  elif CLUSTER_SCALE == 'small' %}-Xms717m -Xmx717m{% else %}-Xms800m -Xmx800m{% endif %}"
 
 faceid_display_configs: []
 
@@ -27,5 +27,22 @@ deploy_conf_defaults:
       requests:
         cpu: 256m
         memory: 1Gi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 0.5
+        memory: 1Gi
+      requests:
+        cpu: 0.25
+        memory: 512Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 0.5
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 512Mi
 faceid_display_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

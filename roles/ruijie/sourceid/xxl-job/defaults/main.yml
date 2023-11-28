@@ -1,6 +1,6 @@
 XXL_JOB_ENABLE: "{% if SOURCEID_DOCKERS['xxl-job'] is defined and (SOURCEID_DOCKERS['xxl-job'].enable is not defined or SOURCEID_DOCKERS['xxl-job'].enable) %}yes{% else %}no{% endif %}"
 
-xxl_job_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms358m -Xmx358m{% elif CLUSTER_SCALE == 'single' %}-Xms358m -Xmx358m{% else %}-Xms358m -Xmx358m{% endif %}"
+xxl_job_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms358m -Xmx358m{% elif CLUSTER_SCALE == 'single' %}-Xms358m -Xmx358m{% elif CLUSTER_SCALE == 'small' %}-Xms358m -Xmx358m{% else %}-Xms358m -Xmx358m{% endif %}"
 
 xxl_job_configs: []
 
@@ -27,5 +27,22 @@ deploy_conf_defaults:
       requests:
         cpu: 256m
         memory: 512Mi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 0.5
+        memory: 512Mi
+      requests:
+        cpu: 0.5
+        memory: 256Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 0.5
+        memory: 512Mi
+      requests:
+        cpu: 0.5
+        memory: 256Mi
 xxl_job_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

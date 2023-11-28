@@ -366,7 +366,7 @@ def changeip_thread(data):
     edit_netfile(data)
     if (old_ip == new_ip):
         logging.info("changeip: old_ip equals new_ip, only restart network")
-        if ".an8" in output_uname or  ".oe2203" in output_uname :
+        if ".an8" in output_uname or  ".oe2203" in output_uname  or  ".ky10" in output_uname:
             os.system('systemctl restart NetworkManager.service && sleep 2 && nmcli networking off && sleep 2 && nmcli networking on  &&  systemctl restart docker')
         else:
             os.system('systemctl restart network')    
@@ -387,7 +387,7 @@ def changeip_thread(data):
     # os.system('sed -i "s/oldIp/' + old_ip + '/g" ' + filepath)
     # os.system('sed -i "s/newIp/' + new_ip + '/g" ' + filepath)
     logging.info("changeip: restart network start."+output_uname)
-    if ".an8" in output_uname or  ".oe2203" in output_uname :
+    if ".an8" in output_uname or  ".oe2203" in output_uname  or  ".ky10" in output_uname:
         logging.info("changeip: restart network start. nmcli networking off && nmcli networking on")
         restart_network_status_code = int(os.system('systemctl restart NetworkManager.service && sleep 2 && nmcli networking off && sleep 2 && nmcli networking on &&  systemctl restart docker'))
     else:
@@ -407,7 +407,7 @@ def changeip_thread(data):
             stop_script_status_code))
     #serverUser = submit_info['serverUser']
     serverPwd = data['serverPwd']
-
+    serverUser = data['serverUser']
     ssh_known_hosts_path = "/root/.ssh/known_hosts"
     if os.path.isfile(ssh_known_hosts_path):
         logging.info("changeip:start clean known_hosts contents")
@@ -417,7 +417,7 @@ def changeip_thread(data):
     time.sleep(1)
     logging.info("changeip: start shell_change_ip.")
     #os.system('sh /etc/kad/api/changeip.sh ' + old_ip + ' ' + new_ip)
-    shell_change_ip(serverPwd, old_ip, new_ip)
+    shell_change_ip(serverUser,serverPwd, old_ip, new_ip)
     logging.info("changeip: end shell_change_ip.")
     # change_mongoip = True
     # while change_mongoip:
@@ -904,13 +904,14 @@ def pod_running_check():
     return flag
 
 
-def shell_change_ip(serverPwd, old_ip, new_ip):
+def shell_change_ip(serverUser,serverPwd, old_ip, new_ip):
     try:
-        logging.debug("shell_change_ip: shell_change_ip is start.")
+        logging.debug("shell_change_ip: shell_change_ip is start")
         #只重启业务组件
         password = serverPwd
         # spawn启动reconfig程序
-        shell_cmd = 'sh /opt/kad/changeip.sh ' + old_ip + ' ' + new_ip + ' Web_changeIp'
+        shell_cmd = 'sh /opt/kad/changeip.sh ' + old_ip + ' ' + new_ip + ' Web_changeIp ' +serverUser
+        logging.debug(shell_cmd)
         process = pexpect.spawn('/bin/bash', ['-c', shell_cmd])
         # expect方法等待scp产生的输出，判断是否匹配指定的字符串Password:
         process.expect('password:')

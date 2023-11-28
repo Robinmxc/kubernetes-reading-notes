@@ -85,6 +85,6 @@
       remote_src: yes
 
 - name: rpm install for node
-  shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2 {{inventory_hostname not in groups.kube_master}}"
+  shell: "{{ base_dir }}/down/rpms/rpminstall.sh 2 {{inventory_hostname != groups.deploy[0]}}"
   no_log: false
   ignore_errors: false

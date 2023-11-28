@@ -1,0 +1,49 @@
+
+FACADE_ENABLE: "{% if SOURCEID_DOCKERS['application-facade'] is defined and (SOURCEID_DOCKERS['application-facade'].enable is not defined or SOURCEID_DOCKERS['application-facade'].enable) %}yes{% else %}no{% endif %}"
+
+facade_java_opt: "{% if CLUSTER_SCALE == 'normal' or  CLUSTER_SCALE == 'basic' %}-Xms2867m -Xmx2867m{% elif CLUSTER_SCALE == 'single' or  CLUSTER_SCALE == 'single-basic' %}-Xms2150m -Xmx2150m{% else %}-Xms2150m -Xmx2150m{% endif %}"
+
+facade_configs: []
+
+facade_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 4
+        memory: 4Gi
+      requests:
+        cpu: 2
+        memory: 2Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 3Gi
+      requests:
+        cpu: 512m
+        memory: 2Gi
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 4
+        memory: 4Gi
+      requests:
+        cpu: 2
+        memory: 2Gi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 3Gi
+      requests:
+        cpu: 512m
+        memory: 2Gi
+facade_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

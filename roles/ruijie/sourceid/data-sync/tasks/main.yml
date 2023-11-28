@@ -23,7 +23,7 @@
       - config
     replace: path="{{ config_base_dir }}/sourceid/data-sync/conf/application.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-      - { regexp: "^feign.sso.base.url=.*$", replace: "feign.sso.base.url=http://rg-sso.{{ APP_NAMESPACE }}.svc/cas" }
+      - { regexp: "^feign.sso.base.url=.*$", replace: "feign.sso.base.url=http://rg-sso.{{ APP_NAMESPACE }}.svc/{{ CAS_SUFFIX }}" }
     no_log: true
     when: 'SOURCEID_DOMAIN_MODE == "single"'
 

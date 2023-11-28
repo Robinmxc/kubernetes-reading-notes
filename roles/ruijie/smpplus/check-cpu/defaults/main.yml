@@ -4,7 +4,7 @@ cpu_required:
     node: 1
   normal:
     master: 8
-    node: 32
+    node: 16
   single:
     master: 16
     node: 16

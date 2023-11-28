@@ -26,5 +26,22 @@ deploy_conf_defaults:
       requests:
         cpu: 200m
         memory: 256Mi
-
+  basic:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 1
+        memory: 512Mi
+      requests:
+        cpu: 500m
+        memory: 256Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 200m
+        memory: 256Mi
 license_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

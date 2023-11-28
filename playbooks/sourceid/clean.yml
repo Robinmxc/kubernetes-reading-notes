@@ -105,6 +105,12 @@
     command: "kubectl delete -f {{ yaml_dir }}/fgm-backend/"
     when: '"rg-fgm-backend" in pod_info.stdout'
 
+  - name: 停止 application-facade
+    tags:
+    - application-facade
+    command: "kubectl delete -f {{ yaml_dir }}/application-facade/"
+    when: '"rg-application-facade" in pod_info.stdout'
+
   - name: 停止 groupview
     tags:
       - groupview
@@ -187,13 +193,13 @@
     tags:
       - freeradius
     command: "kubectl delete -f {{ yaml_dir }}/freeradius/"
-    when: 'pod_info.stdout is search("rg-freeradius-[a-z0-9]*-[a-z0-9]*\s")'
+    when: '"rg-freeradius" in pod_info.stdout'
 
   - name: 停止 rg-authentication-validate
     tags:
       - rg-authentication-validate
     command: "kubectl delete -f {{ yaml_dir }}/rg-authentication-validate/"
-    when: 'pod_info.stdout is search("rg-authentication-validate-[a-z0-9]*-[a-z0-9]*\s")'
+    when: '"rg-authentication-validate"  in pod_info.stdout'
 
   - name: 停止 rg-pcapture
     tags:
@@ -244,6 +250,15 @@
     delay: 3
     ignore_errors: true
 
+  - name: 等待application-facade结束运行
+    tags:
+    - application-facade
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-application-facade" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
 
   - name: 等待frontend结束运行
     tags:
@@ -513,7 +528,7 @@
       - freeradius
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
-    until: 'pod_info.stdout is not search("rg-freeradius-[a-z0-9]*-[a-z0-9]*\s")'
+    until: '"rg-freeradius" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
@@ -523,7 +538,7 @@
       - rg-authentication-validate
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
-    until: 'pod_info.stdout is not search("rg-authentication-validate-[a-z0-9]*-[a-z0-9]*\s")'
+    until: '"rg-authentication-validate" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true

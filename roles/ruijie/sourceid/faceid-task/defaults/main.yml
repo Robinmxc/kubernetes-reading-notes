@@ -1,7 +1,7 @@
 
 FACEID_TASK_ENABLE: "{% if SOURCEID_DOCKERS['faceid-task'] is defined and (SOURCEID_DOCKERS['faceid-task'].enable is not defined or SOURCEID_DOCKERS['faceid-task'].enable) %}yes{% else %}no{% endif %}"
 
-faceid_task_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms2867m -Xmx2867m{% elif CLUSTER_SCALE == 'single' %}-Xms2150m -Xmx2150m{% else %}-Xms2150m -Xmx2150m{% endif %}"
+faceid_task_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms2867m -Xmx2867m{% elif CLUSTER_SCALE == 'single' %}-Xms2150m -Xmx2150m{%  elif CLUSTER_SCALE == 'small' %}-Xms2150m -Xmx2150m{% else %}-Xms800m -Xmx1600m{% endif %}"
 
 faceid_task_configs: []
 
@@ -28,5 +28,22 @@ deploy_conf_defaults:
       requests:
         cpu: 512m
         memory: 2Gi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
 faceid_task_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

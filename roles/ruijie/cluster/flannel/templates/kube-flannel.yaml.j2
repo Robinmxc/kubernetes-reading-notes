@@ -176,7 +176,7 @@ spec:
         - name: EVENT_QUEUE_DEPTH
           value: "5000"
         - name: KUBERNETES_SERVICE_HOST
-          value: "{{ groups.deploy[0] }}"
+          value: "{{ KUBE_MASTER_VIP }}"
         - name: KUBERNETES_SERVICE_PORT
           value: "6443"          
         volumeMounts:

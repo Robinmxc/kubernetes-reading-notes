@@ -87,7 +87,7 @@ spec:
           failureThreshold: 40
           httpGet:
 {% if SOURCEID_DOMAIN_MODE == "single" %}
-            path: /cas/liveProbe
+            path: /{{ CAS_SUFFIX }}/liveProbe
 {% else %}
             path: /liveProbe
 {% endif %}
@@ -101,7 +101,7 @@ spec:
           failureThreshold: 3
           httpGet:
 {% if SOURCEID_DOMAIN_MODE == "single" %}
-            path: /cas/liveProbe
+            path: /{{ CAS_SUFFIX }}/liveProbe
 {% else %}
             path: /liveProbe
 {% endif %}
@@ -115,7 +115,7 @@ spec:
           failureThreshold: 5
           httpGet:
 {% if SOURCEID_DOMAIN_MODE == "single" %}
-            path: /cas/liveProbe
+            path: /{{ CAS_SUFFIX }}/liveProbe
 {% else %}
             path: /liveProbe
 {% endif %}
@@ -215,14 +215,14 @@ spec:
             port:
               number: 80
 {% if SOURCEID_DOMAIN_MODE == "single" %}
-      - path: /cas/public
+      - path: /{{ CAS_SUFFIX }}/public
         pathType: Prefix
         backend:
           service:
             name: rg-gate
             port:
               number: 80
-      - path: /cas/linkid
+      - path: /{{ CAS_SUFFIX }}/linkid
         pathType: Prefix
         backend:
           service:
@@ -245,7 +245,7 @@ spec:
             port:
               number: 80
 {% if SOURCEID_DOMAIN_MODE == "single" %}
-      - path: /cas
+      - path: /{{ CAS_SUFFIX }}
 {% else %}
       - path: /
 {% endif %}

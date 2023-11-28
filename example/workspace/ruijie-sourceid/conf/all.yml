@@ -55,3 +55,5 @@ SOURCEDATA_MYSQL_PWD: ""
 
 # 行业环境：self:本体, university:高教, general-education:普教, enterprise:企业
 INDUSTRY_TYPE: "university"
+
+mongdb_cluster_mode: "psa"

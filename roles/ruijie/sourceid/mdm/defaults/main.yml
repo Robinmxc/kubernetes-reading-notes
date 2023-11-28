@@ -2,9 +2,9 @@ MDM_ENABLE: "{% if SOURCEID_DOCKERS['mdm'] is defined and (SOURCEID_DOCKERS['mdm
 
 DOP_ENABLE: "{% if SOURCEID_DOCKERS['dop'] is defined and (SOURCEID_DOCKERS['dop'].enable is not defined or SOURCEID_DOCKERS['dop'].enable) %}yes{% else %}no{% endif %}"
 
-dop_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms480m -Xmx480m{% elif CLUSTER_SCALE == 'single' %}-Xms480m -Xmx480m{% else %}-Xms480m -Xmx480m{% endif %}"
+dop_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms480m -Xmx480m{% elif CLUSTER_SCALE == 'single' %}-Xms480m -Xmx480m{% elif CLUSTER_SCALE == 'small' %}-Xms480m -Xmx480m{% else %}-Xms358m -Xmx358m{% endif %}"
 
-mdm_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'single' %}-Xms1792m -Xmx1792m{% else %}-Xms1792m -Xmx1792m{% endif %}"
+mdm_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'single' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'small' %}-Xms1792m -Xmx1792m{% else %}-Xms800m -Xmx1600m{% endif %}"
 
 mdm_configs: []
 
@@ -35,7 +35,63 @@ deploy_conf_defaults:
       requests:
         cpu: 500m
         memory: 1Gi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+dop_deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 512Mi
+      requests:
+        cpu: 1
+        memory: 512Mi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 512Mi
+      requests:
+        cpu: 1
+        memory: 512Mi
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 512Mi
+      requests:
+        cpu: 0.5
+        memory: 256Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 512Mi
+      requests:
+        cpu: 0.5
+        memory: 256Mi        
 mdm_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
 
-dop_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+dop_deploy_conf: '{{ dop_deploy_conf_defaults[CLUSTER_SCALE] }}'
