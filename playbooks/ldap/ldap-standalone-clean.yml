@@ -15,7 +15,7 @@
           - openldap-clients
         state: absent
       ignore_errors: true
-
+      no_log: true
     - name: 确认目录存在
       file:
         path: "{{ ldap_backup_dir }}"
