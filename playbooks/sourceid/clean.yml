@@ -195,6 +195,12 @@
     command: "kubectl delete -f {{ yaml_dir }}/rg-authentication-validate/"
     when: 'pod_info.stdout is search("rg-authentication-validate-[a-z0-9]*-[a-z0-9]*\s")'
 
+  - name: 停止 rg-pcapture
+    tags:
+      - pcapture
+    command: "kubectl delete -f {{ yaml_dir }}/pcapture/"
+    when: '"rg-pcapture" in pod_info.stdout'
+
   - name: 停止 rocketmq
     tags:
       - rocketmq
@@ -518,6 +524,16 @@
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: 'pod_info.stdout is not search("rg-authentication-validate-[a-z0-9]*-[a-z0-9]*\s")'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待pcapture结束运行
+    tags:
+      - pcapture
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-pcapture" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
