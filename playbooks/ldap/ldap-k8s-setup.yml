@@ -1,5 +1,13 @@
 - hosts:
     - ldap
+  tasks:
+    - name: 环境检测
+      fail:
+        msg: "k8s开启高可用集群模式时不支持ldap高可用模式"
+      when: '"" != KUBE_MASTER_VIP and DEPLOY_MODE == "multi-master" and (groups.ldap | length >= 2)'
+
+- hosts:
+    - ldap
   any_errors_fatal: true
   vars_files:
     - "/etc/kad/config.yml"

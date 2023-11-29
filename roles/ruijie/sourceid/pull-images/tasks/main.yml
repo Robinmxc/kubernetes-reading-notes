@@ -36,7 +36,7 @@
   register: imgages_info
 
 - name: 获取已下载的镜像文件信息
-  command: "ls {{ img_download_dir }}"
+  command: "ls -1 {{ img_download_dir }}"
   register: download_info
 
 - name: 加载镜像文件
@@ -46,7 +46,7 @@
     img_id_ver: "{{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS[comp_name].name }}:{{ docker_version }}"
     img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
   command: 'docker load -i {{ img_download_dir }}/{{ img_file_name }}'
-  when: '"" != docker_version and img_file_name  in download_info.stdout and img_id_ver not in imgages_info.stdout'
+  when: '"" != docker_version and img_file_name  in download_info.stdout_lines and img_id_ver not in imgages_info.stdout_lines'
   with_items: "{{ SOURCEID_DOCKERS }}"
 
 - name: 重新获取docker已加载的镜像信息
@@ -73,7 +73,7 @@
     img_id_ver: "{{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS[comp_name].name }}:{{ docker_version }}"
     img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
   command: 'docker pull {{ img_id_ver }}'
-  when: '"" != docker_version and img_id_ver not in imgages_info.stdout and img_file_name not in download_info.stdout'
+  when: '"" != docker_version and img_id_ver not in imgages_info.stdout_lines and img_file_name not in download_info.stdout_lines'
   with_items: "{{ SOURCEID_DOCKERS }}"
 
 - name: 保存镜像文件
@@ -83,6 +83,6 @@
     img_id_ver: "{{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS[comp_name].name }}:{{ docker_version }}"
     img_file_name: "{{ comp_name }}-{{ docker_version }}.tar"
   command: 'docker save -o {{ img_download_dir }}/{{ img_file_name }} {{ img_id_ver }}'
-  when: '"" != docker_version and img_file_name not in download_info.stdout'
+  when: '"" != docker_version and img_file_name not in download_info.stdout_lines'
   with_items: "{{ SOURCEID_DOCKERS }}"
 

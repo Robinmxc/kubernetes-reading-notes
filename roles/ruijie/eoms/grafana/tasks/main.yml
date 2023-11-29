@@ -62,11 +62,11 @@
 
   - name: 安装grafana
     yum: name={{ DEST_FILE_PATH }}/{{ grafana_file }} disable_gpg_check=Yes state=present
-    when: "Kylin"  not in  ansible_distribution
+    when: '"Kylin"  not in  ansible_distribution'
 
   - name: 安装grafana
     shell: "rpm -ivh {{ DEST_FILE_PATH }}/{{ grafana_file }} --force --nodeps"
-    when: "Kylin"  in  ansible_distribution
+    when: '"Kylin"  in  ansible_distribution'
 
   - name: 解压 grafana 插件
     shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ grafana_plugin_file }} -C /var/lib/grafana/plugins >/dev/null"
