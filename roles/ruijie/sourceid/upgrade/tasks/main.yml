@@ -139,6 +139,7 @@
       - "sourceid/rg-flow"
       - "sourceid/address-book"
       - "sourceid/auth-extend"
+      - "sourceid/pcapture"
     connection: local
 
   - name: 配置文件自动比对、同步

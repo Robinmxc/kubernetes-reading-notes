@@ -1,69 +1,26 @@
----
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: license-admin
-  namespace: {{ APP_NAMESPACE }}
-rules:
-  - apiGroups:
-      - ""
-    resources:
-      - pods
-      - nodes
-      - namespaces
-    verbs:
-      - get
-      - list
-      - watch
-
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: license-admin-binding
-  namespace: {{ APP_NAMESPACE }}
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: license-admin
-subjects:
-  - kind: ServiceAccount
-    name: license
-    namespace: {{ APP_NAMESPACE }}
-
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: license
-  namespace: {{ APP_NAMESPACE }}
-
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rg-license
+  name: {{ pcapture_node_name }}
   namespace: {{ APP_NAMESPACE }}
   labels:
-    k8s-app: rg-license
+    k8s-app: {{ pcapture_node_name }}
 spec:
-  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 0
+      maxUnavailable: 1
+  replicas: {{ deploy_conf.replicas }}
   selector:
     matchLabels:
-      k8s-app: rg-license
+      k8s-app: {{ pcapture_node_name }}
   template:
     metadata:
       labels:
-        k8s-app: rg-license
+        k8s-app: {{ pcapture_node_name }}
     spec:
-      serviceAccountName: license
-      imagePullSecrets:
-      - name: regsecret
+      hostNetwork: true
 {%if SKYWALKING["enable"] %}
       initContainers:
       - name: init-agent
@@ -77,40 +34,47 @@ spec:
           mountPath: /skywalking/agent
 {% endif %}
       containers:
-      - name: rg-license
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.license.name }}:{{ SOURCEID_DOCKERS.license.version }}
+      - name: rg-pcapture
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["pcapture"].name }}:{{ SOURCEID_DOCKERS["pcapture"].version }}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
         - name: JAVA_AGENT_EXT
           value: {{ SKYWALKING.JAVA_AGENT_EXT }}
         - name: SW_AGENT_NAME
-          value: {{ SKYWALKING.AGENT_PREFIX }}-license
+          value: {{ SKYWALKING.AGENT_PREFIX }}-pcapture
         - name: SW_AGENT_NAMESPACE
           value: {{ SKYWALKING.NAMESPACE }}
         - name: SW_GRPC_LOG_SERVER_HOST
           value: {{ SKYWALKING.SERVER_HOST }}
         - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
-          value: {{ SKYWALKING.SERVER_HOST }}:11800          
+          value: {{ SKYWALKING.SERVER_HOST }}:11800
 {% endif %}
-        - name: JAVA_OPT_EXT
-          value: "{{ license_java_opt }}"
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+        resources:
+          limits:
+            cpu: {{ deploy_conf.resources.limits.cpu }}
+            memory: {{ deploy_conf.resources.limits.memory }}
+          requests:
+            cpu: {{ deploy_conf.resources.requests.cpu }}
+            memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}
         ports:
-        - containerPort: 8080
+        - containerPort: 10000
         volumeMounts:
-        - mountPath: /ruijie/sourceid/license/conf
+        - mountPath: /ruijie/sourceid/pcapture/conf
           name: conf
         - mountPath: /logs
           name: logpath
         - mountPath: /skywalking/agent
           name: agent
 
-{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["license"] is not defined or HEALTH_CHECK["license"])  %}
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["pcapture"] is not defined or HEALTH_CHECK["pcapture"])  %}
         startupProbe:
           failureThreshold: 20
           httpGet:
-            path: /license/liveProbe
-            port: 8080
+            path: /pcapture/liveProbe
+            port: 10000
             scheme: HTTP
           periodSeconds: 5
           successThreshold: 1
@@ -119,28 +83,30 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /license/liveProbe
-            port: 8080
+            path: /pcapture/liveProbe
+            port: 10000
             scheme: HTTP
           periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 1
-          
+
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /license/liveProbe
-            port: 8080
+            path: /pcapture/liveProbe
+            port: 10000
             scheme: HTTP
           periodSeconds: 30
           successThreshold: 1
           timeoutSeconds: 1
 {% endif %}
 
+      imagePullSecrets:
+      - name: regsecret
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/sourceid/license/conf
+            path: {{ config_base_dir }}/sourceid/pcapture/conf
         - name: logpath
           hostPath:
             path: {{ config_base_dir }}/logs
@@ -151,12 +117,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rg-license
+  name: {{ pcapture_node_name }}
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    k8s-app: rg-license
+    k8s-app: {{ pcapture_node_name }}
   ports:
   - port: 80
-    targetPort: 8080
-
+    targetPort: 10000
