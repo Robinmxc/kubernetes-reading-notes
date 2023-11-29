@@ -6,7 +6,15 @@ ssh_user=${serverUser}
 if	[[ "$ssh_user" == "" ]];then
     ssh_user=$(id -nu $SUDO_UID)
 fi
-
+RED='\033[0;31m'
+NC='\033[0m' # 恢复默认颜色
+who=`whoami`
+if [[ ${who} != "root" ]];then
+	  set -e
+    echo -e "${RED}当前登录用户:${ssh_user},需要sudo -i后执行安装${NC}"
+		set +e
+    exit 1
+fi
 ssh_port=$(grep -oP "(?<=Port ).*" /etc/ssh/sshd_config)
 sed -i "s/^#*remote_port.*/remote_port = $ssh_port/"  /opt/kad/ansible.cfg
 export PATH=$PATH:/usr/local/bin/
