@@ -3,9 +3,10 @@ osname=(`uname -r`)
 result=$(echo $osname | grep ".el7.x86_64")
 input=${1} 
 ssh_user=${serverUser}
-if	[[ "$result" == "" ]];then
+if	[[ "$ssh_user" == "" ]];then
     ssh_user=$(id -nu $SUDO_UID)
 fi
+
 ssh_port=$(grep -oP "(?<=Port ).*" /etc/ssh/sshd_config)
 sed -i "s/^#*remote_port.*/remote_port = $ssh_port/"  /opt/kad/ansible.cfg
 export PATH=$PATH:/usr/local/bin/
