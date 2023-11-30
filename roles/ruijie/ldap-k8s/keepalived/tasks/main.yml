@@ -8,7 +8,12 @@
   - name: 设置负载均衡网卡
     set_fact: LDAP_ACCESS_IF="{{ if_info.stdout }}"
 
-  - name: crontab清理eepalived服务拉起脚本
+  - name: 准备文件
+    file: name={{ item }} state=touch
+    with_items:
+    - "/var/spool/cron/root"
+
+  - name: crontab清理keepalived服务拉起脚本
     shell: sed -i '/keepalived_up/d' /var/spool/cron/root
     ignore_errors: true
 
