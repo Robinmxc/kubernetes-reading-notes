@@ -34,7 +34,7 @@
     - config
   lineinfile:
     dest: "{{ config_base_dir }}/sourceid/gate/conf/application.yml"
-    insertafter: 'svc/cas/api'
+    insertafter: 'svc/{{ CAS_SUFFIX }}/api'
     line: "{{ item }}"
   with_items:
     - '      casimages_placeholder5'
@@ -81,8 +81,8 @@
     insertafter: 'port: 80'
     line: "{{ item }}"
   with_items:
-    - '  servlet:'
     - '    context-path: /{{ SELF_SUFFIX }}'
+    - '  servlet: '
   when: 'SOURCEID_DOMAIN_MODE == "single"'
 
 
