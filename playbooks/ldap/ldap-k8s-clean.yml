@@ -53,7 +53,8 @@
 
     - name: 清理keepalived配置
       shell: sed -i '/keepalived_up/d' /var/spool/cron/root
-
+      ignore_errors: true
+      
     - name: 停止keepalived服务
       service: name=keepalived state=stopped enabled=no
       ignore_errors: true

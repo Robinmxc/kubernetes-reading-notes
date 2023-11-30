@@ -43,8 +43,8 @@
   - name: crontab添加keepalived服务拉起脚本
     shell: echo '* * * * * /etc/keepalived/keepalived_up.sh' >> /var/spool/cron/root
 
-  - name: 开机启用keepalived服务
-    shell: systemctl enable keepalived
-
-  - name: 启动keepalived服务
-    shell: systemctl start keepalived
+  - name: 启动服务
+    service: name={{ item }} state=started enabled=yes
+    with_items:
+      - keepalived
+    ignore_errors: true

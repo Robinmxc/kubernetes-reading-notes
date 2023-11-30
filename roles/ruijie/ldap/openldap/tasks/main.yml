@@ -146,7 +146,6 @@
   - "ppolicy_overlay.ldif"
   - "disable_anon.ldif"
   - "db-index.ldif"
-  - "db-directory.ldif"
   - "olcAccess.ldif"
   - "limits.ldif"
   - "limits2.ldif"
@@ -175,9 +174,6 @@
   - "inetorgperson.ldif"
   - "sid_user.ldif"
   ignore_errors: true
-
-- name: 添加索引
-  shell: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /etc/openldap/db-index.ldif
 
 - name: 导入基础域名
   tags:
@@ -325,8 +321,8 @@
     - name: 启动slap服务
       shell: systemctl start slapd
 
-    - name: 再次校准mdb文件
-      shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/openldap/db-directory.ldif
+    - name: 添加索引同时校准配置文件
+      shell: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /etc/openldap/db-index.ldif
 
 - name: 设置定时清理Berkeley DB Logs
   file:
