@@ -21,6 +21,8 @@ cd /opt/kad/down/
 tar -xvf /opt/kad/down/rarlinux-x64-5.3.0.tar.gz >/dev/null 2>&1
 cd /opt/kad/down/rar
 make >/dev/null 
+rm -rf /usr/bin/unrar
+cp /usr/local/bin/unrar /usr/bin/
 chmod 777 /opt/kad/*.sh 
 chmod 777 /opt/kad/inventory/kad-workspace.py
 if [ ! -d "/opt/kad/workspace" ]; then
