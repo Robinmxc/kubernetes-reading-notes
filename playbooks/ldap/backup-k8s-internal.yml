@@ -4,6 +4,14 @@
   vars_files:
     - "/etc/kad/config.yml"
   tasks:
+    - name: 获取ldap服务状态
+      shell: "kubectl get pod -n {{ APP_NAMESPACE }} | grep 'openldap' | wc -l"
+      register: pod_count
+
+    - name: 获取ldap服务状态
+      fail: msg="ldap服务不存在，请检查配置及环境"
+      when: ' "0" == pod_count.stdout'
+
     - name: ldap备份默认路径
       debug:
         msg: "{{ ldap_backup_dir }}/{{ ldap_backup_file }}"

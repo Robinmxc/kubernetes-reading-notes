@@ -1,7 +1,7 @@
-- name: 独立部署
-  when: "LDAP['LDAP_MODE']  == 'standalone'"
-  import_playbook: ldap-standalone-setup.yml
-
 - name: K8S部署
   when: "LDAP['LDAP_MODE']  == 'k8s'"
   import_playbook: ldap-k8s-setup.yml
+
+- name: 独立部署
+  when: "LDAP['LDAP_MODE']  == 'standalone'"
+  import_playbook: ldap-standalone-setup.yml
