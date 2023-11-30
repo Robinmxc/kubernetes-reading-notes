@@ -18,8 +18,8 @@
     when: ("Kylin"  in  ansible_distribution )  
 
   - name: 配置 chrony server 
-    template: src=server-anolis.conf.j2 dest=/etc/chrony.conf
-    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
+    template: src=server-openEuler.conf.j2 dest=/etc/chrony.conf
+    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")  
 
   - name: 启动 chrony server
     service: name=chronyd state=restarted enabled=yes
