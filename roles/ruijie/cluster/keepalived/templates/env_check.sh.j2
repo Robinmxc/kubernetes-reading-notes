@@ -1,30 +1,9 @@
 #!/bin/bash
 set -x
-flag=1
-services=(docker)
-for service in  ${services[@]}
-do
-	serviceInfo=$(systemctl status $service  2>&1 | grep Active)
-	result=$?
-	if [ $result == 0 ]
-	then
-		if [[ "$serviceInfo" =~ "running" ]]
-		then
-			flag=0
-		else
-			flag=0
-		fi
-	else
-		flag=0
-	fi
-done
-# kubelet不正常时不做状态检测，防止环境初始化中不存在虚IP
-serviceInfo=$(systemctl status kubelet  2>&1 | grep Active)
+serviceInfo=$(systemctl status keepalived  2>&1 | grep Active)
 result=$?
 if [ $result != 0 ]
-		flag=1
+   echo `date`': start keepalived' >> /var/log/keepalived.log
+   systemctl start keepalived
 fi
-if [ $flag  == 0 ];then
-   echo `date`':  keepalived is not healthy, try to killall keepalived' >> /var/log/keepalived.log
-   killall keepalived
-fi
+
