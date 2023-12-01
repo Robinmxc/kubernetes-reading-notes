@@ -14,7 +14,7 @@
   - name: 设置keepalived配置文件
     template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
 
-  - name: 设置nginx存活检测脚本
+  - name: 设置keepalived存活检测脚本
     template: src=env_check.sh.j2 dest=/etc/keepalived/env_check.sh mode=755
 
   - name: 开机启用keepalived服务
@@ -22,3 +22,6 @@
 
   - name: 启动keepalived服务
     shell: systemctl restart keepalived
+
+  - name: crontab添加keepalived服务拉起脚本
+    shell: echo '* * * * * /etc/keepalived/env_check.sh' >> /var/spool/cron/root
