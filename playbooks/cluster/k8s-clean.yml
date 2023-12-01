@@ -136,7 +136,7 @@
   - name: 查询chronyd状态
     shell: "systemctl list-units *.service"
     register: svc_info
-    when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat" or "Anolis"  in  ansible_distribution or "openEuler"  in  ansible_distribution or "Kylin"  in  ansible_distribution
+    when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat" or "UOS"  in  ansible_distribution  or "Anolis"  in  ansible_distribution or "openEuler"  in  ansible_distribution or "Kylin"  in  ansible_distribution
 
   - name: stop and disable chronyd in CentOS/RedHat/Anolis/openEuler
     service: name=chronyd state=stopped enabled=no

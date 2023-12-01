@@ -11,15 +11,15 @@
 
   - name: 配置 chrony server 
     template: src=server-anolis.conf.j2 dest=/etc/chrony.conf
-    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
+    when: ("Anolis"  in  ansible_distribution or "UOS"  in  ansible_distribution)
 
   - name: 配置 chrony server 
     template: src=server-ky10.conf.j2 dest=/etc/chrony.conf
     when: ("Kylin"  in  ansible_distribution )  
 
   - name: 配置 chrony server 
-    template: src=server-anolis.conf.j2 dest=/etc/chrony.conf
-    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
+    template: src=server-openEuler.conf.j2 dest=/etc/chrony.conf
+    when: ("openEuler"  in  ansible_distribution)  
 
   - name: 启动 chrony server
     service: name=chronyd state=restarted enabled=yes
@@ -36,7 +36,7 @@
 
   - name: 配置 chrony client
     template: src=client-anolis.conf.j2 dest=/etc/chrony.conf
-    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
+    when: ("Anolis"  in  ansible_distribution  or "UOS"  in  ansible_distribution)
 
   - name: 配置 chrony client
     template: src=client-ky10.conf.j2 dest=/etc/chrony.conf
@@ -44,14 +44,14 @@
 
   - name: 配置 chrony client
     template: src=client-openEuler.conf.j2 dest=/etc/chrony.conf
-    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")  
+    when: ("openEuler"  in  ansible_distribution)  
 
   - name: 启动 chrony client 
     service: name=chronyd state=restarted enabled=yes
 
   - name: 配置 rsyslog 
     template: src=rsyslog.conf dest=/etc/rsyslog.conf
-    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")  
+    when: ("openEuler"  in  ansible_distribution)  
 
   - name: 立即同步时间
     shell: "chronyc makestep"
@@ -79,7 +79,7 @@
    && systemctl restart crond
    && systemctl restart rsyslog"
   ignore_errors: true
-  when: ("Anolis"  in  ansible_distribution)
+  when: ("Anolis"  in  ansible_distribution or "UOS"  in  ansible_distribution)
 
 - name: 设置时区、更新硬件时钟、重启时间变动会影响到的服务
   shell: "timedatectl set-timezone Asia/Shanghai
@@ -90,7 +90,7 @@
    && systemctl restart crond
    && systemctl restart rsyslog"
   ignore_errors: true
-  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")  
+  when: ("openEuler"  in  ansible_distribution )  
 
   
 - name: 设置时区、更新硬件时钟、重启时间变动会影响到的服务

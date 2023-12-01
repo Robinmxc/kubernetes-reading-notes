@@ -12,11 +12,11 @@
 
   - name: 安装influxdb
     shell: "rpm -ivh   {{ DEST_FILE_PATH }}/{{ influxdb_file }} --force --nodeps "
-    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or "Kylin"  in  ansible_distribution or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")   
+    when: "openEuler"  in  ansible_distribution  or "Kylin"  in  ansible_distribution or "UOS"  in  ansible_distribution or  "Anolis"  in  ansible_distribution  
 
   - name: influxdb系统修复脚本
     shell: "chmod +7777 {{ DEST_FILE_PATH }}/influxd;\\cp -rpf {{ DEST_FILE_PATH }}/influxd  /usr/bin/;\\cp -rpf {{ DEST_FILE_PATH }}/influxdb.service /etc/systemd/system/;systemctl daemon-reload;"  
-    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or "Kylin"  in  ansible_distribution or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
+    when: "openEuler"  in  ansible_distribution or "Kylin"  in  ansible_distribution or "UOS"  in  ansible_distribution or  "Anolis"  in  ansible_distribution
 
   - name: 自动配置
     tags:

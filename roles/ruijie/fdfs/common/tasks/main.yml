@@ -164,7 +164,7 @@
   shell: "sed -i 's/-Werror//g' /usr/local/src/nginx-1.20.1/auto/cc/*"
   args:
     chdir: "{{ FDFS_SRC_PATH }}/nginx-{{ fastdfs_nginx_version }}"
-  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22" and "/usr/local/nginx/sbin/nginx" is not exists) 
+  when: ("openEuler"  in  ansible_distribution   and "/usr/local/nginx/sbin/nginx" is not exists) 
    
 - name: 安装nginx
   shell: "./configure --add-module={{ FDFS_SRC_PATH }}/fastdfs-nginx-module-{{ fastdfs_nginx_module_version }}/src && make && make install"
