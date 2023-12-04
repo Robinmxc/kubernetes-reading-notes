@@ -11,20 +11,30 @@ osname=(`uname -r`)
 release_an8_dir="4.19.91-26.an8.x86_64"
 release_oe2203_dir="5.10.0-153.12.0.92.oe2203sp2.x86_64"
 release_el7_dir="3.10.0-957.el7.x86_64"
+release_uos_1060a_dir="4.19.0-91.82.152.uelc20.x86_64"
+release_uos_1060e_dir="4.19.90-2305.1.0.0199.56.uel20.x86_64"
 mkdir -p /opt/kad/down/rpms/${release_an8_dir}
 mkdir -p /opt/kad/down/rpms/${release_oe2203_dir}
 mkdir -p /opt/kad/down/rpms/${release_el7_dir}
 result=$(echo $osname | grep ".oe2203" | grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_oe2203_dir} != "$osname" ]];then
-	ln -s /opt/kad/down/rpms/${release_oe2203_dir} /opt/kad/down/rpms/${osname}
+	ln -s /opt/kad/down/rpms/${release_oe2203_dir} /opt/kad/down/rpms/${osname}  > /dev/null 2>&1
 fi
 result=$(echo $osname | grep ".an8"| grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_an8_dir} != "$osname" ]];then
-	ln -s /opt/kad/down/rpms/${release_an8_dir} /opt/kad/down/rpms/${osname}
+	ln -s /opt/kad/down/rpms/${release_an8_dir} /opt/kad/down/rpms/${osname}  > /dev/null 2>&1
+fi
+result=$(echo $osname | grep ".uelc20"| grep ".x86_64")
+if	[[ "$result" != "" ]] && [[ ${release_an8_dir} != "$osname" ]];then
+	ln -s /opt/kad/down/rpms/4.19.91-26.an8.x86_64 /opt/kad/down/rpms/${osname}   > /dev/null 2>&1
+fi
+result=$(echo $osname | grep ".uel20"| grep ".x86_64")
+if	[[ "$result" != "" ]] && [[ ${release_oe2203_dir} != "$osname" ]];then
+	ln -s /opt/kad/down/rpms/${release_oe2203_dir} /opt/kad/down/rpms/${osname}   > /dev/null 2>&1
 fi
 result=$(echo $osname | grep ".el7"| grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_el7_dir} != "$osname" ]];then
-	ln -s /opt/kad/down/rpms/${release_el7_dir} /opt/kad/down/rpms/${osname}
+	ln -s /opt/kad/down/rpms/${release_el7_dir} /opt/kad/down/rpms/${osname}  > /dev/null 2>&1
 fi
 mkdir -p cd /opt/kad/down/rpms/${osname}
 cd /opt/kad/down/rpms/${osname}
@@ -126,7 +136,7 @@ function mongo_tool(){
 function commonInstall(){
 	echo "commonInstall call"
 	echo "参数 2：仅安装用于现场  3:下载并安装（特定场景） 4:清理 当前参数${mode}"
-	rpms=(git  sshpass  wget unzip libpcap tcpdump net-tools iptables-services ipset-libs ipset ipvsadm tcl bash-completion  rsyslog  \
+	rpms=(git  sshpass  wget unzip libpcap tcpdump net-tools  tcl bash-completion  rsyslog  \
 		oniguruma polkit psmisc rsync socat  make  nfs-utils cyrus-sasl keepalived)
 	for var in ${rpms[@]};
 	do
@@ -222,16 +232,14 @@ function AnolisOS_python3_module(){
 	rpm -qa|grep python36|xargs rpm -ev --allmatches --nodeps  > /dev/null 2>&1
     yum remove -y python2 > /dev/null 2>&1
 }
-function AnolisOS(){
-	echo "AnolisOS call"
+
+function Uos_AnolisOS(){
+	mode=2
+	#为了减少包大小，直接调用龙溪安装脚本，不进行下载
+	echo "Uos_AnolisOS call"
 	AnolisOS_python3_module
-	if [[ ${mode} == 3 ]];then
-		yum -y install yum-utils 
-		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-		#yum -y copr enable copart/restic 
-	fi
 	commonInstall
-	rpms=(tar jq python39 wntp epel-release unzip)
+	rpms=(libffi tar jq python39 wntp epel-release unzip)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
@@ -251,24 +259,59 @@ function AnolisOS(){
 	ansibleInstall
 	kubernetes_process
 }
-function ky10_python3(){
-	rm -rf /usr/bin/python39
-	rm -rf /usr/bin/pip3
-	rm -rf /usr/local/python3
-	mkdir -p /usr/local/python3/
-	tar -xvf /opt/kad/down/rpms/4.19.90-52.15.v2207.ky10.x86_64/python39/python3.tar -C /usr/local/python3
-	cp /usr/local/python3/bin/python3.9 /usr/bin/python39
-	cp /usr/local/python3/bin/pip3 /usr/bin/pip3
-}	
-function ky10(){
-	echo "ky10 call"
+function AnolisOS(){
+	echo "AnolisOS call"
+	AnolisOS_python3_module
+	if [[ ${mode} == 3 ]];then
+		yum -y install yum-utils 
+		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+		#yum -y copr enable copart/restic 
+	fi
 	commonInstall
-	rpms=(perl gc  libtool-ltdl guile  tar jq ansible ntp  chrony.x86_64)
+	rpms=( tar jq python39 wntp epel-release unzip iptables-services ipset-libs ipset ipvsadm)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
 	done
-	ky10_python3
+	rm -rf /usr/local/bin/pip3
+	cp -r /usr/bin/pip3 /usr/local/bin/pip3
+	pip3s=(pyyaml simplejson)
+	for var in ${pip3s[@]};
+	do
+		pipOperator $var
+	done
+	mongo_tool
+	if [[ ${mode} == 3 ]];then
+	 	rpm -ivh http://mirrors.wlnmp.com/centos/wlnmp-release-centos.noarch.rpm
+		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+	fi
+	ansibleInstall
+	kubernetes_process
+}
+function common_python3(){
+	rm -rf /usr/bin/python39
+	rm -rf /usr/bin/pip3
+	rm -rf /usr/local/python3
+	mkdir -p /usr/local/python3/
+	tar -xvf /opt/kad/down/rpms/common/python39/python3.tar -C /usr/local/python3
+	cp /usr/local/python3/bin/python3.9 /usr/bin/python39
+	cp /usr/local/python3/bin/pip3 /usr/bin/pip3
+}	
+function common_ansible(){
+	set -e
+	rpm -ivh /opt/kad/down/rpms/common/ansible/*.rpm --force --nodeps
+	set +e
+}	
+function ky10(){
+	echo "ky10 call"
+	commonInstall
+	rpms=(perl gc  libtool-ltdl guile  tar jq  ntp  chrony.x86_64 iptables-services ipset-libs ipset ipvsadm)
+	for var in ${rpms[@]};
+	do
+		rpmOperator $var
+	done
+	common_python3
+	common_ansible
 	pip3s=(pyyaml simplejson)
 	for var in ${pip3s[@]};
 	do
@@ -277,6 +320,28 @@ function ky10(){
 	mongo_tool
 	kubernetes_process_ky10
 }
+function Uos_openEulerOs(){
+	echo "openEulerOs call"
+	if [[ ${mode} == 3 ]];then
+		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/OS/x86_64/
+		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/everything/x86_64/
+		rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-openEuler
+		yum-config-manager --add-repo https://repo.huaweicloud.com/docker-ce/linux/centos/docker-ce.repo
+		sed -i 's/$releasever/8/g' /etc/yum.repos.d/docker-ce.repo
+	fi
+	commonInstall
+	rpms=(libffi tar jq  ntp  chrony.x86_64)
+	for var in ${rpms[@]};
+	do
+		rpmOperator $var
+	done
+	common_python3
+	common_ansible
+	mongo_tool
+	ansibleInstall
+	kubernetes_process
+}
+
 function openEulerOs(){
 	echo "openEulerOs call"
 	if [[ ${mode} == 3 ]];then
@@ -287,7 +352,7 @@ function openEulerOs(){
 		sed -i 's/$releasever/8/g' /etc/yum.repos.d/docker-ce.repo
 	fi
 	commonInstall
-	rpms=(tar jq python39 ntp  chrony.x86_64)
+	rpms=(libffi tar jq python39 ntp  chrony.x86_64 iptables-services ipset-libs ipset ipvsadm)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
@@ -306,7 +371,7 @@ function centos7(){
 		yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	fi
 	commonInstall
-	rpms=(python3 ntp  chrony.x86_64 ansible)
+	rpms=(python3 ntp  chrony.x86_64 ansible iptables-services ipset-libs ipset ipvsadm)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
@@ -333,6 +398,14 @@ fi
 result=$(echo $osname | grep ".an8"| grep ".x86_64")
 if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
 	AnolisOS
+fi
+result=$(echo $osname | grep ".uelc20"| grep ".x86_64")
+if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
+	Uos_AnolisOS
+fi
+result=$(echo $osname | grep ".uel20"| grep ".x86_64")
+if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
+	Uos_openEulerOs
 fi
 result=$(echo $osname | grep ".el7.x86_64")
 if	[[ "$result" != "" ]];then
