@@ -10,7 +10,7 @@
     - config
   vars:
     cas_server_url_name: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/{{ CAS_SUFFIX }}{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
-    cas_server_url:  '{% if "" != CUSTOMIZE_SUFFIX %}{{ SOURCEID_SSO_URL }}/{{ CUSTOMIZE_SUFFIX }}{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
+    cas_server_url:  '{% if "" != SELF_SUFFIX %}{{ SOURCEID_SSO_URL }}/{{ SELF_SUFFIX }}{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
   replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
     - {regexp: "^cas.server.name=.*$", replace: "cas.server.name={{ cas_server_url_name }}"}
@@ -42,6 +42,15 @@
   with_items:
     - { regexp: "^server.context-path.*$", replace: "server.context-path{{ eq }}/{{ CAS_SUFFIX }}" }
     - { regexp: "^cas.authn.pac4j.cas.*.loginUrl=.*$", replace: "cas.authn.pac4j.cas[0].loginUrl{{ eq }}{{ SOURCEID_SSO_URL }}/{{ adapter_suffix }}" }
+  no_log: true
+  when: 'SOURCEID_DOMAIN_MODE == "single"'
+
+- name: 单域名配置2
+  tags:
+    - config
+  replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+    - {regexp: "/public/client", replace: "${front.server.addr}/public/client"}
   no_log: true
   when: 'SOURCEID_DOMAIN_MODE == "single"'
 

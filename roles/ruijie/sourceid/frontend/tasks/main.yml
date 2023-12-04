@@ -8,10 +8,13 @@
 - name: 修改配置文件
   tags:
     - config
+  vars:
+    self_path: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_FRONTEND_URL }}/{{ SELF_SUFFIX }}{% else %}{{ SOURCEID_FRONTEND_URL }}{% endif %}'
+    sso_path: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/{{ CAS_SUFFIX }}{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
   replace: path="{{ config_base_dir }}/sourceid/frontend/deploy/domain/domain.json" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-    - {regexp: "http[s]{0,1}://gate.test.com", replace: "{{ SOURCEID_FRONTEND_URL }}"}
-    - {regexp: "http[s]{0,1}://service.test.com", replace: "{{ SOURCEID_SSO_URL }}"}
+    - {regexp: "http[s]{0,1}://gate.test.com", replace: "{{ self_path }}"}
+    - {regexp: "http[s]{0,1}://service.test.com", replace: "{{ sso_path }}"}
   no_log: true
 
 - name: 单域名配置

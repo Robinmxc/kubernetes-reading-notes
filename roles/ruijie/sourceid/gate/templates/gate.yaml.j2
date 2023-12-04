@@ -80,7 +80,7 @@ spec:
         startupProbe:
           failureThreshold: 20
           httpGet:
-            path: /liveProbe
+            path: {%if "" != SELF_SUFFIX %}/{{ SELF_SUFFIX }}{% endif %}/liveProbe
             port: 80
             scheme: HTTP
           periodSeconds: 5
@@ -90,7 +90,7 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /liveProbe
+            path: {%if "" != SELF_SUFFIX %}/{{ SELF_SUFFIX }}{% endif %}/liveProbe
             port: 80
             scheme: HTTP
           periodSeconds: 5
@@ -100,7 +100,7 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /liveProbe
+            path: {%if "" != SELF_SUFFIX %}/{{ SELF_SUFFIX }}{% endif %}/liveProbe
             port: 80
             scheme: HTTP
           periodSeconds: 30

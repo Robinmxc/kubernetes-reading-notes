@@ -167,6 +167,11 @@ metadata:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       rewrite ^/{{ CUSTOMIZE_SUFFIX }}/(.*)$ /$1;
 {% endif %}
+{% if '' != CAS_SUFFIX %}
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^/{{ CAS_SUFFIX }}/public/(.*)$ /{{ SELF_SUFFIX }}/public/$1;
+{% endif %}
 spec:
   ingressClassName: nginx
 {% if 'https' == ingress_mode %}
