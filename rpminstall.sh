@@ -12,24 +12,29 @@ release_an8_dir="4.19.91-26.an8.x86_64"
 release_oe2203_dir="5.10.0-153.12.0.92.oe2203sp2.x86_64"
 release_el7_dir="3.10.0-957.el7.x86_64"
 release_uos_1060a_dir="4.19.0-91.82.152.uelc20.x86_64"
+release_uos_1060e_dir="4.19.90-2305.1.0.0199.56.uel20.x86_64"
 mkdir -p /opt/kad/down/rpms/${release_an8_dir}
 mkdir -p /opt/kad/down/rpms/${release_oe2203_dir}
 mkdir -p /opt/kad/down/rpms/${release_el7_dir}
 result=$(echo $osname | grep ".oe2203" | grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_oe2203_dir} != "$osname" ]];then
-	ln -s /opt/kad/down/rpms/${release_oe2203_dir} /opt/kad/down/rpms/${osname}
+	ln -s /opt/kad/down/rpms/${release_oe2203_dir} /opt/kad/down/rpms/${osname}  > /dev/null 2>&1
 fi
 result=$(echo $osname | grep ".an8"| grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_an8_dir} != "$osname" ]];then
-	ln -s /opt/kad/down/rpms/${release_an8_dir} /opt/kad/down/rpms/${osname}
+	ln -s /opt/kad/down/rpms/${release_an8_dir} /opt/kad/down/rpms/${osname}  > /dev/null 2>&1
 fi
 result=$(echo $osname | grep ".uelc20"| grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_an8_dir} != "$osname" ]];then
-	ln -s /opt/kad/down/rpms/4.19.91-26.an8.x86_64 /opt/kad/down/rpms/${osname} 
+	ln -s /opt/kad/down/rpms/4.19.91-26.an8.x86_64 /opt/kad/down/rpms/${osname}   > /dev/null 2>&1
+fi
+result=$(echo $osname | grep ".uel20"| grep ".x86_64")
+if	[[ "$result" != "" ]] && [[ ${release_oe2203_dir} != "$osname" ]];then
+	ln -s /opt/kad/down/rpms/${release_oe2203_dir} /opt/kad/down/rpms/${osname}   > /dev/null 2>&1
 fi
 result=$(echo $osname | grep ".el7"| grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_el7_dir} != "$osname" ]];then
-	ln -s /opt/kad/down/rpms/${release_el7_dir} /opt/kad/down/rpms/${osname}
+	ln -s /opt/kad/down/rpms/${release_el7_dir} /opt/kad/down/rpms/${osname}  > /dev/null 2>&1
 fi
 mkdir -p cd /opt/kad/down/rpms/${osname}
 cd /opt/kad/down/rpms/${osname}
@@ -283,24 +288,30 @@ function AnolisOS(){
 	ansibleInstall
 	kubernetes_process
 }
-function ky10_python3(){
+function common_python3(){
 	rm -rf /usr/bin/python39
 	rm -rf /usr/bin/pip3
 	rm -rf /usr/local/python3
 	mkdir -p /usr/local/python3/
-	tar -xvf /opt/kad/down/rpms/4.19.90-52.15.v2207.ky10.x86_64/python39/python3.tar -C /usr/local/python3
+	tar -xvf /opt/kad/down/rpms/common/python39/python3.tar -C /usr/local/python3
 	cp /usr/local/python3/bin/python3.9 /usr/bin/python39
 	cp /usr/local/python3/bin/pip3 /usr/bin/pip3
+}	
+function common_ansible(){
+	set -e
+	rpm -ivh /opt/kad/down/rpms/common/ansible/*.rpm --force --nodeps
+	set +e
 }	
 function ky10(){
 	echo "ky10 call"
 	commonInstall
-	rpms=(perl gc  libtool-ltdl guile  tar jq ansible ntp  chrony.x86_64 iptables-services ipset-libs ipset ipvsadm)
+	rpms=(perl gc  libtool-ltdl guile  tar jq  ntp  chrony.x86_64 iptables-services ipset-libs ipset ipvsadm)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
 	done
-	ky10_python3
+	common_python3
+	common_ansible
 	pip3s=(pyyaml simplejson)
 	for var in ${pip3s[@]};
 	do
@@ -309,6 +320,28 @@ function ky10(){
 	mongo_tool
 	kubernetes_process_ky10
 }
+function Uos_openEulerOs(){
+	echo "openEulerOs call"
+	if [[ ${mode} == 3 ]];then
+		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/OS/x86_64/
+		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/everything/x86_64/
+		rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-openEuler
+		yum-config-manager --add-repo https://repo.huaweicloud.com/docker-ce/linux/centos/docker-ce.repo
+		sed -i 's/$releasever/8/g' /etc/yum.repos.d/docker-ce.repo
+	fi
+	commonInstall
+	rpms=(libffi tar jq  ntp  chrony.x86_64)
+	for var in ${rpms[@]};
+	do
+		rpmOperator $var
+	done
+	common_python3
+	common_ansible
+	mongo_tool
+	ansibleInstall
+	kubernetes_process
+}
+
 function openEulerOs(){
 	echo "openEulerOs call"
 	if [[ ${mode} == 3 ]];then
@@ -319,7 +352,7 @@ function openEulerOs(){
 		sed -i 's/$releasever/8/g' /etc/yum.repos.d/docker-ce.repo
 	fi
 	commonInstall
-	rpms=(tar jq python39 ntp  chrony.x86_64 iptables-services ipset-libs ipset ipvsadm)
+	rpms=(libffi tar jq python39 ntp  chrony.x86_64 iptables-services ipset-libs ipset ipvsadm)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
@@ -369,6 +402,10 @@ fi
 result=$(echo $osname | grep ".uelc20"| grep ".x86_64")
 if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
 	Uos_AnolisOS
+fi
+result=$(echo $osname | grep ".uel20"| grep ".x86_64")
+if	[[ "$result" != "" ]]&& [[ "True" == "$needExec" ]];then
+	Uos_openEulerOs
 fi
 result=$(echo $osname | grep ".el7.x86_64")
 if	[[ "$result" != "" ]];then
