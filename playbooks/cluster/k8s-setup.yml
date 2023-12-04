@@ -59,37 +59,36 @@
   - ruijie/cluster/docker
 
   tasks:
+  - name: 检查syslog是否存在
+    stat:
+      path: /etc/logrotate.d/syslog
+    register: syslog_status
+
   - name: 查询系统日志自动滚动机制
     shell: "cat /etc/logrotate.d/syslog"
     register: syslog_info
     ignore_errors: true
-    when: ("Anolis"  in  ansible_distribution  or "UOS"  in  ansible_distribution)
+    when: syslog_status.stat.exists  
 
   - name: 设置系统日志自动滚动机制
     shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/syslog"
-    when: ("'dateext' not in syslog_info.stdout" and ("Anolis"  in  ansible_distribution or "UOS"  in  ansible_distribution)
+    when: syslog_status.stat.exists and "'dateext' not in syslog_info.stdout"
     ignore_errors: true
+
+  - name: 检查rsyslog是否存在
+    stat:
+      path: /etc/logrotate.d/rsyslog
+    register: rsyslog_status
 
   - name: 查询系统日志自动滚动机制
     shell: "cat /etc/logrotate.d/rsyslog"
-    register: syslog_info
+    register:  rsyslog_info
     ignore_errors: true
-    when: ("openEuler"  in  ansible_distribution)  
+    when: rsyslog_status.stat.exists  
 
   - name: 设置系统日志自动滚动机制
     shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/rsyslog"
-    when: ("'dateext' not in syslog_info.stdout" and "openEuler"  in  ansible_distribution)
-    ignore_errors: true
-
-  - name: 查询系统日志自动滚动机制
-    shell: "cat /etc/logrotate.d/rsyslog"
-    register: syslog_info
-    ignore_errors: true
-    when: ("Kylin"  in  ansible_distribution )  
-
-  - name: 设置系统日志自动滚动机制
-    shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/rsyslog"
-    when: ("'dateext' not in syslog_info.stdout" and "Kylin"  in  ansible_distribution)
+    when: rsyslog_status.stat.exists and "'dateext' not in rsyslog_info.stdout"
     ignore_errors: true
 
 
