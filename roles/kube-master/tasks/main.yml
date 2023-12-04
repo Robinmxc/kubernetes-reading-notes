@@ -83,11 +83,11 @@
       until: 'pod_info.stdout is not search("coredns-[a-z0-9]*-[a-z0-9]*\s")'
       retries: 30
       delay: 3
-      ignore_errors: true  
+      ignore_errors: true
 
     - name: coredns节点
       command: "kubectl create -f /opt/kube/kube-system/coredns/"
-      
+
   delegate_to: "{{ groups.deploy[0] }}"
   run_once: True
   tags: upgrade_k8s, restart_master
@@ -114,6 +114,19 @@
   ignore_errors: true
   tags: upgrade_k8s
 
+- name: 配置{{ BASIC_AUTH_USER }}用户rbac权限
+  template: src=basic-auth-rbac.yaml.j2 dest=/opt/kube/basic-auth-rbac.yaml
+  when: 'BASIC_AUTH_ENABLE == "yes"'
+  delegate_to: "{{ groups.deploy[0] }}"
+  run_once: true
+  tags: restart_master
+
+- name: 创建{{ BASIC_AUTH_USER }}用户rbac权限
+  shell: "kubectl apply -f /opt/kube/basic-auth-rbac.yaml"
+  when: 'BASIC_AUTH_ENABLE == "yes"'
+  delegate_to: "{{ groups.deploy[0] }}"
+  run_once: true
+  tags: restart_master
 
 # 支持kubectl命令自动补全
 - name: 支持kubectl命令自动补全
@@ -121,8 +134,7 @@
 
 - name: 配置db端口挂载清理任务
   shell: "chmod +777 /opt/kad/tools/db-port-clean.sh && touch /var/spool/cron/root && sed -i '/db-port-clean.sh/d' /var/spool/cron/root && echo '40 2 * * *  sh /opt/kad/tools/db-port-clean.sh' >> /var/spool/cron/root"
-  connection: local
   run_once: true
-  tags: restart_master 
+  tags: restart_master
 
 # 如果node节点也包括在master节点中,设置该节点可以调度pod

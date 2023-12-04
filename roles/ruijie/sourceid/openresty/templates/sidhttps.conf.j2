@@ -1,0 +1,55 @@
+upstream sidssl {
+   {% for host in KUBE_NEW_NODE_HOSTS %}
+    server {{ host }}:443 max_fails=3 fail_timeout=60s;
+   {% endfor %}
+
+}
+
+server {
+    listen 80;
+  {% if SOURCEID_SSO_DOMAIN == SOURCEID_GATE_DOMAIN and SOURCEID_SSO_DOMAIN == SOURCEID_ADAPTER_DOMAIN %}
+   server_name {{ SOURCEID_SSO_DOMAIN }} {{ SOURCEID_MYAPP_DOMAIN }};
+  {% else %}
+   server_name {{ SOURCEID_SSO_DOMAIN }} {{ SOURCEID_GATE_DOMAIN }} {{ SOURCEID_ADAPTER_DOMAIN }} {{ SOURCEID_MYAPP_DOMAIN }};
+  {% endif %}
+   access_log /usr/local/openresty/nginx/logs/{{ SOURCEID_SSO_DOMAIN }}_access.log main;
+   error_log /usr/local/openresty/nginx/logs/{{ SOURCEID_SSO_DOMAIN }}_error.log;
+
+    # HTTP重定向到HTTPS
+    rewrite ^(.*)$  https://$host$1  permanent;
+}
+
+server {
+    listen 443 ssl;
+  {% if SOURCEID_SSO_DOMAIN == SOURCEID_GATE_DOMAIN and SOURCEID_SSO_DOMAIN == SOURCEID_ADAPTER_DOMAIN %}
+   server_name {{ SOURCEID_SSO_DOMAIN }} {{ SOURCEID_MYAPP_DOMAIN }};
+  {% else %}
+   server_name {{ SOURCEID_SSO_DOMAIN }} {{ SOURCEID_GATE_DOMAIN }} {{ SOURCEID_ADAPTER_DOMAIN }} {{ SOURCEID_MYAPP_DOMAIN }};
+  {% endif %}
+   access_log /usr/local/openresty/nginx/logs/{{ SOURCEID_SSO_DOMAIN }}_ssl_access.log main;
+   error_log /usr/local/openresty/nginx/logs/{{ SOURCEID_SSO_DOMAIN }}_ssl_error.log;
+
+   ssl on;
+  {% for f in ingress_ssl_names %}
+    ssl_certificate  {{ ingress_ca_dir }}/{{ f }}.pem;
+    ssl_certificate_key {{ ingress_ca_dir }}/{{ f }}-key.pem;
+  {% endfor %}
+    ssl_session_cache shared:le_nginx_SSL:1m;
+    ssl_session_timeout 1440m;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+
+
+
+    location / {
+        proxy_pass  https://sidssl;
+        proxy_redirect off;
+        proxy_set_header   X-Real-IP        $remote_addr;
+        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto    $scheme;
+        proxy_set_header   Host             $host;
+    }    
+}
+
+
+

@@ -203,7 +203,7 @@
 - name: 密码策略配置
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f /etc/openldap/schema/ppolicy.ldif'
   ignore_errors: true
-  when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8") or "Kylin"  in  ansible_distribution 
+  when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8") or "Kylin"  in  ansible_distribution
 
 - name: 加载ppolicy模块
   shell: ldapsearch -Y EXTERNAL -H ldapi:/// -b 'cn=module{0},cn=config'
@@ -233,15 +233,14 @@
 
 - name: 调整索引数据最大条目限制
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/limits2.ldif
-  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")  or "Kylin"  in  ansible_distribution 
-
+when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")  or "Kylin"  in  ansible_distribution
 - name: tls加密开启
   shell: chmod 644 /etc/pki/tls/ldapserver*
-  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8") or "Kylin"  in  ansible_distribution 
+  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8") or "Kylin"  in  ansible_distribution
 
 - name: tls加密开启
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/add-tls.ldif
-  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8") or "Kylin"  in  ansible_distribution 
+  when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8") or "Kylin"  in  ansible_distribution
 
 - name: 设置ldap默认的ssl加密算法
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/tls1.2.ldif
@@ -280,7 +279,7 @@
     template:
       src: 'master_node_openEuler.j2'
       dest: /etc/openldap/master_node.ldif
-    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")  or "Kylin"  in  ansible_distribution 
+    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22") or  ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")  or "Kylin"  in  ansible_distribution
 
   - name: 导入双主配置文件
     vars:
