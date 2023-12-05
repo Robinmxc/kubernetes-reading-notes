@@ -7,6 +7,8 @@
     register: actual_data_path_info
 
   - name: Backing up mongo update-replset.js
+    vars:
+      actual_data_path: '{{ actual_data_path_info.stdout }}'
     copy:
       src: "{{ item }}"
       dest: "{{ item }}temp"
@@ -14,9 +16,13 @@
     - "{{ actual_data_path }}/ruijie/ruijie-smpplus/mongodb/init/smpplus/rg-init-db/update-replset.js"
 
   - name: change mongo old_ip
+    vars:
+      actual_data_path: '{{ actual_data_path_info.stdout }}'
     shell: 'sed -i "s/oldIp/{{ old_ip }}/g" {{ actual_data_path }}/ruijie/ruijie-smpplus/mongodb/init/smpplus/rg-init-db/update-replset.js'
 
   - name: change mongo new_ip
+    vars:
+      actual_data_path: '{{ actual_data_path_info.stdout }}'
     shell: 'sed -i "s/newIp/{{ new_ip }}/g" {{ actual_data_path }}/ruijie/ruijie-smpplus/mongodb/init/smpplus/rg-init-db/update-replset.js'
 
   - name: 等待mongo运行
@@ -30,4 +36,6 @@
     shell: 'kubectl exec -n ruijie-smpplus mongo1-0 -- mongo -u admin -p {{ MONGODB_ADMIN_PWD }}  --authenticationDatabase admin  /ruijie/init/smpplus/rg-init-db/update-replset.js'
 
   - name: revert mongo update-replset.js
+    vars:
+      actual_data_path: '{{ actual_data_path_info.stdout }}'
     shell: 'mv {{ actual_data_path }}/ruijie/ruijie-smpplus/mongodb/init/smpplus/rg-init-db/update-replset.jstemp {{ actual_data_path }}/ruijie/ruijie-smpplus/mongodb/init/smpplus/rg-init-db/update-replset.js'
