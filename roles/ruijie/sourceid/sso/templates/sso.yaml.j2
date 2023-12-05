@@ -171,6 +171,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       rewrite ^/{{ CAS_SUFFIX }}/public/(.*)$ /{{ SELF_SUFFIX }}/public/$1;
+      rewrite ^/((?!{{ CAS_SUFFIX }}).*\\.txt)$ /{{ CAS_SUFFIX }}/$1;
 {% endif %}
 spec:
   ingressClassName: nginx
@@ -268,6 +269,13 @@ spec:
             name: rg-sso
             port:
               number: 80
+      - backend:
+          service:
+            name: rg-sso
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
 {% endif %}
 ---
 
