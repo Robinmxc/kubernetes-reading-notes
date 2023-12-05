@@ -236,7 +236,7 @@
 
 - name: tls加密开启
   shell: chmod 644 /etc/pki/tls/ldapserver*
-  when: ("openEuler" in ansible_distribution or "UOS" in ansible_distribution or "Anolis" in ansible_distribution or "Kylin" in ansible_distribution) 
+  when: ("openEuler" in ansible_distribution or "UOS" in ansible_distribution or "Anolis" in ansible_distribution or "Kylin" in ansible_distribution)
 
 - name: tls加密开启
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/add-tls.ldif
