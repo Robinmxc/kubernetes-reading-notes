@@ -3,7 +3,7 @@
   when: 'LDAP_ENABLE == "no"'
 
 - name: 检查LDAP是否安装
-  when: ("Anolis"  in  ansible_distribution  or "UOS"  in  ansible_distribution or ((ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and ansible_distribution_major_version == "7") or "Kylin"  in  ansible_distribution)
+  when: ("Anolis"  in  ansible_distribution  or "UOS"  in  ansible_distribution or ansible_distribution == "CentOS"  or "Kylin"  in  ansible_distribution)
   block:
     - name: 检查ldap的服务状态
       stat: 

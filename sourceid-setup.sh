@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 #rpmDirs=$(ls /opt/kad/down/rpms/)
 #for loop in ${rpmDirs[*]}
 #do
@@ -30,6 +30,8 @@ if [ ! -d "/opt/kad/workspace" ]; then
   chmod -R o-w /opt/kad/workspace
   chmod -R o-r /opt/kad/workspace
 fi
+unlink /usr/bin/kad-play  >/dev/null 2>&1
+rm -rf /usr/bin/kad-play  >/dev/null 2>&1
 if [ ! -f "/usr/bin/kad-play" ]; then
   ln -s /opt/kad/kad-play.sh /usr/bin/kad-play
 fi

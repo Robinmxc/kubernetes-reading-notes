@@ -9,7 +9,7 @@ disk_required:
     node: 400
   single:
     master: 10
-    node: 10
+    node: 400
   basic:
     master: 10
     node: 400
