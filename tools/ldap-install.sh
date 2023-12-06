@@ -9,7 +9,7 @@ mkdir -p ${dir}/${release_an8_dir}
 mkdir -p ${dir}/${release_oe2203_dir}
 mkdir -p ${dir}/${release_el7_dir}
 mkdir -p ${dir}/${release_ky10_dir}
-result=$(echo $osname | grep ".oe2203" | grep ".x86_64" | grep ".ky10")
+result=$(echo $osname | grep ".oe2203" | grep ".x86_64")
 if	[[ "$result" != "" ]];then
     if  [[ ${release_oe2203_dir} != "$osname" ]];then
 	    ln -s ${dir}/${release_oe2203_dir} ${dir}/${osname}

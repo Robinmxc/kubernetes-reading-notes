@@ -16,7 +16,10 @@
   - name: 解压 slapd 安装包
     shell: "tar -zxvf {{ DEST_FILE_PATH }}/{{ ldap_file }} -C {{ DATA_DIR }}/slapd >/dev/null"
 
-  - name: 安装 rpm
+  - name: 安装 slap前修改文件执行权限
+    shell: "chmod +777 {{ DATA_DIR }}/slapd/ldap/ldap-install.sh"
+
+  - name: 安装 slapd
     shell: "{{ DATA_DIR }}/slapd/ldap/ldap-install.sh {{ DATA_DIR }}/slapd/ldap"
 
   - name: 注册ldap数据库类型
