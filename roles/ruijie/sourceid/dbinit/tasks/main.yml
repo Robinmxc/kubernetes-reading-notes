@@ -87,8 +87,9 @@
 
   - name: 修改域名
     vars:
-      serviceId: '(http|https)://{{ SOURCEID_GATE_DOMAIN }}.*'
-    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({update:"cas-service-registry", updates:[{q:{clientId:"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}, u:{$set:{"serviceId":"{{ serviceId }}", "logoutUrl":"{{ SOURCEID_FRONTEND_URL }}/logout"}}}]})'''
+      serviceId: '(http|https)://{{ SOURCEID_GATE_DOMAIN }}{% if "" != SELF_SUFFIX %}/{{ SELF_SUFFIX }}{% else %}{% endif %}.*'
+      logout_url: '{% if "" != SELF_SUFFIX %}{{ SOURCEID_FRONTEND_URL }}/{{ SELF_SUFFIX }}{% else %}{{ SOURCEID_FRONTEND_URL }}{% endif %}'
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({update:"cas-service-registry", updates:[{q:{clientId:"OC4wNS4wNS4wNy4wMC4wMy4wMS4wMS4w"}, u:{$set:{"serviceId":"{{ serviceId }}", "logoutUrl":"{{ logout_url }}/logout"}}}]})'''
     when: 'SOURCEID_FRONTEND_URL not in mongo_result.stdout'
     register: mongo_result
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'

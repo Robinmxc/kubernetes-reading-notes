@@ -192,28 +192,14 @@ spec:
             name: rg-frontend
             port:
               number: 80
-      - path: /channel/login
+      - path: {%if "" != SELF_SUFFIX %}/{{ SELF_SUFFIX }}{% endif %}/channel/login
         pathType: Prefix
         backend:
           service:
             name: rg-frontend
             port:
               number: 80
-      - path: /channel/oauth2.0/authorize
-        pathType: Prefix
-        backend:
-          service:
-            name: rg-frontend
-            port:
-              number: 80
-      - path: /channel/login
-        pathType: Prefix
-        backend:
-          service:
-            name: rg-frontend
-            port:
-              number: 80
-      - path: /channel/oauth2.0/authorize
+      - path: {%if "" != SELF_SUFFIX %}/{{ SELF_SUFFIX }}{% endif %}/channel/oauth2.0/authorize
         pathType: Prefix
         backend:
           service:
