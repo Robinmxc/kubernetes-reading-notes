@@ -339,3 +339,5 @@
   shell: sed -i '/db_archive/d' /var/spool/cron/root
 - name: 添加数据库备份
   shell: echo '0 4 * * * db_archive -d -h {{ ldap_customer_data_dir }}' >> /var/spool/cron/root
+- name: 重新启动slap服务
+  shell: systemctl restart slapd
