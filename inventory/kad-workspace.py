@@ -209,7 +209,11 @@ def parse_host_data(workspace_dir):
             group_all_vars["CLUSTER_SCALE"] = "single"
         else:
             group_all_vars["CLUSTER_SCALE"] = "normal"
-
+    if app_namespace == "ruijie-sourceid":
+        if deploy_mode == "allinone":
+            group_all_vars["CLUSTER_SCALE"] = "single-basic"
+        else:
+            group_all_vars["CLUSTER_SCALE"] = "basic"
     if "MONGODB_NODEPORT" not in group_all_vars:
         group_all_vars["MONGODB_NODEPORT"] = ""
 
