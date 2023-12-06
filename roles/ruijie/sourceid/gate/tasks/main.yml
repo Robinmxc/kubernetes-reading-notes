@@ -92,6 +92,7 @@
   replace: path="{{ config_base_dir }}/sourceid/gate/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
     - {regexp: "rg-frontend.ruijie-sourceid.svc", replace: "rg-frontend.ruijie-sourceid.svc/{{ SELF_SUFFIX }}"}
+    - {regexp: "^defaulturl:.*$", replace: "defaulturl: ${server.servlet.context-path}/cas-success/index.html"}
   no_log: true
   when: 'SOURCEID_DOMAIN_MODE == "single"'
 
