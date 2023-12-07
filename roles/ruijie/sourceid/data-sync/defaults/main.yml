@@ -1,6 +1,6 @@
 DATA_SYNC_ENABLE: "{% if SOURCEID_DOCKERS['data-sync'] is defined and (SOURCEID_DOCKERS['data-sync'].enable is not defined or SOURCEID_DOCKERS['data-sync'].enable) %}yes{% else %}no{% endif %}"
 
-data_sync_java_opt: "{% if CLUSTER_SCALE == 'normal' or  CLUSTER_SCALE == 'basic'  %}-Xms1075m -Xmx1075m{% elif CLUSTER_SCALE == 'single' or  CLUSTER_SCALE == 'single-basic'  %}-Xms1075m -Xmx1075m{% else %}-Xms1075m -Xmx1075m{% endif %}"
+data_sync_java_opt: "{% if CLUSTER_SCALE == 'normal'  %}-Xms1075m -Xmx1075m{% elif CLUSTER_SCALE == 'single'   %}-Xms1075m -Xmx1075m{% elif CLUSTER_SCALE == 'small'  %}-Xms1075m -Xmx1075m{% elif CLUSTER_SCALE == 'basic'  %}-Xms800m -Xmx1600m{% else %}-Xms800m -Xmx800m{% endif %}"
 
 deploy_conf_defaults:
   small:
@@ -28,7 +28,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 1
-        memory: 1.5Gi
+        memory: 2Gi
       requests:
         cpu: 500m
         memory: 512Mi
@@ -36,7 +36,7 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 500m
+        cpu: 0.5
         memory: 1Gi
       requests:
         cpu: 256m

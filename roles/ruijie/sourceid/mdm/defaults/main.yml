@@ -4,7 +4,7 @@ DOP_ENABLE: "{% if SOURCEID_DOCKERS['dop'] is defined and (SOURCEID_DOCKERS['dop
 
 dop_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms480m -Xmx480m{% elif CLUSTER_SCALE == 'single' %}-Xms480m -Xmx480m{% elif CLUSTER_SCALE == 'small' %}-Xms480m -Xmx480m{% else %}-Xms358m -Xmx358m{% endif %}"
 
-mdm_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'single' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'small' %}-Xms1792m -Xmx1792m{% else %}-Xms800m -Xmx1600m{% endif %}"
+mdm_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'single' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'small' %}-Xms1792m -Xmx1792m{% else %}-Xms358m -Xmx358m{% endif %}"
 
 mdm_configs: []
 
@@ -48,11 +48,11 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 1
-        memory: 2Gi
+        cpu: 0.5
+        memory: 512Mi
       requests:
         cpu: 0.5
-        memory: 1Gi
+        memory: 256Mi   
 dop_deploy_conf_defaults:
   small:
     replicas: 1
@@ -87,7 +87,7 @@ dop_deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 1
+        cpu: 0.5
         memory: 512Mi
       requests:
         cpu: 0.5
