@@ -205,15 +205,16 @@ def parse_host_data(workspace_dir):
         group_all_vars["ingress_mode"] = "http"
 
     if "CLUSTER_SCALE" not in k8s_config:
-        if deploy_mode == "allinone":
-            group_all_vars["CLUSTER_SCALE"] = "single"
+        if app_namespace == "ruijie-sourceid":
+            if deploy_mode == "allinone":
+                group_all_vars["CLUSTER_SCALE"] = "single-basic"
+            else:
+                group_all_vars["CLUSTER_SCALE"] = "basic"
         else:
-            group_all_vars["CLUSTER_SCALE"] = "normal"
-    if app_namespace == "ruijie-sourceid":
-        if deploy_mode == "allinone":
-            group_all_vars["CLUSTER_SCALE"] = "single-basic"
-        else:
-            group_all_vars["CLUSTER_SCALE"] = "basic"
+            if deploy_mode == "allinone":
+                group_all_vars["CLUSTER_SCALE"] = "single"
+            else:
+                group_all_vars["CLUSTER_SCALE"] = "normal"
     if "MONGODB_NODEPORT" not in group_all_vars:
         group_all_vars["MONGODB_NODEPORT"] = ""
 
