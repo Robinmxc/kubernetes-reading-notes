@@ -15,4 +15,4 @@ disk_required:
     node: 400
   single-basic:
     master: 10
-    node: 10
+    node: 400
