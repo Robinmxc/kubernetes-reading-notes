@@ -10,6 +10,7 @@ osname=(`uname -r`)
 
 release_an8_dir="4.19.91-26.an8.x86_64"
 release_oe2203_dir="5.10.0-153.12.0.92.oe2203sp2.x86_64"
+release_ky10_dir="4.19.90-52.15.v2207.ky10.x86_64"
 release_el7_dir="3.10.0-957.el7.x86_64"
 release_uos_1060a_dir="4.19.0-91.82.152.uelc20.x86_64"
 release_uos_1060e_dir="4.19.90-2305.1.0.0199.56.uel20.x86_64"
@@ -29,8 +30,8 @@ if	[[ "$result" != "" ]] && [[ ${release_an8_dir} != "$osname" ]];then
 	ln -s /opt/kad/down/rpms/4.19.91-26.an8.x86_64 /opt/kad/down/rpms/${osname}   > /dev/null 2>&1
 fi
 result=$(echo $osname | grep ".uel20"| grep ".x86_64")
-if	[[ "$result" != "" ]] && [[ ${release_oe2203_dir} != "$osname" ]];then
-	ln -s /opt/kad/down/rpms/${release_oe2203_dir} /opt/kad/down/rpms/${osname}   > /dev/null 2>&1
+if	[[ "$result" != "" ]] && [[ ${release_ky10_dir} != "$osname" ]];then
+	ln -s /opt/kad/down/rpms/${release_ky10_dir} /opt/kad/down/rpms/${osname}   > /dev/null 2>&1
 fi
 result=$(echo $osname | grep ".el7"| grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_el7_dir} != "$osname" ]];then
@@ -239,7 +240,7 @@ function Uos_AnolisOS(){
 	echo "Uos_AnolisOS call"
 	AnolisOS_python3_module
 	commonInstall
-	rpms=(libffi tar jq python39 wntp epel-release unzip)
+	rpms=(libffi nettle tar jq python39 wntp epel-release unzip)
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
@@ -289,6 +290,7 @@ function AnolisOS(){
 	kubernetes_process
 }
 function common_python3(){
+	echo "common_python3执行"
 	rm -rf /usr/bin/python39
 	rm -rf /usr/bin/pip3
 	rm -rf /usr/local/python3
@@ -322,13 +324,6 @@ function ky10(){
 }
 function Uos_openEulerOs(){
 	echo "openEulerOs call"
-	if [[ ${mode} == 3 ]];then
-		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/OS/x86_64/
-		dnf config-manager --add-repo=https://mirrors.aliyun.com/openeuler/openEuler-20.03-LTS/everything/x86_64/
-		rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-openEuler
-		yum-config-manager --add-repo https://repo.huaweicloud.com/docker-ce/linux/centos/docker-ce.repo
-		sed -i 's/$releasever/8/g' /etc/yum.repos.d/docker-ce.repo
-	fi
 	commonInstall
 	rpms=(libffi tar jq  ntp  chrony.x86_64)
 	for var in ${rpms[@]};
