@@ -333,7 +333,6 @@ function Uos_openEulerOs(){
 	common_python3
 	common_ansible
 	mongo_tool
-	ansibleInstall
 	kubernetes_process
 }
 
