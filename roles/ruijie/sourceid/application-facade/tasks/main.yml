@@ -31,9 +31,9 @@
       - config
     replace: path="{{ config_base_dir }}/sourceid/application-facade/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-      - { regexp: ".svc/oauth2.0", replace: ".svc/cas/oauth2.0" }
-      - { regexp: "rg-sso/oauth2.0", replace: "rg-sso/cas/oauth2.0" }
-      - { regexp: "base-url: http://rg-sso.{{ APP_NAMESPACE }}.svc", replace: "base-url: http://rg-sso.{{ APP_NAMESPACE }}.svc/cas" }
+      - { regexp: ".svc/oauth2.0", replace: ".svc/{{ CAS_SUFFIX }}/oauth2.0" }
+      - { regexp: "rg-sso/oauth2.0", replace: "rg-sso/{{ CAS_SUFFIX }}/oauth2.0" }
+      - { regexp: "http://rg-sso.{{ APP_NAMESPACE }}.svc", replace: "http://rg-sso.{{ APP_NAMESPACE }}.svc/{{ CAS_SUFFIX }}" }
     no_log: true
     when: 'SOURCEID_DOMAIN_MODE == "single"'
 

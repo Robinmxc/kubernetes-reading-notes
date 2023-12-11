@@ -33,8 +33,10 @@ spec:
         env:
           - name: SELF_SUFFIX
             value: {{ SELF_SUFFIX }}
-          - name: SSO_PREFIX
+          - name: SSO_SUFFIX
             value: {{ CAS_SUFFIX }}
+          - name: PORTAL_SUFFIX
+            value: {{ PORTAL_SUFFIX }}
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:

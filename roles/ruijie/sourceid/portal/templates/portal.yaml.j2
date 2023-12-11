@@ -74,7 +74,7 @@ spec:
         startupProbe:
           failureThreshold: 20
           httpGet:
-            path: /portal/liveProbe
+            path: {%if "" != PORTAL_SUFFIX %}/{{ PORTAL_SUFFIX }}{% else %}/portal{% endif %}/liveProbe
             port: 9879
             scheme: HTTP
           periodSeconds: 5
@@ -84,7 +84,7 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /portal/liveProbe
+            path: {%if "" != PORTAL_SUFFIX %}/{{ PORTAL_SUFFIX }}{% else %}/portal{% endif %}/liveProbe
             port: 9879
             scheme: HTTP
           periodSeconds: 5
@@ -94,7 +94,7 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /portal/liveProbe
+            path: {%if "" != PORTAL_SUFFIX %}/{{ PORTAL_SUFFIX }}{% else %}/portal{% endif %}/liveProbe
             port: 9879
             scheme: HTTP
           periodSeconds: 30
@@ -145,14 +145,18 @@ spec:
     - host: {{ SOURCEID_MYAPP_DOMAIN }}
       http:
         paths:
+{%if "" != PORTAL_SUFFIX %}
+        - path: /{{ PORTAL_SUFFIX }}
+{% else %}
         - path: /portal
+{% endif %}
           pathType: Prefix
           backend:
             service:
               name: rg-portal
               port:
                 number: 80
-        - path: /web-page
+        - path: {%if "" != PORTAL_SUFFIX %}/{{ PORTAL_SUFFIX }}{% endif %}/web-page
           pathType: Prefix
           backend:
             service:

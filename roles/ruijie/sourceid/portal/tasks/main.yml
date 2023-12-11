@@ -19,6 +19,21 @@
       - {regexp: "name:.*$", replace: "name: {{ SOURCEID_MYAPP_URL }}"}
     no_log: true
 
+  - name: 单域名配置
+    tags:
+      - config
+    vars:
+      cas_url: '{% if CAS_SUFFIX != "" %}{{ SOURCEID_SSO_URL }}/{{ CAS_SUFFIX }}{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
+      portal_url: '{% if PORTAL_SUFFIX != "" %}{{ SOURCEID_SSO_URL }}/{{ PORTAL_SUFFIX }}{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
+    replace: path="{{ config_base_dir }}/sourceid/portal/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "url:.*$", replace: "url: {{ cas_url }}"}
+      - {regexp: "apiServer:.*$", replace: "apiServer: {{ portal_url }}"}
+      - {regexp: "name:.*$", replace: "name: {{ SOURCEID_SSO_URL }}"}
+      - {regexp: "context-path:.*$", replace: "context-path: /{{PORTAL_SUFFIX }}"}
+    no_log: true
+    when: 'SOURCEID_DOMAIN_MODE == "single"'
+
   - name: 准备部署文件目录
     tags:
       - config
