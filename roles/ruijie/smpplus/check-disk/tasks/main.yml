@@ -7,7 +7,7 @@
 - name: 检查系统盘空间
   vars:
     check_dir: "/opt"
-    space_required: '{% if "0" == deploy_state %}{{ sys_disk_required }}{% else %}80{% endif %}'
+    space_required: '{% if "0" == deploy_state %}{{ sys_disk_required }}{% else %}70{% endif %}'
   import_tasks: "../../../utils/tasks/check_disk_space.yml"
 
 - name: 检查数据盘空间

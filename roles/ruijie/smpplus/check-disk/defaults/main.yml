@@ -1,4 +1,4 @@
-sys_disk_required: 80
+sys_disk_required: 70
 
 disk_required:
   small:
