@@ -62,11 +62,6 @@
     connection: local
     run_once: true
 
-  - name: 备份tools
-    copy:
-      src: "{{ base_dir }}/tools/"
-      dest: "{{BAK_DIR}}/tools/"
-    connection: local
   
   - name: 拷贝smpplus配置文件
     vars:

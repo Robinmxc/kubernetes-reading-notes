@@ -83,12 +83,6 @@
       dest: "{{BAK_DIR}}/workspace/"
     connection: local
 
-  - name: 备份tools
-    copy:
-      src: "{{ base_dir }}/tools/"
-      dest: "{{BAK_DIR}}/tools/"
-    connection: local
-
   - name: 备份标准组件docker镜像
     shell: "docker save {{ docker_images }} -o {{BAK_DIR}}/dockerimages/dockerimages.tar"
     ignore_errors: true
