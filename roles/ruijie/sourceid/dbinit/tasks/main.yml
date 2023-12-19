@@ -95,6 +95,22 @@
     failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
     connection: local
 
+  - name: 查询数据初始化状态
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({find:"cas-service-registry", filter: {name: "5GAAA"}})'''
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+
+  - name: 修改5g域名
+    vars:
+      serviceId: '{{ SOURCEID_FRONTEND_URL }}/aaa/'
+    shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").runCommand({update:"cas-service-registry", updates:[{q:{name:"5GAAA"}, u:{$set:{"serviceId":"{{ serviceId }}.*", "logoutUrl":"{{ serviceId }}"}}}]})''; \
+        {{ mongo_shell }} --eval ''db.getSiblingDB("linkid-dev").runCommand({update:"APP_APP_SYSTEM", updates:[{q:{name:"5GAAA"}, u:{$set:{"domain":"{{ serviceId }}"}}}]})'''
+    when: 'SOURCEID_FRONTEND_URL not in mongo_result.stdout'
+    register: mongo_result
+    failed_when: 'mongo_result.stdout is search(mongo_shell_fail_pattern) and mongo_result.stdout is not search(mongo_shell_success_pattern)'
+    connection: local
+
   - name: 查询数据库SYSTEM_VERSION中保存的组件数据库版本
     shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("admin").getCollection("SYSTEM_VERSION").find({"_id":"DB_VERSION"})'''
     register: db_version
