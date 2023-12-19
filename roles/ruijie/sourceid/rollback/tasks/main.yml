@@ -23,25 +23,23 @@
     wait_for: timeout=15
     when: '"mongo1" not in pod_info.stdout'
 
+  - name: 获取mongo1 POD 名称
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
+    register: shell_result
+    connection: local
+    
   - name: 设置mongo shell
     set_fact:
       mongo_pod_name: "{{ shell_result.stdout }}"
       mongo_pod_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
       mongo_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- mongo {{ mongo_auth_param }}"
     connection: local
-    
+
   - name: 尝试查询复制集状态
     shell: "{{ mongo_pod_shell }} mongo --quiet --eval 'rs.status()'"
     register: rs_status
     connection: local
     when: '"mongo1" not in pod_info.stdout'
-
-  - name: 获取mongo1 POD 名称
-    shell: "kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
-    register: shell_result
-    connection: local
-    
-
 
   - name: drop mongo中所有数据库
     vars:
