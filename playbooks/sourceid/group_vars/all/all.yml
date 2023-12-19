@@ -211,6 +211,8 @@ MGOB: {
 CUSTOMIZE_SUFFIX: ""
 CAS_SUFFIX: ""
 SELF_SUFFIX: ""
+PORTAL_SUFFIX: ""
+BASIC_SUFFIX: ""
 
 # sourceid域名模式 single-单域名，multiple-多域名，自动判断sso、gate、adapter域名是否相等
 SOURCEID_DOMAIN_MODE: "{% if SOURCEID_SSO_DOMAIN == SOURCEID_GATE_DOMAIN and SOURCEID_SSO_DOMAIN == SOURCEID_ADAPTER_DOMAIN %}single{% else %}multiple{% endif %}"
