@@ -4,9 +4,5 @@
     register: shell_result
     connection: local
     run_once: true
-
-  - name: 替换tools
-    shell: "\\cp -rpf {{BAK_DIR}}/tools/* {{ base_dir }}/tools/"
-    connection: local
-    run_once: true    
+  
   when: 'inventory_hostname == groups.kube_master[0]'
