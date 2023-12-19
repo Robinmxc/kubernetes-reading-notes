@@ -63,4 +63,9 @@
     shell: "mongorestore -h {{ groups.mongodb[0] }} -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase 'admin' --drop {{BAK_DIR}}/mongodbbak"
     register: restore_result
     connection: local
+
+  - name: 替换tools
+    shell: "\\cp -rpf {{BAK_DIR}}/tools/* {{ base_dir }}/tools/"
+    connection: local
+
   when: 'inventory_hostname == groups.kube_master[0]'

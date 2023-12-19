@@ -71,7 +71,8 @@
     file: path={{ item }} state=directory
     with_items:
       - "{{BAK_DIR}}"
-      - "{{BAK_DIR}}/workspace"
+      - "{{BAK_DIR}}/workspace"      
+      - "{{BAK_DIR}}/tools"
       - "{{BAK_DIR}}/mongodbbak"
       - "{{BAK_DIR}}/dockerimages"
     connection: local
@@ -80,6 +81,12 @@
     copy:
       src: "{{ base_dir }}/workspace/"
       dest: "{{BAK_DIR}}/workspace/"
+    connection: local
+
+  - name: 备份tools
+    copy:
+      src: "{{ base_dir }}/tools/"
+      dest: "{{BAK_DIR}}/tools/"
     connection: local
 
   - name: 备份标准组件docker镜像
