@@ -341,7 +341,7 @@ def parse_ldap_config(host_data):
         base_dn = base_dn + "dc=" + s + ","
     base_dn = base_dn[0:-1]
     ldap_config["LDAP_BASE_DN"] = base_dn
-
+    group_all_vars["LDAP_VIP"] = ""
     #ldap k8s内部署参数处理
     if ldap_mode == "k8s":
         ldap_vip = ldap_config["LDAP_VIP"] if "LDAP_VIP" in ldap_config else ""
