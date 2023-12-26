@@ -1,5 +1,6 @@
 #!/bin/bash
 serverUser=${4}
+export KAD_APP_NAMESPACE=ruijie-smpplus
 if [ ! -n "$1" ] || [ ! -n "$2" ];
 then
   echo "ip不能为空,请输入原ip与新ip!"
