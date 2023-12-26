@@ -205,7 +205,8 @@ def parse_host_data(workspace_dir):
         group_all_vars["ingress_mode"] = "http"
 
     if "CLUSTER_SCALE" not in k8s_config:
-        if app_namespace == "ruijie-sourceid":
+        # 防止名称空间打离线包时被替换，所以采用in
+        if  "sourceid" in app_namespace:
             if deploy_mode == "allinone":
                 group_all_vars["CLUSTER_SCALE"] = "single-basic"
             else:
