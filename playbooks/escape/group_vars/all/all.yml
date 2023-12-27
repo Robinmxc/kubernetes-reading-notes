@@ -3,12 +3,6 @@
 #默认二进制文件目录
 bin_dir: "/opt/kube/bin"
 
-mongodb_addr: "{% if (groups['mongodb'] | length | int) == 1 %}mongo1{% else %}mongo1,mongo2,mongo3{% endif %}"
-mongodb_auth_mode: "yes"
-mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin{% else %}{% endif %}"
-mongo_shell_fail_pattern: '"ok" : 0'
-mongo_shell_success_pattern: '"ok" : [1-9]+'
-
 namespace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
 
 yaml_dir: "{{ namespace_dir }}/yaml"
@@ -19,16 +13,6 @@ DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}
 
 config_base_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}"
 
-mongodb_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/data"
-mongodb_init_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/init"
-mongodb_backup_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/backup"
-
-rocketmq_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/data"
-rocketmq_logs_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/log"
-rocketmq_conf_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/conf"
-
-mgob_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mgob/data"
-
 db_user_pattern: "^[a-zA-Z0-9_]{3,16}$"
 db_user_invalid_msg: "账号只能由大/小写字母、数字、下划线组成，长度3~16字符"
 
@@ -36,44 +20,16 @@ db_pwd_pattern1: "^[a-zA-Z0-9_]{6,16}$"
 db_pwd_pattern2: "^.*(?=.*\\d)(?=.*[A-Z]{1,})(?=.*[a-z]{1,}).*$"
 db_pwd_invalid_msg: "密码只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符"
 
-#SourceId数据库脚本版本号
-LINKID_DB_VERSION: "3.3.1"
-#component数据库脚本版本号
-COMPONENT_DB_VERSION: "v1.0"
-
-#eportal数据库脚本版本号
-EPORTAL_DB_VERSION: "3.3.1"
-
-MGOB_ENABLED: "no"
-
-# dns 自动安装，可选"coredns"和“kubedns”
-dns_install: "yes"
-dns_backend: "coredns"
-kubedns_offline: "kubedns_1.14.13.tar"
-coredns_offline: "coredns-1.6.9.tar"
-dns_offline: "{%- if dns_backend == 'coredns' -%} \
-                {{ coredns_offline }} \
-              {%- else -%} \
-                {{ kubedns_offline }} \
-              {%- endif -%}"
-
-dns_replicas: "{% if DEPLOY_MODE == 'allinone' %}1{% else %}2{% endif %}"
-
 # 集群 DNS 域名
 CLUSTER_DNS_DOMAIN: "cluster.local."
-
-SMPPLUS_SMS_MIDDLEWARE_ENABLED: "{% if SMPPLUS_DOCKERS['sms-middleware'] is defined %}yes{% else %}no{% endif %}"
 
 PRIVATE_REGISTRY_ENABLED: "no"
 PRIVATE_INSECURE_REGISTRY: "172.17.8.20:8082"
 PRIVATE_REGISTRY_USER: ""
 PRIVATE_REGISTRY_PWD: ""
-
-nginx_port:
-  TCP: ["9888","9788"]
-  UDP: ["1812","1813"]
-
-KADAPI_DOWN_PATH: "/opt/kad/down/api"
+#SourceId镜像
+SAM_DOCKERS: {
+}
 
 #证书目录
 ca_dir: "/etc/kubernetes/ssl"
@@ -81,10 +37,3 @@ ca_dir: "/etc/kubernetes/ssl"
 ingress_ca_dir: "/etc/kad/ssl"
 
 kadapi_ca_dir: "/etc/kad/api/ssl"
-
-
-protectEnable_value: "{%- if ingress_mode == 'https' -%} \
-                 true \
-               {%- else -%} \
-                 true \
-               {%- endif -%}"

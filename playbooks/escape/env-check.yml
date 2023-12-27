@@ -2,8 +2,10 @@
   - kube_master
   - kube_node
   gather_facts: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   any_errors_fatal: true
   roles:
-  - ruijie/smpplus/check-cpu
-  - ruijie/smpplus/check-mem
-  - ruijie/smpplus/check-disk
+  - ruijie/escape/check-cpu
+  - ruijie/escape/check-mem
+  - ruijie/escape/check-disk

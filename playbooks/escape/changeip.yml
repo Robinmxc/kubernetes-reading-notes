@@ -1,6 +1,0 @@
-- import_playbook: changeflieip.yml
-- import_playbook: ../cluster/k8s-clean.yml
-- import_playbook: ../cluster/offline-install.yml
-- import_playbook: ../cluster/k8s-setup.yml
-- import_playbook: reconfig.yml
-- import_playbook: changemongoip.yml

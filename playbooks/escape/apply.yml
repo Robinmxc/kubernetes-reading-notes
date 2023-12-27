@@ -1,33 +1,12 @@
 - hosts:
-    - kube_node
+  - kube_node
   tags:
-    - smpplus
+  - escape
   any_errors_fatal: true
   vars_files:
-    - "{{ KAD_PACKAGE_DIR }}/kad.yml"
-    - "/etc/kad/config.yml"
-  roles:
-    - { role: ruijie/smpplus/prepare-db-pwd, tags: always }
-    - { role: ruijie/smpplus/component, tags: ["component"] }
-    - { role: ruijie/smpplus/linkid, tags: ["linkid"] }
-    - { role: ruijie/smpplus/authentication, tags: ["authentication"] }
-    - { role: ruijie/smpplus/aggregation, tags: ["aggregation"] }
-    - { role: ruijie/smpplus/eportal, tags: ["eportal"] }
-    - { role: ruijie/smpplus/frontend-smp, tags: ["frontend-smp"] }
-    - { role: ruijie/smpplus/frontend-portal, tags: ["frontend-portal"] }
-    - { role: ruijie/smpplus/frontend-client, tags: ["frontend-client"] }
-    - { role: ruijie/smpplus/freeradius, tags: ["freeradius"] }
-    - { role: ruijie/smpplus/license, tags: ["license"] }
-    - { role: ruijie/smpplus/nodeidentify, tags: ["nodeidentify"] }
-    - { role: ruijie/smpplus/sms-middleware, tags: ["sms-middleware"] }
-    - { role: ruijie/smpplus/operations, tags: ["operations"] }
-    - { role: ruijie/smpplus/mgob, tags: ["mgob"] }
-    - { role: ruijie/smpplus/nodeconnector, tags: ["nodeconnector"]}
-    - { role: ruijie/smpplus/linkage-devices, tags: ["linkage-devices"]}
-    - { role: ruijie/smpplus/flow, tags: ["flow"]}
-    - { role: ruijie/smpplus/aiidentify, tags: ["aiidentify"]}
-    - { role: ruijie/smpplus/aitrain, tags: ["aitrain"]}
-    - { role: ruijie/smpplus/nodescanner, tags: ["nodescanner"]}
-    - { role: ruijie/smpplus/nodecompliance, tags: ["nodecompliance"]}
-    - { role: ruijie/smpplus/rg-log, tags: ["rg-log"]}
-    - { role: ruijie/smpplus/maintenance-related, tags: ["maintenance-related"]}
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
+  tasks:
+  - name: 清理
+    debug:
+      msg: "暂未实现"

@@ -1,3 +1,0 @@
-- import_playbook: clean.yml
-- import_playbook: prepare.yml
-- import_playbook: apply.yml
