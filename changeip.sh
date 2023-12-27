@@ -1,5 +1,8 @@
 #!/bin/bash
 serverUser=${4}
+if	[[ "$serverUser" == "" ]];then
+    serverUser="root"
+fi
 export KAD_APP_NAMESPACE=ruijie-smpplus
 if [ ! -n "$1" ] || [ ! -n "$2" ];
 then
