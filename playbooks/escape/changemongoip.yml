@@ -1,0 +1,33 @@
+- hosts:
+  - kube_master
+  ignore_errors: true
+  tasks:
+  - name: 获取smpplus数据盘位置
+    shell: "cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'"
+    register: actual_data_path_info
+
+  - name: Backing up mongo update-replset.js
+    copy:
+      src: "{{ item }}"
+      dest: "{{ item }}temp"
+    with_items:
+    - "{{ actual_data_path }}/ruijie/ruijie-smpplus/mongodb/init/smpplus/rg-init-db/update-replset.js"
+
+  - name: change mongo old_ip
+    shell: 'sed -i "s/oldIp/{{ old_ip }}/g" {{ actual_data_path }}/ruijie/ruijie-smpplus/mongodb/init/smpplus/rg-init-db/update-replset.js'
+
+  - name: change mongo new_ip
+    shell: 'sed -i "s/newIp/{{ new_ip }}/g" {{ actual_data_path }}/ruijie/ruijie-smpplus/mongodb/init/smpplus/rg-init-db/update-replset.js'
+
+  - name: 等待mongo运行
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }} -o wide|grep 'mongo1-0'|grep ' {{ inventory_hostname }} '|awk '{print $3}'"
+    register: pod_status
+    until: 'pod_status.stdout == "Running"'
+    retries: 30
+    delay: 30
+
+  - name: change mongo ip
+    shell: 'kubectl exec -n ruijie-smpplus mongo1-0 -- mongo -u admin -p {{ MONGODB_ADMIN_PWD }}  --authenticationDatabase admin  /ruijie/init/smpplus/rg-init-db/update-replset.js'
+
+  - name: revert mongo update-replset.js
+    shell: 'mv {{ actual_data_path }}/ruijie/ruijie-smpplus/mongodb/init/smpplus/rg-init-db/update-replset.jstemp {{ actual_data_path }}/ruijie/ruijie-smpplus/mongodb/init/smpplus/rg-init-db/update-replset.js'

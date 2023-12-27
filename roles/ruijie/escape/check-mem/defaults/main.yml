@@ -1,0 +1,16 @@
+mem_required:
+  small:
+    master: 4
+    node: 8
+  normal:
+    master: 16
+    node: 16
+  single:
+    master: 16
+    node: 16
+  basic:
+    master: 16
+    node: 16
+  single-basic:
+    master: 16
+    node: 16

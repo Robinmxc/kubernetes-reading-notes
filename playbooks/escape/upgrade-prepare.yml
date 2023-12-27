@@ -1,0 +1,115 @@
+- hosts:
+  - localhost
+  tasks:
+  - name: 创建/etc/kad目录
+    file: path="/etc/kad/" state=directory
+
+  - name: 创建/etc/kad/config.yml文件
+    file: path="/etc/kad/config.yml" state=touch
+
+- hosts: all
+  tags:
+  - smpplus
+  any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
+  roles:
+  - { role: ruijie/smpplus/prepare-db-pwd, tags: always }
+  - { role: ruijie/smpplus/upgrade, tags: always }
+
+- hosts: all
+  tasks:
+    - name: 获取当前k8s版本
+      shell: "kubectl version --short"
+      register: k8s_result
+      connection: local
+      ignore_errors: true
+      run_once: true
+
+- name: 清理k8s
+  when: '"v1.23.8" not in k8s_result.stdout'
+  import_playbook: ../cluster/k8s-clean-history.yml
+
+- name: 离线依赖包部署
+  when: '"v1.23.8" not in k8s_result.stdout'
+  import_playbook: ../cluster/offline-install.yml
+
+- name: 清理k8s
+  when: '"v1.23.8" not in k8s_result.stdout'
+  import_playbook: ../cluster/k8s-clean.yml
+
+- name: 安装k8s
+  when: '"v1.23.8" not in k8s_result.stdout'
+  import_playbook: ../cluster/k8s-setup.yml
+
+- hosts:
+    - kube_master
+    - kube_node
+  tasks:
+    - name: 获取当前ingress实现
+      shell: "kubectl -n kube-system get pod"
+      register: ingress_result
+      connection: local
+      ignore_errors: true
+      run_once: true
+
+    - name: 获取traefik名称
+      shell: "kubectl -n kube-system get daemonsets.apps -o custom-columns=NAME:.metadata.name|grep traefik"
+      register: traefik_result
+      connection: local
+      ignore_errors: true
+      run_once: true
+      when: '"traefik" in ingress_result.stdout'
+
+    - name: 停止traefik
+      shell: "kubectl delete daemonset -n kube-system {{ traefik_result.stdout }} "
+      connection: local
+      ignore_errors: true
+      run_once: true
+      when: '"traefik" in ingress_result.stdout'
+
+    - name: 获取当前docker service配置
+      shell: "cat /usr/lib/systemd/system/docker.service"
+      ignore_errors: true
+      register: docker_service
+
+    - name: 修改docker service配置
+      replace:
+        path: '/usr/lib/systemd/system/docker.service'
+        regexp: 'LimitCORE=infinity'
+        replace: 'LimitCORE=0'
+      when: '"infinity" in docker_service.stdout'
+
+    - name: 重启docker 服务
+      shell: systemctl daemon-reload && systemctl restart docker
+      when: '"infinity" in docker_service.stdout'
+
+    - name: 轮询等待docker服务运行
+      shell: "systemctl status docker.service|grep Active"
+      register: docker_status
+      until: '"running" in docker_status.stdout'
+      retries: 8
+      delay: 2
+
+- hosts:
+    - kube_master
+    - kube_node
+  tasks:
+    - name: 轮询等待node达到Ready状态
+      shell: "kubectl get node {{ inventory_hostname }}|awk 'NR>1{print $2}'"
+      register: node_status
+      delegate_to: "{{ groups.deploy[0] }}"
+      until: node_status.stdout == "Ready" or node_status.stdout == "Ready,SchedulingDisabled"
+      retries: 8
+      delay: 8
+
+- name: 启动ingress
+  when: '"traefik" in ingress_result.stdout'
+  import_playbook: ../cluster/ingress.yml
+
+- hosts: localhost
+  tasks:
+    - name: 输出mongo备份路径
+      debug:
+        msg: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/upgrade_temp/mongodbbak"
