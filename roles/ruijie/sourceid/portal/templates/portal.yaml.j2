@@ -156,7 +156,7 @@ spec:
               name: rg-portal
               port:
                 number: 80
-        - path: {%if "" != PORTAL_SUFFIX %}/{{ PORTAL_SUFFIX }}{% endif %}/web-page
+        - path: {%if "" != PORTAL_SUFFIX %}/{{ PORTAL_SUFFIX }}{% else %}/portal{% endif %}/microportal
           pathType: Prefix
           backend:
             service:

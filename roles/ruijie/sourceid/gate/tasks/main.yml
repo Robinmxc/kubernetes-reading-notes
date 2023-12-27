@@ -69,6 +69,7 @@
     - {regexp: "casimages_placeholder4", replace: "stripPrefix: true"}
     - {regexp: "casimages_placeholder5", replace: "url: http://rg-frontend.{{ APP_NAMESPACE }}.svc/public"}
     - {regexp: "casimages_placeholder6", replace: "url: http://rg-frontend.{{ APP_NAMESPACE }}.svc/public"}
+    - {regexp: "defaulturl:.*", replace: "defaulturl: ${server.servlet.context-path}/cas-success/index.html"}
   no_log: true
   when: 'SOURCEID_DOMAIN_MODE == "single"'
 

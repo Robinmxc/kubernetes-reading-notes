@@ -12,9 +12,9 @@
     tags:
       - config
     no_log: true
-    replace: path="{{ config_base_dir }}/sourceid/license/conf/application.yaml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    replace: path="{{ config_base_dir }}/sourceid/license/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
-      - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ SOURCEID_LINKID_DB_USER }}:{{ SOURCEID_LINKID_DB_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
+      - {regexp: "mongodb:.*/license.*$", replace: "mongodb://{{ SOURCEID_LICENSE_DB_USER }}:{{ SOURCEID_LICENSE_DB_PWD }}@{{ mongodb_addr }}/license?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
 
   - name: 自定义配置
