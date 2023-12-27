@@ -1,7 +1,44 @@
+- hosts: all
+  any_errors_fatal: true
+
 - hosts:
   - localhost
   gather_facts: false
+
   tasks:
-  - name: 清理
-    debug:
-      msg: "暂未实现"
+  - name: 获取所有已经创建的POD信息
+    tags: always
+    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+
+  - name: delete escape-eportal
+    tags:
+    - escape-eportal
+    command: "kubectl delete -f {{ yaml_dir }}/escape-eportal/"
+    when: '"escape-portal" in pod_info.stdout'    
+
+  - name: delete escape-freeradius
+    tags:
+    - escape-freeradius
+    command: "kubectl delete -f {{ yaml_dir }}/escape-freeradius/"
+    when: '"escape-freeradius" in pod_info.stdout'
+
+  - name: 等待escape-eportal结束运行
+    tags:
+      - escape-eportal
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"escape-eportal" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待escape-freeradius结束运行
+    tags:
+      - escape-freeradius
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"escape-freeradius" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true

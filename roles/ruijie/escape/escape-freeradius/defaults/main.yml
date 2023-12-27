@@ -1,0 +1,28 @@
+
+escape_freeradius_configs: []
+
+escape_freeradius_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+escape_freeradius_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

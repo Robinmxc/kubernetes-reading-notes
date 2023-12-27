@@ -6,7 +6,6 @@
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   - "/etc/kad/config.yml"
-  tasks:
-  - name: 清理
-    debug:
-      msg: "暂未实现"
+  roles:
+    - { role: ruijie/escape/escape-freeradius, tags: always }
+    - { role: ruijie/escape/escape-eportal, tags: always }
