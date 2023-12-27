@@ -1,0 +1,7 @@
+- hosts:
+  - localhost
+  gather_facts: false
+  tasks:
+  - name: 清理
+    debug:
+      msg: "暂未实现"

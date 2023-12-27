@@ -4,6 +4,12 @@ KUBE_MASTER_HOSTS: ["192.168.1.61"]
 # Node节点IP
 KUBE_NODE_HOSTS: ["192.168.1.62", "192.168.1.63", "192.168.1.64"]
 
+ESCAPE: {
+  # ESCAPE_ENABLED：true - 部署 false - 不部署；
+  ESCAPE_ENABLED: true,
+  # 对应节点部署keepalive等组件，将来方案此node可能独立于k8s外
+  NODES: ["192.168.1.65"]
+}  
 # POD 网段 (Cluster CIDR），不要与内网已有网段冲突，网络位数不能大于20
 CLUSTER_CIDR: "196.200.192.0/20"
 
