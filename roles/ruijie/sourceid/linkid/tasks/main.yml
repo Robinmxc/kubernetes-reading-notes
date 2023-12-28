@@ -44,10 +44,13 @@
 - name: 单域名配置
   tags:
     - config
+  vars:
+    adapter_suffix: '{% if "" != CUSTOMIZE_SUFFIX %}{{ CUSTOMIZE_SUFFIX }}/adapter{% else %}adapter{% endif %}'
   replace: path="{{ config_base_dir }}/sourceid/linkid/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
     - { regexp: "^feign.cas.base.url=.*$", replace: "feign.cas.base.url=http://rg-sso.{{ APP_NAMESPACE }}.svc/{{ CAS_SUFFIX }}" }
     - { regexp: "^linkid.access-token-url=.*$", replace: "linkid.access-token-url=http://rg-sso/{{ CAS_SUFFIX }}/oauth2.0/accessToken" }
+    - { regexp: "^adapter.feign.base.url=.*$", replace: "adapter.feign.base.url=http://rg-adapter.{{ APP_NAMESPACE }}.svc/{{ adapter_suffix }}" }
   no_log: true
   when: 'SOURCEID_DOMAIN_MODE == "single"'
 

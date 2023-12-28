@@ -48,9 +48,12 @@
 - name: 单域名配置2
   tags:
     - config
+  vars:
+    adapter_suffix: '{% if "" != CUSTOMIZE_SUFFIX %}{{ CUSTOMIZE_SUFFIX }}/adapter{% else %}adapter{% endif %}'
   replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
     - {regexp: "/public/client", replace: "${front.server.addr}/public/client"}
+    - { regexp: "^adapter.feign.base.url =.*$", replace: "adapter.feign.base.url = http://rg-adapter.{{ APP_NAMESPACE }}.svc/{{ adapter_suffix }}" }
   no_log: true
   when: 'SOURCEID_DOMAIN_MODE == "single"'
 

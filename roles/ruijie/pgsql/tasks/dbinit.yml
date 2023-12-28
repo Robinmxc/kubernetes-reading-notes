@@ -136,7 +136,8 @@
     SSO_DOMAIN_URL: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/{{ CAS_SUFFIX }}{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
     GATE_DOMAIN_URL: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_FRONTEND_URL }}/{{ SELF_SUFFIX }}{% else %}{{ SOURCEID_FRONTEND_URL }}{% endif %}'
   shell: "{{ pgsql_pod_shell }}  -d essdb -c  \"UPDATE t_system_config SET value=REGEXP_REPLACE(value, '\\(SOURCEID_GATE_DOMAIN\\)', '{{ GATE_DOMAIN_URL }}') where value like '%(SOURCEID_GATE_DOMAIN)%'; \
-        UPDATE t_system_config SET value=REGEXP_REPLACE(value, '\\(SOURCEID_SSO_DOMAIN\\)', '{{ SSO_DOMAIN_URL }}') where value like '%(SOURCEID_SSO_DOMAIN)%';\""
+        UPDATE t_system_config SET value=REGEXP_REPLACE(value, '\\(SOURCEID_SSO_DOMAIN\\)', '{{ SSO_DOMAIN_URL }}') where value like '%(SOURCEID_SSO_DOMAIN)%'; \
+        UPDATE t_system_config SET value=REGEXP_REPLACE(value, '\\(SOURCEID_AAA_DOMAIN\\)', '{{ SOURCEID_FRONTEND_URL }}') where value like '%(SOURCEID_AAA_DOMAIN)%'; \""
   when: 'SOURCEID_SSO_URL not in pg_result.stdout or SOURCEID_FRONTEND_URL not in pg_result.stdout'
   register: update_result
   failed_when: '"UPDATE" not in update_result.stdout'
