@@ -2,6 +2,7 @@ authentication_java_opt: "-Xms3072m -Xmx6144m"
 
 authentication_configs: []
 
+
 #http-ip，https-域名，测试打包最新代码没有打进去的问题
 host_ip_value: "{%- if ingress_mode == 'https' -%} \
                  {{ ingress_mode }}://{{ SMPPLUS_SSO_DOMAIN }} \
