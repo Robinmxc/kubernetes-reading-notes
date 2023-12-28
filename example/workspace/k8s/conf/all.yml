@@ -5,8 +5,9 @@ KUBE_MASTER_HOSTS: ["192.168.1.61"]
 KUBE_NODE_HOSTS: ["192.168.1.62", "192.168.1.63", "192.168.1.64"]
 
 ESCAPE: {
-  # ESCAPE_ENABLED：true - 部署 false - 不部署；
-  ESCAPE_ENABLED: true,
+  # enable：true - 部署 false - 不部署；
+  enable: false,
+  VIP: "",
   # 对应节点部署keepalive等组件，将来方案此node可能独立于k8s外
   NODES: ["192.168.1.65"]
 }  

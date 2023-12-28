@@ -267,7 +267,7 @@ def parse_host_data(workspace_dir):
     parse_ldap_config(result)
     
     parse_mgob_config(result)
-
+    parse_escape_config(result)
     return result
 
 # 处理mgob配置参数
@@ -400,6 +400,24 @@ def parse_ldap_config(host_data):
             else:
                 host_vars[ip]["LDAP_ROLE"] = "BACKUP"
             idx = idx + 1
+
+# 处理Ldap配置参数
+def parse_escape_config(host_data):
+    group_all_vars = host_data["groups"]["all"]["vars"]
+    escape_config = group_all_vars["ESCAPE"] if "ESCAPE" in group_all_vars else []
+    enabled = escape_config["enable"] if "enable" in escape_config else False
+    if not enabled:
+        return    
+    escape_vip = escape_config["VIP"] if "VIP" in escape_config else ""
+    if "" == escape_vip:
+            raise Exception(u"ESCAP配置中的VIP参数没有设置")
+    if "" != escape_vip and not is_IP(escape_vip):
+            raise Exception(u"ESCAP配置中的VIP不是有效的IP地址")
+    escape_hosts =  escape_config["NODES"] if "NODES" in escape_config else []
+    for ip in escape_hosts:
+        if not is_IP(ip):
+            raise Exception(ip + u"不是有效的IP地址")    
+    host_data["groups"]["escape"] = escape_hosts
 
 # 处理监控系统配置参数
 def parse_eoms_config(host_data):
