@@ -1,6 +1,6 @@
 
 escape_freeradius_configs: []
-
+SESSION_TIMEOUT: 28800
 escape_freeradius_templates_path: ""
 
 deploy_conf_defaults:
@@ -16,7 +16,7 @@ deploy_conf_defaults:
         cpu: 500m
         memory: 1Gi
   single:
-    replicas: 1
+    replicas: 2
     resources:
       limits:
         cpu: 2

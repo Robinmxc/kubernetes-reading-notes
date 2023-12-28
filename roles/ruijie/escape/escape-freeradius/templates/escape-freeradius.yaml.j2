@@ -20,6 +20,9 @@ spec:
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ ESCAPE_DOCKERS[comp_name].name }}:{{ ESCAPE_DOCKERS[comp_name].version }}
+        env:
+        - name: SESSION_TIMEOUT
+          value: "{{ SESSION_TIMEOUT}}" 
         imagePullPolicy: IfNotPresent
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
