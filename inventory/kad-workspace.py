@@ -419,7 +419,10 @@ def parse_escape_config(host_data):
         if not is_IP(ip):
             raise Exception(ip + u"不是有效的IP地址")    
     host_data["groups"]["escape"] = escape_hosts
-    
+    host_vars = host_data["host_vars"]
+    for ip in escape_hosts:
+        if ip not in host_vars:
+            host_vars[ip] = {}
 # 处理监控系统配置参数
 def parse_eoms_config(host_data):
     group_all_vars = host_data["groups"]["all"]["vars"]
