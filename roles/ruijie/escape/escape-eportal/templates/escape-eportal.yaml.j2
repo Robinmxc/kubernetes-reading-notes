@@ -21,6 +21,7 @@ spec:
         k8s-app: rg-{{ comp_name }}
     spec:
       hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet          
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ ESCAPE_DOCKERS[comp_name].name }}:{{ ESCAPE_DOCKERS[comp_name].version }}
@@ -59,5 +60,5 @@ spec:
   selector:
     k8s-app: rg-{{comp_name}}
   ports:
-  - port: 80
+  - port: 8898
     targetPort: 8898
