@@ -10,7 +10,7 @@ ESCAPE: {
   enable: false,
   VIP: "",
   # 逃生组件的所有IP
-  NODES: ["172.17.8.47"]，
+  NODES: ["172.17.8.47"],
   # 逃生节点注入此参数，将smp+的集群IP暴露给逃生组件
   SMPPLUS_VIP: "" 
 }  
