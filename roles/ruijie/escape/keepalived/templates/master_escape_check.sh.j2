@@ -1,0 +1,20 @@
+#!/bin/bash
+set -x
+url="{{ MASTER_CHECK_URl}}"
+
+# 使用timeout命令设置超时时间并发送HTTP请求
+response=$(curl -s -o /dev/null -w "%{http_code}" $url)
+# 检查命令的退出状态
+exit_status=$?
+if [ $exit_status -eq 124 ]; then
+  echo "Request timed out"
+  exit 1  # 超时时退出脚本并返回非零退出状态
+elif [ $exit_status -ne 0 ]; then
+  echo "Request failed with error code $exit_status"
+  exit 1  # 其他错误时退出脚本并返回非零退出状态
+elif [ $response -ne 200 ];then
+  echo "HTTP Status Code is not 200 "
+  exit 1
+fi
+echo "HTTP Status Code is : $response"
+exit 0

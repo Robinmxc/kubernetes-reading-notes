@@ -12,8 +12,61 @@ ESCAPE: {
   # 逃生组件的所有IP
   NODES: ["172.17.8.47"],
   # 逃生节点注入此参数，将smp+的集群IP暴露给逃生组件
-  SMPPLUS_VIP: "" 
-}  
+  SMPPLUS_VIP: "" ,
+  # 主节点检测url，必须配置
+  MASTER_CHECK_URL: "",
+  # 主节点检测间隔，默认 1秒（整数配置）
+  MASTER_CHECK_INTERVAL: "",
+  # 主节点检测超时时间，需要小于主节点检测间隔时间（整数配置）
+  MASTER_CHECK_TIMEOUT: "",
+  # 主节点检测连续失败次数，连续失败后节点会降级（整数配置）
+  MASTER_CHECK_FALL: "",
+  # 主节点检测连续成功次数，连续失败后节点会降级（整数配置）
+  MASTER_CHECK_RISE: "",
+
+  # 备节点检测url，必须配置
+  BACKUP_CHECK_URL: "",
+  # 备节点检测间隔，默认 1秒（整数配置）
+  BACKUP_CHECK_INTERVAL: "",
+  # 备节点检测超时时间，需要小于备节点检测间隔时间（整数配置）
+  BACKUP_CHECK_TIMEOUT: "",
+  # 备节点检测连续失败次数，连续失败后节点会降级（整数配置）
+  BACKUP_CHECK_FALL: "",
+  # 备节点检测连续成功次数，连续失败后节点会降级（整数配置）
+  BACKUP_CHECK_RISE: "",
+}
+
+# 逃生模式开启时，smpplus节点和逃生组件都需要配置此
+ESCAPE: {
+  # enable：true - 部署 false - 不部署；
+  enable: false,
+  VIP: "",
+  # 逃生组件的所有IP
+  NODES: ["172.17.8.47"],
+  # 逃生节点注入此参数，将smp+的集群IP暴露给逃生组件
+  SMPPLUS_VIP: "",
+  # 主节点检测url，必须配置
+  MASTER_CHECK_URL: "",
+  # 主节点检测间隔，默认 1秒（整数配置）
+  MASTER_CHECK_INTERVAL: "",
+  # 主节点检测超时时间，需要小于主节点检测间隔时间（整数配置）
+  MASTER_CHECK_TIMEOUT: "",
+  # 主节点检测连续失败次数，连续失败后节点会降级（整数配置）
+  MASTER_CHECK_FALL: "",
+  # 主节点检测连续成功次数，连续失败后节点会降级（整数配置）
+  MASTER_CHECK_RISE: "",
+
+  # 备节点检测url，必须配置
+  BACKUP_CHECK_URL: "",
+  # 备节点检测间隔，默认 1秒（整数配置）
+  BACKUP_CHECK_INTERVAL: "",
+  # 备节点检测超时时间，需要小于备节点检测间隔时间（整数配置）
+  BACKUP_CHECK_TIMEOUT: "",
+  # 备节点检测连续失败次数，连续失败后节点会降级（整数配置）
+  BACKUP_CHECK_FALL: "",
+  # 备节点检测连续成功次数，连续失败后节点会降级（整数配置）
+  BACKUP_CHECK_RISE: "",
+}
 # POD 网段 (Cluster CIDR），不要与内网已有网段冲突，网络位数不能大于20
 CLUSTER_CIDR: "196.200.192.0/20"
 

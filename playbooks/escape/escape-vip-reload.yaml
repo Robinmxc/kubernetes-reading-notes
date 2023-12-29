@@ -1,0 +1,6 @@
+- hosts:
+  - localhost
+  vars_files:
+    - "/etc/kad/config.yml"
+  roles:
+    - { role: ruijie/escape/keepalived }
