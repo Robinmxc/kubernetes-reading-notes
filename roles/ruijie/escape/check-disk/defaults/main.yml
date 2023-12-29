@@ -6,13 +6,7 @@ disk_required:
     node: 5
   normal:
     master: 10
-    node: 40
+    node: 400
   single:
     master: 10
-    node: 40
-  basic:
-    master: 10
-    node: 40
-  single-basic:
-    master: 10
-    node: 40
+    node: 400
