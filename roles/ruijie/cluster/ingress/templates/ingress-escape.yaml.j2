@@ -1,0 +1,52 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-https
+  namespace: ruijie-escape
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^/entry/(.*)$ /portal/entry/$1;
+{% if 'https' == ingress_mode %}
+    nginx.ingress.kubernetes.io/server-snippet: |
+      rewrite ^/portal/leap(/|$)(.*)$ http://123.123.123.123$1$2;
+{% endif %}
+spec:
+  ingressClassName: nginx
+{% if 'https' == ingress_mode %}
+  tls:
+  - hosts:
+    - '*.{{ ingress_ssl_names[0] }}'
+    secretName: nginx-cert
+{% endif %}
+  rules:
+  - host: {{ KUBE_MASTER_VIP }}.nip.io
+    http: &http_rules
+      paths:
+      - path: /portal
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-frontend-portal
+            port:
+              number: 81
+      - path: /entry
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-frontend-portal
+            port:
+              number: 81
+{% if ESCAPE["enable"] %}
+  - host: {{ ESCAPE.VIP }}.nip.io
+    http: *http_rules
+{% endif %}
+{% if '' != escape_SSO_DOMAIN %}
+  - host: {{ escape_SSO_DOMAIN }}
+    http: *http_rules
+{% endif %}
+{% if '' != escape_PORTAL_DOMAIN %}
+  - host: {{ escape_PORTAL_DOMAIN }}
+    http: *http_rules
+{% endif %}
+
