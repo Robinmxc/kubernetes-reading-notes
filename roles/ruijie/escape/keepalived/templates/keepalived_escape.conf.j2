@@ -1,0 +1,38 @@
+vrrp_script check_escape {
+{% if "MASTER" == hostvars[inventory_hostname]["ESCAPE_ROLE"] %}
+    script "/etc/keepalived/master_escape_check.sh"
+    interval {{ MASTER_CHECK_INTERVAL }}
+    timeout {{ MASTER_CHECK_TIMEOUT }}
+    rise {{ MASTER_CHECK_RISE }}
+    fall {{ MASTER_CHECK_FALL }}
+{% else %}
+    script "/etc/keepalived/backup_escape_check.sh"
+    interval {{ BACKUP_CHECK_INTERVAL }}
+    timeout {{ BACKUP_CHECK_TIMEOUT }}
+    rise {{ BACKUP_CHECK_RISE }}
+    fall {{ BACKUP_CHECK_FALL }}
+{% endif %}
+}
+vrrp_instance VI-escape {
+    state {{ hostvars[inventory_hostname]["ESCAPE_ROLE"] }}
+{% if "MASTER" == hostvars[inventory_hostname]["ESCAPE_ROLE"] %}
+    priority  100
+{% else %}
+    priority  90
+{% endif %}
+    unicast_src_ip {{ inventory_hostname }}
+    unicast_peer {
+{% for h in groups['escape'] %}{% if h != inventory_hostname %}
+        {{ h }}
+{% endif %}{% endfor %}
+    }
+    interface {{ ESCAPE_ACCESS_IF }}
+    virtual_router_id {{ ESCAPE_ROUTER_ID }}
+    advert_int 1
+    track_script {
+        check_escape
+    }
+    virtual_ipaddress {
+        {{ ESCAPE_VIP }}
+    }
+}
