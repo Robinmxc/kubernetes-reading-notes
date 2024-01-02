@@ -1,71 +1,71 @@
 - name: 部署keepalived
   when: '"" != ESCAPE_VIP'
   block:
-  - name: 读取网卡名称
-    shell: "ip a|grep '{{ inventory_hostname }}/'|awk '{print $NF}'"
-    register: if_info
+    - name: 读取网卡名称
+      shell: "ip a|grep '{{ inventory_hostname }}/'|awk '{print $NF}'"
+      register: if_info
 
-  - name: 设置负载均衡网卡
-    set_fact: ESCAPE_ACCESS_IF="{{ if_info.stdout }}"
+    - name: 设置负载均衡网卡
+      set_fact: ESCAPE_ACCESS_IF="{{ if_info.stdout }}"
 
-  - name: 准备文件
-    file: name={{ item }} state=touch
-    with_items:
-    - "/var/spool/cron/root"
+    - name: 准备文件
+      file: name={{ item }} state=touch
+      with_items:
+        - "/var/spool/cron/root"
 
-  - name: crontab清理keepalived服务拉起脚本
-    shell: sed -i '/keepalived_up/d' /var/spool/cron/root
-    ignore_errors: true
+    - name: crontab清理keepalived服务拉起脚本
+      shell: sed -i '/keepalived_up/d' /var/spool/cron/root
+      ignore_errors: true
 
-  - name: 停止keepalived服务
-    service: name=keepalived state=stopped enabled=no
-    ignore_errors: true
+    - name: 停止keepalived服务
+      service: name=keepalived state=stopped enabled=no
+      ignore_errors: true
 
-  - name: 创建keepalived配置目录
-    file: name=/etc/keepalived state=directory
+    - name: 创建keepalived配置目录
+      file: name=/etc/keepalived state=directory
 
-  - name: 创建keepalived配置子目录
-    file: name=/etc/keepalived/conf state=directory
+    - name: 创建keepalived配置子目录
+      file: name=/etc/keepalived/conf state=directory
 
-  - name: 设置keepalived配置文件
-    template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
+    - name: 设置keepalived配置文件
+      template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
 
-  - name: 设置keepalived-escape配置文件
-    template: src=keepalived_escape.conf.j2 dest=/etc/keepalived/conf/keepalived_escape.conf
+    - name: 设置keepalived-escape配置文件
+      template: src=keepalived_escape.conf.j2 dest=/etc/keepalived/conf/keepalived_escape.conf
 
-  - name: 设置escape-master存活检测脚本
-    when: '"MASTER" == hostvars[inventory_hostname]["ESCAPE_ROLE"]'
-    template: src=master_escape_check.sh.j2 dest=/etc/keepalived/conf/master_escape_check.sh mode=755
+    - name: 设置escape-master存活检测脚本
+      when: '"MASTER" == hostvars[inventory_hostname]["ESCAPE_ROLE"]'
+      template: src=master_escape_check.sh.j2 dest=/etc/keepalived/conf/master_escape_check.sh mode=755
 
-  - name: 设置escape-backup存活检测脚本
-    when: '"BACKUP" == hostvars[inventory_hostname]["ESCAPE_ROLE"]'
-    template: src=backup_escape_check.sh.j2 dest=/etc/keepalived/conf/backup_escape_check.sh mode=755
+    - name: 设置escape-backup存活检测脚本
+      when: '"BACKUP" == hostvars[inventory_hostname]["ESCAPE_ROLE"]'
+      template: src=backup_escape_check.sh.j2 dest=/etc/keepalived/conf/backup_escape_check.sh mode=755
 
-  - name: 设置keepalived服务拉起脚本
-    template: src=keepalived_up.sh.j2 dest=/etc/keepalived/keepalived_up.sh mode=755
+    - name: 设置keepalived服务拉起脚本
+      template: src=keepalived_up.sh.j2 dest=/etc/keepalived/keepalived_up.sh mode=755
 
-  - name: 配置keepalived日志
-    shell: sed -i '/KEEPALIVED_OPTIONS/d' /etc/sysconfig/keepalived
-    ignore_errors: true
+    - name: 配置keepalived日志
+      shell: sed -i '/KEEPALIVED_OPTIONS/d' /etc/sysconfig/keepalived
+      ignore_errors: true
 
-  - name: 配置keepalived日志
-    shell: echo 'KEEPALIVED_OPTIONS="-D -S 0"' >> /etc/sysconfig/keepalived
+    - name: 配置keepalived日志
+      shell: echo 'KEEPALIVED_OPTIONS="-D -S 0"' >> /etc/sysconfig/keepalived
 
-  - name: 清理keepalived配置rsyslog日志
-    shell: sed -i '/keepalived.log/d' /etc/rsyslog.conf
+    - name: 清理keepalived配置rsyslog日志
+      shell: sed -i '/keepalived.log/d' /etc/rsyslog.conf
 
-  - name: 配置rsyslog日志
-    shell: echo 'local0.*  /var/log/keepalived.log' >> /etc/rsyslog.conf
+    - name: 配置rsyslog日志
+      shell: echo 'local0.*  /var/log/keepalived.log' >> /etc/rsyslog.conf
 
-  - name: 重启服务rsyslog
-    service: name={{ item }} state=restarted enabled=yes
-    with_items:
-      - rsyslog
+    - name: 重启服务rsyslog
+      service: name={{ item }} state=restarted enabled=yes
+      with_items:
+        - rsyslog
 
-  - name: 启动服务
-    service: name={{ item }} state=started enabled=yes
-    with_items:
-      - keepalived
+    - name: 启动服务
+      service: name={{ item }} state=started enabled=yes
+      with_items:
+        - keepalived
 
-  - name: crontab添加keepalived服务拉起脚本
-    shell: echo '* * * * * /etc/keepalived/keepalived_up.sh' >> /var/spool/cron/root
+    - name: crontab添加keepalived服务拉起脚本
+      shell: echo '* * * * * /etc/keepalived/keepalived_up.sh' >> /var/spool/cron/root
