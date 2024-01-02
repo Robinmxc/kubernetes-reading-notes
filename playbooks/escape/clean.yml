@@ -16,13 +16,15 @@
     - escape-eportal
     command: "kubectl delete -f {{ yaml_dir }}/escape-eportal/"
     when: '"escape-portal" in pod_info.stdout'    
-
+    no_log: true
+        
   - name: delete escape-freeradius
     tags:
     - escape-freeradius
     command: "kubectl delete -f {{ yaml_dir }}/escape-freeradius/"
     when: '"escape-freeradius" in pod_info.stdout'
-
+    no_log: true
+        
   - name: 等待escape-eportal结束运行
     tags:
       - escape-eportal

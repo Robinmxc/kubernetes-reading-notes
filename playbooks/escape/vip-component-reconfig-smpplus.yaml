@@ -8,7 +8,7 @@
   tasks:
   - name: 获取所有已经创建的POD信息
     tags: always
-    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    command: "kubectl get pod -A"
     register: pod_info
 
   - name: delete eportal
@@ -17,16 +17,20 @@
     command: "kubectl delete -f {{ yaml_dir }}/eportal/"
     when: '"portal" in pod_info.stdout'  
     ignore_errors: true
+    no_log: true
+
   - name: delete authentication
     tags:
     - authentication
     command: "kubectl delete -f {{ yaml_dir }}/authentication/"
     when: '"authentication" in pod_info.stdout'    
     ignore_errors: true
+    no_log: true
+            
   - name: 等待eportal结束运行
     tags:
       - eportal
-    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    shell: "kubectl get pod -A"
     register: pod_info
     until: '"rg-eportal" not in pod_info.stdout'
     retries: 30
@@ -36,13 +40,33 @@
   - name: 等待authentication结束运行
     tags:
       - authentication
-    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    shell: "kubectl get pod -A"
     register: pod_info
     until: '"rg-authentication" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
 
+  - name: 清理ingress
+    tags: ingress  
+    command: "kubectl delete -f /opt/kube/kube-system/nginx-ingress/"
+    when: '"nginx-ingress"  in pod_info.stdout'
+
+  - name: 等待ingress结束运行
+    tags:
+      - ingress
+    shell: "kubectl get pod -n kube-system"
+    register: pod_info
+    until: '"nginx-ingress" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 重新配置ingress，请耐心等待
+    tags: ingress  
+    shell: 'cd /opt/kad; \
+        ./kad-play.sh  playbooks/cluster/ingress.yml'    
+   
 - hosts:
   - kube_node
   tags:

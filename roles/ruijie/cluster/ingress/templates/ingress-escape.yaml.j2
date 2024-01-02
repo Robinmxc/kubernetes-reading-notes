@@ -33,10 +33,10 @@ spec:
             name: rg-escape-eportal
             port:
               number: 8898
-{% if ESCAPE["enable"] %}
-  - host: {{ ESCAPE.VIP }}.nip.io
+{% if '' != ESCAPE_SYNC_VIP %}              
+  - host: {{ ESCAPE_SYNC_VIP }}.nip.io
     http: *http_rules
-{% endif %}
+{% endif %}    
 {% if '' != escape_SSO_DOMAIN %}
   - host: {{ escape_SSO_DOMAIN }}
     http: *http_rules
