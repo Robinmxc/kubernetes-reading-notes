@@ -421,61 +421,65 @@ def parse_escape_config(host_data):
             raise Exception(ip + u"不是有效的IP地址")
     host_data["groups"]["escape"] = escape_hosts
 
-    master_check_url = escape_config["MASTER_CHECK_URL"]
-    if "" == master_check_url:
-        raise Exception(u"ESCAPE配置中的MASTER_CHECK_URL参数没有设置")
-    group_all_vars["MASTER_CHECK_URL"] = master_check_url
-
-    master_check_interval = escape_config["MASTER_CHECK_INTERVAL"] if "MASTER_CHECK_INTERVAL" in escape_config else "1"
-    master_check_interval = master_check_interval if "" != master_check_interval else "1"
-    group_all_vars["MASTER_CHECK_INTERVAL"] = master_check_interval
-
-    master_check_timeout = escape_config["MASTER_CHECK_TIMEOUT"] if "MASTER_CHECK_TIMEOUT" in escape_config else "1"
-    master_check_timeout = master_check_timeout if "" != master_check_timeout else "1"
-    group_all_vars["MASTER_CHECK_TIMEOUT"] = master_check_timeout
-
-    master_check_fail = escape_config["MASTER_CHECK_FALL"] if "MASTER_CHECK_FALL" in escape_config else "1"
-    master_check_fail = master_check_fail if "" != master_check_fail else "1"
-    group_all_vars["MASTER_CHECK_FALL"] = master_check_fail
-
-    master_check_rise = escape_config["MASTER_CHECK_RISE"] if "MASTER_CHECK_RISE" in escape_config else "1"
-    master_check_rise = master_check_rise if "" != master_check_rise else "1"
-    group_all_vars["MASTER_CHECK_RISE"] = master_check_rise
-
-    backup_check_url = escape_config["BACKUP_CHECK_URL"]
-    if "" == backup_check_url:
-        raise Exception(u"ESCAPE配置中的BACKUP_CHECK_URL参数没有设置")
-    group_all_vars["BACKUP_CHECK_URL"] = backup_check_url
-
-    backup_check_interval = escape_config["BACKUP_CHECK_INTERVAL"] if "BACKUP_CHECK_INTERVAL" in escape_config else "1"
-    backup_check_interval = backup_check_interval if "" != backup_check_interval else "1"
-    group_all_vars["BACKUP_CHECK_INTERVAL"] = backup_check_interval
-
-    backup_check_timeout = escape_config["BACKUP_CHECK_TIMEOUT"] if "BACKUP_CHECK_TIMEOUT" in escape_config else "1"
-    backup_check_timeout = backup_check_timeout if "" != backup_check_timeout else "1"
-    group_all_vars["BACKUP_CHECK_TIMEOUT"] = backup_check_timeout
-
-    backup_check_fail = escape_config["BACKUP_CHECK_FALL"] if "BACKUP_CHECK_FALL" in escape_config else "1"
-    backup_check_fail = backup_check_fail if "" != backup_check_fail else "1"
-    group_all_vars["BACKUP_CHECK_FALL"] = backup_check_fail
-
-    backup_check_rise = escape_config["BACKUP_CHECK_RISE"] if "BACKUP_CHECK_RISE" in escape_config else "1"
-    backup_check_rise = backup_check_rise if "" != backup_check_rise else "1"
-    group_all_vars["BACKUP_CHECK_RISE"] = backup_check_rise
 
     host_vars = host_data["host_vars"]
+
     host_data["groups"]["escape"] = escape_hosts
     for ip in escape_hosts:
         if ip not in host_vars:
             host_vars[ip] = {}
 
-    #当前仅支持smp+单机版本部署，集群版本需要调整
-    host_data["groups"]["escape_node"] = {"hosts": [group_all_vars["KUBE_MASTER_HOSTS"][0], escape_config["NODES"][0]]}
-    for ip in host_data["groups"]["escape_node"]["hosts"]:
-        if ip in escape_hosts:
-            host_vars[ip]["ESCAPE_ROLE"] = "BACKUP"
-        else:
-            host_vars[ip]["ESCAPE_ROLE"] = "MASTER"
+    if "ruijie-escape" != group_all_vars["APP_NAMESPACE"]:
+        master_check_url = escape_config["MASTER_CHECK_URL"]
+        if "" == master_check_url:
+            raise Exception(u"ESCAPE配置中的MASTER_CHECK_URL参数没有设置")
+
+        group_all_vars["MASTER_CHECK_URL"] = master_check_url
+
+        master_check_interval = escape_config["MASTER_CHECK_INTERVAL"] if "MASTER_CHECK_INTERVAL" in escape_config else "1"
+        master_check_interval = master_check_interval if "" != master_check_interval else "1"
+        group_all_vars["MASTER_CHECK_INTERVAL"] = master_check_interval
+
+        master_check_timeout = escape_config["MASTER_CHECK_TIMEOUT"] if "MASTER_CHECK_TIMEOUT" in escape_config else "1"
+        master_check_timeout = master_check_timeout if "" != master_check_timeout else "1"
+        group_all_vars["MASTER_CHECK_TIMEOUT"] = master_check_timeout
+
+        master_check_fail = escape_config["MASTER_CHECK_FALL"] if "MASTER_CHECK_FALL" in escape_config else "1"
+        master_check_fail = master_check_fail if "" != master_check_fail else "1"
+        group_all_vars["MASTER_CHECK_FALL"] = master_check_fail
+
+        master_check_rise = escape_config["MASTER_CHECK_RISE"] if "MASTER_CHECK_RISE" in escape_config else "1"
+        master_check_rise = master_check_rise if "" != master_check_rise else "1"
+        group_all_vars["MASTER_CHECK_RISE"] = master_check_rise
+
+        backup_check_url = escape_config["BACKUP_CHECK_URL"]
+        if "" == backup_check_url:
+            raise Exception(u"ESCAPE配置中的BACKUP_CHECK_URL参数没有设置")
+        group_all_vars["BACKUP_CHECK_URL"] = backup_check_url
+
+        backup_check_interval = escape_config["BACKUP_CHECK_INTERVAL"] if "BACKUP_CHECK_INTERVAL" in escape_config else "1"
+        backup_check_interval = backup_check_interval if "" != backup_check_interval else "1"
+        group_all_vars["BACKUP_CHECK_INTERVAL"] = backup_check_interval
+
+        backup_check_timeout = escape_config["BACKUP_CHECK_TIMEOUT"] if "BACKUP_CHECK_TIMEOUT" in escape_config else "1"
+        backup_check_timeout = backup_check_timeout if "" != backup_check_timeout else "1"
+        group_all_vars["BACKUP_CHECK_TIMEOUT"] = backup_check_timeout
+
+        backup_check_fail = escape_config["BACKUP_CHECK_FALL"] if "BACKUP_CHECK_FALL" in escape_config else "1"
+        backup_check_fail = backup_check_fail if "" != backup_check_fail else "1"
+        group_all_vars["BACKUP_CHECK_FALL"] = backup_check_fail
+
+        backup_check_rise = escape_config["BACKUP_CHECK_RISE"] if "BACKUP_CHECK_RISE" in escape_config else "1"
+        backup_check_rise = backup_check_rise if "" != backup_check_rise else "1"
+        group_all_vars["BACKUP_CHECK_RISE"] = backup_check_rise
+
+        #当前仅支持smp+单机版本部署，集群版本需要调整
+        host_data["groups"]["escape_node"] = {"hosts": [group_all_vars["KUBE_MASTER_HOSTS"][0], escape_config["NODES"][0]]}
+        for ip in host_data["groups"]["escape_node"]["hosts"]:
+            if ip in escape_hosts:
+                host_vars[ip]["ESCAPE_ROLE"] = "BACKUP"
+            else:
+                host_vars[ip]["ESCAPE_ROLE"] = "MASTER"
 
 # 处理监控系统配置参数
 def parse_eoms_config(host_data):
