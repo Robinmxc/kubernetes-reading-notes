@@ -5,6 +5,14 @@
     src: "{{ namespace_dir }}/conf/escape-eportal/conf/"
     dest: "{{ config_base_dir }}/escape-eportal/conf/"
 
+- name: 自动配置
+  tags:
+  - config
+  replace: path="{{ config_base_dir }}/escape-eportal/conf/application.yaml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+  - {regexp: "serverAddress.*$", replace: "serverAddress: {{ SMPPLUS_VIP }}"}
+  - {regexp: "serverAddress.*$", replace: "serverAddress: {{ SMPPLUS_VIP }}"}
+
 - name: 准备部署文件目录
   tags:
   - config

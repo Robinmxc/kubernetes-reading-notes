@@ -1,0 +1,54 @@
+- hosts: all
+  any_errors_fatal: true
+
+- hosts:
+  - escape
+  gather_facts: false
+  tasks:
+  - name: 替换escape的配置文件变量
+    tags: always
+    replace: path="/opt/kad/workspace/ruijie-escape/conf/all.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+    - {regexp: "ESCAPE_VIP.*$", replace: "ESCAPE_VIP: \"{{ ESCAPE.VIP }}\""}
+    - {regexp: "SMPPLUS_VIP.*$", replace: "SMPPLUS_VIP: \"{{ KUBE_MASTER_VIP }}\""}
+    - {regexp: "SESSION_TIMEOUT.*$", replace: "SESSION_TIMEOUT: {{ ESCAPE.SESSION_TIMEOUT }}"} 
+
+  - name: 输出远程账号
+    debug:
+      msg: "远程账号： {{ansible_sudo_user}}远程密码 {{ ansible_sudo_pass }}"  
+
+  - name: 获取所有已经创建的POD信息
+    tags: always
+    command: "kubectl get pod -n kube-system"
+    register: pod_info
+
+  - name: 远程清理ingress
+    tags: always  
+    command: "kubectl delete -f /opt/kube/kube-system/nginx-ingress/"
+    when: '"nginx-ingress"  in pod_info.stdout'
+
+  - name: 等待ingress结束运行
+    tags:
+      - eportal
+    shell: "kubectl get pod -n kube-system"
+    register: pod_info
+    until: '"nginx-ingress" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+    
+  - name: 远程重新配置ingress
+    tags: always  
+    shell: 'export KAD_APP_NAMESPACE=ruijie-escape; \
+          cd /opt/kad; \
+          export ssh_password={{ ansible_sudo_pass }}; \
+          export serverUser={{ ansible_sudo_user }}; \
+          ./kad-play.sh playbooks/cluster/ingress.yml'    
+
+  - name: 远程执行escape的部署更新
+    tags: always
+    shell: 'export KAD_APP_NAMESPACE=ruijie-escape; \
+          cd /opt/kad; \
+          export ssh_password={{ ansible_sudo_pass }}; \
+          export serverUser={{ ansible_sudo_user }}; \
+          ./kad-play.sh playbooks/escape/reconfig.yml'        
