@@ -1,0 +1,56 @@
+- hosts: all
+  any_errors_fatal: true
+
+- hosts:
+  - localhost
+  gather_facts: false
+
+  tasks:
+  - name: 获取所有已经创建的POD信息
+    tags: always
+    command: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+
+  - name: delete eportal
+    tags:
+    - eportal
+    command: "kubectl delete -f {{ yaml_dir }}/eportal/"
+    when: '"portal" in pod_info.stdout'  
+
+  - name: delete authentication
+    tags:
+    - authentication
+    command: "kubectl delete -f {{ yaml_dir }}/authentication/"
+    when: '"authentication" in pod_info.stdout'    
+
+  - name: 等待eportal结束运行
+    tags:
+      - eportal
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-eportal" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待authentication结束运行
+    tags:
+      - authentication
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-authentication" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+- hosts:
+  - kube_node
+  tags:
+  - smpplus
+  any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
+  roles:
+  - { role: ruijie/smpplus/authentication, tags: ["authentication"] }
+  - { role: ruijie/smpplus/eportal, tags: ["eportal"] }

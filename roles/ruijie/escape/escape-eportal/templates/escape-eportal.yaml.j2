@@ -27,6 +27,8 @@ spec:
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ ESCAPE_DOCKERS[comp_name].name }}:{{ ESCAPE_DOCKERS[comp_name].version }}
         imagePullPolicy: IfNotPresent
         env:
+        - name: ACCESS_VIP
+          value: "{{ ESCAPE_VIP }}"         
         - name: JAVA_OPT_EXT
           value: "{{ JAVA_OPT_EXT}}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}

@@ -12,3 +12,5 @@
     - "/etc/kad/config.yml"
   roles:
     - { role: ruijie/escape/keepalived }
+- import_playbook: vip-component-reconfig-escape.yaml
+- import_playbook: vip-component-reconfig-smpplus.yaml
