@@ -26,7 +26,7 @@
     tags: always  
     command: "kubectl delete -f /opt/kube/kube-system/nginx-ingress/"
     when: '"nginx-ingress"  in pod_info.stdout'
-    
+
   - name: 等待ingress结束运行
     tags:
       - eportal
@@ -39,8 +39,16 @@
     
   - name: 远程重新配置ingress
     tags: always  
-    command: "export KAD_APP_NAMESPACE=ruijie-escape ;cd /opt/kad ;export ssh_password={{ ansible_sudo_pass }} ;export serverUser={{ ansible_sudo_user }} ;./kad-play.sh playbooks/cluster/ingress.yml"
+    shell: 'export KAD_APP_NAMESPACE=ruijie-escape; \
+          cd /opt/kad; \
+          export ssh_password={{ ansible_sudo_pass }}; \
+          export serverUser={{ ansible_sudo_user }}; \
+          ./kad-play.sh playbooks/cluster/ingress.yml'    
 
   - name: 远程执行escape的部署更新
     tags: always
-    command: "export KAD_APP_NAMESPACE=ruijie-escape ;cd /opt/kad ;export ssh_password={{ ansible_sudo_pass }} ;export serverUser={{ ansible_sudo_user }} ; ./kad-play.sh playbooks/escape/reconfig.yml"
+    shell: 'export KAD_APP_NAMESPACE=ruijie-escape; \
+          cd /opt/kad; \
+          export ssh_password={{ ansible_sudo_pass }}; \
+          export serverUser={{ ansible_sudo_user }}; \
+          ./kad-play.sh playbooks/escape/reconfig.yml'        
