@@ -4,18 +4,14 @@ conf_path="/etc/keepalived/conf"
 
 # 检测配置文件是否存在
 if [ -d "$conf_path" ]; then
-    conf_files=("$conf_path"/*.conf)
-    if [ ${#conf_files[@]} -gt 0 ]; then
+    if [ "`ls -A $conf_path | grep .conf`" != "" ]; then
         status=`systemctl is-active keepalived`
         if [ "$status" == "inactive"  ]; then
-            echo "keepalived is not start , start keepalived" >> /var/log/keepalived_up.log
+            echo `date`+ " keepalived is not start , start keepalived" >> /var/log/keepalived_up.log
             systemctl start keepalived
-        else
-            echo "keepalived lived" >> /var/log/keepalived_up.log
-        fi
     else
-        echo "no config file" >> /var/log/keepalived_up.log
+        echo `date`+ " no config file" >> /var/log/keepalived_up.log
     fi
 else
-    echo "no config dir" >> /var/log/keepalived_up.log
+    echo `date`+ " no config dir" >> /var/log/keepalived_up.log
 fi

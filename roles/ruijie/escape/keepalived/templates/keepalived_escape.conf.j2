@@ -1,12 +1,12 @@
 vrrp_script check_escape {
 {% if "MASTER" == hostvars[inventory_hostname]["ESCAPE_ROLE"] %}
-    script "/etc/keepalived/master_escape_check.sh"
+    script "/etc/keepalived/conf/master_escape_check.sh"
     interval {{ MASTER_CHECK_INTERVAL }}
     timeout {{ MASTER_CHECK_TIMEOUT }}
     rise {{ MASTER_CHECK_RISE }}
     fall {{ MASTER_CHECK_FALL }}
 {% else %}
-    script "/etc/keepalived/backup_escape_check.sh"
+    script "/etc/keepalived/conf/backup_escape_check.sh"
     interval {{ BACKUP_CHECK_INTERVAL }}
     timeout {{ BACKUP_CHECK_TIMEOUT }}
     rise {{ BACKUP_CHECK_RISE }}
@@ -22,7 +22,7 @@ vrrp_instance VI-escape {
 {% endif %}
     unicast_src_ip {{ inventory_hostname }}
     unicast_peer {
-{% for h in groups['escape'] %}{% if h != inventory_hostname %}
+{% for h in groups['escape_node'] %}{% if h != inventory_hostname %}
         {{ h }}
 {% endif %}{% endfor %}
     }
