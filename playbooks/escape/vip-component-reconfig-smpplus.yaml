@@ -51,7 +51,7 @@
   vars_files:
   - "{{ KAD_PACKAGE_DIR }}/kad.yml"
   - "/etc/kad/config.yml"
+  - "/opt/kad/playbooks/smpplus/group_vars/all/all.yml"  
   roles:
   - { role: ruijie/smpplus/authentication, tags: ["authentication"] }
   - { role: ruijie/smpplus/eportal, tags: ["eportal"] }
-  - "/opt/kad/playbooks/smpplus/group_vars/all/all.yml"  
