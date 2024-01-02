@@ -1,5 +1,5 @@
 
-license_java_opt: "-Xms128m -Xmx256m"
+license_java_opt: "-Xms358m -Xmx358m"
 
 license_configs: []
 
@@ -30,7 +30,7 @@ deploy_conf_defaults:
     replicas: 2
     resources:
       limits:
-        cpu: 1
+        cpu: 512m
         memory: 512Mi
       requests:
         cpu: 500m
@@ -39,7 +39,7 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 500m
+        cpu: 512m
         memory: 512Mi
       requests:
         cpu: 200m

@@ -28,16 +28,16 @@ deploy_conf_defaults:
     replicas: 2
     resources:
       limits:
-        cpu: 1
+        cpu: 0.5
         memory: 512Mi
       requests:
-        cpu: 1
+        cpu: 0.5
         memory: 256Mi
   single-basic:
     replicas: 1
     resources:
       limits:
-        cpu: 1
+        cpu: 0.5
         memory: 512Mi
       requests:
         cpu: 500m

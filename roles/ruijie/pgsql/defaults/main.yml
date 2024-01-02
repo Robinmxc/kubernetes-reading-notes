@@ -31,7 +31,7 @@ pgsql_deploy_conf_defaults:
   basic:
     resources:
       limits:
-        cpu: 1
+        cpu: 0.5
         memory: 2Gi
       requests:
         cpu: 0.5
@@ -39,7 +39,7 @@ pgsql_deploy_conf_defaults:
   single-basic:
     resources:
       limits:
-        cpu: 1
+        cpu: 0.5
         memory: 2Gi
       requests:
         cpu: 0.5
