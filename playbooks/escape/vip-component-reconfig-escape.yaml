@@ -37,7 +37,7 @@
     delay: 3
     ignore_errors: true
     
-  - name: 远程重新配置ingress
+  - name: 远程重新配置ingress，请耐心等待
     tags: always  
     shell: 'export KAD_APP_NAMESPACE=ruijie-escape; \
           cd /opt/kad; \
@@ -45,7 +45,7 @@
           export serverUser={{ ansible_sudo_user }}; \
           ./kad-play.sh playbooks/cluster/ingress.yml'    
 
-  - name: 远程执行escape的部署更新
+  - name: 远程执行escape的部署更新，请耐心等待
     tags: always
     shell: 'export KAD_APP_NAMESPACE=ruijie-escape; \
           cd /opt/kad; \

@@ -16,13 +16,13 @@
     - eportal
     command: "kubectl delete -f {{ yaml_dir }}/eportal/"
     when: '"portal" in pod_info.stdout'  
-
+    ignore_errors: true
   - name: delete authentication
     tags:
     - authentication
     command: "kubectl delete -f {{ yaml_dir }}/authentication/"
     when: '"authentication" in pod_info.stdout'    
-
+    ignore_errors: true
   - name: 等待eportal结束运行
     tags:
       - eportal
@@ -54,3 +54,4 @@
   roles:
   - { role: ruijie/smpplus/authentication, tags: ["authentication"] }
   - { role: ruijie/smpplus/eportal, tags: ["eportal"] }
+  - "/opt/kad/playbooks/smpplus/group_vars/all/all.yml"  
