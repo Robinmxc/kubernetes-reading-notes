@@ -11,13 +11,14 @@
   vars:
     auth_server: '{% if SOURCEID_DOMAIN_MODE == "single" %}{{ SOURCEID_SSO_URL }}/{{ CAS_SUFFIX }}{% else %}{{ SOURCEID_SSO_URL }}{% endif %}'
     api_path: '{% if SOURCEID_DOMAIN_MODE == "single" %}svc/{{ CAS_SUFFIX }}/api{% else %}svc/api{% endif %}'
+    gate_server: '{{ SOURCEID_FRONTEND_URL }}{% if "" != SELF_SUFFIX %}/{{ SELF_SUFFIX }}{% else %}{% endif %}'
   replace: path="{{ config_base_dir }}/sourceid/gate/conf/application.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
   - {regexp: "^auth-server:.*$", replace: "auth-server: {{ auth_server }}"}
   - {regexp: "mongodb:.*/gate.*$", replace: "mongodb://{{ SOURCEID_GATE_DB_USER }}:{{ SOURCEID_GATE_DB_PWD }}@{{ mongodb_addr }}/gate?replicaSet=rs0"}
   - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
   - {regexp: "svc/api", replace: "{{ api_path }}"}
-  - { regexp: "^licenseAdminUrl:.*$", replace: "licenseAdminUrl: ${server.servlet.context-path}/web-page/license/" }
+  - {regexp: "^licenseAdminUrl:.*$", replace: "licenseAdminUrl: {{ gate_server }}/web-page/license/" }
   no_log: true
 
 - name: 自定义配置
