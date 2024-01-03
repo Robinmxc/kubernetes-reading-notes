@@ -31,10 +31,15 @@
   connection: local
   run_once: true
   
-- name: 拷贝sam配置文件
-  debug:
-    msg: "暂未实现"
-
+- name: 拷贝escape配置文件
+  vars:
+    src_path: "{{ KAD_PACKAGE_DIR }}/conf/{{ item }}"
+    dest_path: "{{ namespace_dir }}/conf/{{ item }}"
+  copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+  when: 'src_path is exists and dest_path is not exists'
+  with_items:
+    - "escape-eportal"
+    - "escape-freeradius"
 - name: 获取autostart.sh状态
   stat: path="/etc/init.d/autostart.sh"
   register: data_dir_stat  
