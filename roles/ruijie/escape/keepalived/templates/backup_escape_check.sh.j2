@@ -1,5 +1,6 @@
 #!/bin/bash
 set -x
+echo `date` + " Start backup_escape_check" >> /var/log/keepalived.log
 url="{{ BACKUP_CHECK_URL}}"
 
 # 使用timeout命令设置超时时间并发送HTTP请求
