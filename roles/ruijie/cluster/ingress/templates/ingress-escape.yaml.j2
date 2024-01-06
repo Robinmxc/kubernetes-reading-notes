@@ -19,14 +19,14 @@ spec:
   - host: {{ KUBE_MASTER_VIP }}.nip.io
     http: &http_rules
       paths:
-      - path: /portal
+      - path: /entry
         pathType: Prefix
         backend:
           service:
             name: rg-escape-eportal
             port:
               number: 8898
-      - path: /entry
+      - path: /
         pathType: Prefix
         backend:
           service:
