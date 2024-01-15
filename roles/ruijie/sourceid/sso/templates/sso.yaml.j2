@@ -287,3 +287,23 @@ spec:
             name: rg-sso
             port:
               number: 80
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rg-sso-ingress-information
+  namespace: ruijie-sourceid
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: lbbsso.ruishan.cc
+    http:
+      paths:
+      - path: /information
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-frontend
+            port:
+              number: 80
