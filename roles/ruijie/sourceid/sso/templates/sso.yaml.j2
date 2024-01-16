@@ -297,7 +297,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: lbbsso.ruishan.cc
+  - host: {{ SOURCEID_SSO_DOMAIN }}
     http:
       paths:
       - path: /information
