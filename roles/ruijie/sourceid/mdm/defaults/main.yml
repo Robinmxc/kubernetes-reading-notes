@@ -4,7 +4,7 @@ DOP_ENABLE: "{% if SOURCEID_DOCKERS['dop'] is defined and (SOURCEID_DOCKERS['dop
 
 dop_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms480m -Xmx480m{% elif CLUSTER_SCALE == 'single' %}-Xms480m -Xmx480m{% elif CLUSTER_SCALE == 'small' %}-Xms480m -Xmx480m{% else %}-Xms358m -Xmx358m{% endif %}"
 
-mdm_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'single' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'small' %}-Xms1792m -Xmx1792m{% else %}-Xms358m -Xmx358m{% endif %}"
+mdm_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'single' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'small' %}-Xms1792m -Xmx1792m{% else %}-Xms600m -Xmx600m{% endif %}"
 
 mdm_configs: []
 

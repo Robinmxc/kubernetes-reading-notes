@@ -1,6 +1,6 @@
 RG_LOG_ENABLE: "{% if SOURCEID_DOCKERS['rg-log'] is defined and (SOURCEID_DOCKERS['rg-log'].enable is not defined or SOURCEID_DOCKERS['rg-log'].enable) %}yes{% else %}no{% endif %}"
 
-rg_log_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1433m -Xmx1433m{% elif CLUSTER_SCALE == 'single' %}-Xms896m -Xmx896m{% elif CLUSTER_SCALE == 'small' %}-Xms896m -Xmx896m{% else %}-Xms800m -Xmx800m{% endif %}"
+rg_log_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1433m -Xmx1433m{% elif CLUSTER_SCALE == 'single' %}-Xms896m -Xmx896m{% elif CLUSTER_SCALE == 'small' %}-Xms896m -Xmx896m{% else %}-Xms400m -Xmx600m{% endif %}"
 
 rg_log_configs: []
 
