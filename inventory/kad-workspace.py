@@ -84,7 +84,7 @@ def parse_host_data(workspace_dir):
     if ("KAD_APP_NAMESPACE" in env):
         app_namespace = os.environ["KAD_APP_NAMESPACE"]
     else:
-        app_namespace = "ruijie-sourceid"
+        app_namespace = "ruijie-escape"
     group_all_vars["APP_NAMESPACE"] = app_namespace
 
     # Copy app config to global
@@ -157,11 +157,11 @@ def parse_host_data(workspace_dir):
         group_all_vars["KUBE_MASTER_VIP"] = k8s_config["KUBE_MASTER_VIP"]
     else:
         group_all_vars["KUBE_MASTER_VIP"] = master_hosts[0]
-    allNodes = set(master_hosts);    
+    allNodes = set(master_hosts);
     allNodes.add(group_all_vars["KUBE_MASTER_VIP"])
     allNodes.update(node_hosts)
-    allNodes.union()   
-    allNodeStr = ', '.join(str(x) for x in allNodes) 
+    allNodes.union()
+    allNodeStr = ', '.join(str(x) for x in allNodes)
     allNodeStr = allNodeStr.replace(' ', '')
     group_all_vars["allNodeStr"] = allNodeStr
     # 计算服务网段
@@ -255,7 +255,7 @@ def parse_host_data(workspace_dir):
 
     if  group_all_vars["KAD_APP_VERSION"] < "1.9.1":
         group_all_vars["HEALTH_CHECK"] = {"enable": False,}
-        
+
     parse_fdfs_config(result)
 
     parse_sourceid_gateway_config(result)
@@ -265,7 +265,7 @@ def parse_host_data(workspace_dir):
     parse_eoms_config(result)
 
     parse_ldap_config(result)
-    
+
     parse_mgob_config(result)
     parse_escape_config(result)
     return result
@@ -376,14 +376,14 @@ def parse_ldap_config(host_data):
         ldap_hosts = ldap_config["LDAP_HOST"] if "LDAP_HOST" in ldap_config else []
         ldap_vip = ldap_config["LDAP_VIP"] if "LDAP_VIP" in ldap_config else ""
         if len(ldap_hosts) !=1 and len(ldap_hosts) !=2:
-          raise Exception(ldap_hosts + u"必须配置一个或者两个IP")
+            raise Exception(ldap_hosts + u"必须配置一个或者两个IP")
         for ip in ldap_hosts:
             if not is_IP(ip):
                 raise Exception(ip + u"不是有效的IP地址")
         if "" != ldap_vip and not is_IP(ldap_vip):
             raise Exception(u"LDAP_VIP不是有效的IP地址")
         if len(ldap_hosts) == 2 and len(ldap_vip) == 0:
-          raise Exception("双主模式必须配置LDAP_VIP")
+            raise Exception("双主模式必须配置LDAP_VIP")
 
         host_data["groups"]["ldap"] = ldap_hosts
         group_all_vars["LDAP_VIP"] = ldap_vip
@@ -408,12 +408,12 @@ def parse_escape_config(host_data):
     escape_config = group_all_vars["ESCAPE"] if "ESCAPE" in group_all_vars else {"enable":False,"VIP":""}
     enabled = escape_config["enable"] if "enable" in escape_config else False
     if not enabled:
-        return    
+        return
     escape_vip = escape_config["VIP"] if "VIP" in escape_config else ""
     if "" == escape_vip:
-            raise Exception(u"ESCAPE配置中的VIP参数没有设置")
+        raise Exception(u"ESCAPE配置中的VIP参数没有设置")
     if "" != escape_vip and not is_IP(escape_vip):
-            raise Exception(u"ESCAPE配置中的VIP不是有效的IP地址")
+        raise Exception(u"ESCAPE配置中的VIP不是有效的IP地址")
     group_all_vars["ESCAPE_VIP"] = escape_vip
     escape_hosts = escape_config["NODES"] if "NODES" in escape_config else []
     for ip in escape_hosts:
@@ -428,8 +428,23 @@ def parse_escape_config(host_data):
     for ip in escape_hosts:
         if ip not in host_vars:
             host_vars[ip] = {}
+    # 逃生优先
+    escape_first = group_all_vars["ESCAPE_FIRST"] if "ESCAPE_FIRST" in group_all_vars else False
+    if escape_first:
+        smp_old_ip = group_all_vars["SMP_OLD_IP"] if "SMP_OLD_IP" in group_all_vars else ""
+        if "" == smp_old_ip:
+            raise Exception(u"ESCAPE配置中的SMP_OLD_IP参数没有设置")
+        if "" != smp_old_ip and not is_IP(smp_old_ip):
+            raise Exception(u"ESCAPE配置中的SMP_OLD_IP不是有效的IP地址")
 
-    if "ruijie-escape" != group_all_vars["APP_NAMESPACE"]:
+        smp_new_ip = group_all_vars["SMP_NEW_IP"] if "SMP_NEW_IP" in group_all_vars else ""
+        if "" == smp_new_ip:
+            raise Exception(u"ESCAPE配置中的SMP_NEW_IP参数没有设置")
+        if "" != smp_new_ip and not is_IP(smp_new_ip):
+            raise Exception(u"ESCAPE配置中的SMP_NEW_IP不是有效的IP地址")
+
+    # 逃生配置解析
+    if "ruijie-escape" != group_all_vars["APP_NAMESPACE"] or escape_first:
         master_check_url = escape_config["MASTER_CHECK_URL"]
         if "" == master_check_url:
             raise Exception(u"ESCAPE配置中的MASTER_CHECK_URL参数没有设置")
@@ -480,6 +495,21 @@ def parse_escape_config(host_data):
                 host_vars[ip]["ESCAPE_ROLE"] = "BACKUP"
             else:
                 host_vars[ip]["ESCAPE_ROLE"] = "MASTER"
+        # 当前仅支持smp+单机版本部署，集群版本需要调整
+        if "ruijie-smpplus" == group_all_vars["APP_NAMESPACE"]:
+            host_data["groups"]["escape_node"] = {"hosts": [group_all_vars["KUBE_MASTER_HOSTS"][0], escape_config["NODES"][0]]}
+            host_data["groups"]["ESCAPE_MASTER"] = [group_all_vars["KUBE_MASTER_HOSTS"][0]]
+            host_data["groups"]["ESCAPE_BACKUP"] = [escape_config["NODES"][0]]
+        else:
+            if escape_first:
+                # 逃生部署并且为逃生优先
+                host_data["groups"]["escape_node"] = {"hosts": [group_all_vars["SMP_OLD_IP"], escape_config["NODES"][0]]}
+                host_data["groups"]["ESCAPE_MASTER"] = [group_all_vars["SMP_OLD_IP"]]
+                host_data["groups"]["ESCAPE_BACKUP"] = [escape_config["NODES"][0]]
+
+        for ip in host_data["groups"]["escape_node"]["hosts"]:
+            if ip not in host_vars:
+                host_vars[ip] = {}
 
 # 处理监控系统配置参数
 def parse_eoms_config(host_data):
@@ -604,7 +634,7 @@ def parse_fdfs_config(host_data):
         if not is_IP(ip):
             raise Exception(ip + u"不是有效的IP地址")
     host_data["groups"]["fdfs_tracker"] = tracker_hosts
-    
+
     if "FDFS_TRACKER_PORT" not in group_all_vars:
         group_all_vars["FDFS_TRACKER_PORT"] = "22122"
 

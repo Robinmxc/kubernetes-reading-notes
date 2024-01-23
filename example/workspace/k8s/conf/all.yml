@@ -4,7 +4,14 @@ KUBE_MASTER_HOSTS: ["192.168.1.61"]
 # Node节点IP
 KUBE_NODE_HOSTS: ["192.168.1.62", "192.168.1.63", "192.168.1.64"]
 
-# 逃生模式开启时，smpplus节点和逃生组件都需要配置此,此配置尽在smpplus上配置有效
+# 优先逃生
+ESCAPE_FIRST: true
+# 优先逃生时必须配置--SMP新服务器IP
+SMP_NEW_IP: ""
+# 优先逃生时必须配置--SMP原服务器IP
+SMP_OLD_IP: ""
+
+# 逃生模式开启时，smpplus节点和逃生组件都需要配置此,此配置尽在需要部署逃生时和逃生优先方案是有效
 ESCAPE: {
   # enable：true - 部署 false - 不部署；
   enable: false,
@@ -33,7 +40,7 @@ ESCAPE: {
   # 备节点检测连续失败次数，连续失败后节点会降级（整数配置）
   BACKUP_CHECK_FALL: "",
   # 备节点检测连续成功次数，连续失败后节点会降级（整数配置）
-  BACKUP_CHECK_RISE: "",
+  BACKUP_CHECK_RISE: ""
 }
 
 # POD 网段 (Cluster CIDR），不要与内网已有网段冲突，网络位数不能大于20

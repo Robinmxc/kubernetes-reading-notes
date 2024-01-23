@@ -1,0 +1,20 @@
+- hosts:
+    - localhost
+  tasks:
+    - name: 环境检测
+      fail:
+        msg: "此功能只支持通过escape操作"
+      when: "APP_NAMESPACE != 'ruijie-escape'"
+
+- hosts:
+    - localhost
+  tasks:
+    - name: 启动keepalived服务
+      shell: "sshpass -p {{ ansible_sudo_pass }} ssh -y {{ ansible_sudo_user }}@{{SMP_NEW_IP}} 'systemctl enable keepalived & systemctl start keepalived'"
+
+    - name: crontab清理keepalived服务拉起脚本
+      shell: "sshpass -p {{ ansible_sudo_pass }} ssh -y {{ ansible_sudo_user }}@{{SMP_NEW_IP}} 'sed -i /keepalived_up/d /var/spool/cron/root'"
+      ignore_errors: true
+
+    - name: crontab添加keepalived服务拉起脚本
+      shell: "sshpass -p {{ ansible_sudo_pass }} ssh -y {{ ansible_sudo_user }}@{{SMP_NEW_IP}} 'echo \"* * * * * /etc/keepalived/keepalived_up.sh\" >> /var/spool/cron/root'"

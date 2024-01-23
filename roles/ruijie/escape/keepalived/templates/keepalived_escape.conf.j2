@@ -1,5 +1,5 @@
 vrrp_script check_escape {
-{% if "MASTER" == hostvars[inventory_hostname]["ESCAPE_ROLE"] %}
+{% if inventory_hostname in groups["ESCAPE_MASTER"] %}
     script "/etc/keepalived/conf/master_escape_check.sh"
     interval {{ MASTER_CHECK_INTERVAL }}
     timeout {{ MASTER_CHECK_TIMEOUT }}
@@ -14,10 +14,11 @@ vrrp_script check_escape {
 {% endif %}
 }
 vrrp_instance VI-escape {
-    state {{ hostvars[inventory_hostname]["ESCAPE_ROLE"] }}
-{% if "MASTER" == hostvars[inventory_hostname]["ESCAPE_ROLE"] %}
+{% if inventory_hostname in groups["ESCAPE_MASTER"] %}
+    state MASTER
     priority  100
 {% else %}
+    state BACKUP
     priority  90
 {% endif %}
     unicast_src_ip {{ inventory_hostname }}

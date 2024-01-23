@@ -1,0 +1,35 @@
+- hosts:
+    - localhost
+  tasks:
+    - name: 环境检测
+      fail:
+        msg: "此功能只支持通过escape操作"
+      when: "APP_NAMESPACE != 'ruijie-escape'"
+
+- hosts:
+    - localhost
+  tasks:
+    - name: 复制修改网卡文件
+      shell: "sshpass -p {{ ansible_sudo_pass }} scp /opt/kad/tools/change-ifcfg.sh {{ ansible_sudo_user }}@{{SMP_OLD_IP}}:/opt/kad/tools/"
+
+    - name: 执行修改网卡
+      shell: "sshpass -p {{ ansible_sudo_pass }} ssh -y {{ ansible_sudo_user }}@{{SMP_OLD_IP}} '/opt/kad/tools/change-ifcfg.sh {{SMP_NEW_IP}} {{SMP_OLD_IP}}' "
+
+    - name: 启动服务
+      service: name={{ item }} state=started enabled=yes
+      with_items:
+        - keepalived
+
+    - name: crontab清理keepalived服务拉起脚本
+      shell: sed -i '/keepalived_up/d' /var/spool/cron/root
+      ignore_errors: true
+
+    - name: crontab添加keepalived服务拉起脚本
+      shell: echo '* * * * * /etc/keepalived/keepalived_up.sh' >> /var/spool/cron/root
+
+- hosts:
+    - localhost
+  tasks:
+    - name: 重启服务(重启服务会有报错，请忽略）
+      shell: "sshpass -p {{ ansible_sudo_pass }} ssh -y {{ ansible_sudo_user }}@{{SMP_OLD_IP}} 'reboot'"
+      ignore_errors: true

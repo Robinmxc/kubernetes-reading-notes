@@ -3,8 +3,8 @@
   tasks:
     - name: 环境检测
       fail:
-        msg: "escape-vip只支持通过smp+本体部署"
-      when: "APP_NAMESPACE == 'ruijie-escape'"
+        msg: "escape-vip-install只支持通过escape部署"
+      when: "APP_NAMESPACE != 'ruijie-escape'"
 
 - hosts:
     - escape_node
@@ -13,4 +13,3 @@
   roles:
     - { role: ruijie/escape/keepalived }
 - import_playbook: vip-component-reconfig-escape.yaml
-- import_playbook: vip-component-reconfig-smpplus.yaml
