@@ -46,7 +46,7 @@ MGOB: {
   MGOB_BACKUP_DAY: "30",
 
 # 清理操作执行时间
-  MGOB_CLEAN_CRON: "10 5 */1 * *",
+  MGOB_CLEAN_CRON: "10 5 * * *",
   
 # MGOB_SFTP_ENABLED: yes - mongodb上传sftp服务器； no - 不上传；默认不上传,不配置时，备份的数据库文件只会保留在本地，存在丢失风险
   MGOB_SFTP_ENABLED: "no",
