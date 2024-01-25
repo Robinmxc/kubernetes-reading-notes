@@ -10,7 +10,7 @@
     - localhost
   tasks:
     - name: 复制修改网卡文件
-      shell: "sshpass -p {{ ansible_sudo_pass }} scp -f /opt/kad/tools/change-ifcfg.sh {{ ansible_sudo_user }}@{{SMP_OLD_IP}}:/opt/kad/tools/"
+      shell: "sshpass -p {{ ansible_sudo_pass }} scp /opt/kad/tools/change-ifcfg.sh {{ ansible_sudo_user }}@{{SMP_OLD_IP}}:/opt/kad/tools/"
 
     - name: 执行修改网卡
       shell: "sshpass -p {{ ansible_sudo_pass }} ssh -y {{ ansible_sudo_user }}@{{SMP_OLD_IP}} '/opt/kad/tools/change-ifcfg.sh {{SMP_NEW_IP}} {{SMP_OLD_IP}}' "
