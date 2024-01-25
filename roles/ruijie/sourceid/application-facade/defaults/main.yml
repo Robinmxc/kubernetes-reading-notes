@@ -1,7 +1,7 @@
 
 FACADE_ENABLE: "{% if SOURCEID_DOCKERS['application-facade'] is defined and (SOURCEID_DOCKERS['application-facade'].enable is not defined or SOURCEID_DOCKERS['application-facade'].enable) %}yes{% else %}no{% endif %}"
 
-facade_java_opt: "{% if CLUSTER_SCALE == 'normal'  %}-Xms2867m -Xmx2867m{% elif CLUSTER_SCALE == 'single'  %}-Xms2150m -Xmx2150m{%  elif CLUSTER_SCALE == 'small' %}-Xms2150m -Xmx2150m{% elif CLUSTER_SCALE == 'basic'  %}-Xms800m -Xmx800m{% else %}-Xms400m -Xmx600m{% endif %}"
+facade_java_opt: "{% if CLUSTER_SCALE == 'normal'  %}-Xms2867m -Xmx2867m{% elif CLUSTER_SCALE == 'single'  %}-Xms2150m -Xmx2150m{%  elif CLUSTER_SCALE == 'small' %}-Xms400m -Xmx600m{% elif CLUSTER_SCALE == 'basic'  %}-Xms800m -Xmx800m{% else %}-Xms400m -Xmx600m{% endif %}"
 
 facade_configs: []
 
@@ -10,6 +10,13 @@ facade_templates_path: ""
 deploy_conf_defaults:
   small:
     replicas: 1
+    resources:
+      limits:
+        cpu: 0.5
+        memory: 1Gi
+      requests:
+        cpu: 256m
+        memory: 512Mi
   normal:
     replicas: 1
     resources:

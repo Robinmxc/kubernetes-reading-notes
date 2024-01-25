@@ -4,13 +4,20 @@ pcapture_configs: []
 pcapture_port: 10000
 deploy_ip: "{% if mongodb_deploy_mode == '1' %}{{ groups['mongodb'][0] }}{% else %}{{ groups['mongodb'][0] }},{{ groups['mongodb'][1] }},{{ groups['mongodb'][2] }}{% endif %}"
 replicas_num: "{% if mongodb_deploy_mode == '1' %}1{% else %}3{% endif %}"
-pcapture_java_opt: "{% if CLUSTER_SCALE == 'normal'  %}-Xms800m -Xmx800m{% elif CLUSTER_SCALE == 'single'  %}-Xms800m -Xmx800m{%  elif CLUSTER_SCALE == 'small' %}-Xms800m -Xmx800m{% else %}-Xms358m -Xmx358m{% endif %}"
+pcapture_java_opt: "{% if CLUSTER_SCALE == 'normal'  %}-Xms800m -Xmx800m{% elif CLUSTER_SCALE == 'single'  %}-Xms800m -Xmx800m{%  elif CLUSTER_SCALE == 'small' %}-Xms358m -Xmx358m{% else %}-Xms358m -Xmx358m{% endif %}"
 
 pcapture_templates_path: ""
 
 deploy_conf_defaults:
   small:
     replicas: '{{ replicas_num }}'
+    resources:
+      limits:
+        cpu: 512m
+        memory: 512Mi
+      requests:
+        cpu: 200m
+        memory: 256Mi
   normal:
     replicas: '{{ replicas_num }}'
     resources:

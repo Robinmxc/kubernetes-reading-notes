@@ -1,5 +1,5 @@
 
-gate_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'single' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'small' %}-Xms1792m -Xmx1792m{% else %}-Xms800m -Xmx800m{% endif %}"
+gate_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'single' %}-Xms1792m -Xmx1792m{% elif CLUSTER_SCALE == 'small' %}-Xms800m -Xmx800m{% else %}-Xms800m -Xmx800m{% endif %}"
 
 gate_configs: []
 
@@ -8,6 +8,13 @@ gate_templates_path: ""
 deploy_conf_defaults:
   small:
     replicas: 1
+    resources:
+      limits:
+        cpu: 0.5
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 512Mi
   normal:
     replicas: 2
     resources:

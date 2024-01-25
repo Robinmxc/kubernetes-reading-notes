@@ -1,10 +1,17 @@
 DATA_SYNC_ENABLE: "{% if SOURCEID_DOCKERS['data-sync'] is defined and (SOURCEID_DOCKERS['data-sync'].enable is not defined or SOURCEID_DOCKERS['data-sync'].enable) %}yes{% else %}no{% endif %}"
 
-data_sync_java_opt: "{% if CLUSTER_SCALE == 'normal'  %}-Xms1075m -Xmx1075m{% elif CLUSTER_SCALE == 'single'   %}-Xms1075m -Xmx1075m{% elif CLUSTER_SCALE == 'small'  %}-Xms1075m -Xmx1075m{% elif CLUSTER_SCALE == 'basic'  %}-Xms400m -Xmx600m  -XX:MetaspaceSize=64m -XX:MaxMetaspaceSize=128m{% else %}-Xms400m -Xmx600m  -XX:MetaspaceSize=64m -XX:MaxMetaspaceSize=128m{% endif %}"
+data_sync_java_opt: "{% if CLUSTER_SCALE == 'normal'  %}-Xms1075m -Xmx1075m{% elif CLUSTER_SCALE == 'single'   %}-Xms1075m -Xmx1075m{% elif CLUSTER_SCALE == 'small'  %}-Xms400m -Xmx600m  -XX:MetaspaceSize=64m -XX:MaxMetaspaceSize=128m{% elif CLUSTER_SCALE == 'basic'  %}-Xms400m -Xmx600m  -XX:MetaspaceSize=64m -XX:MaxMetaspaceSize=128m{% else %}-Xms400m -Xmx600m  -XX:MetaspaceSize=64m -XX:MaxMetaspaceSize=128m{% endif %}"
 
 deploy_conf_defaults:
   small:
     replicas: 1
+    resources:
+      limits:
+        cpu: 0.5
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
   normal:
     replicas: 1
     resources:
