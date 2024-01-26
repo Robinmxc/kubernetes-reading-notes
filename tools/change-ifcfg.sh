@@ -6,4 +6,4 @@ ifCfg=/etc/sysconfig/network-scripts/ifcfg-${ifMark}
 sed -i "s/IPADDR=$2/IPADDR=$1/g" ${ifCfg}
 sed -i "s/IPADDR=\"$2\"/IPADDR=\"$1\"/g" ${ifCfg}
 sed -i "s/$2/$1/g" /etc/keepalived/keepalived.conf
-sed -i "s/$2/$1/g" /etc/keepalived/conf/keepalived_escape.conf
+sed -i ":a;N;$!ba;s/$2/$1/" /etc/keepalived/conf/keepalived_escape.conf
