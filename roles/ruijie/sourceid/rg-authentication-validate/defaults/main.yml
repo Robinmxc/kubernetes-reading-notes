@@ -1,4 +1,6 @@
 RG_AUTHENTICATION_VALIDATE_ENABLE: "{% if SOURCEID_DOCKERS['ess'] is defined and (SOURCEID_DOCKERS['ess'].enable is not defined or SOURCEID_DOCKERS['ess'].enable) %}yes{% else %}no{% endif %}"
+auth-extend_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms800m -Xmx800m{% elif CLUSTER_SCALE == 'single' %}-Xms800m -Xmx800m{% elif CLUSTER_SCALE == 'small' %}-Xms800m -Xmx800m{% else %}-Xms800m -Xmx800m{% endif %}"
+ess_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms800m -Xmx800m{% elif CLUSTER_SCALE == 'single' %}-Xms800m -Xmx800m{% elif CLUSTER_SCALE == 'small' %}-Xms800m -Xmx800m{% else %}-Xms800m -Xmx800m{% endif %}"
 
 rg_authentication_validate_var:
   ess_port_80_rel: 8081
@@ -34,7 +36,64 @@ deploy_conf_defaults:
       requests:
         cpu: 1
         memory: 1Gi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 0.5
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 0.5
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+ess_deploy_conf_defaults:
+  small:
+    replicas: 1
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
 rg_authentication_validate_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
+rg_authentication_validate_deploy_ess_conf: '{{ ess_deploy_conf_defaults[CLUSTER_SCALE] }}'
 
 rg_authentication_validate_var_conf: '{{ rg_authentication_validate_var }}'

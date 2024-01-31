@@ -23,12 +23,6 @@
     wait_for: timeout=15
     when: '"mongo1" not in pod_info.stdout'
 
-  - name: 尝试查询复制集状态
-    shell: "{{ mongo_pod_shell }} mongo --quiet --eval 'rs.status()'"
-    register: rs_status
-    connection: local
-    when: '"mongo1" not in pod_info.stdout'
-
   - name: 获取mongo1 POD 名称
     shell: "kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
     register: shell_result
@@ -41,12 +35,18 @@
       mongo_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- mongo {{ mongo_auth_param }}"
     connection: local
 
+  - name: 尝试查询复制集状态
+    shell: "{{ mongo_pod_shell }} mongo --quiet --eval 'rs.status()'"
+    register: rs_status
+    connection: local
+    when: '"mongo1" not in pod_info.stdout'
+
   - name: drop mongo中所有数据库
     vars:
       comp_name: "{{ item }}"
       db_name: "{{ DB_VERSION[comp_name].name }}"
     shell: '{{ mongo_shell }}  --eval ''db.getSiblingDB("{{ db_name }}").dropDatabase()'''
-    with_items: "{{ DB_VERSION.keys() }}" 
+    with_items: "{{ DB_VERSION }}" 
     connection: local
 
   - name: drop mongo中mdm和carrer数据库
@@ -63,4 +63,5 @@
     shell: "mongorestore -h {{ groups.mongodb[0] }} -u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase 'admin' --drop {{BAK_DIR}}/mongodbbak"
     register: restore_result
     connection: local
+
   when: 'inventory_hostname == groups.kube_master[0]'

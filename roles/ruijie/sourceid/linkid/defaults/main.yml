@@ -1,7 +1,7 @@
 
 linkid_license_check: "{% if 'yes' == SOURCEID_LICENSE_ENABLED %}true{% else %}false{% endif %}"
 
-linkid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms3584m -Xmx3584m{% elif CLUSTER_SCALE == 'single' %}-Xms2150m -Xmx2150m{% else %}-Xms1024m -Xmx1536m{% endif %}"
+linkid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms3584m -Xmx3584m{% elif CLUSTER_SCALE == 'single' %}-Xms2150m -Xmx2150m{% elif CLUSTER_SCALE == 'small' %}-Xms1024m -Xmx1536m{% else %}-Xms800m -Xmx1600m{% endif %}"
 
 linkid_configs: []
 
@@ -28,5 +28,22 @@ deploy_conf_defaults:
       requests:
         cpu: 1
         memory: 2Gi
-
+  basic:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 4
+        memory: 3Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 4
+        memory: 3Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
 linkid_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

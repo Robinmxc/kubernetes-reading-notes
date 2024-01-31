@@ -1,5 +1,5 @@
 
-sso_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms5734m -Xmx5734m{% elif CLUSTER_SCALE == 'single' %}-Xms5734m -Xmx5734m{% else %}-Xms1024m -Xmx1536m{% endif %}"
+sso_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms5734m -Xmx5734m{% elif CLUSTER_SCALE == 'single' %}-Xms5734m -Xmx5734m{% elif CLUSTER_SCALE == 'small' %}-Xms1024m -Xmx1536m{% else %}-Xms4000m -Xmx4000m{% endif %}"
 
 sso_configs: []
 
@@ -8,6 +8,13 @@ sso_templates_path: ""
 deploy_conf_defaults:
   small:
     replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
   normal:
     replicas: 2
     resources:
@@ -26,7 +33,24 @@ deploy_conf_defaults:
       requests:
         cpu: 2
         memory: 2Gi
-
+  basic:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 3
+        memory: 5Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 3
+        memory: 5Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi        
 sso_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
 
 # 二次认证网关参数默认值

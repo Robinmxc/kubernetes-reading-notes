@@ -71,7 +71,8 @@
     file: path={{ item }} state=directory
     with_items:
       - "{{BAK_DIR}}"
-      - "{{BAK_DIR}}/workspace"
+      - "{{BAK_DIR}}/workspace"      
+      - "{{BAK_DIR}}/tools"
       - "{{BAK_DIR}}/mongodbbak"
       - "{{BAK_DIR}}/dockerimages"
     connection: local
@@ -139,6 +140,7 @@
       - "sourceid/rg-flow"
       - "sourceid/address-book"
       - "sourceid/auth-extend"
+      - "sourceid/pcapture"
     connection: local
 
   - name: 配置文件自动比对、同步

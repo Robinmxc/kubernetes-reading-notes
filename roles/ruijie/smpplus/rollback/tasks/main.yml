@@ -4,4 +4,5 @@
     register: shell_result
     connection: local
     run_once: true
+  
   when: 'inventory_hostname == groups.kube_master[0]'

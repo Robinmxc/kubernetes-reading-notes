@@ -43,11 +43,6 @@
   roles:
   - ruijie/cluster/prepare
 
-# [optional] to install loadbalance service, only needed by multi-master cluster
-- hosts: lb
-  any_errors_fatal: true
-  roles:
-  - lb
 
 # to install etcd cluster
 #- hosts: etcd
@@ -64,32 +59,45 @@
   - ruijie/cluster/docker
 
   tasks:
+  - name: 检查syslog是否存在
+    stat:
+      path: /etc/logrotate.d/syslog
+    register: syslog_status
+
   - name: 查询系统日志自动滚动机制
     shell: "cat /etc/logrotate.d/syslog"
     register: syslog_info
     ignore_errors: true
-    when: ("Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
+    when: syslog_status.stat.exists  
 
   - name: 设置系统日志自动滚动机制
     shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/syslog"
-    when: ("'dateext' not in syslog_info.stdout" and "Anolis"  in  ansible_distribution and ansible_distribution_major_version == "8")
+    when: syslog_status.stat.exists and "'dateext' not in syslog_info.stdout"
     ignore_errors: true
+
+  - name: 检查rsyslog是否存在
+    stat:
+      path: /etc/logrotate.d/rsyslog
+    register: rsyslog_status
 
   - name: 查询系统日志自动滚动机制
     shell: "cat /etc/logrotate.d/rsyslog"
-    register: syslog_info
+    register:  rsyslog_info
     ignore_errors: true
-    when: ("openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")  
+    when: rsyslog_status.stat.exists  
 
   - name: 设置系统日志自动滚动机制
     shell: "sed -i '/{/a \\\\n    rotate 10\\n    size 100M\\n    dateext\\n    daily' /etc/logrotate.d/rsyslog"
-    when: ("'dateext' not in syslog_info.stdout" and "openEuler"  in  ansible_distribution and ansible_distribution_major_version == "22")
+    when: rsyslog_status.stat.exists and "'dateext' not in rsyslog_info.stdout"
     ignore_errors: true
 
+
+    
 # to set up 'kube_master' nodes
 - hosts: kube_master
   any_errors_fatal: true
   roles:
+  - ruijie/cluster/keepalived  
   - kube-master
   #- kube-node
   #
@@ -112,13 +120,18 @@
   any_errors_fatal: true
   roles:
   - ruijie/cluster/flannel
-
 # to set up 'kube_node' nodes
 - hosts: kube_node
   any_errors_fatal: true
   roles:
   - kube-node
 
+- hosts: 
+  - kube_master
+  - kube_node
+  any_errors_fatal: true
+  roles:
+  - kube-process
 # to install network plugin, only one can be choosen
 #- hosts:
 #  - kube_master

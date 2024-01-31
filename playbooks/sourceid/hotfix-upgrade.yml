@@ -23,6 +23,12 @@
     command: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
 
+  - name: 停止 security
+    tags:
+    - security
+    command: "kubectl delete -f {{ yaml_dir }}/security/"
+    when: 'pod_info.stdout is search("rg-security-[a-z0-9]*-[a-z0-9]*\s")'
+
   - name: 停止 freeradius
     tags:
     - freeradius

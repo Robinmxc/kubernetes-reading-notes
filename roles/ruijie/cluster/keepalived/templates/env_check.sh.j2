@@ -1,0 +1,9 @@
+#!/bin/bash
+set -x
+serviceInfo=$(systemctl status keepalived  2>&1 | grep Active)
+result=$?
+if [ $result != 0 ]
+   echo `date`': start keepalived' >> /var/log/keepalived.log
+   systemctl start keepalived
+fi
+

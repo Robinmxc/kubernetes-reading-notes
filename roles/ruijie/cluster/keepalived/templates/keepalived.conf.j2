@@ -1,0 +1,30 @@
+global_defs {
+    router_id k8s-{{ hostvars[inventory_hostname]["NODE_LB_ID"] }}
+}
+
+vrrp_script chk_traefik {
+    script "/etc/keepalived/env_check.sh"
+    interval 2
+    weight -20
+}
+
+vrrp_instance VI-Sourceid {
+    state hostvars[inventory_hostname]["NODE_LB_ROLE"]
+    priority {% if "MASTER" == hostvars[inventory_hostname]["NODE_LB_ROLE"] %}100{% else %}{{ 99 | random(61, 1) }}{% endif %}
+    nopreempt
+    unicast_src_ip {{ inventory_hostname }}
+    unicast_peer {
+{% for h in groups['kube_master'] %}{% if h != inventory_hostname %}
+        {{ h }}
+{% endif %}{% endfor %}
+    }
+    interface {{ K8S_ACCESS_IF }}
+    virtual_router_id {{ K8S_ROUTER_ID }}
+    advert_int 1
+    track_script {
+        chk_traefik
+    }
+    virtual_ipaddress {
+        {{ KUBE_MASTER_VIP }}
+    }
+}

@@ -27,5 +27,22 @@ deploy_conf_defaults:
       requests:
         cpu: 500m
         memory: 1Gi
-
+  basic:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 2
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
 component_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd /ruijie/init/sourceid/rg-upgrade-db
+
+# rg-authentication-validate组件数据库版本记录
+{% if "ess" in DB_VERSION %}
+./update_domain.sh essdb {{DB_VERSION["ess"]["name"]}}  sourceid
+{% endif %}

@@ -1,6 +1,6 @@
 ORGANIZATION_CENTER_ENABLE: "{% if SOURCEID_DOCKERS['organization-center'] is defined and (SOURCEID_DOCKERS['organization-center'].enable is not defined or SOURCEID_DOCKERS['organization-center'].enable) %}yes{% else %}no{% endif %}"
 
-organization_center_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms2150m -Xmx2150m{% elif CLUSTER_SCALE == 'single' %}-Xms717m -Xmx717m{% else %}-Xms717m -Xmx717m{% endif %}"
+organization_center_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms2150m -Xmx2150m{% elif CLUSTER_SCALE == 'single' %}-Xms717m -Xmx717m{% elif CLUSTER_SCALE == 'small' %}-Xms400m -Xmx600m  -XX:MetaspaceSize=64m -XX:MaxMetaspaceSize=128m{% else %}-Xms400m -Xmx600m  -XX:MetaspaceSize=64m -XX:MaxMetaspaceSize=128m{% endif %}"
 
 organization_center_configs: []
 
@@ -27,5 +27,22 @@ deploy_conf_defaults:
       requests:
         cpu: 500m
         memory: 512Mi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 512Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 512Mi
 organization_center_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

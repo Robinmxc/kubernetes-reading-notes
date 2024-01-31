@@ -1,4 +1,5 @@
 apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
 bootstrapTokens:
 - groups:
   - system:bootstrappers:kubeadm:default-node-token
@@ -7,36 +8,18 @@ bootstrapTokens:
   usages:
   - signing
   - authentication
-kind: InitConfiguration
-localAPIEndpoint:
-  advertiseAddress: {{ groups.deploy[0] }}
-  bindPort: 6443
-nodeRegistration:
-  criSocket: /var/run/dockershim.sock
-  imagePullPolicy: IfNotPresent
-  name: {{ groups.deploy[0] }}
-  taints: null
 ---
-apiServer:
-  timeoutForControlPlane: 4m0s
 apiVersion: kubeadm.k8s.io/v1beta3
-certificatesDir: /etc/kubernetes/pki
-clusterName: kubernetes
-controllerManager: {}
-dns: {}
-etcd:
-  local:
-    dataDir: /var/lib/etcd
-imageRepository: registry.aliyuncs.com/google_containers
 kind: ClusterConfiguration
-kubernetesVersion: {{ KUBERNETES_VERSION }}
+controlPlaneEndpoint: {{KUBE_MASTER_VIP}}:6443
+imageRepository: registry.aliyuncs.com/google_containers
+kubernetesVersion: v1.23.8
 networking:
   dnsDomain: cluster.local
-  serviceSubnet: 196.200.207.0/24
+  serviceSubnet: 196.200.208.0/24
   podSubnet: {{CLUSTER_CIDR}}
 scheduler: {}
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
 mode: "ipvs"
-

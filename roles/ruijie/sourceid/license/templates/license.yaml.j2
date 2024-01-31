@@ -39,7 +39,6 @@ metadata:
   namespace: {{ APP_NAMESPACE }}
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -110,7 +109,7 @@ spec:
         startupProbe:
           failureThreshold: 20
           httpGet:
-            path: /liveProbe
+            path: /license/liveProbe
             port: 8080
             scheme: HTTP
           periodSeconds: 5
@@ -120,7 +119,7 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /liveProbe
+            path: /license/liveProbe
             port: 8080
             scheme: HTTP
           periodSeconds: 5
@@ -130,7 +129,7 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /liveProbe
+            path: /license/liveProbe
             port: 8080
             scheme: HTTP
           periodSeconds: 30

@@ -1,6 +1,6 @@
 REPORT_ENABLE: "{% if CLUSTER_SCALE == 'normal' and SOURCEID_DOCKERS['report'] is defined and (SOURCEID_DOCKERS['report'].enable is not defined or SOURCEID_DOCKERS['report'].enable) %}yes{% else %}no{% endif %}"
 
-report_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms717m -Xmx717m{% elif CLUSTER_SCALE == 'single' %}-Xms717m -Xmx717m{% else %}-Xms717m -Xmx717m{% endif %}"
+report_java_opt: "{% if CLUSTER_SCALE == 'normal'  or  CLUSTER_SCALE == 'basic' %}-Xms717m -Xmx717m{% elif CLUSTER_SCALE == 'single'  or  CLUSTER_SCALE == 'single-basic' %}-Xms717m -Xmx717m{% else %}-Xms717m -Xmx717m{% endif %}"
 
 report_configs: []
 
@@ -27,5 +27,22 @@ deploy_conf_defaults:
       requests:
         cpu: 250m
         memory: 512Mi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
 report_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

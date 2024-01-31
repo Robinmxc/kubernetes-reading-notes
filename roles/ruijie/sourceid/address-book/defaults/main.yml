@@ -1,6 +1,6 @@
 ADDRESS_BOOK_ENABLE: "{% if SOURCEID_DOCKERS['address-book'] is defined and (SOURCEID_DOCKERS['address-book'].enable is not defined or SOURCEID_DOCKERS['address-book'].enable) %}yes{% else %}no{% endif %}"
 
-address_book_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms358m -Xmx358m{% elif CLUSTER_SCALE == 'single' %}-Xms358m -Xmx358m{% else %}-Xms358m -Xmx358m{% endif %}"
+address_book_java_opt: "{% if CLUSTER_SCALE == 'normal' or  CLUSTER_SCALE == 'basic' %}-Xms358m -Xmx358m{% elif CLUSTER_SCALE == 'single' or  CLUSTER_SCALE == 'single-basic'  %}-Xms358m -Xmx358m{% else %}-Xms358m -Xmx358m{% endif %}"
 
 address_book_configs: []
 
@@ -27,5 +27,22 @@ deploy_conf_defaults:
       requests:
         cpu: 256m
         memory: 512Mi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 512m
+        memory: 512Mi
+      requests:
+        cpu: 256m
+        memory: 512Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 512m
+        memory: 512Mi
+      requests:
+        cpu: 256m
+        memory: 512Mi
 address_book_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

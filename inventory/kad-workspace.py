@@ -133,6 +133,7 @@ def parse_host_data(workspace_dir):
     result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["mgob"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["pgsql"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
+
     if (len(node_hosts) > 1):
         result["groups"]["ess"] = {"hosts": [node_hosts[1]]}
     else:
@@ -141,25 +142,28 @@ def parse_host_data(workspace_dir):
     # 设置K8S部署模式
     deploy_mode = "single-master"
     if (len(master_hosts) == 2):
+        raise Exception(u"多master高可用至少三个master节点")
+    if (len(master_hosts) == 3):
         deploy_mode = "multi-master"
     elif (len(node_hosts) == 1 and node_hosts[0] == master_hosts[0]):
         deploy_mode = "allinone"
     group_all_vars["DEPLOY_MODE"] = deploy_mode
 
     if (deploy_mode == "multi-master"):
+        if k8s_config["KUBE_MASTER_VIP"] == "":
+            raise Exception(u"多master高可用必须配置KUBE_MASTER_VIP")
         if not is_IP(k8s_config["KUBE_MASTER_VIP"]):
             raise Exception(k8s_config["KUBE_MASTER_VIP"] + u"不是有效的IP地址")
-        # 设置负载均衡节点
-        result["groups"]["lb"] = {"hosts": master_hosts}
-        # 双Master部署模式设置为虚
-        group_all_vars["MASTER_IP"] = k8s_config["KUBE_MASTER_VIP"]
-        # 双Master部署模式设置端口为8443
-        group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:8443"
+        group_all_vars["KUBE_MASTER_VIP"] = k8s_config["KUBE_MASTER_VIP"]
     else:
-        result["groups"]["lb"] = {"hosts": []}
-        group_all_vars["MASTER_IP"] = master_hosts[0]
-        group_all_vars["KUBE_APISERVER"] = "https://{{ MASTER_IP }}:6443"
-
+        group_all_vars["KUBE_MASTER_VIP"] = master_hosts[0]
+    allNodes = set(master_hosts);    
+    allNodes.add(group_all_vars["KUBE_MASTER_VIP"])
+    allNodes.update(node_hosts)
+    allNodes.union()   
+    allNodeStr = ', '.join(str(x) for x in allNodes) 
+    allNodeStr = allNodeStr.replace(' ', '')
+    group_all_vars["allNodeStr"] = allNodeStr
     # 计算服务网段
     if "SERVICE_CIDR" in k8s_config:
         config_value = k8s_config["SERVICE_CIDR"].encode("iso-8859-1").decode("iso-8859-1")
@@ -201,11 +205,16 @@ def parse_host_data(workspace_dir):
         group_all_vars["ingress_mode"] = "http"
 
     if "CLUSTER_SCALE" not in k8s_config:
-        if deploy_mode == "allinone":
-            group_all_vars["CLUSTER_SCALE"] = "single"
+        if app_namespace == "ruijie-sourceid":
+            if deploy_mode == "allinone":
+                group_all_vars["CLUSTER_SCALE"] = "single-basic"
+            else:
+                group_all_vars["CLUSTER_SCALE"] = "basic"
         else:
-            group_all_vars["CLUSTER_SCALE"] = "normal"
-
+            if deploy_mode == "allinone":
+                group_all_vars["CLUSTER_SCALE"] = "single"
+            else:
+                group_all_vars["CLUSTER_SCALE"] = "normal"
     if "MONGODB_NODEPORT" not in group_all_vars:
         group_all_vars["MONGODB_NODEPORT"] = ""
 
@@ -215,14 +224,9 @@ def parse_host_data(workspace_dir):
     for ip in node_hosts:
         host_vars[ip] = {"K8S_ROLE": "node"}
 
-    # 设置负载均衡角色
-    if (deploy_mode == "multi-master"):
-        host_vars[master_hosts[0]]["LB_ROLE"] = "master"
-        host_vars[master_hosts[1]]["LB_ROLE"] = "backup"
-
     # 设置nodekeepalive角色
     idx = 1
-    for ip in node_hosts:
+    for ip in master_hosts:
         host_vars[ip]["NODE_LB_ID"] = str(100000 + idx)
         if idx == 1:
             host_vars[ip]["NODE_LB_ROLE"] = "MASTER"
@@ -337,7 +341,7 @@ def parse_ldap_config(host_data):
         base_dn = base_dn + "dc=" + s + ","
     base_dn = base_dn[0:-1]
     ldap_config["LDAP_BASE_DN"] = base_dn
-
+    group_all_vars["LDAP_VIP"] = ""
     #ldap k8s内部署参数处理
     if ldap_mode == "k8s":
         ldap_vip = ldap_config["LDAP_VIP"] if "LDAP_VIP" in ldap_config else ""

@@ -23,6 +23,14 @@ function AnolisOS(){
                net-snmp-libs    openssl-devel   pcre-devel  perl-Data-Dumper   perl-Test-Harness  perl-Thread-Queue  zlib-devel "     
 	yum install -y $rpms --downloadonly  --downloaddir=./
 }  
+function ky10(){
+	echo "AnolisOS call"
+    rpms="make autoconf automake cpp gcc gcc-c++  glibc-devel  glibc-headers  keepalived  kernel-headers  keyutils-libs-devel  krb5-devel \
+          libcom_err-devel libkadm5 libmpc libselinux-devel libsepol-devel libstdc++-devel \
+             libtool  libverto-devel  lm_sensors-libs m4  mpfr  net-snmp-agent-libs \
+               net-snmp-libs    openssl-devel   pcre-devel  perl-Data-Dumper   perl-Test-Harness  perl-Thread-Queue  zlib-devel "     
+	yum install -y $rpms --downloadonly  --downloaddir=./
+} 
 function openEulerOs(){
 	echo "openEulerOs call"
     rpms="make  autoconf automake cpp gcc gcc-c++  glibc-devel  glibc-headers  keepalived  kernel-headers  keyutils-libs-devel  krb5-devel \

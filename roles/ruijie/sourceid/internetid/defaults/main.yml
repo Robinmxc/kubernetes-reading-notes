@@ -2,7 +2,7 @@ INTERNETID_ENABLE: "{% if SOURCEID_DOCKERS['internetid'] is defined and (SOURCEI
 
 GROUP_VIEW_ENABLE: "{% if SOURCEID_DOCKERS['groupview'] is defined and (SOURCEID_DOCKERS['groupview'].enable is not defined or SOURCEID_DOCKERS['groupview'].enable) %}true{% else %}false{% endif %}"
 
-internetid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4301m -Xmx4301m{% elif CLUSTER_SCALE == 'single' %}-Xms1434m -Xmx1434m{% else %}-Xms1434m -Xmx1434m{% endif %}"
+internetid_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms4301m -Xmx4301m{% elif CLUSTER_SCALE == 'single' %}-Xms1434m -Xmx1434m{% elif CLUSTER_SCALE == 'small' %}-Xms400m -Xmx600m{% else %}-Xms400m -Xmx600m{% endif %}"
 
 internetid_configs: []
 
@@ -11,6 +11,13 @@ internetid_templates_path: ""
 deploy_conf_defaults:
   small:
     replicas: 1
+    resources:
+      limits:
+        cpu: 512m
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 512Mi
   normal:
     replicas: 1
     resources:
@@ -29,5 +36,22 @@ deploy_conf_defaults:
       requests:
         cpu: 500m
         memory: 512Mi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 512m
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 512Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 512m
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 512Mi
 internetid_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'

@@ -3,7 +3,7 @@
   when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
 
 - import_tasks: centos.yml
-  when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat" or "Anolis"  in  ansible_distribution or "openEuler"  in  ansible_distribution
+  when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat" or "UOS"  in  ansible_distribution or "Anolis"  in  ansible_distribution or "openEuler"  in  ansible_distribution or "Kylin"  in  ansible_distribution
 
 # 公共系统参数设置
 - import_tasks: common.yml

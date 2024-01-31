@@ -25,11 +25,18 @@ spec:
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/sourceid/frontend/deploy/domain
+            path: {{ config_base_dir }}/sourceid/frontend/deploy/domain/domain.json
       containers:
       - name: rg-frontend
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.frontend.name }}:{{ SOURCEID_DOCKERS.frontend.version }}
         imagePullPolicy: IfNotPresent
+        env:
+          - name: SELF_SUFFIX
+            value: {{ SELF_SUFFIX }}
+          - name: SSO_SUFFIX
+            value: {{ CAS_SUFFIX }}
+          - name: PORTAL_SUFFIX
+            value: {{ PORTAL_SUFFIX }}
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
@@ -42,7 +49,7 @@ spec:
         ports:
         - containerPort: 8081
         volumeMounts:
-        - mountPath: /usr/share/nginx/html/public/deploy/domain
+        - mountPath: /usr/share/nginx/html/public/deploy/domain/domain.json
           name: conf
 
 ---

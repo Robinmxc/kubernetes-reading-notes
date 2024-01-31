@@ -39,6 +39,7 @@
       - config
     vars:
       deploy_conf: '{{rg_authentication_validate_deploy_conf}}'
+      ess_deploy_conf: '{{rg_authentication_validate_deploy_ess_conf}}'      
       var_conf: '{{rg_authentication_validate_var_conf}}'
       comp_name: 'rg-authentication-validate'
       deploy_node_ip: "{{ groups.ess[0] }}"

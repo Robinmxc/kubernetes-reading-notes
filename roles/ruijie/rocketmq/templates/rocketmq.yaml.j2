@@ -63,6 +63,13 @@ spec:
 {% if KAD_APP_NAME != 'smpplus' %}
           value: "{{ mq_server_java_opt }}"
 {% endif %}
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 9876

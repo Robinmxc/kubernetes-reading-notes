@@ -45,8 +45,10 @@ spec:
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
+{% if  DEPLOY_MODE != "multi-master" %}          
         - mountPath: /ruijie/{{comp_name}}/kadapitls
           name: kadapi-tls
+{% endif %}          
         startupProbe:
           failureThreshold: 15
           httpGet:
@@ -83,9 +85,11 @@ spec:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}
+{% if  DEPLOY_MODE != "multi-master" %}                
         - name: kadapi-tls
           configMap:
             name: kadapi-cert
+{% endif %}                      
 ---
 apiVersion: v1
 kind: Service

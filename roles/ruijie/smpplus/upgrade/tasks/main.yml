@@ -21,6 +21,7 @@
     with_items:
       - "{{BAK_DIR}}"
       - "{{BAK_DIR}}/workspace"
+      - "{{BAK_DIR}}/tools"      
       - "{{BAK_DIR}}/mongodbbak"
     connection: local
 
@@ -42,6 +43,7 @@
       dest: "{{BAK_DIR}}/workspace/"
     connection: local
 
+
   # - name: 替换产品版本号
   #   shell: 'sed -i "s!KAD_APP_VERSION:.*!KAD_APP_VERSION: \"{{ UPGRADE_VERSION }}\"!g" /opt/kad/workspace/ruijie-smpplus/conf/all.yml'
   #   register: shell_result
@@ -59,7 +61,8 @@
     register: shell_result
     connection: local
     run_once: true
-    
+
+  
   - name: 拷贝smpplus配置文件
     vars:
       src_path: "{{UPGRADE_DIR}}/kad/down/{{KAD_UPGRADE_PACKAGE_NAME}}/conf/{{ item }}"

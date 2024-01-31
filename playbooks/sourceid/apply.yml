@@ -8,6 +8,8 @@
   - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
+  - { role: ruijie/sourceid/rg-authentication-validate, tags: ["rg-authentication-validate"] }
+  - { role: ruijie/sourceid/freeradius, tags: ["freeradius"] }
   - { role: ruijie/sourceid/linkid, tags: ["linkid"]}
   - { role: ruijie/sourceid/sso, tags: ["sso"] }
   - { role: ruijie/sourceid/gate, tags: ["gate"] }
@@ -20,7 +22,6 @@
   - { role: ruijie/sourceid/gateway/k8s, tags: ["gateway"] }
   - { role: ruijie/sourceid/import-user, tags: ["import-user"] }
   - { role: ruijie/sourceid/data-sync, tags: ["data-sync"] }
-  - { role: ruijie/sourceid/security, tags: ["security"] }
   - { role: ruijie/sourceid/convert, tags: ["convert"] }
   - { role: ruijie/fgm/fgm-backend, tags: ["fgm-backend"] }
   - { role: ruijie/sourceid/groupview, tags: ["groupview"] }
@@ -39,6 +40,5 @@
   - { role: ruijie/sourceid/organization-center, tags: ["organization-center"] }
   - { role: ruijie/sourceid/rg-flow, tags: ["rg-flow"] }
   - { role: ruijie/sourceid/address-book, tags: ["address-book"] }
-  - { role: ruijie/sourceid/freeradius, tags: ["freeradius"] }
-  - { role: ruijie/sourceid/rg-authentication-validate, tags: ["rg-authentication-validate"] }
+  - { role: ruijie/sourceid/pcapture, tags: ["pcapture"] }
   - { role: ruijie/sourceid/application-facade, tags: ["application-facade"] }

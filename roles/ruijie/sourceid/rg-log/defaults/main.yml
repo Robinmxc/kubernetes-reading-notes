@@ -1,6 +1,6 @@
 RG_LOG_ENABLE: "{% if SOURCEID_DOCKERS['rg-log'] is defined and (SOURCEID_DOCKERS['rg-log'].enable is not defined or SOURCEID_DOCKERS['rg-log'].enable) %}yes{% else %}no{% endif %}"
 
-rg_log_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1433m -Xmx1433m{% elif CLUSTER_SCALE == 'single' %}-Xms896m -Xmx896m{% else %}-Xms896m -Xmx896m{% endif %}"
+rg_log_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1433m -Xmx1433m{% elif CLUSTER_SCALE == 'single' %}-Xms896m -Xmx896m{% elif CLUSTER_SCALE == 'small' %}-Xms400m -Xmx600m{% else %}-Xms400m -Xmx600m{% endif %}"
 
 rg_log_configs: []
 
@@ -9,6 +9,13 @@ rg_log_templates_path: ""
 deploy_conf_defaults:
   small:
     replicas: 1
+    resources:
+      limits:
+        cpu: 512m
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 512Mi
   normal:
     replicas: 1
     resources:
@@ -27,5 +34,22 @@ deploy_conf_defaults:
       requests:
         cpu: 512m
         memory: 512Mi
-
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 512m
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 512Mi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 512m
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 512Mi
 rg_log_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
