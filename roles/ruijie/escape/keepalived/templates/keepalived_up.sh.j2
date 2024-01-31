@@ -9,6 +9,7 @@ if [ -d "$conf_path" ]; then
         if [ "$status" == "inactive"  ]; then
             echo `date`+ " keepalived is not start , start keepalived" >> /var/log/keepalived_up.log
             systemctl start keepalived
+        fi
     else
         echo `date`+ " no config file" >> /var/log/keepalived_up.log
     fi
