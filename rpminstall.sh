@@ -21,6 +21,10 @@ result=$(echo $osname | grep ".oe2203" | grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_oe2203_dir} != "$osname" ]];then
 	ln -s /opt/kad/down/rpms/${release_oe2203_dir} /opt/kad/down/rpms/${osname}  > /dev/null 2>&1
 fi
+result=$(echo $osname | grep ".ky10"| grep ".x86_64")
+if	[[ "$result" != "" ]] && [[ ${release_ky10_dir} != "$osname" ]];then
+	ln -s /opt/kad/down/rpms/${release_ky10_dir} /opt/kad/down/rpms/${osname}  > /dev/null 2>&1
+fi
 result=$(echo $osname | grep ".an8"| grep ".x86_64")
 if	[[ "$result" != "" ]] && [[ ${release_an8_dir} != "$osname" ]];then
 	ln -s /opt/kad/down/rpms/${release_an8_dir} /opt/kad/down/rpms/${osname}  > /dev/null 2>&1
@@ -308,10 +312,15 @@ function ky10(){
 	echo "ky10 call"
 	commonInstall
 	rpms=(perl gc  libtool-ltdl guile  tar jq  ntp  chrony.x86_64 iptables-services ipset-libs ipset ipvsadm)
+	result=$(echo $osname | grep ".ky10"| grep ".x86_64")
+	if	[[ "$result" != "" ]] && [[ ${release_ky10_dir} != "$osname" ]];then
+		rpms=(perl gc  libtool-ltdl guile  tar jq  ntp)
+	fi
 	for var in ${rpms[@]};
 	do
 		rpmOperator $var
 	done
+
 	common_python3
 	common_ansible
 	pip3s=(pyyaml simplejson)
