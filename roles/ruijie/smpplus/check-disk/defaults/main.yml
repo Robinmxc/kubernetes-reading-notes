@@ -1,12 +1,11 @@
-sys_disk_required: 70
-
+sys_disk_required: 30
 disk_required:
   small:
     master: 5
     node: 5
   normal:
-    master: 400
-    node: 400
+    master: 30
+    node: 30
   single:
-    master: 400
-    node: 400
+    master: 30
+    node: 30
