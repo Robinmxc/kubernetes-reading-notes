@@ -51,7 +51,7 @@
       - config
     vars:
       deploy_conf: '{{ facade_deploy_conf }}'
-    template: src='{{ facade_templates_path }}application-facade.yaml.j2' dest={{ yaml_dir }}/application-facade/application-facade.yml
+    template: src='{{ facade_templates_path }}sso-proxy.yaml.j2' dest={{ yaml_dir }}/application-facade/application-facade.yml
     run_once: true
     connection: local
 

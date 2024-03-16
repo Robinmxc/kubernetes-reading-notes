@@ -72,6 +72,7 @@
     - "sourceid/auth-extend"
     - "sourceid/application-facade"
     - "sourceid/pcapture"
+    - "sourceid/sso-proxy"
   connection: local
   run_once: true
 

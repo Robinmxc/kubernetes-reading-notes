@@ -1,0 +1,55 @@
+SSO_PROXY_ENABLE: "{% if SOURCEID_DOCKERS['sso-proxy'] is defined and (SOURCEID_DOCKERS['sso-proxy'].enable is not defined or SOURCEID_DOCKERS['sso-proxy'].enable) %}yes{% else %}no{% endif %}"
+
+sso_proxy_java_opt: "{% if CLUSTER_SCALE == 'normal'  %}-Xms1024m -Xmx4000m{% elif CLUSTER_SCALE == 'single'  %}-Xms512m -Xmx1700m{%  elif CLUSTER_SCALE == 'small' %}-Xms512m -Xmx800m{% elif CLUSTER_SCALE == 'basic'  %}-Xms512m -Xmx800m{% else %}-Xms512m -Xmx800m{% endif %}"
+
+sso_proxy_configs: []
+
+sso_proxy_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+  normal:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 4Gi
+      requests:
+        cpu: 2
+        memory: 2Gi
+  single:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 2Gi
+  basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+  single-basic:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+sso_proxy_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
