@@ -24,7 +24,7 @@
       path: '{{ config_base_dir }}/sourceid/sso-proxy/conf/application.properties'
       regexp: '{% if item.regexp is defined %}{{item.regexp}}{% else %}{{ item.name }}\s*=.*${% endif %}'
       replace: '{% if item.regexp is defined %}{{item.value}}{% else %}{{ item.name }}={{item.value}}{% endif %}'
-    with_items: '{{ facade_configs }}'
+    with_items: '{{ sso_proxy_configs }}'
 
   - name: sso认证配置
     tags:
@@ -35,7 +35,6 @@
     with_items:
       - { regexp: "https://sso.ruishan.cc", replace: "{{ sso_path }}" }
     no_log: true
-    when: 'SOURCEID_DOMAIN_MODE == "single"'
 
   - name: 准备部署文件目录
     tags:
