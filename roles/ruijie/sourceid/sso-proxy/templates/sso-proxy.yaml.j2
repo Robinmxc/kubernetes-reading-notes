@@ -111,6 +111,12 @@ spec:
       imagePullSecrets:
       - name: regsecret
       volumes:
+        - emptyDir: {}
+          name: etc
+        - emptyDir: {}
+          name: build
+        - emptyDir: {}
+          name: cas
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/sourceid/sso-proxy/conf
