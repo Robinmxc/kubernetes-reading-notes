@@ -27,7 +27,12 @@
   run_once: true
   connection: local
 
-
+- name: 设置初始化变量
+  set_fact:
+    useRocketMqCluster: '{% if rocket_cluster_mode == "yes" and  DEPLOY_MODE != "allinone" %}True{% else %}False{% endif %}'
+  run_once: true
+  connection: local
+  
 - name: 准备RocketMQ的部署文件
   tags:
   - config
