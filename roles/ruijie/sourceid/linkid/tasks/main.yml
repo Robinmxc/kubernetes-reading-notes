@@ -29,6 +29,9 @@
     - {regexp: "sid.lock.etcd.endpoints.*$", replace: "sid.lock.etcd.endpoints = {{ etcd_address | join(',') }}"}
     - {regexp: "^linkid.self.url=.*$", replace: "linkid.self.url = {{ SOURCEID_FRONTEND_URL }}"}
     - {regexp: "^cas.server.name=.*$", replace: "cas.server.name = {{ SOURCEID_SSO_URL }}"}
+    - {regexp: "rocket.namesrv-addr.*$", replace: "rocket.namesrv-addr = {{rocketmq_addr}}"}
+    - {regexp: "sid.log.mq.ip =.*$", replace: "sid.log.mq.ip = {{rocketmq_addr}}"}   
+     
   no_log: true
 
 - name: 自定义配置

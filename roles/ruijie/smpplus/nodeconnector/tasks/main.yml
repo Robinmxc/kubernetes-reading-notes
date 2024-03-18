@@ -12,7 +12,8 @@
   - config  # replace：path 指定要操作的文件，regexp 指定一个python正则表达式，文件中与正则匹配的字符串将会被替换
   replace: path="{{ config_base_dir }}/nodeconnector/conf/application-prd.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "name-srv-addr:.*", replace: "name-srv-addr: rg-rocket.{{ APP_NAMESPACE }}.svc:9876"}
+  - {regexp: "ip: namesrv.*$", replace: "ip: {{rocketmq_addr}}"}
+  - {regexp: "name-srv-addr:.*$", replace: "name-srv-addr: {{rocketmq_addr}}"}
   - {regexp: "hostIp:.*", replace: "hostIp: {{KUBE_MASTER_VIP}}"}
   no_log: true
 

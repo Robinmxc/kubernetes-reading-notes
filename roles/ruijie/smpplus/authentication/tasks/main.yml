@@ -16,7 +16,8 @@
   - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
   - {regexp: "host-address-ip.*$", replace: "host-address-ip: {{ host_ip_value }}"}
-  - {regexp: "namesrv:", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc:"}
+  - {regexp: "ip: namesrv.*$", replace: "ip: {{rocketmq_addr}}"} 
+  - {regexp: "name-srv-addr:.*$", replace: "name-srv-addr: {{rocketmq_addr}}"} 
   - {regexp: "protectEnable.*$", replace: "protectEnable: {{ protectEnable_value }}"}
   - {regexp: "whiteHost.*$", replace: "whiteHost: {{allNodeStr}}"}
   #- {regexp: "softwarePackageDownLoadAddress.*$", replace: "softwarePackageDownLoadAddress: http://{{KUBE_MASTER_VIP}}:9888"}

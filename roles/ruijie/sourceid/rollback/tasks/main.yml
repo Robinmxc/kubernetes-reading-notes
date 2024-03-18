@@ -19,8 +19,8 @@
     connection: local
     when: '"mongo3" not in pod_info.stdout and mongodb_deploy_mode == "3"'
 
-  - name: 暂停15秒等待mongo启动完成
-    wait_for: timeout=15
+  - name: 暂停30秒等待mongo启动完成
+    wait_for: timeout=30
     when: '"mongo1" not in pod_info.stdout'
 
   - name: 获取mongo1 POD 名称

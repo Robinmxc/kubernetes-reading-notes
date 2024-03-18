@@ -130,7 +130,10 @@ def parse_host_data(workspace_dir):
     result["groups"]["etcd"] = {"hosts": node_hosts}
     result["groups"]["mongodb"] = {"hosts": node_hosts}
     result["groups"]["deploy"] = {"hosts": [master_hosts[0]]}
-    result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
+    if "rocket_cluster_mode" in group_all_vars and group_all_vars["rocket_cluster_mode"] == "yes":
+         result["groups"]["rocketmq"] = {"hosts":[node_hosts[len(node_hosts) - 2],node_hosts[len(node_hosts) - 1]]}
+    else:
+        result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["mgob"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["pgsql"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
 
