@@ -48,6 +48,7 @@
     SOURCEID_CAREER_DB_PWD: '{% if SOURCEID_CAREER_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_CAREER_DB_PWD }}{% endif %}'
     SOURCEID_REPORT_DB_PWD: '{% if SOURCEID_REPORT_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_REPORT_DB_PWD }}{% endif %}'
     SOURCEID_LICENSE_DB_PWD: '{% if SOURCEID_LICENSE_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_LICENSE_DB_PWD }}{% endif %}'
+    SOURCEID_SSO_PROXY_DB_PWD: '{% if SOURCEID_SSO_PROXY_DB_PWD == "" %}{{ sourceid_db_pwd }}{% else %}{{ SOURCEID_SSO_PROXY_DB_PWD }}{% endif %}'
   connection: local
   run_once: true
 

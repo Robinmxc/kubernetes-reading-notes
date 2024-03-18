@@ -30,6 +30,9 @@ SOURCEID_ADAPTER_DOMAIN: "adapter.example.com"
 
 SOURCEID_MYAPP_DOMAIN: "myapp.example.com"
 
+#sso-proxy组件域名
+SOURCEID_SSO_PROXY_DOMAIN: "ssoproxy.example.com"
+
 #登录成功后的跳转地址
 SOURCEID_REDIRECT_URL: "http://www.baidu.com"
 

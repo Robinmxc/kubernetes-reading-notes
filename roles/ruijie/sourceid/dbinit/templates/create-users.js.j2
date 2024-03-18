@@ -95,6 +95,12 @@ db.getSiblingDB("application-facade").runCommand({
   roles: [{role:"dbOwner", db: "application-facade"}]
 });
 
+db.getSiblingDB("sso-proxy").runCommand({
+  createUser: "{{ SOURCEID_SSO_PROXY_DB_USER }}",
+  pwd: "{{ SOURCEID_SSO_PROXY_DB_PWD }}",
+  roles: [{role:"dbOwner", db: "sso-proxy"}]
+});
+
 {% for value in db_list %}
 db.getSiblingDB("{{ value }}").runCommand({
   createUser: "{{ SOURCEID_READONLY_DB_USER }}",

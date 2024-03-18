@@ -42,3 +42,4 @@
   - { role: ruijie/sourceid/address-book, tags: ["address-book"] }
   - { role: ruijie/sourceid/pcapture, tags: ["pcapture"] }
   - { role: ruijie/sourceid/application-facade, tags: ["application-facade"] }
+  - { role: ruijie/sourceid/sso-proxy, tags: ["sso-proxy"] }
