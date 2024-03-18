@@ -89,6 +89,12 @@
     command: "kubectl delete -f {{ yaml_dir }}/operations/"
     when: '"operations" in pod_info.stdout'
 
+  - name: 停止 rg-pcapture
+    tags:
+      - pcapture
+    command: "kubectl delete -f {{ yaml_dir }}/pcapture/"
+    when: '"rg-pcapture" in pod_info.stdout'
+
   - name: delete mgob
     tags:
       - mgob
@@ -293,6 +299,16 @@
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-operations" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待pcapture结束运行
+    tags:
+      - pcapture
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-pcapture" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true
