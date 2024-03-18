@@ -19,6 +19,7 @@
     - {regexp: "^gateway.feign.base.url.*$", replace: "gateway.feign.base.url={{ SOURCEID_GATEWAY_URL }}"}
     - {regexp: "^cas.view.default-redirect-url.*$", replace: "cas.view.default-redirect-url={{ SOURCEID_REDIRECT_URL }}"}
     - {regexp: "^sso.server.partner.cookie-properties.domain=.*$", replace: "sso.server.partner.cookie-properties.domain={{ SOURCEID_GATEWAY_COOKIE_DOMAIN }}"}
+    - {regexp: "^qr.redirect.url.*$", replace: "qr.redirect.url=${cas.server.name}/public/client/wechatScopeAuthTransition?uuid=%s&clientName=%s"}
     - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
   no_log: true
 
@@ -52,7 +53,8 @@
     adapter_suffix: '{% if "" != CUSTOMIZE_SUFFIX %}{{ CUSTOMIZE_SUFFIX }}/adapter{% else %}adapter{% endif %}'
   replace: path="{{ config_base_dir }}/sourceid/sso/conf/application-bus.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-    - {regexp: "/public/client", replace: "${front.server.addr}/public/client"}
+    - {regexp: "=/public/client", replace: "=${front.server.addr}/public/client"}
+    - {regexp: "^qr.redirect.url.*$", replace: "qr.redirect.url=${front.server.addr}/public/client/wechatScopeAuthTransition?uuid=%s&clientName=%s"}
     - { regexp: "^adapter.feign.base.url =.*$", replace: "adapter.feign.base.url = http://rg-adapter.{{ APP_NAMESPACE }}.svc/{{ adapter_suffix }}" }
   no_log: true
   when: 'SOURCEID_DOMAIN_MODE == "single"'
