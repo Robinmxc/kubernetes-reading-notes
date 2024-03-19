@@ -7,11 +7,12 @@ metadata:
     k8s-app: rg-socket5-proxy
 spec:
   containers:
-  - image: 172.17.8.20:8082/smpplus/socket5-proxy:1.0.0
+  - image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
     imagePullPolicy: IfNotPresent
     volumeMounts:
-    - mountPath: /etc/v2ray
+    - mountPath: /etc/v2ray/config.json
       name: conf
+      subPath: config.json
     name: rg-socket5-proxy
 {% if "dict" == (deploy_conf.resources | type_debug) %}
     resources:
