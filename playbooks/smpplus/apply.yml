@@ -32,3 +32,4 @@
     - { role: ruijie/smpplus/rg-log, tags: ["rg-log"]}
     - { role: ruijie/smpplus/socket5-proxy, tags: ["socket5-proxy"]}    
     - { role: ruijie/smpplus/maintenance-related, tags: ["maintenance-related"]}
+    - { role: ruijie/sourceid/pcapture, tags: ["pcapture"] }

@@ -1,0 +1,32 @@
+PCAPTURE_ENABLE: "{% if SMPPLUS_DOCKERS['pcapture'] is defined and (SMPPLUS_DOCKERS['pcapture'].enable is not defined or SMPPLUS_DOCKERS['pcapture'].enable) %}yes{% else %}no{% endif %}"
+mongodb_deploy_mode: "{{ groups['mongodb'] | length }}"
+pcapture_configs: []
+pcapture_port: 10000
+deploy_ip: "{% if mongodb_deploy_mode == '1' %}{{ groups['mongodb'][0] }}{% else %}{{ groups['mongodb'][0] }},{{ groups['mongodb'][1] }},{{ groups['mongodb'][2] }}{% endif %}"
+replicas_num: "{% if mongodb_deploy_mode == '1' %}1{% else %}3{% endif %}"
+
+pcapture_templates_path: ""
+
+deploy_conf_defaults:
+  small:
+    replicas: '{{ replicas_num }}'
+  normal:
+    replicas: '{{ replicas_num }}'
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  single:
+    replicas: '{{ replicas_num }}'
+    resources:
+      limits:
+        cpu: 2
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+
+pcapture_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
