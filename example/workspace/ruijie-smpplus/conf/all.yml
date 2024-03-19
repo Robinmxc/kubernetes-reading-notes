@@ -20,3 +20,4 @@ SMPPLUS_PORTAL_DOMAIN: ""
 # 0.不部署探针 1.浪潮服务器
 FLOW_MODE: 0
 FLOW_PORTS: "eth1,eth2"
+rocket_cluster_mode: "yes"
