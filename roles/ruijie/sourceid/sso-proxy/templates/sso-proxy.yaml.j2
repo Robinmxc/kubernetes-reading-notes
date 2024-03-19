@@ -154,7 +154,8 @@ spec:
       secretName: nginx-cert
 {% endif %}
   rules:
-  - host: {{ SOURCEID_SSO_PROXY_DOMAIN }}
+{% for d in SOURCEID_SSO_PROXY_DOMAIN %}
+  - host: {{ d }}
     http:
       paths:
       - path: /
@@ -164,3 +165,4 @@ spec:
             name: rg-sso-proxy
             port:
               number: 8081
+{% endfor %}
