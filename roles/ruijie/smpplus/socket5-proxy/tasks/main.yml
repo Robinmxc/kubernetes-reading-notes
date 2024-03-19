@@ -1,0 +1,28 @@
+- name: 准备部署文件目录
+  tags:
+  - config
+  file: path={{ item }} state=directory
+  with_items:
+  - "/etc/kubernetes/manifests/prepare"
+
+- name: 复制部署文件
+  tags:
+  - config
+  template: src='socket5-proxy.yaml.j2' dest=/etc/kubernetes/manifests/prepare/socket5-proxy.yaml
+
+- name: 复制配置文件
+  tags:
+  - config
+  copy:
+    src: "{{ namespace_dir }}/conf/socket5-proxy/conf/"
+    dest: "{{ config_base_dir }}/socket5-proxy/conf/"
+
+- name: 自动配置
+  tags:
+  - config
+  replace: path="{{ config_base_dir }}/socket5-proxy/conf/config.json" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+  - {regexp: "listen.*$", replace: "listen\": \"{{SERVICE_VIP}}\""}
+  - {regexp: "sendThrough.*$", replace: "sendThrough\": \"{{SERVICE_VIP}}\""}
+  no_log: true
+

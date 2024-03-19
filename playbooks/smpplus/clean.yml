@@ -11,6 +11,12 @@
     command: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
 
+  - name: delete socket5-proxy
+    tags:
+    - socket5-proxy
+    command: "rm -rf /etc/kubernetes/manifests/socket5-proxy.yaml"
+    when: '"socket5-proxy" in pod_info.stdout'
+
   - name: delete frontend-smp
     tags:
     - frontend-smp

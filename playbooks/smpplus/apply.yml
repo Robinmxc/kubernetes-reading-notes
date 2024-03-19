@@ -30,4 +30,5 @@
     - { role: ruijie/smpplus/nodescanner, tags: ["nodescanner"]}
     - { role: ruijie/smpplus/nodecompliance, tags: ["nodecompliance"]}
     - { role: ruijie/smpplus/rg-log, tags: ["rg-log"]}
+    - { role: ruijie/smpplus/socket5-proxy, tags: ["socket5-proxy"]}    
     - { role: ruijie/smpplus/maintenance-related, tags: ["maintenance-related"]}

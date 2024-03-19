@@ -270,7 +270,18 @@ def parse_host_data(workspace_dir):
     parse_ldap_config(result)
 
     parse_mgob_config(result)
+    
     parse_escape_config(result)
+
+
+    # 解析集群对外服务ip
+    if (deploy_mode == "allinone"):
+      group_all_vars["SERVICE_VIP"] = master_hosts[0]
+    elif ("ESCAPE_VIP"  in group_all_vars and group_all_vars["ESCAPE_VIP"] != ""):
+      group_all_vars["SERVICE_VIP"] =group_all_vars["ESCAPE_VIP"]
+    else:
+      group_all_vars["SERVICE_VIP"] =group_all_vars["KUBE_MASTER_VIP"]
+      
     return result
 
 # 处理mgob配置参数
