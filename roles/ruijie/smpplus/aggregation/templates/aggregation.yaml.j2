@@ -25,6 +25,16 @@ spec:
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
         imagePullPolicy: IfNotPresent
         env:
+{% if ESCAPE["enable"] %}
+        - name: ESCAPE_SERVICE_VIP
+          value: "{{ ESCAPE.VIP }}"
+{% endif %}
+{% if k8s_single == "no" %}
+        - name: CLUSTER_MODE
+          value: "true"
+        - name: SMPPLUS_SERVICE_VIP
+          value: "{{ KUBE_MASTER_VIP }}"
+{% endif %}
         - name: JAVA_OPT_EXT
           value: "{{ JAVA_OPT_EXT}}"
         ports:
