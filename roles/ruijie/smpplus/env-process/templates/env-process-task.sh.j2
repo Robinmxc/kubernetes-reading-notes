@@ -73,12 +73,29 @@ function socket5_process(){
         rm -rf $proxy_file
     fi
 }
+function chajian_port_redirect(){
+    service_rule_name=chajian_port_redirect_9688
+    RULES=$(iptables -t nat -S | grep "$service_rule_name")
+    num=0
+    while IFS= read -r rule; do
+    if	[[ "$rule" != "" ]];then
+        num=$((num + 1))
+    fi
+    done <<< "$RULES"
 
+    if	[[ $num -eq 0 ]];then
+        logger "${service_rule_name}规则添加"
+        iptables -t nat -A PREROUTING -p tcp --dport 9688 -j REDIRECT --to-port 443  -m comment --comment "${service_rule_name}"
+    fi
+}
 function execute_All(){
+{% if ESCAPE["enable"] or  DEPLOY_MODE != "allinone"%}
+    socket5_process
     service rg-freeradius 1812  
     service rg-freeradius 1813
     service rg-eportal 50100 
-    socket5_process
+{% endif %}
+    chajian_port_redirect
 }
 start_time=$(date +%s)
 while true; do
