@@ -9,13 +9,15 @@
 
 - name: 自动配置
   tags:
-  - config  
+  - config
+  vars:
+    software_address: '{% if k8s_single == "no" and ESCAPE["enable"] %}{{ ESCAPE.VIP}}{% elif k8s_single == "no" %}{{ KUBE_MASTER_VIP }}{% else %}{{ groups.kube_node[0] }}{% endif %}'
   replace: path="{{ config_base_dir }}/nodecompliance/conf/application-prd.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
   - {regexp: "name-srv-addr:.*$", replace: "name-srv-addr: {{rocketmq_addr}}"} 
   - {regexp: "mongodb:.*/nodes.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/nodes?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
-  - {regexp: "softwarePackageDownLoadAddress:.*$", replace: "softwarePackageDownLoadAddress: http://{{ groups.kube_node[0] }}:9889"}
+  - {regexp: "softwarePackageDownLoadAddress:.*$", replace: "softwarePackageDownLoadAddress: http://{{ software_address }}:9889"}
   no_log: true
 
 - name: 准备部署文件目录

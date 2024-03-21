@@ -31,8 +31,16 @@ spec:
         env:
 {% if ESCAPE["enable"] %}
         - name: ACCESS_VIP
-          value: "{{ ESCAPE.VIP}}"   
-{% endif %}           
+          value: "{{ ESCAPE.VIP}}"
+        - name: ESCAPE_SERVICE_VIP
+          value: "{{ ESCAPE.VIP}}"
+{% endif %}
+{% if k8s_single == "no" %}
+        - name: CLUSTER_MODE
+          value: "true"
+        - name: SMPPLUS_SERVICE_VIP
+          value: "{{ KUBE_MASTER_VIP }}"
+{% endif %}
         - name: JAVA_OPT_EXT
           value: "{{ JAVA_OPT_EXT}}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
@@ -97,7 +105,7 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-{% if not ESCAPE["enable"] %}
+{% if k8s_single == "yes" %}
   externalTrafficPolicy: Local
 {% endif %}    
   selector:

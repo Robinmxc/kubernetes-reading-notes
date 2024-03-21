@@ -83,6 +83,7 @@ ingress_ca_dir: "/etc/kad/ssl"
 
 kadapi_ca_dir: "/etc/kad/api/ssl"
 
+k8s_single: "{% if (groups['kube_node'] | length | int) == 1 %}yes{% else %}no{% endif %}"
 
 protectEnable_value: "{%- if ingress_mode == 'https' -%} \
                  true \
