@@ -13,14 +13,6 @@
       with_items:
         - "/var/spool/cron/root"
 
-    - name: crontab清理keepalived服务拉起脚本
-      shell: sed -i '/keepalived_up/d' /var/spool/cron/root
-      ignore_errors: true
-
-    - name: 停止keepalived服务
-      service: name=keepalived state=stopped enabled=no
-      ignore_errors: true
-
     - name: 创建keepalived配置目录
       file: name=/etc/keepalived state=directory
 
@@ -30,6 +22,7 @@
     - name: 设置keepalived配置文件
       template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
 
+## 核心任务逻辑开始
     - name: 设置keepalived-escape配置文件
       template: src=keepalived_escape.conf.j2 dest=/etc/keepalived/conf/keepalived_escape.conf
 
@@ -41,12 +34,13 @@
       when: 'inventory_hostname in groups["ESCAPE_BACKUP"]'
       template: src=backup_escape_check.sh.j2 dest=/etc/keepalived/conf/backup_escape_check.sh mode=755
 
+## 核心任务逻辑结束
+
     - name: 设置keepalived服务拉起脚本
       template: src=keepalived_up.sh.j2 dest=/etc/keepalived/keepalived_up.sh mode=755
 
     - name: 配置keepalived日志
       shell: sed -i '/KEEPALIVED_OPTIONS/d' /etc/sysconfig/keepalived
-      ignore_errors: true
 
     - name: 配置keepalived日志
       shell: echo 'KEEPALIVED_OPTIONS="-D -S 0"' >> /etc/sysconfig/keepalived
@@ -63,11 +57,12 @@
         - rsyslog
 
     - name: 启动服务
-      when: "APP_NAMESPACE != 'ruijie-escape'"
-      service: name={{ item }} state=started enabled=yes
+      service: name={{ item }} state=restarted enabled=yes
       with_items:
         - keepalived
 
+    - name: crontab清理keepalived服务拉起脚本
+      shell: sed -i '/keepalived_up/d' /var/spool/cron/root
+
     - name: crontab添加keepalived服务拉起脚本
-      when: "APP_NAMESPACE != 'ruijie-escape'"
       shell: echo '* * * * * /etc/keepalived/keepalived_up.sh' >> /var/spool/cron/root

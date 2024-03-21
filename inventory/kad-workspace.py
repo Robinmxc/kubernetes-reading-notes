@@ -444,6 +444,10 @@ def parse_escape_config(host_data):
             host_vars[ip] = {}
     # 逃生优先
     escape_first = group_all_vars["ESCAPE_FIRST"] if "ESCAPE_FIRST" in group_all_vars else False
+
+    smp_deploy_mode = "single-master"
+    smp_nodes = []
+
     if escape_first:
         smp_old_ip = group_all_vars["SMP_OLD_IP"] if "SMP_OLD_IP" in group_all_vars else ""
         if "" == smp_old_ip:
@@ -456,6 +460,25 @@ def parse_escape_config(host_data):
             raise Exception(u"ESCAPE配置中的SMP_NEW_IP参数没有设置")
         if "" != smp_new_ip and not is_IP(smp_new_ip):
             raise Exception(u"ESCAPE配置中的SMP_NEW_IP不是有效的IP地址")
+
+        smp_deploy_mode = group_all_vars["SMP_DEPLOY_MODE"] if "SMP_DEPLOY_MODE" in group_all_vars else "single-master"
+        if smp_deploy_mode not in ["single-master", "multi-master"]:
+            raise Exception(u"ESCAPE配置中的SMP_DEPLOY_MODE参数设置不正确")
+
+        # 多节点增加解析smp配置
+        if "multi-master" == smp_deploy_mode:
+            smp_kad_ip = group_all_vars["SMP_KAD_IP"] if "SMP_KAD_IP" in group_all_vars else ""
+            if "" == smp_kad_ip:
+                raise Exception(u"ESCAPE配置中的SMP_KAD_IP参数没有设置")
+            if "" != smp_kad_ip and not is_IP(smp_kad_ip):
+                raise Exception(u"ESCAPE配置中的SMP_KAD_IP不是有效的IP地址")
+
+            smp_nodes = group_all_vars["SMP_NODES"] if "SMP_NODES" in group_all_vars else []
+            if len(smp_nodes) == 0:
+                raise Exception(u"ESCAPE配置中的SMP_NODES参数没有设置")
+            for ip in smp_nodes:
+                if not is_IP(ip):
+                    raise Exception(ip + u"不是有效的IP地址")
 
     # 逃生配置解析
     if "ruijie-escape" != group_all_vars["APP_NAMESPACE"] or escape_first:
@@ -502,24 +525,29 @@ def parse_escape_config(host_data):
         backup_check_rise = backup_check_rise if "" != backup_check_rise else "1"
         group_all_vars["BACKUP_CHECK_RISE"] = backup_check_rise
 
-        #当前仅支持smp+单机版本部署，集群版本需要调整
-        host_data["groups"]["escape_node"] = {"hosts": [group_all_vars["KUBE_MASTER_HOSTS"][0], escape_config["NODES"][0]]}
-        for ip in host_data["groups"]["escape_node"]["hosts"]:
-            if ip in escape_hosts:
-                host_vars[ip]["ESCAPE_ROLE"] = "BACKUP"
-            else:
-                host_vars[ip]["ESCAPE_ROLE"] = "MASTER"
-        # 当前仅支持smp+单机版本部署，集群版本需要调整
+        # smp部署逃生
         if "ruijie-smpplus" == group_all_vars["APP_NAMESPACE"]:
-            host_data["groups"]["escape_node"] = {"hosts": [group_all_vars["KUBE_MASTER_HOSTS"][0], escape_config["NODES"][0]]}
-            host_data["groups"]["ESCAPE_MASTER"] = [group_all_vars["KUBE_MASTER_HOSTS"][0]]
-            host_data["groups"]["ESCAPE_BACKUP"] = [escape_config["NODES"][0]]
+            temp_escape_node = group_all_vars["KUBE_MASTER_HOSTS"] + escape_hosts
+            host_data["groups"]["escape_node"] = {"hosts": temp_escape_node}
+
+            host_data["groups"]["ESCAPE_MASTER"] = group_all_vars["KUBE_MASTER_HOSTS"]
+            host_data["groups"]["ESCAPE_BACKUP"] = escape_config["NODES"]
         else:
+            # 逃生部署且逃生优先
             if escape_first:
-                # 逃生部署并且为逃生优先
-                host_data["groups"]["escape_node"] = {"hosts": [group_all_vars["SMP_OLD_IP"], escape_config["NODES"][0]]}
-                host_data["groups"]["ESCAPE_MASTER"] = [group_all_vars["SMP_OLD_IP"]]
-                host_data["groups"]["ESCAPE_BACKUP"] = [escape_config["NODES"][0]]
+                # smp单节点
+                if "single-master" == smp_deploy_mode:
+                    # 逃生部署并且为逃生优先
+                    host_data["groups"]["escape_node"] = {"hosts": [group_all_vars["SMP_OLD_IP"], escape_config["NODES"][0]]}
+                    host_data["groups"]["ESCAPE_MASTER"] = [group_all_vars["SMP_OLD_IP"]]
+                    host_data["groups"]["ESCAPE_BACKUP"] = [escape_config["NODES"][0]]
+
+                # smp多节点
+                if "multi-master" == smp_deploy_mode:
+                    temp_escape_node = smp_nodes + escape_hosts
+                    host_data["groups"]["escape_node"] = {"hosts": temp_escape_node}
+                    host_data["groups"]["ESCAPE_MASTER"] = smp_nodes
+                    host_data["groups"]["ESCAPE_BACKUP"] = escape_config["NODES"]
 
         for ip in host_data["groups"]["escape_node"]["hosts"]:
             if ip not in host_vars:

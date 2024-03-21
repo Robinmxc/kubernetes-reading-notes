@@ -1,3 +1,16 @@
+{% if DEPLOY_MODE == 'muti_master' %}
+vrrp_script check_master {
+    script "/etc/keepalived/conf/master_check.sh"
+    interval 1
+    weight -5
+}
+{% endif %}
+
+vrrp_script notify_master {
+    script "/etc/keepalived/conf/notify_master.sh"
+    interval 1
+}
+
 vrrp_script check_escape {
 {% if inventory_hostname in groups["ESCAPE_MASTER"] %}
     script "/etc/keepalived/conf/master_escape_check.sh"
@@ -12,10 +25,11 @@ vrrp_script check_escape {
     rise {{ BACKUP_CHECK_RISE }}
     fall {{ BACKUP_CHECK_FALL }}
 {% endif %}
+    weight -20
 }
 vrrp_instance VI-escape {
 {% if inventory_hostname in groups["ESCAPE_MASTER"] %}
-    state MASTER
+    state BACKUP
     priority  100
 {% else %}
     state BACKUP
@@ -31,9 +45,13 @@ vrrp_instance VI-escape {
     virtual_router_id {{ ESCAPE_ROUTER_ID }}
     advert_int 1
     track_script {
+{% if DEPLOY_MODE == 'muti_master' %}
+        check_master  
+{% endif %}
         check_escape
     }
     virtual_ipaddress {
         {{ ESCAPE_VIP }}
     }
+    notify_master /etc/keepalived/conf/notify_master.sh
 }

@@ -10,17 +10,19 @@
     - localhost
   tasks:
     - name: 复制修改网卡文件
-      shell: "sshpass -p {{ ansible_sudo_pass }} scp /opt/kad/tools/change-ifcfg.sh {{ ansible_sudo_user }}@{{SMP_OLD_IP}}:/opt/kad/tools/"
+      shell: "sshpass -p {{ ansible_sudo_pass }} scp /opt/kad/tools/change-ifcfg.sh {{ ansible_sudo_user }}@{{ SMP_OLD_IP }}:/opt/kad/tools/"
 
     - name: 执行修改smp+网卡
-      shell: "sshpass -p {{ ansible_sudo_pass }} ssh -y {{ ansible_sudo_user }}@{{SMP_OLD_IP}} '/opt/kad/tools/change-ifcfg.sh {{SMP_NEW_IP}} {{SMP_OLD_IP}}' "
+      shell: "sshpass -p {{ ansible_sudo_pass }} ssh -y {{ ansible_sudo_user }}@{{ SMP_OLD_IP }} '/opt/kad/tools/change-ifcfg.sh {{ SMP_NEW_IP }} {{ SMP_OLD_IP }}' "
 
     - name: 修改keepalived配置
-      shell: sed -i ':a;N;$!ba;s/{{SMP_OLD_IP}}/{{SMP_NEW_IP}}/' /etc/keepalived/conf/keepalived_escape.conf
+      shell: sed -i ':a;N;$!ba;s/{{ SMP_OLD_IP }}/{{ SMP_NEW_IP }}/' /etc/keepalived/conf/keepalived_escape.conf
       ignore_errors: true
 
     - name: 启动服务
-      service: name={{ item }} state=started enabled=yes
+      service: name={{ item }} 
+      state: started 
+      enabled: yes
       with_items:
         - keepalived
 
@@ -35,5 +37,5 @@
     - localhost
   tasks:
     - name: 重启服务(重启服务会有报错，请忽略）
-      shell: "sshpass -p {{ ansible_sudo_pass }} ssh -y {{ ansible_sudo_user }}@{{SMP_OLD_IP}} 'reboot'"
+      shell: "sshpass -p {{ ansible_sudo_pass }} ssh -y {{ ansible_sudo_user }}@{{ SMP_OLD_IP }} 'reboot'"
       ignore_errors: true
