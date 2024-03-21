@@ -11,42 +11,6 @@
     command: "kubectl get pod -A"
     register: pod_info
 
-  - name: delete eportal
-    tags:
-    - eportal
-    command: "kubectl delete -f {{ yaml_dir }}/eportal/"
-    when: '"portal" in pod_info.stdout'  
-    ignore_errors: true
-    no_log: true
-
-  - name: delete authentication
-    tags:
-    - authentication
-    command: "kubectl delete -f {{ yaml_dir }}/authentication/"
-    when: '"authentication" in pod_info.stdout'    
-    ignore_errors: true
-    no_log: true
-            
-  - name: 等待eportal结束运行
-    tags:
-      - eportal
-    shell: "kubectl get pod -A"
-    register: pod_info
-    until: '"rg-eportal" not in pod_info.stdout'
-    retries: 30
-    delay: 3
-    ignore_errors: true
-
-  - name: 等待authentication结束运行
-    tags:
-      - authentication
-    shell: "kubectl get pod -A"
-    register: pod_info
-    until: '"rg-authentication" not in pod_info.stdout'
-    retries: 30
-    delay: 3
-    ignore_errors: true
-
   - name: 清理ingress
     tags: ingress  
     command: "kubectl delete -f /opt/kube/kube-system/nginx-ingress/"
@@ -67,16 +31,11 @@
     shell: 'cd /opt/kad; \
           export ssh_password={{ ansible_sudo_pass }}; \
           export serverUser={{ ansible_sudo_user }}; \
-        ./kad-play.sh  playbooks/cluster/ingress.yml'    
-- hosts:
-  - kube_node
-  tags:
-  - smpplus
-  any_errors_fatal: true
-  vars_files:
-  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
-  - "/etc/kad/config.yml"
-  - "/opt/kad/playbooks/smpplus/group_vars/all/all.yml"  
-  roles:
-  - { role: ruijie/smpplus/authentication, tags: ["authentication"] }
-  - { role: ruijie/smpplus/eportal, tags: ["eportal"] }
+        ./kad-play.sh  playbooks/cluster/ingress.yml'
+
+  - name: 重新配置ingress，请耐心等待
+    tags: ingress
+    shell: 'cd /opt/kad; \
+          export ssh_password={{ ansible_sudo_pass }}; \
+          export serverUser={{ ansible_sudo_user }}; \
+        ./kad-play.sh  playbooks/smpplus/reconfig.yml'
