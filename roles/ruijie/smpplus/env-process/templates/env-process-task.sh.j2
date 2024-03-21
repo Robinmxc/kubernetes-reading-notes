@@ -10,6 +10,7 @@ function service(){
     service_rule_name="customer_${service_name}_${service_port}"
     RULES=$(iptables -t nat -S | grep "$service_rule_name")
     ADD_FLAG=true
+    num=0
     while IFS= read -r rule; do
     if	[[ "$rule" != "" ]];then
         destination_ip=$(echo "$rule" | grep -oP '(?<=-d )\d+\.\d+\.\d+\.\d+')
@@ -21,9 +22,14 @@ function service(){
                  iptables -t nat -D $del_rule
                  ADD_FLAG=true
         else
+                if	[[ $num -ge 1 ]];then
+                    del_rule=$(echo "$rule" | sed 's/-A //')
+                    logger  "env-process-task删除老规则$del_rule"
+                    iptables -t nat -D $del_rule
+                fi
+                num=$((num + 1))
                 ADD_FLAG=false
-        fi
-       
+        fi  
     fi
     done <<< "$RULES"
     if	[[ "$ADD_FLAG" == true ]];then
