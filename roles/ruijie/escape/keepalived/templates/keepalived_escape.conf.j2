@@ -1,15 +1,10 @@
-{% if DEPLOY_MODE == 'muti_master' %}
+{% if DEPLOY_MODE == "multi-master" and  inventory_hostname in groups["ESCAPE_MASTER"] %}
 vrrp_script check_master {
     script "/etc/keepalived/conf/master_check.sh"
     interval 1
     weight -5
 }
 {% endif %}
-
-vrrp_script notify_master {
-    script "/etc/keepalived/conf/notify_master.sh"
-    interval 1
-}
 
 vrrp_script check_escape {
 {% if inventory_hostname in groups["ESCAPE_MASTER"] %}
@@ -45,7 +40,7 @@ vrrp_instance VI-escape {
     virtual_router_id {{ ESCAPE_ROUTER_ID }}
     advert_int 1
     track_script {
-{% if DEPLOY_MODE == 'muti_master' %}
+{% if  DEPLOY_MODE == "multi-master" and  inventory_hostname in groups["ESCAPE_MASTER"]  %}
         check_master  
 {% endif %}
         check_escape

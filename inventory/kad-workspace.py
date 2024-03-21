@@ -435,6 +435,8 @@ def parse_escape_config(host_data):
             raise Exception(ip + u"不是有效的IP地址")
     host_data["groups"]["escape"] = escape_hosts
 
+    # smp+部署时多master检测时配置检测ip为KUBE_MASTER_VIP
+    group_all_vars["MASTER_CHECK_VIP"] = group_all_vars["KUBE_MASTER_VIP"]
 
     host_vars = host_data["host_vars"]
 
@@ -442,12 +444,14 @@ def parse_escape_config(host_data):
     for ip in escape_hosts:
         if ip not in host_vars:
             host_vars[ip] = {}
-    # 逃生优先
-    escape_first = group_all_vars["ESCAPE_FIRST"] if "ESCAPE_FIRST" in group_all_vars else False
 
     smp_deploy_mode = "single-master"
     smp_nodes = []
 
+    # 逃生优先
+    escape_first = group_all_vars["ESCAPE_FIRST"] if "ESCAPE_FIRST" in group_all_vars else False
+
+    # 逃生优先部署
     if escape_first:
         smp_old_ip = group_all_vars["SMP_OLD_IP"] if "SMP_OLD_IP" in group_all_vars else ""
         if "" == smp_old_ip:
@@ -479,6 +483,9 @@ def parse_escape_config(host_data):
             for ip in smp_nodes:
                 if not is_IP(ip):
                     raise Exception(ip + u"不是有效的IP地址")
+
+            # 逃生优先部署时smp+多master版本，检测master vip 为smp_new_ip
+            group_all_vars["MASTER_CHECK_VIP"] = smp_new_ip
 
     # 逃生配置解析
     if "ruijie-escape" != group_all_vars["APP_NAMESPACE"] or escape_first:

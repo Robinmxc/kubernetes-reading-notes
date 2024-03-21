@@ -4,12 +4,18 @@ KUBE_MASTER_HOSTS: ["192.168.1.61"]
 # Node节点IP
 KUBE_NODE_HOSTS: ["192.168.1.62", "192.168.1.63", "192.168.1.64"]
 
-# 优先逃生
-ESCAPE_FIRST: true
-# 优先逃生时必须配置--SMP新服务器IP
+# 优先逃生--本选项代表从逃生服务器部署整个逃生
+ESCAPE_FIRST: false
+# 优先逃生时配置--SMP新服务器IP(单节点对应的服务器新ip，多master对应的是k8s集群新vip）
 SMP_NEW_IP: ""
-# 优先逃生时必须配置--SMP原服务器IP
+# 优先逃生时配置--SMP原服务器IP(单节点对应的服务器原ip，多master对应的是k8s集群原vip）
 SMP_OLD_IP: ""
+# 从逃生部署时对应的是smp+的部署模式 single-master/multi-master,默认是single-master，
+SMP_DEPLOY_MODE: single-master
+# 优先逃生时必配置--SMP中kad所在的节点，在SMP_DEPLOY_MODEL=multi-master时需要配置
+SMP_KAD_IP: ""
+# 优先逃生时必配置--SMP所有服务节点，在SMP_DEPLOY_MODEL=multi-master时需要配置
+SMP_NODES: []
 
 # 逃生模式开启时，smpplus节点和逃生组件都需要配置此,此配置尽在需要部署逃生时和逃生优先方案是有效
 ESCAPE: {

@@ -26,6 +26,10 @@
     - name: 设置keepalived-escape配置文件
       template: src=keepalived_escape.conf.j2 dest=/etc/keepalived/conf/keepalived_escape.conf
 
+    - name: 设置escape-master-ip存活检测脚本
+      when: 'inventory_hostname in groups["ESCAPE_MASTER"]'
+      template: src=master_check.sh.j2 dest=/etc/keepalived/conf/master_check.sh mode=755
+
     - name: 设置escape-master存活检测脚本
       when: 'inventory_hostname in groups["ESCAPE_MASTER"]'
       template: src=master_escape_check.sh.j2 dest=/etc/keepalived/conf/master_escape_check.sh mode=755
