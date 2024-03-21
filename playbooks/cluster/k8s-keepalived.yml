@@ -1,0 +1,4 @@
+- hosts: kube_master
+  any_errors_fatal: true
+  roles:
+    - ruijie/cluster/keepalived
