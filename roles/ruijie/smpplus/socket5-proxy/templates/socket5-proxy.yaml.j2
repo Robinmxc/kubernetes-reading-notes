@@ -26,6 +26,6 @@ spec:
   hostNetwork: true
   volumes:
   - hostPath:
-      path: /etc/v2ray
+      path: {{ config_base_dir }}/socket5-proxy/conf
     name: conf
 status: {}

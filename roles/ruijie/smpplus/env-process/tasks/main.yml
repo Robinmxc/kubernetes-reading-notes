@@ -1,0 +1,20 @@
+- name: 准备部署文件目录
+  tags:
+  - config
+  file: path={{ item }} state=directory
+  with_items:
+  - "{{ config_base_dir }}/env-process"
+
+- name: 设置env-process-task.sh脚本
+  template: src=env-process-task.sh.j2 dest={{ config_base_dir }}/env-process/env-process-task.sh mode=777
+
+- name: 设置start.sh脚本
+  template: src=env-start.sh.j2 dest={{ config_base_dir }}/env-process/env-start.sh mode=777
+
+- name: crontab清理keepalived服务拉起脚本
+  shell: sed -i '/env-process/d' /var/spool/cron/root
+  ignore_errors: true
+
+- name: crontab添加keepalived服务拉起脚本
+  shell: echo '* * * * * {{ config_base_dir }}/env-process/env-start.sh' >> /var/spool/cron/root
+
