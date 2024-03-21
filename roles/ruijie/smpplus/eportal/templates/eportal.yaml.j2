@@ -97,7 +97,7 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-{% if not ESCAPE["enable"] %}
+{% if k8s_single == "yes" %}
   externalTrafficPolicy: Local
 {% endif %}    
   selector:
