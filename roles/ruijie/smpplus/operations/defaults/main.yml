@@ -1,5 +1,5 @@
 operations_java_opt: "-Xms256m -Xmx512m"
-
+mongodb_deploy_mode: "{{ groups['mongodb'] | length }}"
 deploy_ip: "{% if mongodb_deploy_mode == '1' %}{{ groups['mongodb'][0] }}{% else %}{{ groups['mongodb'][0] }},{{ groups['mongodb'][1] }},{{ groups['mongodb'][2] }}{% endif %}"
 
 operations_configs: []
