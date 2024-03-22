@@ -7,9 +7,10 @@
 
 - name: 复制部署文件
   tags:
-  - config
+  - config   
   vars:
-    comp_name: 'socket5-proxy'  
+    comp_name: 'socket5-proxy' 
+    deploy_conf: '{{ socket5_proxy_deploy_conf }}' 
   template: src='socket5-proxy.yaml.j2' dest=/etc/kubernetes/manifests/prepare/socket5-proxy.yaml
 
 - name: 复制配置文件
