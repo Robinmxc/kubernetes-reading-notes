@@ -5,6 +5,7 @@
     - escape
   gather_facts: false
   tasks:
+    # 从逃生部署的时候，需要通过本机替换配置执行后续操作，目前缺少对smp+执行填充数据reconfig的操作
     - name: 替换escape的配置文件变量
       when: "APP_NAMESPACE == 'ruijie-escape' and ESCAPE_FIRST"
       tags: always
@@ -14,7 +15,7 @@
         - {regexp: "SMPPLUS_VIP.*$", replace: "SMPPLUS_VIP: \"{{ SMP_NEW_IP }}\""}
         - {regexp: "SESSION_TIMEOUT.*$", replace: "SESSION_TIMEOUT: {{ ESCAPE.SESSION_TIMEOUT }}"}
 
-
+    #从smp+本机执行逃生部署，需要替换逃生服务器的配置后续操作
     - name: 替换escape的配置文件变量
       when: "APP_NAMESPACE == 'ruijie-smpplus'"
       tags: always

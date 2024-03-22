@@ -23,7 +23,7 @@ if [[ ${ssh_password} == "" ]];then
     read  -s ssh_password  
 fi 
 if	[[ "$result" != "" ]];then
- 	 sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $*  --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}" 
+ 	 sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $*  --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}  ansible_sudo_user=${ssh_user}"
 else
     result_an8_oe2203_ky10=$(echo $osname | grep -E ".an8|.oe2203|.ky10")
     result_ky10=$(echo $osname | grep -E ".ky10")
@@ -38,9 +38,9 @@ else
         set +o errexit 
     fi	
     if	[[ "$result_ky10" != "" ]];then
-   	  sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $* -e 'ansible_python_interpreter=/usr/bin/python39' --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}" 
+   	  sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $* -e 'ansible_python_interpreter=/usr/bin/python39' --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}  ansible_sudo_user=${ssh_user}"
     else
-       sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $* -e 'ansible_python_interpreter=/usr/bin/python3' --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}" 
+       sshpass -p ${ssh_password}  ansible-playbook -i inventory/ -k $* -e 'ansible_python_interpreter=/usr/bin/python3' --become  --become-method  sudo --user ${ssh_user} --extra-vars "ansible_sudo_pass=${ssh_password}  ansible_sudo_user=${ssh_user}"
     fi
 
 fi
