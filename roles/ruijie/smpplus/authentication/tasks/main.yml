@@ -8,6 +8,9 @@
 - name: 自动配置
   tags:
   - config
+  vars:
+    kad2_url: '{% if k8s_single == "no" %}{{ groups.kube_node[0] }}{% else %}{{ groups.kube_node[1] }}{% endif %}'
+    kad3_url: '{% if k8s_single == "no" %}{{ groups.kube_node[0] }}{% else %}{{ groups.kube_node[2] }}{% endif %}'
   replace: path="{{ config_base_dir }}/authentication/conf/application-prd.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
   - {regexp: "mongodb:.*/nodes.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/nodes?replicaSet=rs0"}
@@ -23,7 +26,9 @@
   #- {regexp: "softwarePackageDownLoadAddress.*$", replace: "softwarePackageDownLoadAddress: http://{{KUBE_MASTER_VIP}}:9888"}
   - {regexp: "certificatePath.*$", replace: "certificatePath: /ruijie/authentication/kadapitls/kadapi.pem"}
   - {regexp: "privateKeyPath.*$", replace: "privateKeyPath: /ruijie/authentication/kadapitls/kadapi-smp-key.pem"}
-  - {regexp: "kadUrl.*$", replace: "kadUrl: https://{{KUBE_MASTER_VIP}}:11938"}
+  - {regexp: "kadUrl.*$", replace: "kadUrl: https://{{groups.kube_node[0]}}:11938"}
+  - {regexp: "kad2Url.*$", replace: "kadUrl: https://{{kad2_url}}:11938"}
+  - {regexp: "kad3Url.*$", replace: "kadUrl: https://{{kad3_url}}:11938"}
   - {regexp: "sentinel-dashboard-srv", replace: "{{KUBE_MASTER_VIP}}"}
   no_log: true
 
