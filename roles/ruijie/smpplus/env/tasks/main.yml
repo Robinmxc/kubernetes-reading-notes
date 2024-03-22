@@ -54,6 +54,7 @@
     - "nodescanner"
     - "nodecompliance"    
     - "rg-log"
+    - "socket5-proxy"    
     - "pcapture"
 - name: 获取autostart.sh状态
   stat: path="/etc/init.d/autostart.sh"
