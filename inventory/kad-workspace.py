@@ -84,7 +84,7 @@ def parse_host_data(workspace_dir):
     if ("KAD_APP_NAMESPACE" in env):
         app_namespace = os.environ["KAD_APP_NAMESPACE"]
     else:
-        app_namespace = "ruijie-smpplus"
+        app_namespace = "ruijie-sourceid"
     group_all_vars["APP_NAMESPACE"] = app_namespace
 
     # Copy app config to global
