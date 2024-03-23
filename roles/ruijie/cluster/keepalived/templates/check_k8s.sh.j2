@@ -1,4 +1,15 @@
 #!/bin/bash
-set -x
-exit 0
+is_enabled_check=false
+if [ "$is_enabled_check" = true ]; then
+    exists=$(docker ps --filter status=running | grep -q k8s_kube-apiserver_kube-apiserver && echo "true" || echo "false")
+    if [ $exists == true ]; then
+        exit 0
+    else
+        exit 1
+    fi
+else
+    exit 0
+fi
+
+
 
