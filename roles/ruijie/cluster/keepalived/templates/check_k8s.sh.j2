@@ -5,7 +5,7 @@ if [ "$is_enabled_check" = true ]; then
     if [ $exists == true ]; then
         exit 0
     else
-        logger "keepalived check_k8s_2 false exit 1"
+        logger "keepalived check_k8s_2 结果false，系统返回 exit 1"
         exit 1
     fi
 else
