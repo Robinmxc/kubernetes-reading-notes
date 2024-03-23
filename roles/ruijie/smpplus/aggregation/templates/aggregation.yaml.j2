@@ -34,6 +34,8 @@ spec:
           value: "true"
         - name: SMPPLUS_SERVICE_VIP
           value: "{{ KUBE_MASTER_VIP }}"
+        - name: SOCKET_PROXY_PORTS
+          value: "1080"
 {% endif %}
         - name: JAVA_OPT_EXT
           value: "{{ JAVA_OPT_EXT}}"
