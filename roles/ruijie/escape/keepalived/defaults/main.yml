@@ -1,1 +1,1 @@
-ESCAPE_ROUTER_ID: 155
+ESCAPE_ROUTER_ID: "{{ ESCAPE_VIP.split('.')[-1] }}"

@@ -2,3 +2,9 @@
   any_errors_fatal: true
   roles:
     - ruijie/cluster/keepalived
+
+- hosts: kube_master
+  tasks:
+    - name: k8s安装完毕后，keepalive开启业务检测
+      shell: "sed -i 's/is_enabled_check=false/is_enabled_check=true/' /etc/keepalived/conf/check_k8s.sh"
+      when: '"" != KUBE_MASTER_VIP and DEPLOY_MODE == "multi-master" '

@@ -1,7 +1,5 @@
 vrrp_script check_k8s {
     script "/etc/keepalived/conf/check_k8s.sh"
-    interval 2
-    weight -20
 }
 
 vrrp_instance VI-KUBE {

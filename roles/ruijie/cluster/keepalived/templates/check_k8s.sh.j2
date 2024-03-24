@@ -1,4 +1,6 @@
 #!/bin/bash
+set -x
+echo `date`+ "start check_k8s" >> /var/log/keepalived_up.log
 is_enabled_check=false
 if [ "$is_enabled_check" = true ]; then
     exists=$(docker ps --filter status=running | grep -q k8s_kube-apiserver_kube-apiserver && echo "true" || echo "false")
