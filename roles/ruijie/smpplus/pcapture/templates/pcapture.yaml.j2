@@ -38,7 +38,7 @@ spec:
         ports:
         - containerPort: 10088
         volumeMounts:
-        - mountPath: /ruijie/{{comp_name}}
+        - mountPath: /ruijie/smpplus/pcapture/conf
           name: conf
         - mountPath: /logs
           name: logpath
@@ -80,7 +80,7 @@ spec:
       volumes:
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/{{comp_name}}
+            path: {{ config_base_dir }}/{{comp_name}}/conf
         - name: logpath
           hostPath:
             path: {{ config_base_dir }}/logs
