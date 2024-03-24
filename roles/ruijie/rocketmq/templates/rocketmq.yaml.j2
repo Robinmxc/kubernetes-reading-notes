@@ -23,7 +23,7 @@ spec:
 {% endif %}
 
 {% if  rocket_cluster_mode == "yes" and  DEPLOY_MODE !='allinone' and "yes" != (rocketmq_public) %}
-        command: ["sh","mqbroker", "-n", "\"rg-rocket1:9876;rg-rocket2:9876\" autoCreateTopicEnable=true"]
+        command: ["sh","mqbroker", "-n", "\"rg-rocket:9876;rg-rocket2:9876\" autoCreateTopicEnable=true"]
 {% endif %}
 
         env:
