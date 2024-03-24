@@ -5,9 +5,14 @@ vrrp_script check_k8s {
 }
 
 vrrp_instance VI-KUBE {
-    state BACKUP
+{% if "MASTER" == hostvars[inventory_hostname]["NODE_LB_ROLE"] %}
+    state MASTER
     priority 100
+{% else %}
+    state BACKUP
+    priority  90
     nopreempt
+{% endif %}
     unicast_src_ip {{ inventory_hostname }}
     unicast_peer {
 {% for h in groups['kube_master'] %}{% if h != inventory_hostname %}
