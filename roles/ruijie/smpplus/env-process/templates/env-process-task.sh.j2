@@ -77,13 +77,18 @@ function chajian_port_redirect(){
     service_rule_name=chajian_port_redirect_9688
     RULES=$(iptables -t nat -S | grep "$service_rule_name")
     num=0
+    ADD_FLAG=true
     while IFS= read -r rule; do
     if	[[ "$rule" != "" ]];then
+        if	[[ $num -ge 1 ]];then  
+            iptables -t nat -D PREROUTING -p tcp --dport 9688 -j REDIRECT --to-port 443 -m comment --comment "${service_rule_name}"
+        fi   
         num=$((num + 1))
+        ADD_FLAG=false
     fi
     done <<< "$RULES"
 
-    if	[[ $num -eq 0 ]];then
+    if	[[ "$ADD_FLAG" == true ]];then
         logger "${service_rule_name}规则添加"
         iptables -t nat -A PREROUTING -p tcp --dport 9688 -j REDIRECT --to-port 443  -m comment --comment "${service_rule_name}"
     fi

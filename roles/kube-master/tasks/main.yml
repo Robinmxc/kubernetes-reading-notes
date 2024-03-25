@@ -94,6 +94,15 @@
   when: 'DEPLOY_MODE == "single-master" or DEPLOY_MODE == "allinone"'
 
 
+- name: 修改kube-controller-manager的调度参数
+  shell: "grep node-monitor-grace-period /etc/kubernetes/manifests/kube-controller-manager.yaml >> /dev/null; \
+          if [ $? -ne 0 ]; \
+          then sed -i \"s#--use-service-account-credentials=true#--use-service-account-credentials=true\\n    - --node-monitor-grace-period={{node_monitor_grace_period}}\\n    - --node-monitor-period={{node_monitor_period}}\\n    - --pod-eviction-timeout={{pod_eviction_timeout}}#g\" /etc/kubernetes/manifests/kube-controller-manager.yaml; \
+          fi;"
+  connection: local
+  run_once: true
+  tags: upgrade_k8s
+
 - name: 修改kubernetes的端口范围
   shell: "grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml >> /dev/null; \
           if [ $? -ne 0 ]; \
@@ -102,7 +111,21 @@
   connection: local
   run_once: true
   tags: upgrade_k8s
-  
+
+- name: 暂停3秒等待静态pod修改生效
+  wait_for: timeout=3
+
+- name: 轮询等待kube-controller-manager处于running状态
+  shell: "kubectl get pod -n kube-system | grep 'kube-controller-manager' | awk '{print $3}'| sort -u"
+  register: pod_status
+  until: pod_status.stdout == "Running"
+  connection: local
+  run_once: true
+  retries: 15
+  delay: 5
+  ignore_errors: true
+  tags: upgrade_k8s
+
 - name: 重置端口后,轮询等待apiserver处于running状态
   shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'| sort -u"
   register: pod_status
