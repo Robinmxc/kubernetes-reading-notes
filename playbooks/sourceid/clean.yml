@@ -207,6 +207,12 @@
     command: "kubectl delete -f {{ yaml_dir }}/pcapture/"
     when: '"rg-pcapture" in pod_info.stdout'
 
+  - name: 停止 rg-sso-proxy
+    tags:
+      - sso-proxy
+    command: "kubectl delete -f {{ yaml_dir }}/sso-proxy/"
+    when: '"rg-sso-proxy" in pod_info.stdout'
+
   - name: 停止 rocketmq
     tags:
       - rocketmq
@@ -549,6 +555,16 @@
     shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
     until: '"rg-pcapture" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 等待sso-proxy结束运行
+    tags:
+      - sso-proxy
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-sso-proxy" not in pod_info.stdout'
     retries: 30
     delay: 3
     ignore_errors: true

@@ -132,3 +132,12 @@ HOSTS: {
   "id.example.com": "172.17.8.93",
   "idself.example.com": "172.17.8.93"
 }
+
+# http部署模式
+ingress_mode: "http"
+# https域名
+#ingress_ssl_names: ["ruishan.cc"]
+# 认证代理http部署模式
+ssoproxy_ingress_mode: "http"
+# 认证代理https域名
+#ssoproxy_ssl_names: ["ruishan.cc"]
