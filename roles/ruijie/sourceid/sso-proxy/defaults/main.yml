@@ -1,6 +1,6 @@
 SSO_PROXY_ENABLE: "{% if SOURCEID_DOCKERS['sso-proxy'] is defined and (SOURCEID_DOCKERS['sso-proxy'].enable is not defined or SOURCEID_DOCKERS['sso-proxy'].enable) %}yes{% else %}no{% endif %}"
 
-sso_proxy_java_opt: "{% if CLUSTER_SCALE == 'normal'  %}-Xms1024m -Xmx4000m{% elif CLUSTER_SCALE == 'single'  %}-Xms512m -Xmx1700m{%  elif CLUSTER_SCALE == 'small' %}-Xms512m -Xmx800m{% elif CLUSTER_SCALE == 'basic'  %}-Xms512m -Xmx1700m{% else %}-Xms512m -Xmx800m{% endif %}"
+sso_proxy_java_opt: "{% if CLUSTER_SCALE == 'normal'  %}-Xms1024m -Xmx3700m{% elif CLUSTER_SCALE == 'single'  %}-Xms512m -Xmx1700m{%  elif CLUSTER_SCALE == 'small' %}-Xms512m -Xmx800m{% elif CLUSTER_SCALE == 'basic'  %}-Xms512m -Xmx1700m{% else %}-Xms512m -Xmx800m{% endif %}"
 
 sso_proxy_configs: []
 
