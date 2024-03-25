@@ -34,5 +34,6 @@
         ./kad-play.sh  playbooks/cluster/ingress.yml'
 
   - name: 配置完成
-    msg: "vip如若修改，请重新执行业务组件reconfig"
+    debug:
+      msg: "vip如若修改，请重新执行业务组件reconfig"
 
