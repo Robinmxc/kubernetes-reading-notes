@@ -1,4 +1,4 @@
-PCAPTURE_ENABLE: "{% if SMPPLUS_DOCKERS['pcapture'] is defined and (SMPPLUS_DOCKERS['pcapture'].enable is not defined or SMPPLUS_DOCKERS['pcapture'].enable) %}yes{% else %}no{% endif %}"
+PCAPTURE_ENABLE: "yes"
 mongodb_deploy_mode: "{{ groups['mongodb'] | length }}"
 pcapture_configs: []
 pcapture_port: 10000
