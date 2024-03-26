@@ -23,7 +23,7 @@ mongodb_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/data"
 mongodb_init_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/init"
 mongodb_backup_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/backup"
 
-rocketmq_addr: "{% if (groups['rocketmq'] | length | int) == 1 %}rg-rocket.ruijie-smpplus.svc:9876{% else %}rg-rocket.ruijie-smpplus.svc:9876;rg-rocket2.ruijie-smpplus:9876{% endif %}"
+rocketmq_addr: "{% if (groups['rocketmq'] | length | int) == 1 %}rg-rocket.ruijie-smpplus.svc:9876{% else %}rg-rocket.ruijie-smpplus.svc:9876;rg-rocket2.ruijie-smpplus.svc:9876{% endif %}"
 rocketmq_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/data"
 rocketmq_logs_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/log"
 rocketmq_conf_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/conf"
