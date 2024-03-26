@@ -149,9 +149,11 @@ spec:
   ingressClassName: nginx
 {% if 'https' == ssoproxy_ingress_mode %}
   tls:
+{% for s in SOURCEID_SSO_PROXY_DOMAIN %}
     - hosts:
-      - {{ SOURCEID_SSO_PROXY_DOMAIN }}
+      - {{ s }}
       secretName: nginx-cert
+{% endfor %}
 {% endif %}
   rules:
 {% for d in SOURCEID_SSO_PROXY_DOMAIN %}

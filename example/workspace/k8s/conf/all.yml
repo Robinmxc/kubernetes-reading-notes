@@ -139,5 +139,3 @@ ingress_mode: "http"
 #ingress_ssl_names: ["ruishan.cc"]
 # 认证代理http部署模式
 ssoproxy_ingress_mode: "http"
-# 认证代理https域名
-#ssoproxy_ssl_names: ["ruishan.cc"]
