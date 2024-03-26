@@ -48,5 +48,5 @@ DOCKER_STORAGE_DIR: "{{ DATA_DIR }}/docker"
 
 node_monitor_grace_period: 10s
 node_monitor_period: 2s
-pod_eviction_timeout: 20s
+pod_eviction_timeout: 10s
 
