@@ -128,7 +128,15 @@ def certs_download():
 
     # 1.copy certs
     # 2.restart freeradius pod
+    cert_name = data["certName"]
     cert_download_url = data["certDownloadUrl"]
+    #下载前先删除同名文件，避免下载失败
+    if cert_name == "":
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'cert_name is empty'
+        return result
+    os.system("rm -rf  " + data_dir + "/ruijie/ruijie-smpplus/share/certs/" + cert_name)
     #下载证书
     download_result = int(
             os.system("cd " + data_dir + "/ruijie/ruijie-smpplus/share/certs/" + " && curl -OJ " + cert_download_url))
