@@ -62,12 +62,12 @@ spec:
         - mountPath: /ruijie/{{comp_name}}/kadapitls
           name: kadapi-tls
         startupProbe:
-          failureThreshold: 15
+          failureThreshold: 30
           httpGet:
             path: /liveProbe/authentication
             port: 9888
             scheme: HTTP
-          periodSeconds: 10
+          periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 1
 

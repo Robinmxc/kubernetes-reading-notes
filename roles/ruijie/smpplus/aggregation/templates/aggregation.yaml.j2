@@ -58,12 +58,12 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         startupProbe:
-          failureThreshold: 15
+          failureThreshold: 30
           httpGet:
             path: /liveProbe/aggregation
             port: 9999
             scheme: HTTP
-          periodSeconds: 10
+          periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 1
 
