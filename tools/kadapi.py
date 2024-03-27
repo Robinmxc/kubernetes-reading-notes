@@ -70,11 +70,6 @@ def get_expiry_date():
                                                                                                                "").replace(
         "\n", "")
     logging.debug("data_dir:" + data_dir)
-    if len(data_dir) < 1:
-        result["result"] = False
-        result["code"] = 204
-        result["message"] = 'data_dir is empty'
-        return result
 
     for cert_name in cert_names:
         time_stamp = validity_calculation(data_dir, cert_name)
@@ -120,11 +115,6 @@ def certs_download():
         os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline().replace(" ", "").replace(
             "\n", ""))
     logging.debug("data_dir:" + data_dir)
-    if len(data_dir) < 1:
-        result["result"] = False
-        result["code"] = 204
-        result["message"] = 'data_dir is empty'
-        return result
 
     # 1.copy certs
     # 2.restart freeradius pod
@@ -168,11 +158,6 @@ def certs_change():
         os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline().replace(" ", "").replace(
             "\n", ""))
     logging.debug("data_dir:" + data_dir)
-    if len(data_dir) < 1:
-        result["result"] = False
-        result["code"] = 204
-        result["message"] = 'data_dir is empty'
-        return result
 
     # 1.copy certs
     # 2.restart freeradius pod
@@ -233,11 +218,6 @@ def certs_enabled():
         os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline().replace(" ", "").replace(
             "\n", ""))
     logging.debug("data_dir:" + data_dir)
-    if len(data_dir) < 1:
-        result["result"] = False
-        result["code"] = 204
-        result["message"] = 'data_dir is empty'
-        return result
 
     # 1.copy certs
     # 2.restart freeradius pod
@@ -813,9 +793,6 @@ def access_mode_change(current_info, submit_info):
         logging.debug("access_mode_change is start.")
         data_dir = str(os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline()).replace(" ","").replace("\n", "")
         logging.debug("access_mode_change: data_dir:" + data_dir)
-        if len(data_dir) < 1:
-            logging.error("access_mode_change: data_dir is empty....")
-            return
 
         #current_info 读取现有配置，change_info页面传递来的参数
         current_accessMode = current_info["date"]["accessMode"]
