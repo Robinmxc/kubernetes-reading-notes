@@ -112,23 +112,8 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-{% if k8s_single == "yes" and not ESCAPE["enable"] %}
-  externalTrafficPolicy: Local
-{% endif %}    
   selector:
     k8s-app: rg-{{comp_name}}
-{% if ESCAPE["enable"] %}
-  ports:
-  - port: 8090
-    name: port8090
-    targetPort: 8090
-  - protocol: UDP
-    port: 50100
-    name: port50100
-    targetPort: 50100
-{% endif %}   
-
-{% if not ESCAPE["enable"] %}
   type: NodePort
   ports:
   - port: 8090
@@ -140,4 +125,3 @@ spec:
     name: port50100
     targetPort: 50100
     nodePort: 50100
-{% endif %}  

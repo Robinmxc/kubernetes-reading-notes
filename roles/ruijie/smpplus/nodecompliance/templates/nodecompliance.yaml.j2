@@ -101,9 +101,6 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-{% if k8s_single == "yes" %}
-  externalTrafficPolicy: Local
-{% endif %}
   selector:
     k8s-app: rg-{{comp_name}}
   type: NodePort
