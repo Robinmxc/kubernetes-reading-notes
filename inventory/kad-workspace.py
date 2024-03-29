@@ -275,10 +275,10 @@ def parse_host_data(workspace_dir):
 
 
     # 解析集群对外服务ip
-    if (deploy_mode == "allinone"):
-      group_all_vars["SERVICE_VIP"] = master_hosts[0]
-    elif ("ESCAPE_VIP"  in group_all_vars and group_all_vars["ESCAPE_VIP"] != ""):
+    if ("ESCAPE_VIP"  in group_all_vars and group_all_vars["ESCAPE_VIP"] != ""):
       group_all_vars["SERVICE_VIP"] =group_all_vars["ESCAPE_VIP"]
+    elif(deploy_mode == "allinone"):
+      group_all_vars["SERVICE_VIP"] = master_hosts[0]
     else:
       group_all_vars["SERVICE_VIP"] =group_all_vars["KUBE_MASTER_VIP"]
       
