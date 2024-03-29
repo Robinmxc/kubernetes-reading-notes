@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: rg-{{ comp_name }}
   namespace: {{ APP_NAMESPACE }}
@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
+  serviceName: "rg-{{ comp_name }}"
   template:
     metadata:
       labels:

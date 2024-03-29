@@ -61,6 +61,9 @@ spec:
           name: conf
         - mountPath: /ruijie/{{comp_name}}/kadapitls
           name: kadapi-tls
+        - mountPath: /root/.kube/config
+          name: kube
+          subPath: config
         startupProbe:
           failureThreshold: 30
           httpGet:
@@ -109,6 +112,9 @@ spec:
         - name: kadapi-tls
           configMap:
             name: kadapi-cert
+        - name: kube
+          hostPath:
+            path: /root/.kube
 ---
 apiVersion: v1
 kind: Service
