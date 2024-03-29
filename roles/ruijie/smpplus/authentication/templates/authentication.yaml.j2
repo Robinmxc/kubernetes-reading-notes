@@ -34,9 +34,9 @@ spec:
 {% if k8s_single == "no" %}
         - name: CLUSTER_MODE
           value: "true"
+{% endif %}
         - name: SOCKET_PROXY_PORTS
           value: "1080"
-{% endif %}
         - name: SMPPLUS_SERVICE_VIP
           value: "{{ KUBE_MASTER_VIP }}"
         - name: JAVA_OPT_EXT
