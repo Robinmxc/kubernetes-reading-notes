@@ -1,17 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: rg-{{ comp_name }}
   namespace: {{ APP_NAMESPACE }}
   labels:
     k8s-app: rg-{{ comp_name }}
 spec:
+  serviceName: operations
   replicas: {{ deploy_conf.replicas }}
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
