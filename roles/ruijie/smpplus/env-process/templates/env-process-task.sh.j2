@@ -2,42 +2,6 @@
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:$PATH"
 service_vip={{SERVICE_VIP}}
 current_pid=$$
-function service(){
-	service_name=${1} 
-    service_port=${2} 
-    service_info=$(kubectl get svc -A | grep ${service_name})
-    service_ip=$(echo "$service_info" | awk '{print $4}')
-    service_rule_name="customer_${service_name}_${service_port}"
-    RULES=$(iptables -t nat -S | grep "$service_rule_name")
-    ADD_FLAG=true
-    num=0
-    while IFS= read -r rule; do
-    if	[[ "$rule" != "" ]];then
-        destination_ip=$(echo "$rule" | grep -oP '(?<=-d )\d+\.\d+\.\d+\.\d+')
-	    source_port=$(echo "$rule" | grep -oP '(?<=--dport )\d+')
-	    old_destination=$(echo "$rule" | grep -oP '(?<=--to-destination )[^:]+')
-        if	[[ "$destination_ip" != "$service_vip" ]] || [[ "$source_port" != "${service_port}" ]] || [[ "${service_ip}" != "$old_destination" ]];then
-                 del_rule=$(echo "$rule" | sed 's/-A //')
-                 logger  "env-process-task删除老规则$del_rule"
-                 iptables -t nat -D $del_rule
-                 ADD_FLAG=true
-        else
-                if	[[ $num -ge 1 ]];then
-                    del_rule=$(echo "$rule" | sed 's/-A //')
-                    logger  "env-process-task删除老规则$del_rule"
-                    iptables -t nat -D $del_rule
-                fi
-                num=$((num + 1))
-                ADD_FLAG=false
-        fi  
-    fi
-    done <<< "$RULES"
-    if	[[ "$ADD_FLAG" == true ]];then
-        logger  "env-process-task $current_pid 添加新规则        iptables -t nat -A PREROUTING -p udp -d "${service_vip}"  --dport ${service_port} -j DNAT --to-destination ${service_ip}:${service_port} -m comment --comment \"${service_rule_name}\""
-        iptables -t nat -A PREROUTING -p udp -d "${service_vip}"  --dport ${service_port} -j DNAT --to-destination ${service_ip}:${service_port} -m comment --comment "${service_rule_name}"
-    fi
-}
-
 
 function socket5_process(){
     VIP_EXIST_FLAG=false
@@ -95,10 +59,7 @@ function chajian_port_redirect(){
 }
 function execute_All(){
 {% if ESCAPE["enable"] or  DEPLOY_MODE != "allinone"%}
-    socket5_process
-    service rg-freeradius 1812  
-    service rg-freeradius 1813
-    service rg-eportal 50100 
+    socket5_proces
 {% endif %}
     chajian_port_redirect
 }
