@@ -22,6 +22,7 @@
       - {regexp: "baseDir: .*$", replace: "baseDir: /ruijie/smpplus/pcapture/conf/dumpPackage/"}
       - {regexp: "tarDir: .*$", replace: "tarDir: /ruijie/smpplus/pcapture/conf/dumpPackage/tars/"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+      - {regexp: "ip.*$", replace: "ip: {{rocketmq_addr}}"}
       - {regexp: "grabIp: .*$", replace: "grabIp: {{ grab_ip }}"}
     no_log: true
 
