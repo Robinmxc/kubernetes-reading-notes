@@ -8,7 +8,7 @@ mongo -u {{ MONGODB_ADMIN_USER }}  -p {{ MONGODB_ADMIN_PWD }} --authenticationDa
 
 end=0
 
-versions=(R0.0 R1.0 R1.1 R1.2 R1.3 R1.4 R1.5 R1.6 R1.6.3 R1.6.4 R1.6.5 R1.7.0 R1.7.1 R1.7.2 R1.8.0 R1.8.0p1 R1.8.0p2 R1.9.0 R1.9.0p2 R1.9.1 R1.9.1p1 R2.0.0 R2.0.0p1 R2.0.1 R2.0.1p1 R2.0.2 R2.0.2p1 R2.0.3 R2.0.3p1 R2.0.4 R2.0.4p1 R2.1.0)
+versions=(R0.0 R1.0 R1.1 R1.2 R1.3 R1.4 R1.5 R1.6 R1.6.3 R1.6.4 R1.6.5 R1.7.0 R1.7.1 R1.7.2 R1.8.0 R1.8.0p1 R1.8.0p2 R1.9.0 R1.9.0p2 R1.9.1 R1.9.1p1 R2.0.0 R2.0.0p1 R2.0.1 R2.0.1p1 R2.0.2 R2.0.2p1 R2.0.3 R2.0.3p1 R2.0.4 R2.0.4p1 R2.1.0 R2.1.1)
 
 {% raw %}
 for (( i = 0 ; i < ${#versions[@]} ; i++ ))
