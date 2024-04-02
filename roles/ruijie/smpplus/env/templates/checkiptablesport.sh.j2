@@ -1,0 +1,16 @@
+#!/bin/sh
+
+reconfig_iptables=0
+
+iptables_ports_str={{ portlist }}
+iptables_ports=(${iptables_ports_str//,/ })
+
+for port in "${iptables_ports[@]}"; do
+    if ! /usr/sbin/iptables -L -n | grep -q " $port "; then
+        reconfig_iptables=1
+    fi
+done
+
+if [ "$reconfig_iptables" -eq 1 ]; then
+    /usr/sbin/iptables -F && sh /etc/init.d/autostart.sh
+fi

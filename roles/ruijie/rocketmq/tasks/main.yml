@@ -33,7 +33,7 @@
   run_once: true
   connection: local
   
-- name: 准备RocketMQ的部署文件
+- name: 准备RocketMQ-1的部署文件(集群)
   tags:
   - config
   vars:
@@ -44,9 +44,9 @@
   template: src=rocketmq.yaml.j2 dest={{ yaml_dir }}/rocketmq/rocketmq.yml
   run_once: true
   connection: local
-  when: 'rocket_cluster_mode == "yes" and  DEPLOY_MODE !="allinone" and "yes" != (rocketmq_public)'
+  when: 'rocket_cluster_mode == "yes" and  DEPLOY_MODE !="allinone"'
 
-- name: 准备RocketMQ的部署文件
+- name: 准备RocketMQ的部署文件（单机）
   tags:
   - config
   vars:
@@ -57,9 +57,9 @@
   template: src=rocketmq.yaml.j2 dest={{ yaml_dir }}/rocketmq/rocketmq.yml
   run_once: true
   connection: local
-  when: 'rocket_cluster_mode != "yes" or  DEPLOY_MODE =="allinone" or "yes" == (rocketmq_public)'
+  when: 'rocket_cluster_mode != "yes" or  DEPLOY_MODE =="allinone"'
 
-- name: 准备RocketMQ-2的部署文件
+- name: 准备RocketMQ-2的部署文件（集群）
   tags:
   - config
   vars:
@@ -70,7 +70,7 @@
   template: src=rocketmq.yaml.j2 dest={{ yaml_dir }}/rocketmq/rocketmq2.yml
   run_once: true
   connection: local
-  when: 'rocket_cluster_mode == "yes" and  DEPLOY_MODE !="allinone" and "yes" != (rocketmq_public)'
+  when: 'rocket_cluster_mode == "yes" and  DEPLOY_MODE !="allinone"'
 
 - name: 准备RocketMQ的broker的配置文件目录
   tags:
@@ -80,7 +80,7 @@
   - "{{ rocketmq_conf_dir }}"
 
 
-- name: 准备RocketMQ的broker文件
+- name: 准备RocketMQ的broker文件（单机）
   tags:
   - config
   vars:
@@ -88,9 +88,9 @@
     brokerName: "broker-a"
     deploy_conf: '{{ mq_deploy_conf }}'
   template: src=broker.conf dest={{ rocketmq_conf_dir }}/broker.conf
-  when: 'rocket_cluster_mode != "yes" or  DEPLOY_MODE =="allinone" or "yes" == (rocketmq_public)'
+  when: 'rocket_cluster_mode != "yes" or  DEPLOY_MODE =="allinone"'
 
-- name: 准备RocketMQ的broker文件
+- name: 准备RocketMQ的broker文件（集群）
   tags:
   - config
   vars:
@@ -98,7 +98,7 @@
     brokerName: "{% if ansible_host == groups.rocketmq[1] %}broker-a{% else %}broker-b{%endif%}"
     deploy_conf: '{{ mq_deploy_conf }}'
   template: src=broker.conf dest={{ rocketmq_conf_dir }}/broker.conf
-  when: 'rocket_cluster_mode == "yes" and  DEPLOY_MODE !="allinone" and "yes" != (rocketmq_public)'
+  when: 'rocket_cluster_mode == "yes" and  DEPLOY_MODE !="allinone"'
 
 - name: 获取已下载离线镜像信息
   command: "ls {{ base_dir }}/down"
@@ -135,7 +135,7 @@
       run_once: true
 
 - name: 部署RocketMQ2
-  when: '"rg-rocket2" not in pod_info.stdout and rocket_cluster_mode == "yes" and  DEPLOY_MODE !="allinone"  and "yes" != (rocketmq_public)'
+  when: '"rg-rocket2" not in pod_info.stdout and rocket_cluster_mode == "yes" and  DEPLOY_MODE !="allinone"'
   block:
     - name: 复制RocketMQ2镜像
       copy: src={{ base_dir }}/down/{{ rocketmq_offline }} dest=/opt/kube/images/{{ rocketmq_offline }}

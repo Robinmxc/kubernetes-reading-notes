@@ -2,14 +2,14 @@
 #chkconfig: 2345 80 90
 #description:auto_run
 
-iptables -I INPUT -p tcp -m multiport --dport {{ portlist }} -j DROP
+/usr/sbin/iptables -I INPUT -p tcp -m multiport --dport {{ portlist }} -j DROP
 {% for masterhost in KUBE_MASTER_HOSTS %}
 {% if masterhost not in KUBE_NODE_HOSTS %}
-iptables -I INPUT -s {{ masterhost }} -p tcp -m multiport --dport {{ portlist }} -j ACCEPT
+/usr/sbin/iptables -I INPUT -s {{ masterhost }} -p tcp -m multiport --dport {{ portlist }} -j ACCEPT
 {% endif %}
 {% endfor %}
 {% for host in KUBE_NODE_HOSTS %}
-iptables -I INPUT -s {{ host }} -p tcp -m multiport --dport {{ portlist }} -j ACCEPT
+/usr/sbin/iptables -I INPUT -s {{ host }} -p tcp -m multiport --dport {{ portlist }} -j ACCEPT
 {% endfor %}
-iptables -I INPUT -s 127.0.0.1 -p tcp -m multiport --dport {{ portlist }} -j ACCEPT
-iptables -I INPUT -s {{ CLUSTER_CIDR }} -p tcp -m multiport --dport {{ portlist }} -j ACCEPT
+/usr/sbin/iptables -I INPUT -s 127.0.0.1 -p tcp -m multiport --dport {{ portlist }} -j ACCEPT
+/usr/sbin/iptables -I INPUT -s {{ CLUSTER_CIDR }} -p tcp -m multiport --dport {{ portlist }} -j ACCEPT
