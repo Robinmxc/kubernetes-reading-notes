@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: rg-{{ comp_name }}
   namespace: {{ APP_NAMESPACE }}
@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
+  serviceName: "rg-{{ comp_name }}"
   template:
     metadata:
       labels:
@@ -57,6 +58,15 @@ spec:
           failureThreshold: 5
       imagePullSecrets:
       - name: regsecret
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
       volumes:
         - name: log
           hostPath:
@@ -78,9 +88,6 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-{% if k8s_single == "yes" %}
-  externalTrafficPolicy: Local
-{% endif %}
   selector:
     k8s-app: rg-{{comp_name}}
   type: NodePort

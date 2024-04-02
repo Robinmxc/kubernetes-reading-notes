@@ -55,6 +55,9 @@
     - name: 配置rsyslog日志
       shell: echo 'local0.*  /var/log/keepalived.log' >> /etc/rsyslog.conf
 
+    - name: 设置日志文件清理条件
+      template: src='keepalived.logrotate.j2' dest='/etc/logrotate.d/keepalived'
+
     - name: 重启服务rsyslog
       service: name={{ item }} state=restarted enabled=yes
       with_items:

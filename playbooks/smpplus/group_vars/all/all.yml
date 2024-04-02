@@ -8,7 +8,7 @@ mongodb_auth_mode: "yes"
 mongo_auth_param: "{% if mongodb_auth_mode == 'yes' %}-u {{ MONGODB_ADMIN_USER }} -p {{ MONGODB_ADMIN_PWD }} --authenticationDatabase admin{% else %}{% endif %}"
 mongo_shell_fail_pattern: '"ok" : 0'
 mongo_shell_success_pattern: '"ok" : [1-9]+'
-
+tolerationSeconds: 20
 namespace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
 
 yaml_dir: "{{ namespace_dir }}/yaml"
@@ -23,7 +23,7 @@ mongodb_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/data"
 mongodb_init_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/init"
 mongodb_backup_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/mongodb/backup"
 
-rocketmq_addr: "{% if (groups['rocketmq'] | length | int) == 1 %}rg-rocket.ruijie-smpplus.svc:9876{% else %}rg-rocket.ruijie-smpplus.svc:9876;rg-rocket2.ruijie-smpplus:9876{% endif %}"
+rocketmq_addr: "{% if (groups['rocketmq'] | length | int) == 1 %}rg-rocket.ruijie-smpplus.svc:9876{% else %}rg-rocket.ruijie-smpplus.svc:9876;rg-rocket2.ruijie-smpplus.svc:9876{% endif %}"
 rocketmq_data_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/data"
 rocketmq_logs_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/log"
 rocketmq_conf_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/rocketmq/conf"

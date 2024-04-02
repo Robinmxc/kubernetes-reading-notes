@@ -11,10 +11,10 @@
 - name: 设置start.sh脚本
   template: src=env-start.sh.j2 dest={{ config_base_dir }}/env-process/env-start.sh mode=777
 
-- name: crontab清理keepalived服务拉起脚本
+- name: crontab清理env-process脚本
   shell: sed -i '/env-process/d' /var/spool/cron/root
   ignore_errors: true
 
-- name: crontab添加keepalived服务拉起脚本
+- name: crontab添加env-process服务拉起脚本
   shell: echo '* * * * * {{ config_base_dir }}/env-process/env-start.sh' >> /var/spool/cron/root
 

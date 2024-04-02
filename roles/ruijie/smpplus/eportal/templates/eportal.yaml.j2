@@ -36,9 +36,9 @@ spec:
           value: "true"
         - name: SMPPLUS_SERVICE_VIP
           value: "{{ KUBE_MASTER_VIP }}"
+{% endif %}
         - name: SOCKET_PROXY_PORTS
           value: "1080"
-{% endif %}
         - name: JAVA_OPT_EXT
           value: "{{ JAVA_OPT_EXT}}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
@@ -91,6 +91,15 @@ spec:
 
       imagePullSecrets:
       - name: regsecret
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
       volumes:
         - name: conf
           hostPath:
@@ -103,23 +112,8 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-{% if k8s_single == "yes" %}
-  externalTrafficPolicy: Local
-{% endif %}    
   selector:
     k8s-app: rg-{{comp_name}}
-{% if ESCAPE["enable"] %}
-  ports:
-  - port: 8090
-    name: port8090
-    targetPort: 8090
-  - protocol: UDP
-    port: 50100
-    name: port50100
-    targetPort: 50100
-{% endif %}   
-
-{% if not ESCAPE["enable"] %}
   type: NodePort
   ports:
   - port: 8090
@@ -131,4 +125,3 @@ spec:
     name: port50100
     targetPort: 50100
     nodePort: 50100
-{% endif %}  

@@ -38,6 +38,15 @@ spec:
             subPath: mongobak.yml
           - name: date-config
             mountPath: /etc/localtime 
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
       volumes:
         - name: mgob-storage
           hostPath:

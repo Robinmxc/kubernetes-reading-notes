@@ -89,6 +89,7 @@
       ignore_errors: true
       delegate_to: "{{ groups.deploy[0] }}"
 
+
     - name: 修改kubernetes的端口范围
       shell: "grep service-node-port-range /etc/kubernetes/manifests/kube-apiserver.yaml >> /dev/null; \
               if [ $? -ne 0 ]; \
@@ -97,6 +98,10 @@
       tags: upgrade_k8s
       when: 'DEPLOY_MODE == "multi-master" and inventory_hostname in groups.kube_master'
 
+    - name: 暂停3秒等待静态pod修改生效
+      wait_for: timeout=3
+
+
     - name: 重置端口后,轮询等待apiserver处于running状态
       shell: "kubectl get pod -n kube-system | grep 'kube-apiserver' | awk '{print $3}'| sort -u"
       register: pod_status
@@ -104,7 +109,9 @@
       retries: 15
       delay: 5
       ignore_errors: true
-      tags: upgrade_k8s      
+      tags: upgrade_k8s    
+      connection: local
+      run_once: true   
       when: 'DEPLOY_MODE == "multi-master" and inventory_hostname in groups.kube_master' 
 
     - name: 通过kubeadm安装后支持kubelet命令

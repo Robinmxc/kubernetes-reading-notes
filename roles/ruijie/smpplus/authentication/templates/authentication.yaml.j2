@@ -34,11 +34,11 @@ spec:
 {% if k8s_single == "no" %}
         - name: CLUSTER_MODE
           value: "true"
-        - name: SMPPLUS_SERVICE_VIP
-          value: "{{ KUBE_MASTER_VIP }}"
+{% endif %}
         - name: SOCKET_PROXY_PORTS
           value: "1080"
-{% endif %}
+        - name: SMPPLUS_SERVICE_VIP
+          value: "{{ KUBE_MASTER_VIP }}"
         - name: JAVA_OPT_EXT
           value: "{{ JAVA_OPT_EXT}}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
@@ -59,17 +59,18 @@ spec:
         volumeMounts:
         - mountPath: /ruijie/{{comp_name}}
           name: conf
-{% if  DEPLOY_MODE != "multi-master" %}          
         - mountPath: /ruijie/{{comp_name}}/kadapitls
           name: kadapi-tls
-{% endif %}          
+        - mountPath: /root/.kube/config
+          name: kube
+          subPath: config
         startupProbe:
-          failureThreshold: 15
+          failureThreshold: 30
           httpGet:
             path: /liveProbe/authentication
             port: 9888
             scheme: HTTP
-          periodSeconds: 10
+          periodSeconds: 3
           successThreshold: 1
           timeoutSeconds: 1
 
@@ -95,15 +96,25 @@ spec:
 
       imagePullSecrets:
       - name: regsecret
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
       volumes:
         - name: conf
           hostPath:
             path: {{ config_base_dir }}/{{comp_name}}
-{% if  DEPLOY_MODE != "multi-master" %}                
         - name: kadapi-tls
           configMap:
             name: kadapi-cert
-{% endif %}                      
+        - name: kube
+          hostPath:
+            path: /root/.kube
 ---
 apiVersion: v1
 kind: Service
@@ -111,25 +122,8 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-{% if k8s_single == "yes" %}
-  externalTrafficPolicy: Local
-{% endif %}
   selector:
     k8s-app: rg-{{comp_name}}
-{% if ESCAPE["enable"] %}    
-  ports:
-  - port: 9788
-    name: port9788
-    targetPort: 9788
-  - port: 9888
-    name: port9888
-    targetPort: 9888
-  - protocol: UDP
-    port: 67
-    name: port67
-    targetPort: 67
-{% endif %}   
-{% if not ESCAPE["enable"] %}    
   type: NodePort
   ports:
   - port: 9788
@@ -145,4 +139,3 @@ spec:
     name: port67
     targetPort: 67
     nodePort: 67
-{% endif %}   

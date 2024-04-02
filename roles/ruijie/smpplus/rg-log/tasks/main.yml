@@ -14,7 +14,7 @@
     replace: path="{{ config_base_dir }}/rg-log/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
       - {regexp: "mongodb:.*/log.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/log?replicaSet=rs0"}
-      - {regexp: "namesrv:", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc:"}
+      - {regexp: "namesrv-addr:.*$", replace: "namesrv-addr: {{rocketmq_addr}}"}  
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
     no_log: true
 

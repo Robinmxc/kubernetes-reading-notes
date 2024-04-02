@@ -86,12 +86,12 @@ spec:
           name: conf
 
         startupProbe:
-          failureThreshold: 15
+          failureThreshold: 20
           httpGet:
             path: /liveProbe/license
             port: 8089
             scheme: HTTP
-          periodSeconds: 10
+          periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 1
 
@@ -117,6 +117,15 @@ spec:
 
       imagePullSecrets:
       - name: regsecret
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
       volumes:
         - name: conf
           hostPath:

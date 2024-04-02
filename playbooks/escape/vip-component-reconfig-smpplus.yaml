@@ -33,9 +33,7 @@
           export serverUser={{ ansible_sudo_user }}; \
         ./kad-play.sh  playbooks/cluster/ingress.yml'
 
-  - name: 重新配置ingress，请耐心等待
-    tags: ingress
-    shell: 'cd /opt/kad; \
-          export ssh_password={{ ansible_sudo_pass }}; \
-          export serverUser={{ ansible_sudo_user }}; \
-        ./kad-play.sh  playbooks/smpplus/reconfig.yml'
+  - name: 配置完成
+    debug:
+      msg: "vip如若修改，请重新执行业务组件reconfig"
+

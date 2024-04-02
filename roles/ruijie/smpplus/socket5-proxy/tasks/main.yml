@@ -29,3 +29,10 @@
   - {regexp: "sendThrough.*$", replace: "sendThrough\": \"{{SERVICE_VIP}}\","}
   no_log: true
 
+- name: 配置变更后，delete socket5-proxy 触发代理组件重启
+  tags:
+  - deploy
+  command: "rm -rf /etc/kubernetes/manifests/socket5-proxy.yaml"
+  ignore_errors: true
+
+

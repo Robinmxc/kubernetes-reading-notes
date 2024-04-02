@@ -34,9 +34,9 @@ spec:
           value: "true"
         - name: SMPPLUS_SERVICE_VIP
           value: "{{ KUBE_MASTER_VIP }}"
+{% endif %}
         - name: SOCKET_PROXY_PORTS
           value: "1080"
-{% endif %}
         - name: JAVA_OPT_EXT
           value: "{{ JAVA_OPT_EXT}}"
         ports:
@@ -58,12 +58,12 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         startupProbe:
-          failureThreshold: 15
+          failureThreshold: 30
           httpGet:
             path: /liveProbe/aggregation
             port: 9999
             scheme: HTTP
-          periodSeconds: 10
+          periodSeconds: 3
           successThreshold: 1
           timeoutSeconds: 1
 
@@ -109,6 +109,15 @@ spec:
 {% endif %}
       imagePullSecrets:
       - name: regsecret
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
       volumes:
         - name: conf
           hostPath:
@@ -127,7 +136,6 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-  externalTrafficPolicy: Local
   selector:
     k8s-app: rg-{{comp_name}}
   type: NodePort

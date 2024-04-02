@@ -76,6 +76,10 @@
 	&& iptables -F -t mangle && iptables -X -t mangle"
     #when: "'kubeasz' not in install_info.stdout"
 
+  - name: crontab清理防止安装iptables lock
+    shell: sed -i '/env-process/d' /var/spool/cron/root
+    ignore_errors: true
+
   - name: 查询网卡信息
     shell: "ip link | grep mtu"
     register: ip_link_info

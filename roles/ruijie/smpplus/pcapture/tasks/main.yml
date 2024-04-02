@@ -16,12 +16,13 @@
       - config
     vars:
       grab_ip: "{{ deploy_ip }}"
-    replace: path="{{ config_base_dir }}/smpplus/pcapture/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    replace: path="{{ config_base_dir }}/pcapture/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
     with_items:
       - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
       - {regexp: "baseDir: .*$", replace: "baseDir: /ruijie/smpplus/pcapture/conf/dumpPackage/"}
       - {regexp: "tarDir: .*$", replace: "tarDir: /ruijie/smpplus/pcapture/conf/dumpPackage/tars/"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+      - {regexp: "ip.*$", replace: "ip: {{rocketmq_addr}}"}
       - {regexp: "grabIp: .*$", replace: "grabIp: {{ grab_ip }}"}
     no_log: true
 
