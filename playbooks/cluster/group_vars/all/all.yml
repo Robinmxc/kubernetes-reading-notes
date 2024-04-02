@@ -46,7 +46,5 @@ DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}
 
 DOCKER_STORAGE_DIR: "{{ DATA_DIR }}/docker"
 
-node_monitor_grace_period: 10s
-node_monitor_period: 2s
-pod_eviction_timeout: 10s
+node_monitor_grace_period: 20s
 
