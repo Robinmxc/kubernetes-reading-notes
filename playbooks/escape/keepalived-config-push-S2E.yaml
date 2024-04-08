@@ -1,0 +1,13 @@
+- hosts:
+    - localhost
+  tasks:
+    - name: 环境检测
+      fail:
+        msg: "当前脚本只支持通过smp+本体操作"
+      when: "APP_NAMESPACE != 'ruijie-smpplus'"
+- hosts:
+    - escape_node
+  vars_files:
+    - "/etc/kad/config.yml"
+  roles:
+    - { role: ruijie/escape/keepalived }

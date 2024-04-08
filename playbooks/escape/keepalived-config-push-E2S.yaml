@@ -1,0 +1,14 @@
+- hosts:
+    - localhost
+  tasks:
+    - name: 环境检测
+      fail:
+        msg: "当前脚本只支持通过escape本体操作"
+      when: "APP_NAMESPACE != 'ruijie-escape'"
+
+- hosts:
+    - escape_node
+  vars_files:
+    - "/etc/kad/config.yml"
+  roles:
+    - { role: ruijie/escape/keepalived }
