@@ -1,4 +1,4 @@
-nodecompliance_java_opt:  "-Xms2048m -Xmx5120m"
+nodecompliance_java_opt:  "-Xms2048m -Xmx10240m"
 
 deploy_conf_defaults:
   small:
@@ -7,8 +7,8 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 6
-        memory: 6Gi
+        cpu: 12
+        memory: 16Gi
       requests:
         cpu: 1
         memory: 2Gi
@@ -16,8 +16,8 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 6
-        memory: 6Gi
+        cpu: 12
+        memory: 16Gi
       requests:
         cpu: 1
         memory: 2Gi

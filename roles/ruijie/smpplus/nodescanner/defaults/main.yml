@@ -1,4 +1,4 @@
-nodescanner_java_opt:  "-Xms1024m -Xmx4096m"
+nodescanner_java_opt:  "-Xms2048m -Xmx8192m"
 
 deploy_conf_defaults:
   small:
@@ -8,7 +8,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 8
-        memory: 5.5Gi
+        memory: 12Gi
       requests:
         cpu: 1
         memory: 1Gi
@@ -17,7 +17,7 @@ deploy_conf_defaults:
     resources:
       limits:
         cpu: 8
-        memory: 5.5Gi
+        memory: 12Gi
       requests:
         cpu: 1
         memory: 1Gi
