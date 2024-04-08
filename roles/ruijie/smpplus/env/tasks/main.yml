@@ -95,4 +95,11 @@
     portlist: "{{ iptables_port | join(',') }}"
   template: src="checkiptablesport.sh.j2" dest={{ config_base_dir }}/env-process/checkiptablesport.sh mode=777
 
+- name: crontab清理iptables端口检查脚本
+  shell: sed -i '/checkiptablesport/d' /var/spool/cron/root
+  ignore_errors: true
+
+- name: crontab添加iptables端口检查脚本
+  shell: echo '*/1 * * * * {{ config_base_dir }}/env-process/checkiptablesport.sh' >> /var/spool/cron/root
+
 
