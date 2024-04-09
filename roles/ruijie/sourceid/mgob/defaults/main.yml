@@ -31,5 +31,21 @@ deploy_conf_defaults:
       requests:
         cpu: 500m
         memory: 256Mi
+  basic:
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 256Mi
+  single-basic:
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 256Mi
 
 mgob_deploy_conf: '{{ deploy_conf_defaults[CLUSTER_SCALE] }}'
