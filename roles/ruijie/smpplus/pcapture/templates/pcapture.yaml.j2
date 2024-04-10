@@ -21,6 +21,7 @@ spec:
         k8s-app: {{ pcapture_node_name }}
     spec:
       hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: rg-pcapture
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS["pcapture"].name }}:{{ SMPPLUS_DOCKERS["pcapture"].version }}
