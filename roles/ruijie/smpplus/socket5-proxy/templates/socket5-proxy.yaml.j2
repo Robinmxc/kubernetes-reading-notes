@@ -13,6 +13,8 @@ spec:
     - mountPath: /etc/v2ray/config.json
       name: conf
       subPath: config.json
+    - mountPath: /var/log/v2ray
+      name: log      
     name: rg-socket5-proxy
 {% if "dict" == (deploy_conf.resources | type_debug) %}
     resources:
@@ -28,4 +30,7 @@ spec:
   - hostPath:
       path: {{ config_base_dir }}/socket5-proxy/conf
     name: conf
+  - hostPath:
+      path: {{ config_base_dir }}/socket5-proxy/log
+    name: log    
 status: {}

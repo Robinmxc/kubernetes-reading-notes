@@ -4,6 +4,7 @@
   file: path={{ item }} state=directory
   with_items:
   - "/etc/kubernetes/manifests/prepare"
+  - "{{ config_base_dir }}/socket5-proxy/log"
 
 - name: 复制部署文件
   tags:
