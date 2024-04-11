@@ -83,8 +83,8 @@ smpplus_deploy_conf_defaults:
   single:
     resources:
       limits:
-        cpu: 2
-        memory: 6Gi
+        cpu: 4
+        memory: 8Gi
       requests:
         cpu: 500m
         memory: 1Gi
