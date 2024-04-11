@@ -1,5 +1,9 @@
 vrrp_script check_k8s {
     script "/etc/keepalived/conf/check_k8s.sh"
+    interval 10
+    timeout 5
+    rise 2
+    fall 5
 }
 
 vrrp_instance VI-KUBE {

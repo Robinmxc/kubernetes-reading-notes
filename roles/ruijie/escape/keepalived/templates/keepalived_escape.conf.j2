@@ -1,7 +1,8 @@
 {% if MASTER_CHECK_VIP != "" and  inventory_hostname in groups["ESCAPE_MASTER"] %}
 vrrp_script check_master {
     script "/etc/keepalived/conf/master_check.sh"
-    interval 1
+    interval 5
+    timeout 3
     weight -5
 }
 {% endif %}
