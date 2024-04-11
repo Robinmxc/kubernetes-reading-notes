@@ -32,7 +32,7 @@ function socket5_process(){
         \cp -rpf $prepare_file $proxy_file
         touch "$proxy_file"
     fi
-    if	[[ "$VIP_EXIST_FLAG" != true ]];then
+    if	[[ "$VIP_EXIST_FLAG" != true ]] && [[ -f "$proxy_file" ]];then
         logger "env-process-task $current_pid移除$proxy_file"
         rm -rf $proxy_file
     fi
