@@ -1,3 +1,22 @@
+- name: 创建切割日志和清理日志脚本
+  copy:
+    dest: "/opt/split-log-proxy.sh"
+    content: |
+      #!/bin/sh
+      split -b 10M -d -a 3 {{ config_base_dir }}/socket5-proxy/log/error.log {{ config_base_dir }}/socket5-proxy/log/error.`date -d yesterday +%Y%m%d`.log
+      cat /dev/null > {{ config_base_dir }}/socket5-proxy/log/error.log
+      find {{ config_base_dir }}/socket5-proxy/log/ -mtime +60 -name "error.*.log*" -exec rm -rf {} \;
+
+- cron:
+    name: "split"
+    state: present
+    minute: "0"
+    hour: "2"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    job: 'sh /opt/split-log-proxy.sh'
+
 - name: 准备部署文件目录
   tags:
   - config
