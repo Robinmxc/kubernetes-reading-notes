@@ -1,0 +1,58 @@
+- name: 创建切割日志和清理日志脚本
+  copy:
+    dest: "/opt/split-log-proxy.sh"
+    content: |
+      #!/bin/sh
+      split -b 10M -d -a 3 {{ config_base_dir }}/socket5-proxy/log/error.log {{ config_base_dir }}/socket5-proxy/log/error.`date -d yesterday +%Y%m%d`.log
+      cat /dev/null > {{ config_base_dir }}/socket5-proxy/log/error.log
+      find {{ config_base_dir }}/socket5-proxy/log/ -mtime +60 -name "error.*.log*" -exec rm -rf {} \;
+
+- cron:
+    name: "split"
+    state: present
+    minute: "0"
+    hour: "2"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    job: 'sh /opt/split-log-proxy.sh'
+
+- name: 准备部署文件目录
+  tags:
+  - config
+  file: path={{ item }} state=directory
+  with_items:
+  - "/etc/kubernetes/manifests/prepare"
+  - "{{ config_base_dir }}/socket5-proxy/log"
+
+- name: 复制部署文件
+  tags:
+  - config   
+  vars:
+    comp_name: 'socket5-proxy' 
+    deploy_conf: '{{ socket5_proxy_deploy_conf }}' 
+  template: src='socket5-proxy.yaml.j2' dest=/etc/kubernetes/manifests/prepare/socket5-proxy.yaml
+
+- name: 复制配置文件
+  tags:
+  - config
+  copy:
+    src: "{{ namespace_dir }}/conf/socket5-proxy/conf/"
+    dest: "{{ config_base_dir }}/socket5-proxy/conf/"
+
+- name: 自动配置
+  tags:
+  - config
+  replace: path="{{ config_base_dir }}/socket5-proxy/conf/config.json" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+  with_items:
+  - {regexp: "listen.*$", replace: "listen\": \"{{SERVICE_VIP}}\","}
+  - {regexp: "sendThrough.*$", replace: "sendThrough\": \"{{SERVICE_VIP}}\","}
+  no_log: true
+
+- name: 配置变更后，delete socket5-proxy 触发代理组件重启
+  tags:
+  - deploy
+  command: "rm -rf /etc/kubernetes/manifests/socket5-proxy.yaml"
+  ignore_errors: true
+
+

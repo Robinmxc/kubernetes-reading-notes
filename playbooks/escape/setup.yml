@@ -1,0 +1,7 @@
+- hosts:
+  - kube_node
+  tags: always
+  any_errors_fatal: true
+  roles:
+  - ruijie/escape/env
+- import_playbook: apply.yml

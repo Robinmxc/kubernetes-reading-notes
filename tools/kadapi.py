@@ -70,11 +70,6 @@ def get_expiry_date():
                                                                                                                "").replace(
         "\n", "")
     logging.debug("data_dir:" + data_dir)
-    if len(data_dir) < 1:
-        result["result"] = False
-        result["code"] = 204
-        result["message"] = 'data_dir is empty'
-        return result
 
     for cert_name in cert_names:
         time_stamp = validity_calculation(data_dir, cert_name)
@@ -100,6 +95,108 @@ def validity_calculation(data_dir, cert_name):
         logging.error(e)
         return 0
 
+@server.route('/kadapi/systemConfig/certs/download', methods=['get', 'post'])
+def certs_download():
+    result = {
+        "code": 200,
+        "message": "ok",
+        "result": True,
+        "data": {}
+    }
+    data = json.loads(request.get_data(as_text=True))
+    logging.debug("certificate validity request parameter:" + str(data))
+    keys = ['certDownloadUrl']
+    if all(t not in data.keys() for t in keys):
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'Parameter illegal'
+        return result
+    data_dir = str(
+        os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline().replace(" ", "").replace(
+            "\n", ""))
+    logging.debug("data_dir:" + data_dir)
+
+    # 1.copy certs
+    # 2.restart freeradius pod
+    cert_name = data["certName"]
+    cert_download_url = data["certDownloadUrl"]
+    #下载前先删除同名文件，避免下载失败
+    if cert_name == "":
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'cert_name is empty'
+        return result
+    os.system("rm -rf  " + data_dir + "/ruijie/ruijie-smpplus/share/certs/" + cert_name)
+    #下载证书
+    download_result = int(
+            os.system("cd " + data_dir + "/ruijie/ruijie-smpplus/share/certs/" + " && curl -OJ " + cert_download_url))
+    if not download_result == 0:
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'download certs fail'
+        return result
+
+    return result
+
+@server.route('/kadapi/systemConfig/certs/change', methods=['get', 'post'])
+def certs_change():
+    result = {
+        "code": 200,
+        "message": "ok",
+        "result": True,
+        "data": {}
+    }
+    data = json.loads(request.get_data(as_text=True))
+    logging.debug("certificate validity request parameter:" + str(data))
+    keys = ['oldCertName', "oldCertPriKeyPWD", 'certName', 'certPriKeyPWD', 'certDownloadUrl']
+    if all(t not in data.keys() for t in keys):
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'Parameter illegal'
+        return result
+    data_dir = str(
+        os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline().replace(" ", "").replace(
+            "\n", ""))
+    logging.debug("data_dir:" + data_dir)
+
+    # 1.copy certs
+    # 2.restart freeradius pod
+    cert_name = data["certName"]
+    old_cert_name = data["oldCertName"]
+    cert_private_key_pwd = data["certPriKeyPWD"]
+    old_cert_private_key_pwd = data["oldCertPriKeyPWD"]
+    certs_path = data_dir + "/ruijie/ruijie-smpplus/share/certs/" + cert_name
+    logging.debug("prepare to copy cert. certs_path:" + certs_path)
+    copy_result_1 = int(
+        os.system("\\cp -f " + certs_path + "  " + data_dir + "/ruijie/ruijie-smpplus/freeradius/certs/" + cert_name))
+    if not copy_result_1 == 0:
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'copy certs fail'
+        return result
+    logging.debug("prepare to replace related args")
+    # 3.replace certName and certPriKeyPWD
+    effect_certs_config_file = data_dir + "/ruijie/ruijie-smpplus/freeradius/mods-available/eap"
+
+    effect_result_pwd = int(os.system(
+        "sed -i '/^.*private_key_password = /s/" + old_cert_private_key_pwd + "/" + cert_private_key_pwd + "/' " + effect_certs_config_file))
+    effect_result_file_1 = int(os.system(
+        "sed -i '/^.*private_key_file = /s/" + old_cert_name + "/" + cert_name + "/' " + effect_certs_config_file))
+    effect_result_file_2 = int(os.system(
+        "sed -i '/^.*certificate_file = /s/" + old_cert_name + "/" + cert_name + "/' " + effect_certs_config_file))
+
+    if not effect_result_pwd == 0 or not effect_result_file_1 == 0 or not effect_result_file_2 == 0:
+        result["result"] = False
+        result["code"] = 204
+        result["message"] = 'replace effect certName and certPriKeyPWD fail'
+        return result
+
+    # 4.rm old certs
+    if not cert_name == old_cert_name:
+        logging.debug("preparing to delete old_cert. old_cert_name:" + old_cert_name)
+        os.system("rm -rf  " + data_dir + "/ruijie/ruijie-smpplus/freeradius/certs/" + old_cert_name)
+
+    return result
 
 @server.route('/kadapi/systemConfig/certs/enabled', methods=['get', 'post'])
 def certs_enabled():
@@ -121,11 +218,6 @@ def certs_enabled():
         os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline().replace(" ", "").replace(
             "\n", ""))
     logging.debug("data_dir:" + data_dir)
-    if len(data_dir) < 1:
-        result["result"] = False
-        result["code"] = 204
-        result["message"] = 'data_dir is empty'
-        return result
 
     # 1.copy certs
     # 2.restart freeradius pod
@@ -701,9 +793,6 @@ def access_mode_change(current_info, submit_info):
         logging.debug("access_mode_change is start.")
         data_dir = str(os.popen("cat /etc/kad/config.yml |awk -F ' ' '{print $2}'|tr -d '\"'").readline()).replace(" ","").replace("\n", "")
         logging.debug("access_mode_change: data_dir:" + data_dir)
-        if len(data_dir) < 1:
-            logging.error("access_mode_change: data_dir is empty....")
-            return
 
         #current_info 读取现有配置，change_info页面传递来的参数
         current_accessMode = current_info["date"]["accessMode"]

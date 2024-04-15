@@ -1,17 +1,19 @@
 - name: 获取kadapi安装状态
-  stat: 
+  stat:
     path: /etc/systemd/system/kadapi.service
   register: stat_result
+  connection: local
+  run_once: true
 
 - name: 安装kadapi
-  when: 'not stat_result.stat.exists and iswebchangeip is undefined  and DEPLOY_MODE != "multi-master"'
+  when: 'not stat_result.stat.exists and iswebchangeip is undefined  and KAD_APP_NAME == "smpplus"'
   block:
     - name: 准备kadapi相关目录
       file: name={{ item }} state=directory
       with_items:
       - /etc/kad/api
       - /etc/kad/api/ssl
-    
+
     - name: 下载kadapi二进制文件
       copy: src={{ KADAPI_DOWN_PATH }}/{{ item }} dest=/etc/kad/api/{{ item }} mode=0755
       with_items:
@@ -46,7 +48,9 @@
       template: src='kadapi.yaml.j2' dest=/etc/kad/api/kadapi.yaml
 
     - name: 创建kadapi公钥
-      shell: "cd /etc/kad/api/ssl && {{ bin_dir }}/cfssl gencert -initca ca-csr.json | {{ bin_dir }}/cfssljson -bare ca" 
+      shell: "cd /etc/kad/api/ssl && {{ bin_dir }}/cfssl gencert -initca ca-csr.json | {{ bin_dir }}/cfssljson -bare ca"
+      connection: local
+      run_once: true
 
     - name: 创建 kadapi证书和私钥
       shell: "cd /etc/kad/api/ssl && {{ bin_dir }}/cfssl gencert \
@@ -54,9 +58,13 @@
             -ca-key={{ kadapi_ca_dir }}/ca-key.pem \
             -config={{ kadapi_ca_dir }}/ca-config.json \
             -profile=kadapi kadapi-csr.json | {{ bin_dir }}/cfssljson -bare kadapi"
+      connection: local
+      run_once: true
 
     - name: 转换kadapi证书格式
       shell: "cd /etc/kad/api/ssl && openssl pkcs8 -topk8 -inform PEM -in /etc/kad/api/ssl/kadapi-key.pem -outform PEM -nocrypt > /etc/kad/api/ssl/kadapi-smp-key.pem"
+      connection: local
+      run_once: true
 
     - name: 获取configmap数据
       command: "kubectl -n {{ APP_NAMESPACE }} get configmap"
@@ -74,6 +82,11 @@
       shell: "kubectl -n {{ APP_NAMESPACE }} create configmap kadapi-cert --from-file=/etc/kad/api/ssl/"
       connection: local
       run_once: true
+
+    - name: 复制证书文件
+      copy:
+        src: "/etc/kad/api/"
+        dest: "/etc/kad/api/"
 
     - name: 创建kadapi的systemd unit文件
       copy: src=kadapi.service dest=/etc/systemd/system/kadapi.service
@@ -95,7 +108,7 @@
       delay: 8
 
 - name: 更替kadapi
-  when: 'stat_result.stat.exists and iswebchangeip is undefined  and DEPLOY_MODE != "multi-master"'
+  when: 'stat_result.stat.exists and iswebchangeip is undefined  and KAD_APP_NAME == "smpplus"'
   block:
     - name: 下载替换的kadapi二进制文件
       copy: src={{ KADAPI_DOWN_PATH }}/{{ item }} dest=/etc/kad/api/{{ item }} mode=0755
@@ -114,7 +127,7 @@
       delay: 8
 
 - name: web修改ip重新创建kadapi 模板文件的 configmap
-  when: 'stat_result.stat.exists and iswebchangeip is defined and DEPLOY_MODE != "multi-master"'
+  when: 'stat_result.stat.exists and iswebchangeip is defined and KAD_APP_NAME == "smpplus"'
   block:
     - name: 获取configmap数据
       command: "kubectl -n {{ APP_NAMESPACE }} get configmap"

@@ -11,113 +11,145 @@
     command: "kubectl get pod -n {{ APP_NAMESPACE }}"
     register: pod_info
 
+  - name: delete socket5-proxy
+    tags:
+    - socket5-proxy
+    command: "rm -rf /etc/kubernetes/manifests/socket5-proxy.yaml"
+    when: '"socket5-proxy" in pod_info.stdout'
+    ignore_errors: true
+
   - name: delete frontend-smp
     tags:
     - frontend-smp
     command: "kubectl delete -f {{ yaml_dir }}/frontend-smp/"
     when: '"frontend-smp" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete frontend-portal
     tags:
     - frontend-portal
     command: "kubectl delete -f {{ yaml_dir }}/frontend-portal/"
     when: '"frontend-portal" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete eportal
     tags:
     - eportal
     command: "kubectl delete -f {{ yaml_dir }}/eportal/"
     when: '"portal" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete freeradius
     tags:
     - freeradius
     command: "kubectl delete -f {{ yaml_dir }}/freeradius/"
     when: '"freeradius" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete aggregation
     tags:
     - aggregation
     command: "kubectl delete -f {{ yaml_dir }}/aggregation/"
     when: '"aggregation" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete linkid
     tags:
     - linkid
     command: "kubectl delete -f {{ yaml_dir }}/linkid/"
     when: '"linkid" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete component
     tags:
     - component
     command: "kubectl delete -f {{ yaml_dir }}/component/"
     when: '"component" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete authentication
     tags:
     - authentication
     command: "kubectl delete -f {{ yaml_dir }}/authentication/"
     when: '"authentication" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete adminui
     tags:
     - adminui
     command: "kubectl delete -f {{ yaml_dir }}/adminui/"
     when: '"adminui" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete license
     tags:
     - license
     command: "kubectl delete -f {{ yaml_dir }}/license/"
     when: '"license" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete sms-middleware
     tags:
       - sms-middleware
     command: "kubectl delete -f {{ yaml_dir }}/sms-middleware/"
     when: '"sms-middleware" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete nodeidentify
     tags:
     - nodeidentify
     command: "kubectl delete -f {{ yaml_dir }}/nodeidentify/"
     when: '"nodeidentify" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete operations
     tags:
       - operations
     command: "kubectl delete -f {{ yaml_dir }}/operations/"
     when: '"operations" in pod_info.stdout'
+    ignore_errors: true
+
+  - name: 停止 rg-pcapture
+    tags:
+      - pcapture
+    command: "kubectl delete -f {{ yaml_dir }}/pcapture/"
+    when: '"rg-pcapture" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete mgob
     tags:
       - mgob
     command: "kubectl delete -f {{ yaml_dir }}/mgob/"
     when: '"rg-mgob" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete nodeconnector # 删除nodeconnector服务
     tags:
       - nodeconnector
     command: "kubectl delete -f {{ yaml_dir }}/nodeconnector/"
     when: '"nodeconnector" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete pcap-scan # 删除pcapscan服务
     tags:
       - pcap-scan
     command: "kubectl delete -f {{ yaml_dir }}/pcap-scan/"
     when: '"pcap-scan" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete linkagedevices # 删除linkagedevices服务
     tags:
       - linkage-devices
     command: "kubectl delete -f {{ yaml_dir }}/linkage-devices/"
     when: '"linkage-devices" in pod_info.stdout'
+    ignore_errors: true
 
   - name: delete frontend-client
     tags:
       - frontend-client
     command: "kubectl delete -f {{ yaml_dir }}/frontend-client/"
     when: '"frontend-client" in pod_info.stdout'
+    ignore_errors: true
 
   - name: 获取flow容器状态
     tags:
@@ -130,7 +162,7 @@
       - flow
     shell: "docker rm -f  `docker ps -aq --filter name=flow`"
     when: '"flow"  in flow_info.stdout'
-    ignore_errors: trueai
+    ignore_errors: true
 
   - name: delete aiidentify
     tags:
@@ -165,6 +197,13 @@
       - rg-log
     command: "kubectl delete -f {{ yaml_dir }}/rg-log/"
     when: '"rg-log" in pod_info.stdout'
+    ignore_errors: true
+
+  - name: 停止 rocketmq
+    tags:
+      - rocketmq
+    command: "kubectl delete -f {{ yaml_dir }}/rocketmq/"
+    when: '"rg-rocket" in pod_info.stdout'
     ignore_errors: true
 
   - name: 等待frontend-smp结束运行
@@ -297,6 +336,16 @@
     delay: 3
     ignore_errors: true
 
+  - name: 等待pcapture结束运行
+    tags:
+      - pcapture
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-pcapture" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
   - name: 等待mgob结束运行
     tags:
       - mgob
@@ -397,7 +446,16 @@
     retries: 30
     delay: 3
     ignore_errors: true
-
+    
+  - name: 等待rocketmq结束运行
+    tags:
+      - rocketmq
+    shell: "kubectl get pod -n {{ APP_NAMESPACE }}"
+    register: pod_info
+    until: '"rg-rocket" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
   - name: 获取maintenance-related script
     tags:
       - maintenance-related

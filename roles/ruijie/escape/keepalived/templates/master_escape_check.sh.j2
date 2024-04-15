@@ -1,0 +1,21 @@
+#!/bin/bash
+set -x
+echo `date` + " Start master_escape_check" >> /var/log/keepalived.log
+url="{{ MASTER_CHECK_URL}}"
+
+# 使用timeout命令设置超时时间并发送HTTP请求
+response=$(curl -s -o /dev/null -w "%{http_code}" $url)
+# 检查命令的退出状态
+exit_status=$?
+if [ $exit_status -eq 124 ]; then
+  echo `date` + " Request timed out" >> /var/log/keepalived.log
+  exit 1  # 超时时退出脚本并返回非零退出状态
+elif [ $exit_status -ne 0 ]; then
+  echo `date` + " Request failed with error code $exit_status" >> /var/log/keepalived.log
+  exit 1  # 其他错误时退出脚本并返回非零退出状态
+elif [ $response -ne 200 ];then
+  echo `date` + " HTTP Status Code is not 200 " >> /var/log/keepalived.log
+  exit 1
+fi
+echo `date` + " HTTP Status Code is : $response" >> /var/log/keepalived.log
+exit 0

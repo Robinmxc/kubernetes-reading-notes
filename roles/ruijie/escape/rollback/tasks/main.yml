@@ -1,0 +1,5 @@
+- block:
+  - name: 清理
+    debug:
+      msg: "暂未实现"
+  when: 'inventory_hostname == groups.kube_master[0]'

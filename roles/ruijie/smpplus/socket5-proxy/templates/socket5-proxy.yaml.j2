@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rg-socket5-proxy
+  namespace: ruijie-smpplus
+  labels:
+    k8s-app: rg-socket5-proxy
+spec:
+  containers:
+  - image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+    - mountPath: /etc/v2ray/config.json
+      name: conf
+      subPath: config.json
+    - mountPath: /var/log/v2ray
+      name: log      
+    name: rg-socket5-proxy
+{% if "dict" == (deploy_conf.resources | type_debug) %}
+    resources:
+      limits:
+        cpu: {{ deploy_conf.resources.limits.cpu }}
+        memory: {{ deploy_conf.resources.limits.memory }}
+      requests:
+        cpu: {{ deploy_conf.resources.requests.cpu }}
+        memory: {{ deploy_conf.resources.requests.memory }}
+{% endif %}  
+  hostNetwork: true
+  volumes:
+  - hostPath:
+      path: {{ config_base_dir }}/socket5-proxy/conf
+    name: conf
+  - hostPath:
+      path: {{ config_base_dir }}/socket5-proxy/log
+    name: log    
+status: {}

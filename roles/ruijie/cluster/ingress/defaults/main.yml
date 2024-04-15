@@ -4,6 +4,8 @@ nginx_offline: "nginx-ingress-1.5.1.tar"
 # http or https
 ingress_mode: "http"
 
+escape_SSO_DOMAIN: ""
+escape_PORTAL_DOMAIN: ""
 #证书文件名，如：["com.ruijie", "com.ruijie.cn"]
 #同时/etc/kubernetes/ssl目录下要有：com.ruijie.pem, com.ruijie-key.pem, com.ruijie.com.cn.pem, com.ruijie.com.cn-key.pem
 ingress_ssl_names: []

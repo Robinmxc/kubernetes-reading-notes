@@ -1,0 +1,11 @@
+- hosts:
+  - kube_node
+  tags:
+  - escape
+  any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  - "/etc/kad/config.yml"
+  roles:
+    - { role: ruijie/escape/escape-freeradius, tags: always }
+    - { role: ruijie/escape/escape-eportal, tags: always }

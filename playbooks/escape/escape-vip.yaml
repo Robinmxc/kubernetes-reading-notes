@@ -1,0 +1,16 @@
+- hosts:
+    - localhost
+  tasks:
+    - name: 环境检测
+      fail:
+        msg: "escape-vip只支持通过smp+本体部署"
+      when: "APP_NAMESPACE == 'ruijie-escape'"
+
+- hosts:
+    - escape_node
+  vars_files:
+    - "/etc/kad/config.yml"
+  roles:
+    - { role: ruijie/escape/keepalived }
+- import_playbook: vip-component-reconfig-escape.yaml
+- import_playbook: vip-component-reconfig-smpplus.yaml

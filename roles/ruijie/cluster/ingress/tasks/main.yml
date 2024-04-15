@@ -62,11 +62,12 @@
       with_items:
       - {regexp: "server_ip_copy", replace: '{{ KUBE_MASTER_VIP }}' }
       - {regexp: "server_domain_copy", replace: '{{ SMPPLUS_SSO_DOMAIN }}' }
+      - {regexp: "proxy_read_timeout.*$", replace: 'proxy_read_timeout                      300s;' }
       no_log: true
       when: "KAD_APP_NAME == 'smpplus'"
       connection: local
       run_once: true
-      
+
     - name: 获取configmap数据
       command: "kubectl -n kube-system get configmap"
       register: nginx_config
@@ -116,6 +117,18 @@
       connection: local
       run_once: true
       when: "KAD_APP_NAME == 'smpplus'"
+
+    - name: 创建ingress-escape资源
+      template: src=ingress-escape.yaml.j2 dest={{ nginx_temp_dir }}/ingress-escape.yaml
+      connection: local
+      run_once: true
+      when: "KAD_APP_NAME == 'escape'"
+
+    - name: 部署ingress-escape
+      shell:  "kubectl apply -f {{ nginx_temp_dir }}/ingress-escape.yaml"
+      connection: local
+      run_once: true
+      when: "KAD_APP_NAME == 'escape'"
 
     - name: 创建nginx-configmap文件
       template: src=nginx-configmap.yaml.j2 dest={{ nginx_temp_dir }}/nginx-configmap.yaml

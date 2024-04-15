@@ -1,0 +1,39 @@
+# ---------基础参数--------------------
+
+#默认二进制文件目录
+bin_dir: "/opt/kube/bin"
+
+namespace_dir: "{{ base_dir }}/workspace/{{ APP_NAMESPACE }}"
+
+yaml_dir: "{{ namespace_dir }}/yaml"
+
+max_space_dir: "{{hostvars[groups['kube_node'][0]].ansible_mounts | selectattr('mount', 'match', '^(?!/var/lib/).*') | sort(attribute='size_available') | map(attribute='mount') | list | last }}"
+
+DATA_DIR: "{% if '/' == max_space_dir %}{% else %}{{ max_space_dir }}{% endif %}"
+
+config_base_dir: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}"
+
+db_user_pattern: "^[a-zA-Z0-9_]{3,16}$"
+db_user_invalid_msg: "账号只能由大/小写字母、数字、下划线组成，长度3~16字符"
+
+db_pwd_pattern1: "^[a-zA-Z0-9_]{6,16}$"
+db_pwd_pattern2: "^.*(?=.*\\d)(?=.*[A-Z]{1,})(?=.*[a-z]{1,}).*$"
+db_pwd_invalid_msg: "密码只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符"
+
+# 集群 DNS 域名
+CLUSTER_DNS_DOMAIN: "cluster.local."
+
+PRIVATE_REGISTRY_ENABLED: "no"
+PRIVATE_INSECURE_REGISTRY: "172.17.8.20:8082"
+PRIVATE_REGISTRY_USER: ""
+PRIVATE_REGISTRY_PWD: ""
+#SourceId镜像
+SAM_DOCKERS: {
+}
+
+#证书目录
+ca_dir: "/etc/kubernetes/ssl"
+
+ingress_ca_dir: "/etc/kad/ssl"
+
+kadapi_ca_dir: "/etc/kad/api/ssl"

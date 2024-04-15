@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: rg-{{ comp_name }}
   namespace: {{ APP_NAMESPACE }}
@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       k8s-app: rg-{{ comp_name }}
+  serviceName: "rg-{{ comp_name }}"
   template:
     metadata:
       labels:
@@ -17,6 +18,7 @@ spec:
     spec:
       #hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
+      terminationGracePeriodSeconds: 0
       containers:
       - name: rg-{{ comp_name }}
         image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SMPPLUS_DOCKERS[comp_name].name }}:{{ SMPPLUS_DOCKERS[comp_name].version }}
@@ -57,6 +59,15 @@ spec:
           failureThreshold: 5
       imagePullSecrets:
       - name: regsecret
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
       volumes:
         - name: log
           hostPath:
@@ -78,7 +89,6 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-  externalTrafficPolicy: Local
   selector:
     k8s-app: rg-{{comp_name}}
   type: NodePort

@@ -1,0 +1,16 @@
+- hosts:
+  - localhost
+  tags: always
+  any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  roles:
+  - ruijie/escape/pull-images
+
+- hosts:
+  - kube_node
+  any_errors_fatal: true
+  vars_files:
+  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+  roles:
+  - { role: ruijie/escape/load-images, tags: ["always"] }

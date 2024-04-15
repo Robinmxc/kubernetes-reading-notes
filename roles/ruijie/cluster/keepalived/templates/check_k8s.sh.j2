@@ -1,0 +1,15 @@
+#!/bin/bash
+set -x
+echo `date`+ "start check_k8s" >> /var/log/keepalived_up.log
+is_enabled_check=false
+if [ "$is_enabled_check" = true ]; then
+    exists=$(docker ps --filter status=running | grep -q k8s_kube-apiserver_kube-apiserver && echo "true" || echo "false")
+    if [ $exists == true ]; then
+        exit 0
+    else
+        logger "keepalived check_k8s_2 结果false，系统返回 exit 1"
+        exit 1
+    fi
+else
+    exit 0
+fi

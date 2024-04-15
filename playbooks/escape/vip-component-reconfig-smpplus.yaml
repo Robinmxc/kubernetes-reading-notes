@@ -1,0 +1,39 @@
+- hosts: all
+  any_errors_fatal: true
+
+- hosts:
+  - localhost
+  gather_facts: false
+
+  tasks:
+  - name: 获取所有已经创建的POD信息
+    tags: always
+    command: "kubectl get pod -A"
+    register: pod_info
+
+  - name: 清理ingress
+    tags: ingress  
+    command: "kubectl delete -f /opt/kube/kube-system/nginx-ingress/"
+    when: '"nginx-ingress"  in pod_info.stdout'
+
+  - name: 等待ingress结束运行
+    tags:
+      - ingress
+    shell: "kubectl get pod -n kube-system"
+    register: pod_info
+    until: '"nginx-ingress" not in pod_info.stdout'
+    retries: 30
+    delay: 3
+    ignore_errors: true
+
+  - name: 重新配置ingress，请耐心等待
+    tags: ingress  
+    shell: 'cd /opt/kad; \
+          export ssh_password={{ ansible_sudo_pass }}; \
+          export serverUser={{ ansible_sudo_user }}; \
+        ./kad-play.sh  playbooks/cluster/ingress.yml'
+
+  - name: 配置完成
+    debug:
+      msg: "vip如若修改，请重新执行业务组件reconfig"
+

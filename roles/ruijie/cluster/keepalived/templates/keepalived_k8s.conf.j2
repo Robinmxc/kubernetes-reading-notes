@@ -1,0 +1,33 @@
+vrrp_script check_k8s {
+    script "/etc/keepalived/conf/check_k8s.sh"
+    interval 10
+    timeout 5
+    rise 2
+    fall 5
+}
+
+vrrp_instance VI-KUBE {
+{% if "MASTER" == hostvars[inventory_hostname]["NODE_LB_ROLE"] %}
+    state MASTER
+    priority 100
+{% else %}
+    state BACKUP
+    priority  90
+    nopreempt
+{% endif %}
+    unicast_src_ip {{ inventory_hostname }}
+    unicast_peer {
+{% for h in groups['kube_master'] %}{% if h != inventory_hostname %}
+        {{ h }}
+{% endif %}{% endfor %}
+    }
+    interface {{ K8S_ACCESS_IF }}
+    virtual_router_id {{ K8S_ROUTER_ID }}
+    advert_int 1
+    track_script {
+        check_k8s
+    }
+    virtual_ipaddress {
+        {{ KUBE_MASTER_VIP }}
+    }
+}

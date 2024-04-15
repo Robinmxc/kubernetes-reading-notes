@@ -1,0 +1,76 @@
+- name: 获取namespace是否存在
+  command: "kubectl get namespaces"
+  register: namespaces_info
+  connection: local
+  run_once: true
+
+- name: 创建namespace
+  shell: "kubectl create namespace {{ APP_NAMESPACE }}"
+  when: 'APP_NAMESPACE not in namespaces_info.stdout'
+  connection: local
+  run_once: true
+
+- name: 获取secret数据
+  command: "kubectl get secret -n {{ APP_NAMESPACE }}"
+  when: 'PRIVATE_REGISTRY_ENABLED == "yes"'
+  register: secret_info
+  connection: local
+  run_once: true
+
+- name: 创建regsecret
+  shell: "kubectl create secret docker-registry regsecret --docker-server={{ PRIVATE_INSECURE_REGISTRY }} --docker-username={{ PRIVATE_REGISTRY_USER }} --docker-password={{ PRIVATE_REGISTRY_PWD }} --namespace={{ APP_NAMESPACE }}"
+  when: 'PRIVATE_REGISTRY_ENABLED == "yes" and "regsecret" not in secret_info.stdout'
+  connection: local
+  run_once: true
+
+- name: 准备目录
+  file: path={{ item }} state=directory
+  with_items:
+  - "{{ namespace_dir }}/yaml"
+  - "{{ namespace_dir }}/conf"
+  connection: local
+  run_once: true
+  
+- name: 拷贝escape配置文件
+  vars:
+    src_path: "{{ KAD_PACKAGE_DIR }}/conf/{{ item }}"
+    dest_path: "{{ namespace_dir }}/conf/{{ item }}"
+  copy: src="{{ src_path }}/" dest="{{ dest_path }}/"
+  when: 'src_path is exists and dest_path is not exists'
+  with_items:
+    - "escape-eportal"
+    - "escape-freeradius"
+- name: 获取autostart.sh状态
+  stat: path="/etc/init.d/autostart.sh"
+  register: data_dir_stat  
+  ignore_errors: true
+
+- name: 设置自动配置iptables脚本
+  vars: 
+    portlist: "{{ iptables_port | join(',') }}"
+  template: src="autostart.sh.j2" dest="/etc/init.d/autostart.sh"
+ 
+- name: 获取autostart.sh状态
+  stat: path="/etc/init.d/autostart.sh"
+  register: data_dir_stat_new  
+
+- name: 设置脚本执行权限
+  file: name="{{ item }}" mode=0700
+  with_items:
+  - "/etc/init.d/autostart.sh"
+  when: 'data_dir_stat_new.stat.exists'
+
+- name: 设置脚本开机执行
+  shell: systemctl enable autostart.sh
+  when: 'data_dir_stat_new.stat.exists'
+
+- name: 初次执行autostart.sh脚本
+  shell: iptables -F && sh /etc/init.d/autostart.sh
+
+
+- name: 获取configmap数据
+  command: "kubectl -n {{ APP_NAMESPACE }} get configmap"
+  register: etcd_tls
+  connection: local
+  run_once: true
+

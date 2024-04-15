@@ -1,0 +1,23 @@
+# 应用名称
+KAD_APP_NAME: "smpplus"
+
+rocketmq_public: "no"
+# 应用版本
+KAD_APP_VERSION: "r1.0.0-test"
+
+#MongoDB管理员密码
+MONGODB_ADMIN_USER: "admin"
+MONGODB_ADMIN_PWD: "123Admin"
+
+# 数据库只读账号密码，只能由大/小写字母、数字、下划线组成，至少1个大写字母，1个小写字母和1个数字，长度6~16字符。
+MONGODB_READONLY_PWD: "123Admin"
+
+mongdb_cluster_mode: "pss"
+#smp+支持https，填写域名即可
+SMPPLUS_SSO_DOMAIN: ""
+#填写域名用于配置portal https时使用
+SMPPLUS_PORTAL_DOMAIN: ""
+# 0.不部署探针 1.浪潮服务器
+FLOW_MODE: 0
+FLOW_PORTS: "eth1,eth2"
+rocket_cluster_mode: "yes"

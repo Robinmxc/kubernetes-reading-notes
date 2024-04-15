@@ -10,7 +10,7 @@
   - config
   replace: path="{{ config_base_dir }}/eportal/conf/application-prd.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
-  - {regexp: "mongodb:.*/eportal.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ groups.kube_node[0] }}/eportal?replicaSet=rs0"}
+  - {regexp: "mongodb:.*/eportal.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/eportal?replicaSet=rs0"}
   - {regexp: "protectEnable.*$", replace: "protectEnable: {{ protectEnable_value }}"}
   - {regexp: "whiteHost.*$", replace: "whiteHost: {{allNodeStr}}"}
 

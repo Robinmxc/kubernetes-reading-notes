@@ -54,6 +54,8 @@
     - "nodescanner"
     - "nodecompliance"    
     - "rg-log"
+    - "socket5-proxy"    
+    - "pcapture"
 - name: 获取autostart.sh状态
   stat: path="/etc/init.d/autostart.sh"
   register: data_dir_stat
@@ -63,7 +65,7 @@
   vars: 
     portlist: "{{ iptables_port | join(',') }}"
   template: src="autostart.sh.j2" dest="/etc/init.d/autostart.sh"
- 
+
 - name: 获取autostart.sh状态
   stat: path="/etc/init.d/autostart.sh"
   register: data_dir_stat_new  
@@ -80,4 +82,24 @@
 
 - name: 初次执行autostart.sh脚本
   shell: iptables -F && sh /etc/init.d/autostart.sh
+
+- name: 准备部署文件目录
+  tags:
+    - config
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ config_base_dir }}/env-process"
+
+- name: 设置自动检查iptables port脚本
+  vars:
+    portlist: "{{ iptables_port | join(',') }}"
+  template: src="checkiptablesport.sh.j2" dest={{ config_base_dir }}/env-process/checkiptablesport.sh mode=777
+
+- name: crontab清理iptables端口检查脚本
+  shell: sed -i '/checkiptablesport/d' /var/spool/cron/root
+  ignore_errors: true
+
+- name: crontab添加iptables端口检查脚本
+  shell: echo '*/1 * * * * {{ config_base_dir }}/env-process/checkiptablesport.sh' >> /var/spool/cron/root
+
 

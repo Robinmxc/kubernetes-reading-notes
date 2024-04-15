@@ -1,0 +1,10 @@
+cpu_required:
+  small:
+    master: 1
+    node: 1
+  normal:
+    master: 16
+    node: 16
+  single:
+    master: 16
+    node: 16

@@ -94,6 +94,7 @@
       - "nodescanner"
       - "nodecompliance"
       - "rg-log"
+      - "pcapture"
     connection: local
     run_once: true
   when: 'inventory_hostname == groups.kube_master[0]'

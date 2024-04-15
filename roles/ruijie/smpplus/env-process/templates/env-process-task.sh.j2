@@ -1,0 +1,78 @@
+#!/bin/sh
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:$PATH"
+service_vip={{SERVICE_VIP}}
+current_pid=$$
+
+function socket5_process(){
+    VIP_EXIST_FLAG=false
+    interface_list=$(ip addr | awk '/inet / {split($2, ip, "/"); print ip[1]}')
+    for ip_address in $interface_list; do
+    if [[ "$ip_address" == "${service_vip}" ]];then
+        VIP_EXIST_FLAG=true
+    fi
+    done
+    proxy_file="/etc/kubernetes/manifests/socket5-proxy.yaml"
+    prepare_file="/etc/kubernetes/manifests/prepare/socket5-proxy.yaml"
+    PROXY_FILE_UPDATE=false
+    if	[[ "$VIP_EXIST_FLAG" == true ]] && [[ -f "$proxy_file" ]] && [[ -f "$prepare_file" ]];then
+
+        cmp -s "$prepare_file" "$proxy_file"
+        if [ $? -eq 0 ]; then
+            echo "文件 $prepare_file 和 $proxy_file 的内容完全相同."
+        else
+            logger   "env-process-task $current_pid 文件 $prepare_file 和 $proxy_file 的内容不完全相同."
+            PROXY_FILE_UPDATE=true
+        fi
+    fi
+    if	[[ "$VIP_EXIST_FLAG" == true ]] && [[ ! -f "$proxy_file" ]] && [[ -f "$prepare_file" ]];then
+        PROXY_FILE_UPDATE=true
+    fi
+    if	[[ "$PROXY_FILE_UPDATE" == true ]];then
+        logger "env-process-task $current_pid更新代理文件内容"
+        \cp -rpf $prepare_file $proxy_file
+        touch "$proxy_file"
+    fi
+    if	[[ "$VIP_EXIST_FLAG" != true ]] && [[ -f "$proxy_file" ]];then
+        logger "env-process-task $current_pid移除$proxy_file"
+        rm -rf $proxy_file
+    fi
+}
+function chajian_port_redirect(){
+    service_rule_name=chajian_port_redirect_9688
+    RULES=$(iptables -t nat -S | grep "$service_rule_name")
+    num=0
+    ADD_FLAG=true
+    while IFS= read -r rule; do
+    if	[[ "$rule" != "" ]];then
+        if	[[ $num -ge 1 ]];then  
+            iptables -t nat -D PREROUTING -p tcp --dport 9688 -j REDIRECT --to-port 443 -m comment --comment "${service_rule_name}"
+        fi   
+        num=$((num + 1))
+        ADD_FLAG=false
+    fi
+    done <<< "$RULES"
+
+    if	[[ "$ADD_FLAG" == true ]];then
+        logger "${service_rule_name}规则添加"
+        iptables -t nat -A PREROUTING -p tcp --dport 9688 -j REDIRECT --to-port 443  -m comment --comment "${service_rule_name}"
+    fi
+}
+function execute_All(){
+{% if ESCAPE["enable"] or  DEPLOY_MODE != "allinone"%}
+    socket5_process
+{% endif %}
+    chajian_port_redirect
+}
+start_time=$(date +%s)
+while true; do
+    execute_All
+    current_time=$(date +%s)
+    elapsed_time=$((current_time - start_time))
+    if [ $elapsed_time -ge 60 ]; then
+        break
+    else
+        sleep 1
+    fi
+    
+done
+

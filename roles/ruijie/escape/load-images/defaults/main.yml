@@ -1,0 +1,1 @@
+img_dir: '{% if "allinone" == DEPLOY_MODE %}{{ img_download_dir }}{% else %}{{ img_copy_dir }}{% endif %}'

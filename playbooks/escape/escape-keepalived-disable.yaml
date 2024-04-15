@@ -1,0 +1,20 @@
+- hosts:
+    - localhost
+  tasks:
+    - name: 环境检测
+      fail:
+        msg: "当前脚本只支持通过smp+本体操作"
+      when: "APP_NAMESPACE != 'ruijie-smpplus'"
+
+- hosts:
+    - kube_node
+  vars_files:
+    - "/etc/kad/config.yml"
+  tasks:
+    - name: 失效逃生keepalived配置
+      file: name="/etc/keepalived/conf/keepalived_escape.conf" state=absent
+
+    - name: 重新配置keepalived服务
+      service: name={{ item }} state=restarted enabled=yes
+      with_items:
+        - keepalived

@@ -8,6 +8,9 @@
 - name: 自动配置
   tags:
   - config
+  vars:
+    kad2_url: '{% if k8s_single == "no" %}{{ groups.kube_node[1] }}{% else %}{{ groups.kube_node[0] }}{% endif %}'
+    kad3_url: '{% if k8s_single == "no" %}{{ groups.kube_node[2] }}{% else %}{{ groups.kube_node[0] }}{% endif %}'
   replace: path="{{ config_base_dir }}/authentication/conf/application-prd.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
   with_items:
   - {regexp: "mongodb:.*/nodes.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/nodes?replicaSet=rs0"}
@@ -16,13 +19,16 @@
   - {regexp: "mongodb:.*/linkid-dev.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-dev?replicaSet=rs0"}
   - {regexp: "mongodb:.*/linkid-job.*$", replace: "mongodb://{{ MONGODB_ADMIN_USER }}:{{ MONGODB_ADMIN_PWD }}@{{ mongodb_addr }}/linkid-job?replicaSet=rs0"}
   - {regexp: "host-address-ip.*$", replace: "host-address-ip: {{ host_ip_value }}"}
-  - {regexp: "namesrv:", replace: "rg-rocket.{{ APP_NAMESPACE }}.svc:"}
+  - {regexp: "ip: namesrv.*$", replace: "ip: {{rocketmq_addr}}"} 
+  - {regexp: "name-srv-addr:.*$", replace: "name-srv-addr: {{rocketmq_addr}}"} 
   - {regexp: "protectEnable.*$", replace: "protectEnable: {{ protectEnable_value }}"}
   - {regexp: "whiteHost.*$", replace: "whiteHost: {{allNodeStr}}"}
   #- {regexp: "softwarePackageDownLoadAddress.*$", replace: "softwarePackageDownLoadAddress: http://{{KUBE_MASTER_VIP}}:9888"}
   - {regexp: "certificatePath.*$", replace: "certificatePath: /ruijie/authentication/kadapitls/kadapi.pem"}
   - {regexp: "privateKeyPath.*$", replace: "privateKeyPath: /ruijie/authentication/kadapitls/kadapi-smp-key.pem"}
-  - {regexp: "kadUrl.*$", replace: "kadUrl: https://{{KUBE_MASTER_VIP}}:11938"}
+  - {regexp: "kadUrl.*$", replace: "kadUrl: https://{{groups.kube_node[0]}}:11938"}
+  - {regexp: "kad2Url.*$", replace: "kad2Url: https://{{kad2_url}}:11938"}
+  - {regexp: "kad3Url.*$", replace: "kad3Url: https://{{kad3_url}}:11938"}
   - {regexp: "sentinel-dashboard-srv", replace: "{{KUBE_MASTER_VIP}}"}
   no_log: true
 

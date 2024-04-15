@@ -130,7 +130,10 @@ def parse_host_data(workspace_dir):
     result["groups"]["etcd"] = {"hosts": node_hosts}
     result["groups"]["mongodb"] = {"hosts": node_hosts}
     result["groups"]["deploy"] = {"hosts": [master_hosts[0]]}
-    result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
+    if "rocket_cluster_mode" in group_all_vars and group_all_vars["rocket_cluster_mode"] == "yes":
+         result["groups"]["rocketmq"] = {"hosts":[node_hosts[len(node_hosts) - 2],node_hosts[len(node_hosts) - 1]]}
+    else:
+        result["groups"]["rocketmq"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["mgob"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
     result["groups"]["pgsql"] = {"hosts": [node_hosts[len(node_hosts) - 1]]}
 
@@ -157,11 +160,11 @@ def parse_host_data(workspace_dir):
         group_all_vars["KUBE_MASTER_VIP"] = k8s_config["KUBE_MASTER_VIP"]
     else:
         group_all_vars["KUBE_MASTER_VIP"] = master_hosts[0]
-    allNodes = set(master_hosts);    
+    allNodes = set(master_hosts);
     allNodes.add(group_all_vars["KUBE_MASTER_VIP"])
     allNodes.update(node_hosts)
-    allNodes.union()   
-    allNodeStr = ', '.join(str(x) for x in allNodes) 
+    allNodes.union()
+    allNodeStr = ', '.join(str(x) for x in allNodes)
     allNodeStr = allNodeStr.replace(' ', '')
     group_all_vars["allNodeStr"] = allNodeStr
     # 计算服务网段
@@ -205,7 +208,8 @@ def parse_host_data(workspace_dir):
         group_all_vars["ingress_mode"] = "http"
 
     if "CLUSTER_SCALE" not in k8s_config:
-        if app_namespace == "ruijie-sourceid":
+        # 防止名称空间打离线包时被替换，所以采用in
+        if  "sourceid" in app_namespace:
             if deploy_mode == "allinone":
                 group_all_vars["CLUSTER_SCALE"] = "single-basic"
             else:
@@ -254,7 +258,7 @@ def parse_host_data(workspace_dir):
 
     if  group_all_vars["KAD_APP_VERSION"] < "1.9.1":
         group_all_vars["HEALTH_CHECK"] = {"enable": False,}
-        
+
     parse_fdfs_config(result)
 
     parse_sourceid_gateway_config(result)
@@ -264,9 +268,20 @@ def parse_host_data(workspace_dir):
     parse_eoms_config(result)
 
     parse_ldap_config(result)
-    
-    parse_mgob_config(result)
 
+    parse_mgob_config(result)
+    
+    parse_escape_config(result)
+
+
+    # 解析集群对外服务ip
+    if ("ESCAPE_VIP"  in group_all_vars and group_all_vars["ESCAPE_VIP"] != ""):
+      group_all_vars["SERVICE_VIP"] =group_all_vars["ESCAPE_VIP"]
+    elif(deploy_mode == "allinone"):
+      group_all_vars["SERVICE_VIP"] = master_hosts[0]
+    else:
+      group_all_vars["SERVICE_VIP"] =group_all_vars["KUBE_MASTER_VIP"]
+      
     return result
 
 # 处理mgob配置参数
@@ -375,14 +390,14 @@ def parse_ldap_config(host_data):
         ldap_hosts = ldap_config["LDAP_HOST"] if "LDAP_HOST" in ldap_config else []
         ldap_vip = ldap_config["LDAP_VIP"] if "LDAP_VIP" in ldap_config else ""
         if len(ldap_hosts) !=1 and len(ldap_hosts) !=2:
-          raise Exception(ldap_hosts + u"必须配置一个或者两个IP")
+            raise Exception(ldap_hosts + u"必须配置一个或者两个IP")
         for ip in ldap_hosts:
             if not is_IP(ip):
                 raise Exception(ip + u"不是有效的IP地址")
         if "" != ldap_vip and not is_IP(ldap_vip):
             raise Exception(u"LDAP_VIP不是有效的IP地址")
         if len(ldap_hosts) == 2 and len(ldap_vip) == 0:
-          raise Exception("双主模式必须配置LDAP_VIP")
+            raise Exception("双主模式必须配置LDAP_VIP")
 
         host_data["groups"]["ldap"] = ldap_hosts
         group_all_vars["LDAP_VIP"] = ldap_vip
@@ -399,6 +414,151 @@ def parse_ldap_config(host_data):
             else:
                 host_vars[ip]["LDAP_ROLE"] = "BACKUP"
             idx = idx + 1
+
+
+def parse_escape_config(host_data):
+    group_all_vars = host_data["groups"]["all"]["vars"]
+
+    escape_config = group_all_vars["ESCAPE"] if "ESCAPE" in group_all_vars else {"enable":False,"VIP":""}
+    enabled = escape_config["enable"] if "enable" in escape_config else False
+    if not enabled:
+        return
+    escape_vip = escape_config["VIP"] if "VIP" in escape_config else ""
+    if "" == escape_vip:
+        raise Exception(u"ESCAPE配置中的VIP参数没有设置")
+    if "" != escape_vip and not is_IP(escape_vip):
+        raise Exception(u"ESCAPE配置中的VIP不是有效的IP地址")
+    group_all_vars["ESCAPE_VIP"] = escape_vip
+    escape_hosts = escape_config["NODES"] if "NODES" in escape_config else []
+    for ip in escape_hosts:
+        if not is_IP(ip):
+            raise Exception(ip + u"不是有效的IP地址")
+    host_data["groups"]["escape"] = escape_hosts
+
+    # smp+部署时多master检测时配置检测ip为KUBE_MASTER_VIP
+    group_all_vars["MASTER_CHECK_VIP"] = group_all_vars["KUBE_MASTER_VIP"]
+
+    host_vars = host_data["host_vars"]
+
+    host_data["groups"]["escape"] = escape_hosts
+    for ip in escape_hosts:
+        if ip not in host_vars:
+            host_vars[ip] = {}
+
+    smp_deploy_mode = "single-master"
+    smp_nodes = []
+
+    # 逃生优先
+    escape_first = group_all_vars["ESCAPE_FIRST"] if "ESCAPE_FIRST" in group_all_vars else False
+
+    # 逃生优先部署
+    if escape_first:
+        smp_old_ip = group_all_vars["SMP_OLD_IP"] if "SMP_OLD_IP" in group_all_vars else ""
+        if "" == smp_old_ip:
+            raise Exception(u"ESCAPE配置中的SMP_OLD_IP参数没有设置")
+        if "" != smp_old_ip and not is_IP(smp_old_ip):
+            raise Exception(u"ESCAPE配置中的SMP_OLD_IP不是有效的IP地址")
+
+        smp_new_ip = group_all_vars["SMP_NEW_IP"] if "SMP_NEW_IP" in group_all_vars else ""
+        if "" == smp_new_ip:
+            raise Exception(u"ESCAPE配置中的SMP_NEW_IP参数没有设置")
+        if "" != smp_new_ip and not is_IP(smp_new_ip):
+            raise Exception(u"ESCAPE配置中的SMP_NEW_IP不是有效的IP地址")
+
+        smp_deploy_mode = group_all_vars["SMP_DEPLOY_MODE"] if "SMP_DEPLOY_MODE" in group_all_vars else "single-master"
+        if smp_deploy_mode not in ["single-master", "multi-master"]:
+            raise Exception(u"ESCAPE配置中的SMP_DEPLOY_MODE参数设置不正确")
+
+        # 多节点增加解析smp配置
+        if "multi-master" == smp_deploy_mode:
+            smp_kad_ip = group_all_vars["SMP_KAD_IP"] if "SMP_KAD_IP" in group_all_vars else ""
+            if "" == smp_kad_ip:
+                raise Exception(u"ESCAPE配置中的SMP_KAD_IP参数没有设置")
+            if "" != smp_kad_ip and not is_IP(smp_kad_ip):
+                raise Exception(u"ESCAPE配置中的SMP_KAD_IP不是有效的IP地址")
+
+            smp_nodes = group_all_vars["SMP_NODES"] if "SMP_NODES" in group_all_vars else []
+            if len(smp_nodes) == 0:
+                raise Exception(u"ESCAPE配置中的SMP_NODES参数没有设置")
+            for ip in smp_nodes:
+                if not is_IP(ip):
+                    raise Exception(ip + u"不是有效的IP地址")
+
+            # 逃生优先部署时smp+多master版本，检测master vip 为smp_new_ip
+            group_all_vars["MASTER_CHECK_VIP"] = smp_new_ip
+
+    # 逃生配置解析
+    if "ruijie-escape" != group_all_vars["APP_NAMESPACE"] or escape_first:
+        master_check_url = escape_config["MASTER_CHECK_URL"]
+        if "" == master_check_url:
+            raise Exception(u"ESCAPE配置中的MASTER_CHECK_URL参数没有设置")
+
+        group_all_vars["MASTER_CHECK_URL"] = master_check_url
+
+        master_check_interval = escape_config["MASTER_CHECK_INTERVAL"] if "MASTER_CHECK_INTERVAL" in escape_config else "1"
+        master_check_interval = master_check_interval if "" != master_check_interval else "1"
+        group_all_vars["MASTER_CHECK_INTERVAL"] = master_check_interval
+
+        master_check_timeout = escape_config["MASTER_CHECK_TIMEOUT"] if "MASTER_CHECK_TIMEOUT" in escape_config else "1"
+        master_check_timeout = master_check_timeout if "" != master_check_timeout else "1"
+        group_all_vars["MASTER_CHECK_TIMEOUT"] = master_check_timeout
+
+        master_check_fail = escape_config["MASTER_CHECK_FALL"] if "MASTER_CHECK_FALL" in escape_config else "1"
+        master_check_fail = master_check_fail if "" != master_check_fail else "1"
+        group_all_vars["MASTER_CHECK_FALL"] = master_check_fail
+
+        master_check_rise = escape_config["MASTER_CHECK_RISE"] if "MASTER_CHECK_RISE" in escape_config else "1"
+        master_check_rise = master_check_rise if "" != master_check_rise else "1"
+        group_all_vars["MASTER_CHECK_RISE"] = master_check_rise
+
+        backup_check_url = escape_config["BACKUP_CHECK_URL"]
+        if "" == backup_check_url:
+            raise Exception(u"ESCAPE配置中的BACKUP_CHECK_URL参数没有设置")
+        group_all_vars["BACKUP_CHECK_URL"] = backup_check_url
+
+        backup_check_interval = escape_config["BACKUP_CHECK_INTERVAL"] if "BACKUP_CHECK_INTERVAL" in escape_config else "1"
+        backup_check_interval = backup_check_interval if "" != backup_check_interval else "1"
+        group_all_vars["BACKUP_CHECK_INTERVAL"] = backup_check_interval
+
+        backup_check_timeout = escape_config["BACKUP_CHECK_TIMEOUT"] if "BACKUP_CHECK_TIMEOUT" in escape_config else "1"
+        backup_check_timeout = backup_check_timeout if "" != backup_check_timeout else "1"
+        group_all_vars["BACKUP_CHECK_TIMEOUT"] = backup_check_timeout
+
+        backup_check_fail = escape_config["BACKUP_CHECK_FALL"] if "BACKUP_CHECK_FALL" in escape_config else "1"
+        backup_check_fail = backup_check_fail if "" != backup_check_fail else "1"
+        group_all_vars["BACKUP_CHECK_FALL"] = backup_check_fail
+
+        backup_check_rise = escape_config["BACKUP_CHECK_RISE"] if "BACKUP_CHECK_RISE" in escape_config else "1"
+        backup_check_rise = backup_check_rise if "" != backup_check_rise else "1"
+        group_all_vars["BACKUP_CHECK_RISE"] = backup_check_rise
+
+        # smp部署逃生
+        if "ruijie-smpplus" == group_all_vars["APP_NAMESPACE"]:
+            temp_escape_node = group_all_vars["KUBE_MASTER_HOSTS"] + escape_hosts
+            host_data["groups"]["escape_node"] = {"hosts": temp_escape_node}
+
+            host_data["groups"]["ESCAPE_MASTER"] = group_all_vars["KUBE_MASTER_HOSTS"]
+            host_data["groups"]["ESCAPE_BACKUP"] = escape_config["NODES"]
+        else:
+            # 逃生部署且逃生优先
+            if escape_first:
+                # smp单节点
+                if "single-master" == smp_deploy_mode:
+                    # 逃生部署并且为逃生优先
+                    host_data["groups"]["escape_node"] = {"hosts": [group_all_vars["SMP_OLD_IP"], escape_config["NODES"][0]]}
+                    host_data["groups"]["ESCAPE_MASTER"] = [group_all_vars["SMP_OLD_IP"]]
+                    host_data["groups"]["ESCAPE_BACKUP"] = [escape_config["NODES"][0]]
+
+                # smp多节点
+                if "multi-master" == smp_deploy_mode:
+                    temp_escape_node = smp_nodes + escape_hosts
+                    host_data["groups"]["escape_node"] = {"hosts": temp_escape_node}
+                    host_data["groups"]["ESCAPE_MASTER"] = smp_nodes
+                    host_data["groups"]["ESCAPE_BACKUP"] = escape_config["NODES"]
+
+        for ip in host_data["groups"]["escape_node"]["hosts"]:
+            if ip not in host_vars:
+                host_vars[ip] = {}
 
 # 处理监控系统配置参数
 def parse_eoms_config(host_data):
@@ -523,7 +683,7 @@ def parse_fdfs_config(host_data):
         if not is_IP(ip):
             raise Exception(ip + u"不是有效的IP地址")
     host_data["groups"]["fdfs_tracker"] = tracker_hosts
-    
+
     if "FDFS_TRACKER_PORT" not in group_all_vars:
         group_all_vars["FDFS_TRACKER_PORT"] = "22122"
 

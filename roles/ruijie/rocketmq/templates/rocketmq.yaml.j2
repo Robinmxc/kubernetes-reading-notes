@@ -1,29 +1,28 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: rg-rocket
+  name: {{rg_rocket_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-  serviceName: rg-rocket
+  serviceName: {{rg_rocket_name}}
   replicas: 1
   selector:
     matchLabels:
-      name: rg-rocket
+      name: {{rg_rocket_name}}
   template:
     metadata:
      labels:
-       name: rg-rocket
+       name: {{rg_rocket_name}}
     spec:
       nodeName: {{ rocketmq_node_ip }}
+{% if KAD_APP_NAME == 'smpplus' %}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+{% endif %}
       containers:
       - name: broker
         image: rocketmqinc/rocketmq:{{ rocketmq_version }}
-{% if "yes" == (rocketmq_public) %}
-        command: ["sh","mqbroker", "-n","localhost:9876 autoCreateTopicEnable=true"]
-{% endif %}
-{% if "yes" != (rocketmq_public) %}
-        command: ["sh","mqbroker", "-n","localhost:9876 autoCreateTopicEnable=true"]
-{% endif %}
+        command: ["sh","mqbroker", "-c", "/opt/rocketmq/conf/broker.conf"]
         env:
         - name: JAVA_OPT_EXT
 {% if KAD_APP_NAME == 'smpplus' %}
@@ -44,7 +43,13 @@ spec:
 {% endif %}
         ports:
           - containerPort: 10909
+{% if KAD_APP_NAME == 'smpplus' %}
+            hostPort: 10909
+{% endif %}
           - containerPort: 10911
+{% if KAD_APP_NAME == 'smpplus' %}
+            hostPort: 10911
+{% endif %}
         volumeMounts:
           - mountPath: /root/logs
             name: brokeroptlogs
@@ -73,6 +78,9 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 9876
+{% if KAD_APP_NAME == 'smpplus' %}
+            hostPort: 9876
+{% endif %}
         volumeMounts:
           - mountPath: /root/logs
             name: namesrvoptlogs
@@ -99,29 +107,26 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rg-rocket
+  name: {{rg_rocket_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    name: rg-rocket
-{% if "yes" == (rocketmq_public) %}
-  type: NodePort
+    name: {{rg_rocket_name}}
   ports:
+{% if KAD_APP_NAME == 'smpplus' %}
   - name: n9876
     port: 9876
     targetPort: 9876
-    nodePort: 9876
   - name: n10909
     port: 10909
     targetPort: 10909
-    nodePort: 10909
   - name: n10911
     port: 10911
     targetPort: 10911
-    nodePort: 10911
+  clusterIP: None
 {% endif %}
-{% if "yes" != (rocketmq_public) %}
+{% if KAD_APP_NAME != 'smpplus' %}
   ports:
-  - port: 9876
-    targetPort: 9876
+   - port: 9876
+     targetPort: 9876
 {% endif %}

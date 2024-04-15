@@ -1,0 +1,48 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-https
+  namespace: ruijie-escape
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^/portal(/|$)(.*)$ /$2 break;
+spec:
+  ingressClassName: nginx
+{% if 'https' == ingress_mode %}
+  tls:
+  - hosts:
+    - '*.{{ ingress_ssl_names[0] }}'
+    secretName: nginx-cert
+{% endif %}
+  rules:
+  - host: {{ KUBE_MASTER_VIP }}.nip.io
+    http: &http_rules
+      paths:
+      - path: /entry
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-escape-eportal
+            port:
+              number: 8898
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-escape-eportal
+            port:
+              number: 8898
+{% if '' != ESCAPE_SYNC_VIP %}              
+  - host: {{ ESCAPE_SYNC_VIP }}.nip.io
+    http: *http_rules
+{% endif %}    
+{% if '' != escape_SSO_DOMAIN %}
+  - host: {{ escape_SSO_DOMAIN }}
+    http: *http_rules
+{% endif %}
+{% if '' != escape_PORTAL_DOMAIN %}
+  - host: {{ escape_PORTAL_DOMAIN }}
+    http: *http_rules
+{% endif %}
+

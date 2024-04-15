@@ -74,6 +74,15 @@ spec:
 
       imagePullSecrets:
       - name: regsecret
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: {{tolerationSeconds}}
       volumes:
         - name: conf
           hostPath:
@@ -86,7 +95,6 @@ metadata:
   name: rg-{{comp_name}}
   namespace: {{ APP_NAMESPACE }}
 spec:
-  externalTrafficPolicy: Local
   selector:
     k8s-app: rg-{{comp_name}}
   type: NodePort

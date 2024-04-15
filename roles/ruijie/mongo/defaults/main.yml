@@ -28,7 +28,7 @@ deploy_conf_defaults:
         memory: "{%- if  mongdb_cluster_mode == 'psa' -%}24Gi{%- else -%}16Gi{%- endif -%}"
       requests:
         cpu: 8
-        memory: 16Gi
+        memory: 8Gi
   single:
     resources:
       limits:

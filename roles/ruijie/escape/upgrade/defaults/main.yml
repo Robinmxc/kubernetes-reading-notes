@@ -1,0 +1,7 @@
+BAK_DIR: "{{ DATA_DIR }}/ruijie/{{ APP_NAMESPACE }}/upgrade_temp"
+
+KAD_UPGRADE_PACKAGE_NAME: "sam-kad-2.0.1"
+
+UPGRADE_DIR: "{{base_dir}}/down/sam-kad-2.0.1-upgrade"
+
+docker_images: "{% for h in SAM_DOCKERS %} {{ PRIVATE_INSECURE_REGISTRY }}/{{ SAM_DOCKERS[h]['name'] }}:{{ SAM_DOCKERS[h]['version'] }} {% endfor %}"
