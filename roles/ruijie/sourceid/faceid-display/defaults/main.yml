@@ -1,6 +1,6 @@
 FACEID_DISPLAY_ENABLE: "{% if SOURCEID_DOCKERS['faceid-display'] is defined and (SOURCEID_DOCKERS['faceid-display'].enable is not defined or SOURCEID_DOCKERS['faceid-display'].enable) %}yes{% else %}no{% endif %}"
 
-faceid_display_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1433m -Xmx1433m{% elif CLUSTER_SCALE == 'single' %}-Xms717m -Xmx717m{%  elif CLUSTER_SCALE == 'small' %}-Xms717m -Xmx717m{% else %}-Xms800m -Xmx800m{% endif %}"
+faceid_display_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms1433m -Xmx1433m{% elif CLUSTER_SCALE == 'single' %}-Xms717m -Xmx717m{%  elif CLUSTER_SCALE == 'small' %}-Xms717m -Xmx717m{% else %}-Xms400m -Xmx600m{% endif %}"
 
 faceid_display_configs: []
 

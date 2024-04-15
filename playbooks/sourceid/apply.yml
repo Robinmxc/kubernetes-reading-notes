@@ -8,6 +8,8 @@
   - "/etc/kad/config.yml"
   roles:
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
+  - { role: ruijie/sourceid/rg-authentication-validate, tags: ["rg-authentication-validate"] }
+  - { role: ruijie/sourceid/freeradius, tags: ["freeradius"] }
   - { role: ruijie/sourceid/linkid, tags: ["linkid"]}
   - { role: ruijie/sourceid/sso, tags: ["sso"] }
   - { role: ruijie/sourceid/gate, tags: ["gate"] }
@@ -39,6 +41,5 @@
   - { role: ruijie/sourceid/rg-flow, tags: ["rg-flow"] }
   - { role: ruijie/sourceid/address-book, tags: ["address-book"] }
   - { role: ruijie/sourceid/pcapture, tags: ["pcapture"] }
-  - { role: ruijie/sourceid/freeradius, tags: ["freeradius"] }
-  - { role: ruijie/sourceid/rg-authentication-validate, tags: ["rg-authentication-validate"] }
   - { role: ruijie/sourceid/application-facade, tags: ["application-facade"] }
+  - { role: ruijie/sourceid/sso-proxy, tags: ["sso-proxy"] }

@@ -38,7 +38,7 @@ spec:
         ports:
         - containerPort: 8888
         volumeMounts:
-        - mountPath: /ruijie/auth-extend/conf
+        - mountPath: /ruijie/sourceid/auth-extend/conf
           name: ae-conf
         - mountPath: /logs
           name: ae-logpath
@@ -124,6 +124,10 @@ spec:
           value: {{ deploy_node_ip }}
         - name: CURRENT_NODE_IP
           value: {{ deploy_node_ip }}
+{%if "" != SELF_SUFFIX %}
+        - name: SELF_SUFFIX
+          value: /{{ SELF_SUFFIX }}
+{% endif %}
 
 
 {%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["rg-authentication-validate"] is not defined or HEALTH_CHECK["rg-authentication-validate"])  %}

@@ -19,6 +19,15 @@
       - {regexp: "ip: rg-rocket*$", replace: "ip: {{rocketmq_addr}}"}          
     no_log: true
 
+  - name: 单域名配置
+    tags:
+      - config
+    replace: path="{{ config_base_dir }}/sourceid/organization-center/conf/application-pro.yml" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - { regexp: "rg-sso.{{ APP_NAMESPACE }}.svc", replace: "rg-sso.{{ APP_NAMESPACE }}.svc/{{ CAS_SUFFIX }}" }
+    no_log: true
+    when: 'SOURCEID_DOMAIN_MODE == "single"'
+
   - name: 准备部署文件目录
     tags:
       - config

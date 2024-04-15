@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rg-portal
+  name: rg-sso-proxy
   namespace: {{ APP_NAMESPACE }}
   labels:
-    k8s-app: rg-portal
+    k8s-app: rg-sso-proxy
 spec:
   replicas: {{ deploy_conf.replicas }}
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 0
   selector:
     matchLabels:
-      k8s-app: rg-portal
+      k8s-app: rg-sso-proxy
   template:
     metadata:
       labels:
-        k8s-app: rg-portal
+        k8s-app: rg-sso-proxy
     spec:
 {%if SKYWALKING["enable"] %}
       initContainers:
@@ -33,15 +33,15 @@ spec:
           mountPath: /skywalking/agent
 {% endif %}
       containers:
-      - name: rg-portal
-        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS.portal.name }}:{{ SOURCEID_DOCKERS.portal.version }}
+      - name: rg-sso-proxy
+        image: {{ PRIVATE_INSECURE_REGISTRY }}/{{ SOURCEID_DOCKERS["sso-proxy"].name }}:{{ SOURCEID_DOCKERS["sso-proxy"].version }}
         imagePullPolicy: IfNotPresent
         env:
 {%if SKYWALKING["enable"] %}
         - name: JAVA_AGENT_EXT
           value: {{ SKYWALKING.JAVA_AGENT_EXT }}
         - name: SW_AGENT_NAME
-          value: {{ SKYWALKING.AGENT_PREFIX }}-portal
+          value: {{ SKYWALKING.AGENT_PREFIX }}-sso-proxy
         - name: SW_AGENT_NAMESPACE
           value: {{ SKYWALKING.NAMESPACE }}
         - name: SW_GRPC_LOG_SERVER_HOST
@@ -50,7 +50,7 @@ spec:
           value: {{ SKYWALKING.SERVER_HOST }}:11800          
 {% endif %}
         - name: JAVA_OPT_EXT
-          value: "{{ portal_java_opt }}"
+          value: "{{ sso_proxy_java_opt }}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
@@ -61,21 +61,27 @@ spec:
             memory: {{ deploy_conf.resources.requests.memory }}
 {% endif %}
         ports:
-        - containerPort: 9879
+        - containerPort: 8081
         volumeMounts:
-        - mountPath: /ruijie/sourceid/portal/conf
-          name: conf
-        - mountPath: /logs
-          name: logpath
-        - mountPath: /skywalking/agent
-          name: agent
+            - mountPath: /etc/cas
+              name: etc
+            - mountPath: /build
+              name: build
+            - mountPath: /cas
+              name: cas
+            - mountPath: /ruijie/sourceid/sso-proxy/conf
+              name: conf
+            - mountPath: /logs
+              name: logpath
+            - mountPath: /skywalking/agent
+              name: agent
 
-{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["portal"] is not defined or HEALTH_CHECK["portal"]) %}
+{%if HEALTH_CHECK["enable"] and (HEALTH_CHECK["sso-proxy"] is not defined or HEALTH_CHECK["sso-proxy"]) %}
         startupProbe:
           failureThreshold: 20
           httpGet:
-            path: {%if "" != PORTAL_SUFFIX %}/{{ PORTAL_SUFFIX }}{% else %}/portal{% endif %}/liveProbe
-            port: 9879
+            path: /liveProbe
+            port: 8081
             scheme: HTTP
           periodSeconds: 5
           successThreshold: 1
@@ -84,8 +90,8 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: {%if "" != PORTAL_SUFFIX %}/{{ PORTAL_SUFFIX }}{% else %}/portal{% endif %}/liveProbe
-            port: 9879
+            path: /liveProbe
+            port: 8081
             scheme: HTTP
           periodSeconds: 5
           successThreshold: 1
@@ -94,8 +100,8 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: {%if "" != PORTAL_SUFFIX %}/{{ PORTAL_SUFFIX }}{% else %}/portal{% endif %}/liveProbe
-            port: 9879
+            path: /liveProbe
+            port: 8081
             scheme: HTTP
           periodSeconds: 30
           successThreshold: 1
@@ -105,9 +111,15 @@ spec:
       imagePullSecrets:
       - name: regsecret
       volumes:
+        - emptyDir: {}
+          name: etc
+        - emptyDir: {}
+          name: build
+        - emptyDir: {}
+          name: cas
         - name: conf
           hostPath:
-            path: {{ config_base_dir }}/sourceid/portal/conf
+            path: {{ config_base_dir }}/sourceid/sso-proxy/conf
         - name: logpath
           hostPath:
             path: {{ config_base_dir }}/logs
@@ -118,49 +130,41 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rg-portal
+  name: rg-sso-proxy
   namespace: {{ APP_NAMESPACE }}
 spec:
   selector:
-    k8s-app: rg-portal
+    k8s-app: rg-sso-proxy
   ports:
   - port: 80
-    targetPort: 9879
+    targetPort: 8081
 
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: rg-portal-ingress
+  name: rg-sso-proxy-ingress
   namespace: {{ APP_NAMESPACE }}
 spec:
   ingressClassName: nginx
-{% if 'https' == ingress_mode %}
+{% if 'https' == ssoproxy_ingress_mode %}
   tls:
+{% for s in SOURCEID_SSO_PROXY_DOMAIN %}
     - hosts:
-      - {{ SOURCEID_MYAPP_DOMAIN }}
+      - {{ s }}
       secretName: nginx-cert
+{% endfor %}
 {% endif %}
   rules:
-    - host: {{ SOURCEID_MYAPP_DOMAIN }}
-      http:
-        paths:
-{%if "" != PORTAL_SUFFIX %}
-        - path: /{{ PORTAL_SUFFIX }}
-{% else %}
-        - path: /portal
-{% endif %}
-          pathType: Prefix
-          backend:
-            service:
-              name: rg-portal
-              port:
-                number: 80
-        - path: {%if "" != PORTAL_SUFFIX %}/{{ PORTAL_SUFFIX }}{% else %}/portal{% endif %}/microportal
-          pathType: Prefix
-          backend:
-            service:
-              name: rg-frontend
-              port:
-                number: 80             
-
+{% for d in SOURCEID_SSO_PROXY_DOMAIN %}
+  - host: {{ d }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rg-sso-proxy
+            port:
+              number: 8081
+{% endfor %}

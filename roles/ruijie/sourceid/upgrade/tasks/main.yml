@@ -141,6 +141,7 @@
       - "sourceid/address-book"
       - "sourceid/auth-extend"
       - "sourceid/pcapture"
+      - "sourceid/sso-proxy"
     connection: local
 
   - name: 配置文件自动比对、同步

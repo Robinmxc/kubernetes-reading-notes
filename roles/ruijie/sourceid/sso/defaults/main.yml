@@ -1,5 +1,5 @@
 
-sso_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms5734m -Xmx5734m{% elif CLUSTER_SCALE == 'single' %}-Xms5734m -Xmx5734m{% elif CLUSTER_SCALE == 'small' %}-Xms1024m -Xmx1536m{% else %}-Xms800m -Xmx1600m{% endif %}"
+sso_java_opt: "{% if CLUSTER_SCALE == 'normal' %}-Xms5734m -Xmx5734m{% elif CLUSTER_SCALE == 'single' %}-Xms5734m -Xmx5734m{% elif CLUSTER_SCALE == 'small' %}-Xms1024m -Xmx1536m{% else %}-Xms4000m -Xmx4000m{% endif %}"
 
 sso_configs: []
 
@@ -8,6 +8,13 @@ sso_templates_path: ""
 deploy_conf_defaults:
   small:
     replicas: 1
+    resources:
+      limits:
+        cpu: 2
+        memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
   normal:
     replicas: 2
     resources:
@@ -30,8 +37,8 @@ deploy_conf_defaults:
     replicas: 2
     resources:
       limits:
-        cpu: 1
-        memory: 2Gi
+        cpu: 3
+        memory: 5Gi
       requests:
         cpu: 0.5
         memory: 1Gi
@@ -39,8 +46,8 @@ deploy_conf_defaults:
     replicas: 1
     resources:
       limits:
-        cpu: 1
-        memory: 2Gi
+        cpu: 3
+        memory: 5Gi
       requests:
         cpu: 0.5
         memory: 1Gi        

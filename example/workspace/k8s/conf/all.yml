@@ -91,7 +91,7 @@ MGOB: {
   MGOB_BACKUP_DAY: "30",
 
 # 清理操作执行时间
-  MGOB_CLEAN_CRON: "10 5 */1 * *",
+  MGOB_CLEAN_CRON: "10 5 * * *",
   
 # MGOB_SFTP_ENABLED: yes - mongodb上传sftp服务器； no - 不上传；默认不上传,不配置时，备份的数据库文件只会保留在本地，存在丢失风险
   MGOB_SFTP_ENABLED: "no",
@@ -177,3 +177,10 @@ HOSTS: {
   "id.example.com": "172.17.8.93",
   "idself.example.com": "172.17.8.93"
 }
+
+# http部署模式
+ingress_mode: "http"
+# https域名
+#ingress_ssl_names: ["ruishan.cc"]
+# 认证代理http部署模式
+ssoproxy_ingress_mode: "http"

@@ -50,6 +50,8 @@ spec:
         - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
           value: {{ SKYWALKING.SERVER_HOST }}:11800
 {% endif %}
+        - name: JAVA_OPT_EXT
+          value: "{{ pcapture_java_opt }}"
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
