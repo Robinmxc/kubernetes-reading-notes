@@ -26,6 +26,15 @@
     no_log: true
     when: 'SOURCEID_DOMAIN_MODE == "single"'
 
+  - name: 配置文件更新
+    tags:
+      - config
+    replace: path="{{ config_base_dir }}/sourceid/adapter/conf/application-pro.properties" regexp="{{ item.regexp }}" replace="{{ item.replace }}"
+    with_items:
+      - {regexp: "sid.log.mq.ip.*$", replace: "sid.log.mq.ip = {{rocketmq_addr}}"} 
+    no_log: true
+
+
   - name: 准备部署文件目录
     tags:
       - config

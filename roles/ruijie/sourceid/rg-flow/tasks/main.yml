@@ -17,6 +17,7 @@
       - {regexp: "spring.datasource.druid.master.username: .*$", replace: "spring.datasource.druid.master.username: postgres"}
       - {regexp: "spring.datasource.druid.master.password: .*$", replace: "spring.datasource.druid.master.password: {{ PGSQL_ADMIN_PWD }}"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+      - {regexp: "ip: rg-rocket.*$", replace: "ip: {{rocketmq_addr}}"}    
     no_log: true
 
   - name: 单域名配置

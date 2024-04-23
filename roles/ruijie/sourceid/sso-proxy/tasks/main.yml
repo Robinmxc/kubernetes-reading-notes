@@ -15,6 +15,7 @@
     with_items:
       - {regexp: "mongodb:.*/ssoproxy.*$", replace: "mongodb://{{ SOURCEID_SSO_PROXY_DB_USER }}:{{ SOURCEID_SSO_PROXY_DB_PWD }}@{{ mongodb_addr }}/sso-proxy?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
+      - {regexp: "sid.log.mq.ip =.*$", replace: "sid.log.mq.ip = {{rocketmq_addr}}"}    
     no_log: true
 
   - name: 自定义配置
