@@ -15,7 +15,7 @@
     with_items:
       - {regexp: "mongodb:.*/internet-id.*$", replace: "mongodb://{{ SOURCEID_INTERNETID_DB_USER }}:{{ SOURCEID_INTERNETID_DB_PWD }}@{{ mongodb_addr }}/internet-id?replicaSet=rs0"}
       - {regexp: "kube-ruijie.svc", replace: "{{ APP_NAMESPACE }}.svc"}
-      - {regexp: "namesrv-addr:.*$", replace: "name-srv-addr: {{rocketmq_addr}}"} 
+      - {regexp: "namesrv-addr:.*$", replace: "namesrv-addr: {{rocketmq_addr}}"} 
       - {regexp: "is-auto-create-topic.*$", replace: "is-auto-create-topic : {{ GROUP_VIEW_ENABLE }}"}
     no_log: true  
 
