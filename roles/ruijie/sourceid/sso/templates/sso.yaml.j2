@@ -173,7 +173,7 @@ metadata:
       rewrite ^/{{ CAS_SUFFIX }}/public/(.*)$ /{{ SELF_SUFFIX }}/public/$1;
       rewrite ^/((?!{{ CAS_SUFFIX }}).*\\.txt)$ /{{ CAS_SUFFIX }}/$1;
       if ($uri = /{{ BASIC_SUFFIX }}) {
-          rewrite ^ /{{ SELF_SUFFIX }} redirect;
+          rewrite ^ /{{ CAS_SUFFIX }} redirect;
       }
 {% endif %}
 spec:
