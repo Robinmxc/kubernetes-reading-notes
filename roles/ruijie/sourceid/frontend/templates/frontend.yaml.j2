@@ -37,6 +37,10 @@ spec:
             value: {{ CAS_SUFFIX }}
           - name: PORTAL_SUFFIX
             value: {{ PORTAL_SUFFIX }}
+{%if WORKBENCH_SUFFIX != ""  %}
+          - name: WORKBENCH_SUFFIX
+            value: {{ WORKBENCH_SUFFIX }}
+{% endif %}            
 {% if "dict" == (deploy_conf.resources | type_debug) %}
         resources:
           limits:
