@@ -162,6 +162,9 @@ kind: Ingress
 metadata:
   name: rg-sso-ingress
   namespace: {{ APP_NAMESPACE }}
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_input_headers "X-My-Header: LSodkIkdieoPQldoejdkisew";
 {% if '' != CUSTOMIZE_SUFFIX %}
   annotations:
     nginx.ingress.kubernetes.io/configuration-snippet: |
