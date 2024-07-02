@@ -4,56 +4,11 @@ KUBE_MASTER_HOSTS: ["192.168.1.61"]
 # Node节点IP
 KUBE_NODE_HOSTS: ["192.168.1.62", "192.168.1.63", "192.168.1.64"]
 
-# 优先逃生--本选项代表从逃生服务器部署整个逃生
-ESCAPE_FIRST: false
-# 优先逃生时配置--SMP新服务器IP(单节点对应的服务器新ip，多master对应的是k8s集群新vip）
-SMP_NEW_IP: ""
-# 优先逃生时配置--SMP原服务器IP(单节点对应的服务器原ip，多master对应的是k8s集群原vip）
-SMP_OLD_IP: ""
-# 从逃生部署时对应的是smp+的部署模式 single-master/multi-master,默认是single-master，
-SMP_DEPLOY_MODE: single-master
-# 优先逃生时必配置--SMP中kad所在的节点，在SMP_DEPLOY_MODEL=multi-master时需要配置
-SMP_KAD_IP: ""
-# 优先逃生时必配置--SMP所有服务节点，在SMP_DEPLOY_MODEL=multi-master时需要配置
-SMP_NODES: []
-
-# 逃生模式开启时，smpplus节点和逃生组件都需要配置此,此配置尽在需要部署逃生时和逃生优先方案是有效
-ESCAPE: {
-  # enable：true - 部署 false - 不部署；
-  enable: false,
-  VIP: "",
-  # 逃生组件的所有IP
-  NODES: ["172.17.8.47"],
-  # 逃生节点注入此参数，将smp+的集群IP暴露给逃生组件
-  SESSION_TIMEOUT: 28800,
-  # 主节点检测url，必须配置
-  MASTER_CHECK_URL: "",
-  # 主节点检测间隔，默认 1秒（整数配置）
-  MASTER_CHECK_INTERVAL: "",
-  # 主节点检测超时时间，需要小于主节点检测间隔时间（整数配置）
-  MASTER_CHECK_TIMEOUT: "",
-  # 主节点检测连续失败次数，连续失败后节点会降级（整数配置）
-  MASTER_CHECK_FALL: "",
-  # 主节点检测连续成功次数，连续失败后节点会降级（整数配置）
-  MASTER_CHECK_RISE: "",
-
-  # 备节点检测url，必须配置
-  BACKUP_CHECK_URL: "",
-  # 备节点检测间隔，默认 1秒（整数配置）
-  BACKUP_CHECK_INTERVAL: "",
-  # 备节点检测超时时间，需要小于备节点检测间隔时间（整数配置）
-  BACKUP_CHECK_TIMEOUT: "",
-  # 备节点检测连续失败次数，连续失败后节点会降级（整数配置）
-  BACKUP_CHECK_FALL: "",
-  # 备节点检测连续成功次数，连续失败后节点会降级（整数配置）
-  BACKUP_CHECK_RISE: ""
-}
-
 # POD 网段 (Cluster CIDR），不要与内网已有网段冲突，网络位数不能大于20
 CLUSTER_CIDR: "196.200.192.0/20"
 
 # 部署规模：small, normal, single,basic,single-basic。normal为标准规模，small主要用于开发、测试，single为单机,basic基础版(sid支持)，single-basic(sid支持)单机基础版本
-#CLUSTER_SCALE: "normal"
+CLUSTER_SCALE: "basic"
 
 # 双Master部署模式时使用的虚IP
 KUBE_MASTER_VIP: ""

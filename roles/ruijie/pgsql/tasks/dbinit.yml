@@ -4,11 +4,18 @@
   connection: local
   run_once: true
 
+- name: 获取mongo1 POD 名称
+  shell: "kubectl get pod -n {{ APP_NAMESPACE }} -o custom-columns=NAME:.metadata.name | grep mongo1"
+  register: mongo_shell_result
+  connection: local
+  run_once: true
+
 - name: 设置pgsql shell
   set_fact:
     pgsql_pod_name: "{{ shell_result.stdout }}"
     pgsql_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- "
     pgsql_pod_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ shell_result.stdout }} -- psql -U postgres "
+    mongo_shell: "kubectl exec -n {{ APP_NAMESPACE }} {{ mongo_shell_result.stdout }} -- mongo {{ mongo_auth_param }}"
   connection: local
   run_once: true
 
@@ -137,6 +144,23 @@
   shell: "{{ pgsql_pod_shell }}  -d essdb -c  \"UPDATE t_system_config SET value=REGEXP_REPLACE(value, '\\(SOURCEID_GATE_DOMAIN\\)', '{{ GATE_DOMAIN_URL }}') where value like '%(SOURCEID_GATE_DOMAIN)%'; \
         UPDATE t_system_config SET value=REGEXP_REPLACE(value, '\\(SOURCEID_SSO_DOMAIN\\)', '{{ SSO_DOMAIN_URL }}') where value like '%(SOURCEID_SSO_DOMAIN)%'; \
         UPDATE t_system_config SET value=REGEXP_REPLACE(value, '\\(SOURCEID_AAA_DOMAIN\\)', '{{ SOURCEID_FRONTEND_URL }}') where value like '%(SOURCEID_AAA_DOMAIN)%'; \""
+  register: update_result
+  failed_when: '"UPDATE" not in update_result.stdout'
+  connection: local
+
+- name: 5GAAA初始化数据
+  shell: '{{ mongo_shell }} --eval ''db.getSiblingDB("cas").getCollection("cas-service-registry").find({"clientId":"5bed24691001ea0715610d3e"})'''
+  register: mongo_result
+  connection: local
+
+- name: 获取client_secret
+  set_fact:
+    client_secret: "{{ mongo_result.stdout | regex_search('\\\"clientSecret\\\" : \\\"([^\\\"]+)\\\"') | regex_replace('\\\"clientSecret\\\" : \\\"', '') | regex_replace('\\\"', '')}}"
+  when: mongo_result.stdout is defined
+
+- name: 更新5GAAA配置
+  shell: "{{ pgsql_pod_shell }} -d essdb -c \"UPDATE t_system_config SET value='{{ client_secret }}' WHERE property_key='5gconfig.appPwdBasic';\""
+  when: '"5bed24691001ea0715610d3e" in mongo_result.stdout'
   register: update_result
   failed_when: '"UPDATE" not in update_result.stdout'
   connection: local

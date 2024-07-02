@@ -28,19 +28,6 @@
   - { role: ruijie/rocketmq}
 
 - hosts:
-  - pgsql
-  tags:
-  - pgsql
-  - midware
-  - sourceid-universities
-  vars_files:
-  - "{{ KAD_PACKAGE_DIR }}/kad.yml"
-  - "/etc/kad/config.yml"
-  any_errors_fatal: true
-  roles:
-  - { role: ruijie/pgsql}
-
-- hosts:
   - kube_node
   tags:
   - initdata
@@ -51,7 +38,20 @@
   roles:
   - { role: ruijie/sourceid/prepare-db-pwd, tags: always }
   - { role: ruijie/sourceid/dbinit, tags: always }
-  
+
+- hosts:
+    - pgsql
+  tags:
+    - pgsql
+    - midware
+    - sourceid-universities
+  vars_files:
+    - "{{ KAD_PACKAGE_DIR }}/kad.yml"
+    - "/etc/kad/config.yml"
+  any_errors_fatal: true
+  roles:
+    - { role: ruijie/pgsql}
+
 - import_playbook: apply.yml
 
 - hosts:
