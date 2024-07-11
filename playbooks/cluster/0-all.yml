@@ -1,0 +1,5 @@
+---
+- import_playbook: env-check.yml
+- import_playbook: k8s-clean.yml
+- import_playbook: offline-install.yml
+- import_playbook: k8s-setup.yml
