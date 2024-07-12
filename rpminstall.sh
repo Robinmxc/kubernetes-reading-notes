@@ -256,7 +256,7 @@ function Uos_AnolisOS(){
 	do
 		pipOperator $var
 	done
-	mongo_tool
+	#mongo_tool
 	if [[ ${mode} == 3 ]];then
 	 	rpm -ivh http://mirrors.wlnmp.com/centos/wlnmp-release-centos.noarch.rpm
 		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
@@ -285,7 +285,7 @@ function AnolisOS(){
 	do
 		pipOperator $var
 	done
-	mongo_tool
+	#mongo_tool
 	if [[ ${mode} == 3 ]];then
 	 	rpm -ivh http://mirrors.wlnmp.com/centos/wlnmp-release-centos.noarch.rpm
 		yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
@@ -328,7 +328,7 @@ function ky10(){
 	do
 		pipOperator $var
 	done
-	mongo_tool
+	#mongo_tool
 	kubernetes_process_ky10
 }
 function Uos_openEulerOs(){
@@ -341,7 +341,7 @@ function Uos_openEulerOs(){
 	done
 	common_python3
 	common_ansible
-	mongo_tool
+	#mongo_tool
 	kubernetes_process
 }
 
@@ -360,7 +360,7 @@ function openEulerOs(){
 	do
 		rpmOperator $var
 	done
-	mongo_tool
+	#mongo_tool
 	ansibleInstall
 	kubernetes_process
 }
@@ -386,7 +386,7 @@ function centos7(){
 		pipOperator $var
 	done
 	
-	mongo_tool
+	#mongo_tool
 	kubernetes_process_centos7
 }
 

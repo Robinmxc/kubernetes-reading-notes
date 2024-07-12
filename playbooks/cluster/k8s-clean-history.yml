@@ -1,26 +1,26 @@
 # WARNING: This playbook will erase the entire k8s-cluster, include PODs, ETCD data etc.
 # Make sure you know what you are doing.
 
-- hosts:
-    - kube_master
-    - kube_node
-  tasks:
-  - name: 获取maintenance-related script
-    tags:
-      - maintenance-related
-    shell: "grep 'smpplus-oper.sh'  /var/spool/cron/root | cat"
-    register: maintenance_script_status
-    when: 'KAD_APP_NAME == "smpplus"'
-    ignore_errors: true
+#- hosts:
+#    - kube_master
+#    - kube_node
+#  tasks:
+#  - name: 获取maintenance-related script
+#    tags:
+#      - maintenance-related
+#    shell: "grep 'smpplus-oper.sh'  /var/spool/cron/root | cat"
+#    register: maintenance_script_status
+#    when: 'KAD_APP_NAME == "smpplus"'
+#    ignore_errors: true
 
-  - name: delete maintenance-related
-    tags:
-      - maintenance-related
-    shell: "sed -i '/{{ item }}/d' /var/spool/cron/root"
-    with_items:
-      - "smpplus-oper.sh"
-    when: 'KAD_APP_NAME == "smpplus" and "smpplus-oper.sh" in maintenance_script_status.stdout'
-    ignore_errors: true
+#  - name: delete maintenance-related
+#    tags:
+#      - maintenance-related
+#    shell: "sed -i '/{{ item }}/d' /var/spool/cron/root"
+#    with_items:
+#      - "smpplus-oper.sh"
+#    when: 'KAD_APP_NAME == "smpplus" and "smpplus-oper.sh" in maintenance_script_status.stdout'
+#    ignore_errors: true
 
 
 # to clean 'kube_node' nodes
@@ -37,9 +37,7 @@
     no_log: true
 
   - name: umount kubelet filesystems
-    shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount"
-    args:
-      warn: false
+    shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount || exit 0"
     ignore_errors: true
     no_log: true
 

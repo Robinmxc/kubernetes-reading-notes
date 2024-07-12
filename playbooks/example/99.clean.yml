@@ -14,9 +14,7 @@
     ignore_errors: true
 
   - name: umount kubelet filesystems
-    shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount"
-    args:
-      warn: false
+    shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount || exit 0"
     ignore_errors: true
 
   - name: remove files and dirs of 'kube_node' nodes
