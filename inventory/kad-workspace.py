@@ -94,27 +94,27 @@ def parse_host_data(workspace_dir):
             group_all_vars[k] = app_config[k]
 
     # Configure KAD_APP_NAME
-    if ("KAD_APP_NAME" in group_all_vars):
-        app_name = group_all_vars["KAD_APP_NAME"]
-    else:
-        app_name = "sourceid"
-        group_all_vars["KAD_APP_NAME"] = app_name
+    #if ("KAD_APP_NAME" in group_all_vars):
+    #    app_name = group_all_vars["KAD_APP_NAME"]
+    #else:
+    #    app_name = "sourceid"
+    #    group_all_vars["KAD_APP_NAME"] = app_name
 
     # Configure KAD_PACKAGE_NAME
-    if ("KAD_PACKAGE_NAME" in group_all_vars):
-        kad_package_name = group_all_vars["KAD_PACKAGE_NAME"]
-    else:
-        kad_package_name = app_name + "-kad-" + group_all_vars["KAD_APP_VERSION"]
-        group_all_vars["KAD_PACKAGE_NAME"] = kad_package_name
+    #if ("KAD_PACKAGE_NAME" in group_all_vars):
+    #    kad_package_name = group_all_vars["KAD_PACKAGE_NAME"]
+    #else:
+    #    kad_package_name = app_name + "-kad-" + group_all_vars["KAD_APP_VERSION"]
+    #    group_all_vars["KAD_PACKAGE_NAME"] = kad_package_name
 
     # Configure KAD_PACKAGE_DIR
-    if ("KAD_PACKAGE_DIR" not in group_all_vars):
-        kad_package_dir = "/opt/kad/down/" + kad_package_name
-        if not os.path.exists(kad_package_dir):
-            kad_package_dir2 = group_all_vars["temp_dir"] + "/"  + kad_package_name
-            if os.path.exists(kad_package_dir2):
-                kad_package_dir = kad_package_dir2
-        group_all_vars["KAD_PACKAGE_DIR"] = kad_package_dir
+    #if ("KAD_PACKAGE_DIR" not in group_all_vars):
+    #    kad_package_dir = "/opt/kad/down/" + kad_package_name
+    #    if not os.path.exists(kad_package_dir):
+    #        kad_package_dir2 = group_all_vars["temp_dir"] + "/"  + kad_package_name
+    #        if os.path.exists(kad_package_dir2):
+    #            kad_package_dir = kad_package_dir2
+    #    group_all_vars["KAD_PACKAGE_DIR"] = kad_package_dir
 
     # Configure host groups
     master_hosts = k8s_config["KUBE_MASTER_HOSTS"]
@@ -245,33 +245,33 @@ def parse_host_data(workspace_dir):
         idx = idx + 1
 
     # 设置mongodb节点名称
-    idx = 1
-    for ip in result["groups"]["mongodb"]["hosts"]:
-        host_vars[ip]["MONGO_NODE_NAME"] = "mongo" + str(idx)
-        idx = idx + 1
+    #idx = 1
+    #for ip in result["groups"]["mongodb"]["hosts"]:
+    #    host_vars[ip]["MONGO_NODE_NAME"] = "mongo" + str(idx)
+    #    idx = idx + 1
 
     # 设置pgsql节点名称
-    idx = 0
-    for ip in result["groups"]["pgsql"]["hosts"]:
-        host_vars[ip]["PG_NODE_NAME"] = "postgresql-" + str(idx)
-        idx = idx + 1
+    #idx = 0
+    #for ip in result["groups"]["pgsql"]["hosts"]:
+    #    host_vars[ip]["PG_NODE_NAME"] = "postgresql-" + str(idx)
+    #    idx = idx + 1
 
-    if  group_all_vars["KAD_APP_VERSION"] < "1.9.1":
-        group_all_vars["HEALTH_CHECK"] = {"enable": False,}
+    #if  group_all_vars["KAD_APP_VERSION"] < "1.9.1":
+    #    group_all_vars["HEALTH_CHECK"] = {"enable": False,}
 
-    parse_fdfs_config(result)
+    #parse_fdfs_config(result)
 
-    parse_sourceid_gateway_config(result)
+    #parse_sourceid_gateway_config(result)
 
-    parse_sourcedata_config(result)
+    #parse_sourcedata_config(result)
 
     parse_eoms_config(result)
 
-    parse_ldap_config(result)
+    #parse_ldap_config(result)
 
-    parse_mgob_config(result)
+    #parse_mgob_config(result)
     
-    parse_escape_config(result)
+    #parse_escape_config(result)
 
 
     # 解析集群对外服务ip
