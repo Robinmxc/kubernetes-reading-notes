@@ -106,29 +106,29 @@
       connection: local
       when: "'https' == ingress_mode"
 
-    - name: 创建ingress-smpplus资源
-      template: src=ingress-smpplus.yaml.j2 dest={{ nginx_temp_dir }}/ingress-smpplus.yaml
-      connection: local
-      run_once: true
-      when: "KAD_APP_NAME == 'smpplus'"
+    #- name: 创建ingress-smpplus资源
+    #  template: src=ingress-smpplus.yaml.j2 dest={{ nginx_temp_dir }}/ingress-smpplus.yaml
+    #  connection: local
+    #  run_once: true
+    #  when: "KAD_APP_NAME == 'smpplus'"
 
-    - name: 部署ingress-smpplus
-      shell:  "kubectl apply -f {{ nginx_temp_dir }}/ingress-smpplus.yaml"
-      connection: local
-      run_once: true
-      when: "KAD_APP_NAME == 'smpplus'"
+    #- name: 部署ingress-smpplus
+    #  shell:  "kubectl apply -f {{ nginx_temp_dir }}/ingress-smpplus.yaml"
+    #  connection: local
+    #  run_once: true
+    #  when: "KAD_APP_NAME == 'smpplus'"
 
-    - name: 创建ingress-escape资源
-      template: src=ingress-escape.yaml.j2 dest={{ nginx_temp_dir }}/ingress-escape.yaml
-      connection: local
-      run_once: true
-      when: "KAD_APP_NAME == 'escape'"
+    #- name: 创建ingress-escape资源
+    #  template: src=ingress-escape.yaml.j2 dest={{ nginx_temp_dir }}/ingress-escape.yaml
+    #  connection: local
+    #  run_once: true
+    #  when: "KAD_APP_NAME == 'escape'"
 
-    - name: 部署ingress-escape
-      shell:  "kubectl apply -f {{ nginx_temp_dir }}/ingress-escape.yaml"
-      connection: local
-      run_once: true
-      when: "KAD_APP_NAME == 'escape'"
+    #- name: 部署ingress-escape
+    #  shell:  "kubectl apply -f {{ nginx_temp_dir }}/ingress-escape.yaml"
+    #  connection: local
+    #  run_once: true
+    #  when: "KAD_APP_NAME == 'escape'"
 
     - name: 创建nginx-configmap文件
       template: src=nginx-configmap.yaml.j2 dest={{ nginx_temp_dir }}/nginx-configmap.yaml
