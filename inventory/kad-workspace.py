@@ -80,18 +80,18 @@ def parse_host_data(workspace_dir):
         group_all_vars[k] = k8s_config[k]
 
     # Configure app namespace
-    env = os.environ
-    if ("KAD_APP_NAMESPACE" in env):
-        app_namespace = os.environ["KAD_APP_NAMESPACE"]
-    else:
-        app_namespace = "ruijie-sourceid"
-    group_all_vars["APP_NAMESPACE"] = app_namespace
+    #env = os.environ
+    #if ("KAD_APP_NAMESPACE" in env):
+    #    app_namespace = os.environ["KAD_APP_NAMESPACE"]
+    #else:
+    #    app_namespace = "ruijie-sourceid"
+    #group_all_vars["APP_NAMESPACE"] = app_namespace
 
     # Copy app config to global
-    if app_namespace in module_configs:
-        app_config = module_configs[app_namespace]
-        for k in app_config:
-            group_all_vars[k] = app_config[k]
+    #if app_namespace in module_configs:
+    #    app_config = module_configs[app_namespace]
+    #    for k in app_config:
+    #        group_all_vars[k] = app_config[k]
 
     # Configure KAD_APP_NAME
     #if ("KAD_APP_NAME" in group_all_vars):

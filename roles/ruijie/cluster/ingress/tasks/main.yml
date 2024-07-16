@@ -10,17 +10,17 @@
   run_once: true
   delegate_to: "{{ groups.deploy[0] }}"
 
-- name: 获取namespace是否存在
-  command: "kubectl get namespaces"
-  register: namespaces_info
-  connection: local
-  run_once: true
+#- name: 获取namespace是否存在
+#  command: "kubectl get namespaces"
+#  register: namespaces_info
+#  connection: local
+#  run_once: true
 
-- name: 创建namespace
-  shell: "kubectl create namespace {{ APP_NAMESPACE }}"
-  when: 'APP_NAMESPACE not in namespaces_info.stdout'
-  connection: local
-  run_once: true
+#- name: 创建namespace
+#  shell: "kubectl create namespace {{ APP_NAMESPACE }}"
+#  when: 'APP_NAMESPACE not in namespaces_info.stdout'
+#  connection: local
+#  run_once: true
   
 - name: 部署ingress
   when: '"nginx-ingress" not in pod_info.stdout'
