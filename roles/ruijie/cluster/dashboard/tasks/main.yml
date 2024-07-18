@@ -16,9 +16,9 @@
       copy: src={{ base_dir }}/down/{{ dashboard_offline }} dest=/opt/kube/images/{{ dashboard_offline }}
       when: 'dashboard_offline in download_info.stdout'
 
-    - name: 尝试推送离线 heapster镜像（若执行失败，可忽略）
-      copy: src={{ base_dir }}/down/{{ heapster_offline }} dest=/opt/kube/images/{{ heapster_offline }}
-      when: 'heapster_offline in download_info.stdout and heapster_install == "no"'
+    - name: 尝试推送离线 metrics-scraper镜像（若执行失败，可忽略）
+      copy: src={{ base_dir }}/down/{{ metrics_scraper_offline }} dest=/opt/kube/images/{{ metrics_scraper_offline }}
+      when: 'metrics_scraper_offline in download_info.stdout'
 
     - name: 获取dashboard离线镜像推送情况
       command: "ls /opt/kube/images"
@@ -28,13 +28,18 @@
       shell: "docker load -i /opt/kube/images/{{ dashboard_offline }}"
       when: 'dashboard_offline in image_info.stdout'
 
-    - name: 导入 heapster的离线镜像（若执行失败，可忽略）
-      shell: "docker load -i /opt/kube/images/{{ heapster_offline }}"
-      when: 'heapster_offline in image_info.stdout and heapster_install == "no"'
+    - name: 导入 metrics-scraper的离线镜像（若执行失败，可忽略）
+      shell: "docker load -i /opt/kube/images/{{ metrics_scraper_offline }}"
+      when: 'metrics_scraper_offline in image_info.stdout'  
+
+    - name: 创建 dashboard自签证书
+      shell: "kubectl create secret generic kubernetes-dashboard-certs --from-file=/etc/kubernetes/pki/apiserver.key \
+      --from-file=/etc/kubernetes/pki/apiserver.crt -n kube-system"
+      delegate_to: "{{ groups.deploy[0] }}"
+      run_once: true
 
     - name: 创建 dashboard部署
-      shell: "kubectl apply -f {{ base_dir }}/manifests/ruijie/dashboard && \
-	      kubectl apply -f {{ base_dir }}/manifests/heapster/heapster-only"
+      shell: "kubectl apply -f {{ base_dir }}/manifests/ruijie/dashboard/2.5.1"
       delegate_to: "{{ groups.deploy[0] }}"
       run_once: true
   when: '"kubernetes-dashboard" not in pod_info.stdout and dashboard_install == "yes"'

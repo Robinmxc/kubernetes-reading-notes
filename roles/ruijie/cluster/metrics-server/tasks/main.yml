@@ -16,7 +16,6 @@
       when: 'metricsserver_offline in download_info.stdout'
       with_items:
         - "{{ metricsserver_offline }}"
-        - "{{ addon_resizer_offline }}"
 
     - name: 获取metrics-server离线镜像推送情况
       command: "ls /opt/kube/images"
@@ -27,10 +26,9 @@
       when: 'metricsserver_offline in image_info.stdout'
       with_items:
         - "{{ metricsserver_offline }}"
-        - "{{ addon_resizer_offline }}"
 
     - name: 创建 metrics-server部署
-      shell: "kubectl apply -f {{ base_dir }}/manifests/ruijie/metrics-server"
+      shell: "kubectl apply -f {{ base_dir }}/manifests/ruijie/metrics-server/0.7.0"
       delegate_to: "{{ groups.deploy[0] }}"
       run_once: true
   when: '"metrics-server" not in pod_info.stdout and metricsserver_install == "yes"'

@@ -163,6 +163,16 @@
   roles:
   - ruijie/cluster/ingress
 
+- hosts: kube_node
+  any_errors_fatal: true
+  roles:
+  - ruijie/cluster/metrics-server
+
+- hosts: kube_node
+  any_errors_fatal: true
+  roles:
+  - ruijie/cluster/dashboard
+
 - hosts: kube_master
   tasks:
   - name: k8s安装完毕后，keepalive开启业务检测
