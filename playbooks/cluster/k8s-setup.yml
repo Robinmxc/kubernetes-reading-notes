@@ -173,6 +173,12 @@
   roles:
   - ruijie/cluster/dashboard
 
+# to execute finish task for 'kube_master' 
+- hosts: kube_master
+  any_errors_fatal: true
+  roles:
+  - ruijie/cluster/finish  
+
 - hosts: kube_master
   tasks:
   - name: k8s安装完毕后，keepalive开启业务检测

@@ -36,9 +36,8 @@
     no_log: true
 
   - name: umount kubelet filesystems
-    shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount || exit 0"  
+    shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount || exit 0"
     ignore_errors: true
-
 
   - name: 查看是否安装docker
     shell: "systemctl status docker.service  2>&1|grep Active|cat"
@@ -46,19 +45,9 @@
     ignore_errors: true
     no_log: true
 
-  - name: 重启docker 服务
-    shell: systemctl restart docker
+  - name: stop and disable docker service
+    shell: systemctl stop docker && systemctl disable docker 
     when: '"running" in docker_status_first.stdout'
-    ignore_errors: true
-    no_log: true
-
-  - name: 轮询等待docker服务重启完毕
-    shell: "systemctl status docker.service  2>&1|grep Active|cat"
-    register: docker_status
-    until: '"running" in docker_status.stdout'
-    when: '"running" in docker_status_first.stdout'    
-    retries: 10
-    delay: 3
     ignore_errors: true
     no_log: true
 
