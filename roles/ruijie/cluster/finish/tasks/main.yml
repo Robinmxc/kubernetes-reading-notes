@@ -1,7 +1,7 @@
-- name: 部署keepalived负载均衡service
+- name: 执行集群创建成功以后的一些后置任务
   when: '"" != KUBE_MASTER_VIP and DEPLOY_MODE == "multi-master" '
   block:
-    - name: 在执行节点创建相关目录
+    - name: 在执行节点创建keepalived相关目录
       file: path=/opt/kube/kube-system/keepalived state=directory
 
     # service文件中externalIPs是动态指定，因此需要用template模块替换参数
@@ -9,12 +9,9 @@
       template: src=keepalived-svc.yaml.j2 dest=/opt/kube/kube-system/keepalived/keepalived-svc.yaml
 
     - name: 创建keepalived service资源
-      command: "kubectl apply -f /opt/kube/kube-system/keepalived"  
-  delegate_to: "{{ groups.deploy[0] }}"
-  run_once: true
+      shell: "kubectl apply -f /opt/kube/kube-system/keepalived"
 
-- name: Patch external VIP for dashboard service
-  when: '"" != KUBE_MASTER_VIP and DEPLOY_MODE == "multi-master" '
-  command: "kubectl patch svc kubernetes-dashboard -n kube-system -p '{\"spec\": {\"externalIPs\":[\"{{KUBE_MASTER_VIP}}\"]}}'"  
+    - name: Patch external VIP for dashboard service
+      shell: "kubectl patch svc kubernetes-dashboard -n kube-system -p '{\"spec\": {\"externalIPs\":[\"{{KUBE_MASTER_VIP}}\"]}}'"
   delegate_to: "{{ groups.deploy[0] }}"
   run_once: true

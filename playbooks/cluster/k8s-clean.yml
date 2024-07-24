@@ -93,6 +93,8 @@
 
 # to clean 'lb' nodes
 - hosts:
+  - kube_master
+  - kube_node
   - lb
   - ex-lb
   tasks:
@@ -110,7 +112,10 @@
     - "/etc/haproxy"
     - "/etc/keepalived"
     - "/var/lib/etcd"
-    
+
+  - name: clear ipvsadm
+    shell: 'ipvsadm -C'
+    ignore_errors: true
 
 # to clean ntp, certs and keys, env path
 - hosts:

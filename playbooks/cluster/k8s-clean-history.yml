@@ -192,6 +192,8 @@
 
 # to clean 'lb' nodes
 - hosts:
+  - kube_master
+  - kube_node
   - lb
   - ex-lb
   tasks:
